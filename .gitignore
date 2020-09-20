@@ -1,7 +1,6 @@
 .vscode/
 .directory
-bin/
-lib/
+build/
 
 # Make and CMake
 *Makefile
