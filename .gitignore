@@ -1,0 +1,10 @@
+.vscode/
+.directory
+bin/
+lib/
+
+# Make and CMake
+*Makefile
+*.cmake
+CMakeCache.txt
+*CMakeFiles
