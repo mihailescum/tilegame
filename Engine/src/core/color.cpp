@@ -1,4 +1,4 @@
-#include "color.hpp"
+#include "core/color.hpp"
 
 namespace engine {
     const Color Color::White(1.0f, 1.0f, 1.0f, 1.0f);

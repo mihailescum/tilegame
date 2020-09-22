@@ -1,7 +1,7 @@
-#include "graphicsdevice.hpp"
+#include "core/graphicsdevice.hpp"
 
 #include <sstream>
-#include "log.hpp"
+#include "core/log.hpp"
 
 namespace engine
 {

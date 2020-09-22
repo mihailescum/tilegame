@@ -1,34 +1,58 @@
 # Source Files
-set (SOURCES_ENGINE
-        game.cpp
-        window.cpp
-        shader.cpp
-        texture2D.cpp
-        log.cpp
-        graphicsdevice.cpp
-        viewport.cpp
-        spritebatch.cpp
-        color.cpp)
+set (SOURCES_ENGINE_CORE
+        core/game.cpp
+        core/window.cpp
+        core/shader.cpp
+        core/texture2D.cpp
+        core/log.cpp
+        core/graphicsdevice.cpp
+        core/viewport.cpp
+        core/spritebatch.cpp
+        core/color.cpp
+)
+
+set (SOURCES_ENGINE_MAP
+        map/map.cpp
+        map/maprenderer.cpp
+        map/tile.cpp
+        map/tileset.cpp
+)
 
 # Header Files
 set (HEADER_PATH ${PROJECT_SOURCE_DIR}/Engine/include)
-set (HEADER_ENGINE 
-        ${HEADER_PATH}/engine.hpp
-        ${HEADER_PATH}/game.hpp
-        ${HEADER_PATH}/window.hpp
-        ${HEADER_PATH}/shader.hpp
-        ${HEADER_PATH}/texture2D.hpp
-        ${HEADER_PATH}/stb_image.hpp
-        ${HEADER_PATH}/log.hpp
-        ${HEADER_PATH}/graphicsdevice.hpp
-        ${HEADER_PATH}/viewport.hpp
-        ${HEADER_PATH}/rectangle.hpp
-        ${HEADER_PATH}/spritebatch.hpp
-        ${HEADER_PATH}/color.hpp)
+
+set (HEADER_ENGINE_CORE
+        ${HEADER_PATH}/core/game.hpp
+        ${HEADER_PATH}/core/window.hpp
+        ${HEADER_PATH}/core/shader.hpp
+        ${HEADER_PATH}/core/texture2D.hpp
+        ${HEADER_PATH}/core/stb_image.hpp
+        ${HEADER_PATH}/core/log.hpp
+        ${HEADER_PATH}/core/graphicsdevice.hpp
+        ${HEADER_PATH}/core/viewport.hpp
+        ${HEADER_PATH}/core/rectangle.hpp
+        ${HEADER_PATH}/core/spritebatch.hpp
+        ${HEADER_PATH}/core/color.hpp
+)
+
+set (HEADER_ENGINE_MAP
+        ${HEADER_PATH}/map/map.hpp
+        ${HEADER_PATH}/map/maprenderer.hpp
+        ${HEADER_PATH}/map/tile.hpp
+        ${HEADER_PATH}/map/tileset.hpp
+)
 
 # Create Library
 set (LIBRARY_NAME engine)
-add_library(${LIBRARY_NAME} STATIC ${SOURCES_ENGINE} ${HEADER_ENGINE})
+add_library(${LIBRARY_NAME} 
+        STATIC 
+                ${HEADER_PATH}/engine.hpp
+                ${SOURCES_ENGINE_CORE} 
+                ${SOURCES_ENGINE_MAP}
+                ${HEADER_ENGINE_CORE}
+                ${HEADER_ENGINE_MAP}
+)
+
 set_target_properties(
         ${LIBRARY_NAME} 
         PROPERTIES 

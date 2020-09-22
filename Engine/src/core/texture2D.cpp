@@ -1,10 +1,10 @@
-#include "texture2D.hpp"
+#include "core/texture2D.hpp"
 
 #include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.hpp"
-#include "log.hpp"
+#include "core/stb_image.hpp"
+#include "core/log.hpp"
 
 namespace engine
 {

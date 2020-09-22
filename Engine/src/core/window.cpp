@@ -1,7 +1,7 @@
-#include "window.hpp"
+#include "core/window.hpp"
 
 #include <sstream>
-#include "log.hpp"
+#include "core/log.hpp"
 
 namespace engine
 {

@@ -1,10 +1,10 @@
-#include "shader.hpp"
+#include "core/shader.hpp"
 
 #include <string>
 #include <fstream>
 #include <sstream>
 
-#include "log.hpp"
+#include "core/log.hpp"
 #include "glm/ext.hpp"
 
 namespace engine

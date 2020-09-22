@@ -2,7 +2,7 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "spritebatch.hpp"
+#include "core/spritebatch.hpp"
 
 namespace engine
 {
