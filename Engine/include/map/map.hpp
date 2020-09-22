@@ -14,7 +14,7 @@ namespace engine
     {
     private:
         TilesetInfo tilesetInfo;
-        std::vector<int> data;
+        std::vector<unsigned> data;
         unsigned width;
         unsigned height;
 
@@ -23,10 +23,16 @@ namespace engine
         void parseCSV(const std::string &csv);
 
     public:
-        Map() {}
+        Map();
         Map(const Map &map) = delete;
         ~Map() {}
         void loadFromFile(const std::string &path, const std::string &filename);
+        void Draw(SpriteBatch &spriteBatch) const;
+
+        unsigned getWidth() const;
+        unsigned getHeight() const;
+        const TilesetInfo &getTilesetInfo() const;
+        const std::vector<unsigned> &getData() const;
     };
 } // namespace engine
 

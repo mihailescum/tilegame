@@ -66,7 +66,7 @@ namespace engine
     }
 
     void Game::resize(const int width, const int height) {
-        Viewport &currentViewport = graphicsDevice->getViewport();
+        Viewport currentViewport = graphicsDevice->getViewport();
         currentViewport.width = width;
         currentViewport.height = height;
         graphicsDevice->setViewport(currentViewport);

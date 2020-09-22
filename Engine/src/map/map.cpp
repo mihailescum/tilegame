@@ -7,6 +7,11 @@
 
 namespace engine
 {
+    Map::Map()
+    {
+        this->mapRenderer = std::unique_ptr<MapRenderer>(new MapRenderer(*this));
+    }
+
     void Map::loadFromFile(const std::string &path, const std::string &filename)
     {
         tinyxml2::XMLDocument doc;
@@ -51,4 +56,14 @@ namespace engine
             }
         }
     }
+
+    void Map::Draw(SpriteBatch &spriteBatch) const
+    {
+        this->mapRenderer->Draw(spriteBatch);
+    }
+
+    unsigned Map::getWidth() const { return this->width; }
+    unsigned Map::getHeight() const { return this->height; }
+    const TilesetInfo &Map::getTilesetInfo() const { return this->tilesetInfo; }
+    const std::vector<unsigned> &Map::getData() const { return this->data; }
 } // namespace engine

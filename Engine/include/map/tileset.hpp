@@ -29,6 +29,9 @@ namespace engine
             ~Tileset() {}
             void loadFromFile(const std::string &path, const std::string &filename);
             const Texture2D &getTexture() const;
+            const Tile &getTile(const unsigned index) const;
+            unsigned getTileWidth() const;
+            unsigned getTileHeight() const;
     };
 } // namespace engine
 

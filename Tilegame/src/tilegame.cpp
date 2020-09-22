@@ -48,9 +48,7 @@ namespace tilegame
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
-        spriteBatch->begin();
-        //spriteBatch->draw(tileset.getTexture(), engine::Rectangle(100, 100, 400, 400), engine::Color::White);
-        spriteBatch->end();
+        map1.Draw(*spriteBatch);
 
         frames++;
     }

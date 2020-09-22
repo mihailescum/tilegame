@@ -5,8 +5,8 @@
     },
     "activeFile": "world/map1.tmx",
     "expandedProjectPaths": [
-        "world",
-        "textures"
+        "textures",
+        "world"
     ],
     "fileStates": {
         "world/map1.tmx": {
@@ -24,13 +24,13 @@
     },
     "map.lastUsedFormat": "tmx",
     "openFiles": [
-        "world/map1.tmx",
-        "world/tileset1.tsx"
+        "world/tileset1.tsx",
+        "world/map1.tmx"
     ],
     "project": "test_project.tiled-project",
     "recentFiles": [
-        "world/map1.tmx",
-        "world/tileset1.tsx"
+        "world/tileset1.tsx",
+        "world/map1.tmx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

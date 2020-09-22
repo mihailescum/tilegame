@@ -45,7 +45,7 @@ namespace engine
         }
         this->begun = true;
 
-        Viewport &viewport = this->graphicsDevice.getViewport();
+        const Viewport &viewport = this->graphicsDevice.getViewport();
         glm::mat4 projection = glm::ortho(
             (float)viewport.x,
             (float)viewport.width,
@@ -114,8 +114,8 @@ namespace engine
         glm::vec2 uvBottomRight(1.0f, 1.0f);
         if (sourceRectangle != nullptr)
         {
-            int textureWidth = texture.getWidth();
-            int textureHeight = texture.getHeight();
+            double textureWidth = texture.getWidth();
+            double textureHeight = texture.getHeight();
 
             uvTopLeft.x = (float)sourceRectangle->x / textureWidth;
             uvTopLeft.y = (float)sourceRectangle->y / textureHeight;
@@ -179,8 +179,8 @@ namespace engine
             //Top Left
             this->spriteData[offset + 8] = posTopLeft.x;
             this->spriteData[offset + 9] = posTopLeft.y;
-            this->spriteData[offset + 10] = uvTopLeft.y;
-            this->spriteData[offset + 11] = uvTopLeft.x;
+            this->spriteData[offset + 10] = uvTopLeft.x;
+            this->spriteData[offset + 11] = uvTopLeft.y;
             //Bottom Left
             this->spriteData[offset + 12] = posBottomLeft.x;
             this->spriteData[offset + 13] = posBottomLeft.y;

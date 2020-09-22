@@ -36,7 +36,7 @@ namespace engine
         glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     }
 
-    Viewport &GraphicsDevice::getViewport() const
+    const Viewport &GraphicsDevice::getViewport() const
     {
         return this->viewport;
     }

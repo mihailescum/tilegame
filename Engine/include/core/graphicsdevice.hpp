@@ -16,7 +16,7 @@ namespace engine
         ~GraphicsDevice() {}
         int create();
         void setViewport(const Viewport &viewport);
-        Viewport &getViewport() const;
+        const Viewport &getViewport() const;
         void clear(const Color &color) const;
 
     private:

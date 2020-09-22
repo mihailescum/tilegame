@@ -31,16 +31,17 @@ namespace engine
                 Tile tile;
                 tile.sourceRect = Rectangle(
                     x * this->tileWidth,
-                    y * this->tileHeight, 
-                    (x + 1) * this->tileWidth,
-                    (y + 1) * this->tileHeight);
+                    y * this->tileHeight,
+                    this->tileWidth,
+                    this->tileHeight);
+                this->tiles.push_back(tile);
             }
         }
     }
 
-    const Texture2D &Tileset::getTexture() const
-    {
-        return *this->texture;
-    }
+    const Texture2D &Tileset::getTexture() const { return *this->texture; }
+    const Tile &Tileset::getTile(const unsigned index) const { return this->tiles[index]; }
+    unsigned Tileset::getTileWidth() const { return this->tileWidth; }
+    unsigned Tileset::getTileHeight() const { return this->tileHeight; }
 
 } // namespace engine
