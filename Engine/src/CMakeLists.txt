@@ -4,18 +4,27 @@ set (SOURCES_ENGINE
         window.cpp
         shader.cpp
         texture2D.cpp
-        log.cpp)
+        log.cpp
+        graphicsdevice.cpp
+        viewport.cpp
+        spritebatch.cpp
+        color.cpp)
 
 # Header Files
 set (HEADER_PATH ${PROJECT_SOURCE_DIR}/Engine/include)
 set (HEADER_ENGINE 
-        ${HEADER_PATH}/engine.h 
-        ${HEADER_PATH}/game.h
-        ${HEADER_PATH}/window.h
-        ${HEADER_PATH}/shader.h
-        ${HEADER_PATH}/texture2D.h
-        ${HEADER_PATH}/stb_image.h
-        ${HEADER_PATH}/log.h)
+        ${HEADER_PATH}/engine.hpp
+        ${HEADER_PATH}/game.hpp
+        ${HEADER_PATH}/window.hpp
+        ${HEADER_PATH}/shader.hpp
+        ${HEADER_PATH}/texture2D.hpp
+        ${HEADER_PATH}/stb_image.hpp
+        ${HEADER_PATH}/log.hpp
+        ${HEADER_PATH}/graphicsdevice.hpp
+        ${HEADER_PATH}/viewport.hpp
+        ${HEADER_PATH}/rectangle.hpp
+        ${HEADER_PATH}/spritebatch.hpp
+        ${HEADER_PATH}/color.hpp)
 
 # Create Library
 set (LIBRARY_NAME engine)

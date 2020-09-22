@@ -1,7 +1,7 @@
 #ifndef __ENGINE_TEXTURE2D_H__
 #define __ENGINE_TEXTURE2D_H__
 
-#include <glad/glad.h>
+#include "glad/glad.h"
 
 #include <string>
 
@@ -23,9 +23,16 @@ namespace engine
             @return a GLuint object that represents the texture
         */
         GLuint getglTexture() const;
+        int getWidth() const;
+        int getHeight() const;
+
+        friend bool operator==(const Texture2D &lhs, const Texture2D &rhs) { return lhs.glTexture == rhs.glTexture; }
+        friend bool operator!=(const Texture2D &lhs, const Texture2D &rhs) { return !(lhs == rhs); }
 
     private:
         GLuint glTexture = 0;
+        int width;
+        int height;
     };
 } // namespace engine
 

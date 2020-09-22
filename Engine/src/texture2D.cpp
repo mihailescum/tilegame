@@ -1,10 +1,10 @@
-#include "texture2D.h"
+#include "texture2D.hpp"
 
 #include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "log.h"
+#include "stb_image.hpp"
+#include "log.hpp"
 
 namespace engine
 {
@@ -19,9 +19,9 @@ namespace engine
 
     int Texture2D::loadTexture(const std::string path, const GLenum colorFormat, const bool flipVertically)
     {
-        int width, height, nrChannels;
+        int nrChannels;
         stbi_set_flip_vertically_on_load(flipVertically);
-        unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, &nrChannels, 0);
         if (data)
         {
             createTextureFromRawData(width, height, colorFormat, GL_UNSIGNED_BYTE, true, data);
@@ -53,5 +53,15 @@ namespace engine
     GLuint Texture2D::getglTexture() const
     {
         return this->glTexture;
+    }
+
+    int Texture2D::getWidth() const
+    {
+        return this->width;
+    }
+
+    int Texture2D::getHeight() const
+    {
+        return this->height;
     }
 } // namespace engine

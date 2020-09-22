@@ -17,7 +17,8 @@ namespace engine
             @return a GLuint object that represents the shader program
         */
         GLuint getglShaderProgram() const;
-        int loadShader(const std::string vertexPath, const std::string geometryPath, const std::string fragmentPath);
+        int loadShaderFromFile(const std::string vertexPath, const std::string geometryPath, const std::string fragmentPath);
+        int loadShaderFromSource(const std::string vertexSource, const std::string geometrySource, const std::string fragmentSource);
         void setBool(const std::string &name, GLboolean value) const;
         void setInt(const std::string &name, GLint value) const;
         void setFloat(const std::string &name, GLfloat value) const;
@@ -32,7 +33,9 @@ namespace engine
     private:
         GLuint glShaderProgram = 0;
         int checkCompileErrors(GLuint shader, std::string type) const;
-        GLuint loadAndCompileShader(const std::string path, const std::string name, const GLenum shaderType);
+        GLuint compileShader(const std::string source, const std::string name, const GLenum shaderType) const;
+        GLuint compileProgram(const GLuint vertex, const GLuint geometry, const GLuint fragment);
+        std::string loadShaderSource(const std::string path) const;
     };
 } // namespace engine
 

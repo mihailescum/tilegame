@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "tilegame.h"
+#include "tilegame.hpp"
 #include <fstream>
 #include <sstream>
 

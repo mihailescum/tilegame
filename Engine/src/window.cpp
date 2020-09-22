@@ -1,9 +1,13 @@
-#include "window.h"
+#include "window.hpp"
 
-#include <iostream>
+#include <sstream>
+#include "log.hpp"
 
 namespace engine
 {
+    Window::Window(const int width, const int height) : windowWidth(width), windowHeight(height) {
+    }
+
     bool Window::isResizable()
     {
         return (this->resizable == GLFW_TRUE) ? true : false;
@@ -14,7 +18,7 @@ namespace engine
         this->resizable = (resizable) ? GLFW_TRUE : GLFW_FALSE;
     }
 
-    std::string Window::getTitle()
+    std::string Window::getTitle() const
     {
         return this->title;
     }
@@ -28,14 +32,14 @@ namespace engine
         }
     }
 
-    int Window::getWindowWidth()
+    int Window::getWindowWidth() const
     {
-        return this->window_width;
+        return this->windowWidth;
     }
 
-    int Window::getWindowHeight()
+    int Window::getWindowHeight() const
     {
-        return this->window_height;
+        return this->windowHeight;
     }
 
     void Window::setWindowDimensions(const int width, const int height)
@@ -43,34 +47,34 @@ namespace engine
         if (this->glfwWindow)
         {
             if (width >= 0)
-                this->window_width = width;
+                this->windowWidth = width;
             if (height >= 0)
-                this->window_width = width;
+                this->windowHeight = height;
 
-            glfwSetWindowSize(this->glfwWindow, this->window_width, this->window_height);
+            glfwSetWindowSize(this->glfwWindow, this->windowWidth, this->windowHeight);
         }
     }
 
     void errorCallback(int error, const char *description)
     {
-        std::cerr << "GLFW error " << error << ": " << description << std::endl;
+        std::stringstream msg;
+        msg << "GLFW error " << error << ": " << description << std::endl;
+        Log::e(msg.str());
     }
 
     void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     {
-        glViewport(0, 0, width, height);
+        // __raise windowSizeChanged(width, height);
     }
 
-    int Window::initialize(const int width, const int height)
+    int Window::initialize()
     {
-        this->window_width = width;
-        this->window_height = height;
-
         int glfwInitRes = glfwInit();
         if (!glfwInitRes)
         {
-            std::cerr << "Unable to initialize GLFW" << std::endl;
-            return 0;
+            std::stringstream msg;
+            msg << "Unable to initialize GLFW." << std::endl;
+            Log::e(msg.str());
         }
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -79,27 +83,19 @@ namespace engine
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, this->resizable);
 
-        this->glfwWindow = glfwCreateWindow(window_width, window_height, "InitGL", nullptr, nullptr);
+        this->glfwWindow = glfwCreateWindow(windowWidth, windowHeight, "InitGL", nullptr, nullptr);
         if (!this->glfwWindow)
         {
-            std::cerr << "Unable to create GLFW window" << std::endl;
+            std::stringstream msg;
+            msg << "Unable to create GLFW window" << std::endl;
+            Log::e(msg.str());
+
             glfwTerminate();
             this->glfwWindow = nullptr;
             return 0;
         }
 
         glfwMakeContextCurrent(this->glfwWindow);
-
-        int gladInitRes = gladLoadGL();
-        if (!gladInitRes)
-        {
-            std::cerr << "Unable to initialize glad" << std::endl;
-            glfwDestroyWindow(this->glfwWindow);
-            glfwTerminate();
-            this->glfwWindow = nullptr;
-            return 0;
-        }
-        glViewport(0, 0, window_width, window_height);
 
         glfwSetFramebufferSizeCallback(this->glfwWindow, framebuffer_size_callback);
 
@@ -111,9 +107,10 @@ namespace engine
         if (this->glfwWindow)
             glfwDestroyWindow(this->glfwWindow);
         glfwTerminate();
+        this->glfwWindow = nullptr;
     }
 
-    bool Window::shouldClose()
+    bool Window::shouldClose() const
     {
         if (!glfwWindow)
             return true;
@@ -121,7 +118,7 @@ namespace engine
             return glfwWindowShouldClose(glfwWindow);
     }
 
-    GLFWwindow *Window::getGLFWwindow()
+    GLFWwindow *Window::getGLFWwindow() const
     {
         return this->glfwWindow;
     }

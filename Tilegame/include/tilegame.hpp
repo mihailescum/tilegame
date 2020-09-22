@@ -1,7 +1,7 @@
 #ifndef __TILEGAME_TILEGAME_H__
 #define __TILEGAME_TILEGAME_H__
 
-#include "engine.h"
+#include "engine.hpp"
 
 namespace tilegame
 {

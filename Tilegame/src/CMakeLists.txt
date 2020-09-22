@@ -6,7 +6,7 @@ set (SOURCES_GAME
 # Header Files
 set (HEADER_PATH ${PROJECT_SOURCE_DIR}/Tilegame/include)
 set (HEADER_GAME
-        ${HEADER_PATH}/tilegame.h)
+        ${HEADER_PATH}/tilegame.hpp)
  
 # Create Executable
 set(EXECUTABLE_NAME tilegame)

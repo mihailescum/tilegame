@@ -1,25 +1,19 @@
-#include "tilegame.h"
-
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
-#include "glm/gtc/matrix_transform.hpp"
+#include "tilegame.hpp"
 
 #include <vector>
 #include <time.h>
 
 #include <sstream>
 
-#include "engine.h"
+#include "engine.hpp"
 
 namespace tilegame
 {
+    engine::Texture2D test;
+
     void Tilegame::initialize()
     {
         Game::initialize();
-
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetWindowPos(window.getGLFWwindow(), 700, 400);
@@ -27,6 +21,7 @@ namespace tilegame
 
     void Tilegame::loadContent()
     {
+        test.loadTexture("content/textures/current_demo.png", GL_RGBA, false);
     }
 
     void Tilegame::unloadContent()
@@ -51,8 +46,12 @@ namespace tilegame
 
     void Tilegame::draw()
     {
-        glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        graphicsDevice.clear(engine::Color::CornflowerBlue);
+
+        spriteBatch.begin();
+        engine::Rectangle source(0, 0, 900, 900);
+        spriteBatch.draw(test, engine::Rectangle(100, 100, 100, 100), &source, engine::Color::White);
+        spriteBatch.end();
 
         frames++;
     }
