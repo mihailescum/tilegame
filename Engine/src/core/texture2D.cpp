@@ -8,6 +8,10 @@
 
 namespace engine
 {
+    Texture2D::~Texture2D() {
+        this->deleteTexture();
+    }
+
     void Texture2D::createTextureFromRawData(const int width, const int height, const GLenum colorFormat, const GLenum dataType, const bool generateMipmap, const void *data)
     {
         glGenTextures(1, &glTexture);

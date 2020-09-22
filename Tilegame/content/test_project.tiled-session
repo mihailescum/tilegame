@@ -5,16 +5,16 @@
     },
     "activeFile": "world/map1.tmx",
     "expandedProjectPaths": [
-        "textures",
-        "world"
+        "world",
+        "textures"
     ],
     "fileStates": {
         "world/map1.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 106,
-                "y": -535
+                "x": 77,
+                "y": 45.16666666666667
             }
         },
         "world/tileset1.tsx": {

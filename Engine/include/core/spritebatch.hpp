@@ -15,6 +15,7 @@ namespace engine
     {
     private:
         static const int NUM_SIMULT_TEXTURES = 1;
+        static const int MAX_BATCH_SIZE = 4096;
 
         const GraphicsDevice &graphicsDevice;
         Texture2D activeTextures[NUM_SIMULT_TEXTURES];
@@ -39,10 +40,10 @@ namespace engine
         SpriteBatch(const SpriteBatch &spriteBatch) = delete;
         ~SpriteBatch();
         void create();
-        void begin();
-        void begin(const glm::mat4 &transform);
-        void draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle, const Color &color);
+        void begin(const bool alphaBlendingEnabled);
+        void begin(const glm::mat4 &transform, const bool alphaBlendingEnabled);
         void draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Color &color);
+        void draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle, const Color &color);
         void end();
     };
 } // namespace engine

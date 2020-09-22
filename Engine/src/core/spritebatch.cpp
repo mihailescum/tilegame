@@ -31,13 +31,13 @@ namespace engine
         this->shader->loadShaderFromSource(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
     }
 
-    void SpriteBatch::begin()
+    void SpriteBatch::begin(const bool alphaBlendingEnabled)
     {
         glm::mat4 transform(1.0);
-        this->begin(transform);
+        this->begin(transform, alphaBlendingEnabled);
     }
 
-    void SpriteBatch::begin(const glm::mat4 &transform)
+    void SpriteBatch::begin(const glm::mat4 &transform, const bool alphaBlendingEnabled)
     {
         if (this->begun)
         {
@@ -55,6 +55,12 @@ namespace engine
             1.0f);
 
         this->wvp = transform * projection;
+
+        if (alphaBlendingEnabled)
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
     }
 
     void SpriteBatch::end()
@@ -64,6 +70,8 @@ namespace engine
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
         flush();
+
+        glDisable(GL_BLEND);
 
         this->begun = false;
     }
@@ -99,6 +107,8 @@ namespace engine
         this->addSpriteData(texture, destinationRectangle, sourceRectangle);
 
         this->num_active_sprites++;
+        if (this->num_active_sprites > MAX_BATCH_SIZE)
+            this->flush();
     }
 
     void SpriteBatch::addSpriteData(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle)

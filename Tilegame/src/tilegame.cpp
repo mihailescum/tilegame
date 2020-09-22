@@ -1,8 +1,7 @@
 #include "tilegame.hpp"
 
 #include <vector>
-#include <time.h>
-
+#include <memory>
 #include <sstream>
 
 #include "engine.hpp"
@@ -10,10 +9,13 @@
 namespace tilegame
 {
     engine::Map map1;
+    std::unique_ptr<engine::MapRenderer> map1Renderer;
 
     void Tilegame::initialize()
     {
         Game::initialize();
+
+        map1Renderer = std::unique_ptr<engine::MapRenderer>(new engine::MapRenderer(map1));
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
@@ -22,6 +24,7 @@ namespace tilegame
     void Tilegame::loadContent()
     {
         map1.loadFromFile("content/world/", "map1.tmx");
+        map1Renderer->initialize();
     }
 
     void Tilegame::unloadContent()
@@ -48,7 +51,7 @@ namespace tilegame
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
-        map1.Draw(*spriteBatch);
+        map1Renderer->draw(*spriteBatch);
 
         frames++;
     }

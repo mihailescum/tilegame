@@ -4,9 +4,10 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include "tinyxml2.h"
 
 #include "map/tilesetinfo.hpp"
-#include "map/maprenderer.hpp"
+#include "map/tilelayer.hpp"
 
 namespace engine
 {
@@ -14,25 +15,22 @@ namespace engine
     {
     private:
         TilesetInfo tilesetInfo;
-        std::vector<unsigned> data;
         unsigned width;
         unsigned height;
+        std::vector<std::unique_ptr<TileLayer>> layers;
 
-        std::unique_ptr<MapRenderer> mapRenderer;
-
-        void parseCSV(const std::string &csv);
+        void parseTilesetElement(const std::string &path, const tinyxml2::XMLElement *element);
 
     public:
         Map();
         Map(const Map &map) = delete;
         ~Map() {}
         void loadFromFile(const std::string &path, const std::string &filename);
-        void Draw(SpriteBatch &spriteBatch) const;
 
+        const TilesetInfo &getTilesetInfo() const;
         unsigned getWidth() const;
         unsigned getHeight() const;
-        const TilesetInfo &getTilesetInfo() const;
-        const std::vector<unsigned> &getData() const;
+        const std::vector<std::unique_ptr<TileLayer>> &getLayers() const;
     };
 } // namespace engine
 

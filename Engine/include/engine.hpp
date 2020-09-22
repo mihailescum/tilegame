@@ -17,5 +17,6 @@
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/tilesetinfo.hpp"
+#include "map/tilelayer.hpp"
 
 #endif

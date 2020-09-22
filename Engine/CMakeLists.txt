@@ -19,6 +19,7 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/tile.cpp
         ${SOURCES_PATH}/map/tileset.cpp
         ${SOURCES_PATH}/map/tilesetinfo.cpp
+        ${SOURCES_PATH}/map/tilelayer.cpp
 )
 
 # Header Files
@@ -44,6 +45,7 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/tile.hpp
         ${HEADER_PATH}/map/tileset.hpp
         ${HEADER_PATH}/map/tilesetinfo.hpp
+        ${HEADER_PATH}/map/tilelayer.hpp
 )
 
 # Create Library
