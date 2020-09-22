@@ -18,6 +18,7 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/maprenderer.cpp
         ${SOURCES_PATH}/map/tile.cpp
         ${SOURCES_PATH}/map/tileset.cpp
+        ${SOURCES_PATH}/map/tilesetinfo.cpp
 )
 
 # Header Files
@@ -42,6 +43,7 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/maprenderer.hpp
         ${HEADER_PATH}/map/tile.hpp
         ${HEADER_PATH}/map/tileset.hpp
+        ${HEADER_PATH}/map/tilesetinfo.hpp
 )
 
 # Create Library

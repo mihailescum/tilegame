@@ -16,5 +16,6 @@
 #include "map/maprenderer.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
+#include "map/tilesetinfo.hpp"
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "map/tile.hpp"
 #include "core/texture2D.hpp"
@@ -12,21 +13,21 @@ namespace engine
     class Tileset
     {
         private:
-            int firstGID = 0;
             std::vector<Tile> tiles;
 
             std::string name;
-            int tileWidth;
-            int tileHeight;
-            int tileCount;
-            int columns;
-            int rows;
-            Texture2D texture;
+            unsigned tileWidth;
+            unsigned tileHeight;
+            unsigned tileCount;
+            unsigned columns;
+            unsigned rows;
+            std::unique_ptr<Texture2D> texture;
 
         public:
             Tileset() {}
+            Tileset(const Tileset &tileset) = delete;
             ~Tileset() {}
-            void loadFromFile(const std::string filename, const std::string folder="");
+            void loadFromFile(const std::string &path, const std::string &filename);
             const Texture2D &getTexture() const;
     };
 } // namespace engine

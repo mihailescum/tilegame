@@ -29,8 +29,8 @@
     ],
     "project": "test_project.tiled-project",
     "recentFiles": [
-        "world/tileset1.tsx",
-        "world/map1.tmx"
+        "world/map1.tmx",
+        "world/tileset1.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

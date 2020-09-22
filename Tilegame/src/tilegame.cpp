@@ -9,7 +9,7 @@
 
 namespace tilegame
 {
-    engine::Tileset tileset;
+    engine::Map map1;
 
     void Tilegame::initialize()
     {
@@ -21,7 +21,7 @@ namespace tilegame
 
     void Tilegame::loadContent()
     {
-        tileset.loadFromFile("content/world/tileset1.tsx", "content/textures/");
+        map1.loadFromFile("content/world/", "map1.tmx");
     }
 
     void Tilegame::unloadContent()
@@ -49,7 +49,7 @@ namespace tilegame
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
         spriteBatch->begin();
-        spriteBatch->draw(tileset.getTexture(), engine::Rectangle(100, 100, 400, 400), engine::Color::White);
+        //spriteBatch->draw(tileset.getTexture(), engine::Rectangle(100, 100, 400, 400), engine::Color::White);
         spriteBatch->end();
 
         frames++;
