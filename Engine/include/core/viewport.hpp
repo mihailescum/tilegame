@@ -3,7 +3,7 @@
 
 #include "glad/glad.h"
 
-#include "rectangle.hpp"
+#include "core/rectangle.hpp"
 
 namespace engine
 {

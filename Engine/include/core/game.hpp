@@ -1,16 +1,19 @@
 #ifndef __ENGINE_GAME_H__
 #define __ENGINE_GAME_H__
 
-#include "graphicsdevice.hpp"
-#include "spritebatch.hpp"
-#include "window.hpp"
+#include <memory>
+
+#include "core/graphicsdevice.hpp"
+#include "core/spritebatch.hpp"
+#include "core/window.hpp"
 
 namespace engine
 {
     class Game
     {
     public:
-        Game() : window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT), graphicsDevice(window), spriteBatch(graphicsDevice) {}
+        Game() {}
+        Game(const Game& game) = delete;
         ~Game() {}
         void run();
 
@@ -26,11 +29,11 @@ namespace engine
         virtual void update(const double deltaTime) = 0;
         virtual void draw() = 0;
         virtual void resize(const int width, const int height);
-        Window window;
+        std::unique_ptr<Window> window;
         double timeStep;
 
-        GraphicsDevice graphicsDevice;
-        SpriteBatch spriteBatch;
+        std::unique_ptr<GraphicsDevice> graphicsDevice;
+        std::unique_ptr<SpriteBatch> spriteBatch;
     };
 } // namespace engine
 

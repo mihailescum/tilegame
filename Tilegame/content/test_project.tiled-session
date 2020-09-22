@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "world/map1.tmx",
+    "expandedProjectPaths": [
+        "world",
+        "textures"
+    ],
+    "fileStates": {
+        "world/map1.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 106,
+                "y": -535
+            }
+        },
+        "world/tileset1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "world/map1.tmx",
+        "world/tileset1.tsx"
+    ],
+    "project": "test_project.tiled-project",
+    "recentFiles": [
+        "world/tileset1.tsx",
+        "world/map1.tmx"
+    ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

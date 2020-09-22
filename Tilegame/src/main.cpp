@@ -15,7 +15,7 @@ void errorCallback(int error, const char *description)
 int main(int argc, char *argv[])
 {
     glfwSetErrorCallback(errorCallback);
-    tilegame::Tilegame game = tilegame::Tilegame();
+    tilegame::Tilegame game;
     game.run();
 
     return 0;

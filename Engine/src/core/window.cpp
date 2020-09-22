@@ -55,6 +55,10 @@ namespace engine
         }
     }
 
+    void Window::setPosition(const int x, const int y) {
+        glfwSetWindowPos(this->glfwWindow, 700, 400);
+    }
+
     void errorCallback(int error, const char *description)
     {
         std::stringstream msg;

@@ -3,9 +3,9 @@
 
 #include "glad/glad.h"
 
-#include "viewport.hpp"
-#include "window.hpp"
-#include "color.hpp"
+#include "core/viewport.hpp"
+#include "core/window.hpp"
+#include "core/color.hpp"
 
 namespace engine
 {

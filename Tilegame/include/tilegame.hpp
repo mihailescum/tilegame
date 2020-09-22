@@ -7,6 +7,11 @@ namespace tilegame
 {
     class Tilegame : public engine::Game
     {
+    public:
+        Tilegame() : Game() {}
+        Tilegame(const Tilegame& game) = delete;
+        ~Tilegame() {}
+
     protected:
         void initialize();
         void loadContent();

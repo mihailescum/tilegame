@@ -16,6 +16,7 @@ namespace engine
 
     Shader::~Shader()
     {
+        this->deleteShader();
     }
 
     void Shader::deleteShader()

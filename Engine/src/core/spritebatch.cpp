@@ -20,15 +20,15 @@ namespace engine
             glDeleteBuffers(1, &VBO);
         if (this->VAO != 0)
             glDeleteVertexArrays(1, &VAO);
-
-        shader.deleteShader();
     }
 
     void SpriteBatch::create()
     {
         glGenBuffers(1, &this->VBO);
         glGenVertexArrays(1, &this->VAO);
-        shader.loadShaderFromSource(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
+
+        this->shader = std::unique_ptr<Shader>(new Shader());
+        this->shader->loadShaderFromSource(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
     }
 
     void SpriteBatch::begin()
@@ -209,13 +209,13 @@ namespace engine
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
-        shader.use();
+        shader->use();
         for (int i = 0; i < this->num_active_textures; i++)
             activeTextures[i].use(i);
 
-        shader.setInt("Texture", 0);
+        shader->setInt("Texture", 0);
 
-        shader.setMatrix4fv("WVP", this->wvp);
+        shader->setMatrix4fv("WVP", this->wvp);
 
         glBindVertexArray(this->VAO);
         glDrawArrays(GL_TRIANGLES, 0, num_active_sprites * 6);

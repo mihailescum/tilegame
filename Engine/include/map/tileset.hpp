@@ -4,9 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "tinyxml2.h"
-
-#include "tile.hpp"
+#include "map/tile.hpp"
+#include "core/texture2D.hpp"
 
 namespace engine
 {
@@ -15,10 +14,20 @@ namespace engine
         private:
             int firstGID = 0;
             std::vector<Tile> tiles;
+
+            std::string name;
+            int tileWidth;
+            int tileHeight;
+            int tileCount;
+            int columns;
+            int rows;
+            Texture2D texture;
+
         public:
             Tileset() {}
             ~Tileset() {}
-            void loadFromFile(const std::string filename);
+            void loadFromFile(const std::string filename, const std::string folder="");
+            const Texture2D &getTexture() const;
     };
 } // namespace engine
 

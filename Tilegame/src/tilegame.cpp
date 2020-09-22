@@ -9,19 +9,19 @@
 
 namespace tilegame
 {
-    engine::Texture2D test;
+    engine::Tileset tileset;
 
     void Tilegame::initialize()
     {
         Game::initialize();
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetWindowPos(window.getGLFWwindow(), 700, 400);
+        window->setPosition(700, 400);
     }
 
     void Tilegame::loadContent()
     {
-        test.loadTexture("content/textures/current_demo.png", GL_RGBA, false);
+        tileset.loadFromFile("content/world/tileset1.tsx", "content/textures/");
     }
 
     void Tilegame::unloadContent()
@@ -39,19 +39,18 @@ namespace tilegame
             timer--;
             std::stringstream ss;
             ss << "FPS: " << frames << " - UPS: " << updates;
-            window.setTitle(ss.str());
+            window->setTitle(ss.str());
             updates = 0, frames = 0;
         }
     }
 
     void Tilegame::draw()
     {
-        graphicsDevice.clear(engine::Color::CornflowerBlue);
+        graphicsDevice->clear(engine::Color::CornflowerBlue);
 
-        spriteBatch.begin();
-        engine::Rectangle source(0, 0, 900, 900);
-        spriteBatch.draw(test, engine::Rectangle(100, 100, 100, 100), &source, engine::Color::White);
-        spriteBatch.end();
+        spriteBatch->begin();
+        spriteBatch->draw(tileset.getTexture(), engine::Rectangle(100, 100, 400, 400), engine::Color::White);
+        spriteBatch->end();
 
         frames++;
     }

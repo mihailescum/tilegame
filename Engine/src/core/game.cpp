@@ -19,7 +19,7 @@ namespace engine
         // - While window is alive
         while (this->shouldRun)
         {
-            this->shouldRun = !window.shouldClose();
+            this->shouldRun = !window->shouldClose();
 
             // - Measure time
             lastTime = nowTime;
@@ -35,7 +35,7 @@ namespace engine
             }
             // - Render at maximum possible frames
             draw(); // - Render function
-            glfwSwapBuffers(window.getGLFWwindow());
+            glfwSwapBuffers(window->getGLFWwindow());
             glfwPollEvents();
         }
         unloadContent();
@@ -44,27 +44,31 @@ namespace engine
     void Game::initialize()
     {
         timeStep = 1.0 / 60;
-        int windowResult = window.initialize();
+
+        this->window = std::unique_ptr<Window>(new Window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT));
+        int windowResult = window->initialize();
         if (!windowResult)
         {
             this->shouldRun = false;
             return;
         }
         
-        int graphicsDeviceResult = graphicsDevice.create();
+        this->graphicsDevice = std::unique_ptr<GraphicsDevice>(new GraphicsDevice(*this->window));
+        int graphicsDeviceResult = graphicsDevice->create();
         if (!graphicsDeviceResult)
         {
-            window.~Window();
             this->shouldRun = false;
             return;
         }
-        spriteBatch.create();
+
+        this->spriteBatch = std::unique_ptr<SpriteBatch>(new SpriteBatch(*this->graphicsDevice));
+        spriteBatch->create();
     }
 
     void Game::resize(const int width, const int height) {
-        Viewport &currentViewport = graphicsDevice.getViewport();
+        Viewport &currentViewport = graphicsDevice->getViewport();
         currentViewport.width = width;
         currentViewport.height = height;
-        graphicsDevice.setViewport(currentViewport);
+        graphicsDevice->setViewport(currentViewport);
     }
 } // namespace engine

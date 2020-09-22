@@ -18,7 +18,7 @@ namespace engine
         void setTitle(const std::string title);
         int getWindowWidth() const;
         int getWindowHeight() const;
-
+        void setPosition(const int x, const int y);
         /*
             Creates and show a window using the given dimensions
         */

@@ -1,11 +1,13 @@
 #ifndef __ENGINE_SPRITEBATCH_H__
 #define __ENGINE_SPRITEBATCH_H__
 
-#include "graphicsdevice.hpp"
-#include "texture2D.hpp"
-#include "shader.hpp"
-
 #include <vector>
+#include <memory>
+
+#include "core/graphicsdevice.hpp"
+#include "core/texture2D.hpp"
+#include "core/shader.hpp"
+
 
 namespace engine
 {
@@ -26,7 +28,7 @@ namespace engine
 
         GLuint VBO = 0;
         GLuint VAO = 0;
-        Shader shader;
+        std::unique_ptr<Shader> shader;
         glm::mat4 wvp;
 
         static const std::string vertexShaderSource;
@@ -34,6 +36,7 @@ namespace engine
 
     public:
         SpriteBatch(const GraphicsDevice &graphicsDevice);
+        SpriteBatch(const SpriteBatch &spriteBatch) = delete;
         ~SpriteBatch();
         void create();
         void begin();

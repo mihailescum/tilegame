@@ -6,6 +6,7 @@ namespace engine
     struct Rectangle
     {
     public:
+        Rectangle() {}
         Rectangle(const int x, const int y, const int width, const int height) : x(x), y(y), width(width), height(height) {}
         ~Rectangle() {}
         int x;
