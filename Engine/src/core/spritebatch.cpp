@@ -54,7 +54,7 @@ namespace engine
             -1.0f,
             1.0f);
 
-        this->wvp = transform * projection;
+        this->wvp = projection * transform;
 
         if (alphaBlendingEnabled)
         {

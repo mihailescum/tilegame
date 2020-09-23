@@ -16,7 +16,7 @@ namespace engine
 
         double lastTime = glfwGetTime();
         double nowTime = lastTime;
-        double accumulatedTime = 0;
+        double accumulatedTime = timeStep;
         double deltaTime = 0;
 
         // - While window is alive

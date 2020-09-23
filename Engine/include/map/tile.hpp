@@ -10,6 +10,7 @@ namespace engine
         public:
             Tile() {}
             ~Tile() {}
+            
             Rectangle sourceRect;
     };
 } // namespace engine

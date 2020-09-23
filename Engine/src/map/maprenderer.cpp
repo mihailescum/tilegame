@@ -10,9 +10,9 @@ namespace engine
         this->mapHeight = map.getHeight();
     }
 
-    void MapRenderer::draw(SpriteBatch &spriteBatch) const
+    void MapRenderer::draw(SpriteBatch &spriteBatch, const Camera &camera) const
     {
-        spriteBatch.begin(true);
+        spriteBatch.begin(camera.getTransform(), true);
 
         const Texture2D &texture = tilesetInfo->tileset->getTexture();
         unsigned firstGid = tilesetInfo->firstGid;

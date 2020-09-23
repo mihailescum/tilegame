@@ -11,18 +11,19 @@ namespace engine
 {
     class GraphicsDevice
     {
+    private:
+        GLbitfield clear_mask;
+        Viewport viewport;
+
     public:
         GraphicsDevice(const Window &window);
         ~GraphicsDevice() {}
+
         int create();
-        void setViewport(const Viewport &viewport);
-        const Viewport &getViewport() const;
         void clear(const Color &color) const;
 
-    private:
-        GLbitfield clear_mask;
-        Viewport defaultViewport;
-        Viewport &viewport;
+        const Viewport &getViewport() const;
+        void setViewport(const Viewport &viewport);
     };
 } // namespace engine
 

@@ -11,6 +11,7 @@ set (SOURCES_ENGINE_CORE
         ${SOURCES_PATH}/core/viewport.cpp
         ${SOURCES_PATH}/core/spritebatch.cpp
         ${SOURCES_PATH}/core/color.cpp
+        ${SOURCES_PATH}/core/camera.cpp
 )
 
 set (SOURCES_ENGINE_MAP
@@ -20,6 +21,12 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/tileset.cpp
         ${SOURCES_PATH}/map/tilesetinfo.cpp
         ${SOURCES_PATH}/map/tilelayer.cpp
+)
+
+set (SOURCES_ENGINE_ENTITIES
+        ${SOURCES_PATH}/entities/entity.cpp
+        ${SOURCES_PATH}/entities/freeentity.cpp
+        ${SOURCES_PATH}/entities/player.cpp
 )
 
 # Header Files
@@ -37,6 +44,7 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/rectangle.hpp
         ${HEADER_PATH}/core/spritebatch.hpp
         ${HEADER_PATH}/core/color.hpp
+        ${HEADER_PATH}/core/camera.hpp
 )
 
 set (HEADER_ENGINE_MAP
@@ -48,6 +56,12 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/tilelayer.hpp
 )
 
+set (HEADER_ENGINE_ENTITIES
+        ${HEADER_PATH}/entities/entity.hpp
+        ${HEADER_PATH}/entities/freeentity.hpp
+        ${HEADER_PATH}/entities/player.hpp
+)
+
 # Create Library
 set (LIBRARY_NAME engine)
 add_library(${LIBRARY_NAME} 
@@ -55,8 +69,10 @@ add_library(${LIBRARY_NAME}
                 ${HEADER_PATH}/engine.hpp
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_MAP}
+                ${SOURCES_ENGINE_ENTITIES}
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_MAP}
+                ${HEADER_ENGINE_ENTITIES}
 )
 
 set_target_properties(

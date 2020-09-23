@@ -5,7 +5,7 @@
 
 namespace engine
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : defaultViewport(0, 0, window.getWindowWidth(), window.getWindowHeight()), viewport(defaultViewport)
+    GraphicsDevice::GraphicsDevice(const Window &window) : viewport(0, 0, window.getWindowWidth(), window.getWindowHeight())
     {
     }
 
@@ -22,7 +22,7 @@ namespace engine
             return 0;
         }
 
-        this->setViewport(defaultViewport);
+        this->setViewport(viewport);
         //glEnable(GL_DEPTH_TEST);
         //glEnable(GL_CULL_FACE);
         //glCullFace(GL_BACK);

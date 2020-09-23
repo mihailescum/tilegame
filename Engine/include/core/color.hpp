@@ -7,6 +7,7 @@ namespace engine
     {
     public:
         Color(const float r, const float g, const float b, const float a) : r(r), g(g), b(b), a(a) {}
+        
         float r;
         float g;
         float b;

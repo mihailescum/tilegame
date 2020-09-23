@@ -3,6 +3,8 @@
 
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"
+#include "core/camera.hpp"
+
 #include "map/tilesetinfo.hpp"
 
 namespace engine
@@ -20,7 +22,8 @@ namespace engine
     public:
         MapRenderer(const Map &map) : map(map) {}
         ~MapRenderer() {}
-        void draw(SpriteBatch &spriteBatch) const;
+        
+        void draw(SpriteBatch &spriteBatch, const Camera &camera) const;
         void initialize();
     };
 } // namespace engine

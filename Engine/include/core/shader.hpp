@@ -10,13 +10,18 @@ namespace engine
 {
     class Shader
     {
+    private:
+        GLuint glShaderProgram = 0;
+
+        int checkCompileErrors(GLuint shader, std::string type) const;
+        GLuint compileShader(const std::string source, const std::string name, const GLenum shaderType) const;
+        GLuint compileProgram(const GLuint vertex, const GLuint geometry, const GLuint fragment);
+        std::string loadShaderSource(const std::string path) const;
+
     public:
         Shader();
         ~Shader();
-        /*
-            @return a GLuint object that represents the shader program
-        */
-        GLuint getglShaderProgram() const;
+
         int loadShaderFromFile(const std::string vertexPath, const std::string geometryPath, const std::string fragmentPath);
         int loadShaderFromSource(const std::string vertexSource, const std::string geometrySource, const std::string fragmentSource);
         void setBool(const std::string &name, GLboolean value) const;
@@ -30,12 +35,10 @@ namespace engine
         void use() const;
         void deleteShader();
 
-    private:
-        GLuint glShaderProgram = 0;
-        int checkCompileErrors(GLuint shader, std::string type) const;
-        GLuint compileShader(const std::string source, const std::string name, const GLenum shaderType) const;
-        GLuint compileProgram(const GLuint vertex, const GLuint geometry, const GLuint fragment);
-        std::string loadShaderSource(const std::string path) const;
+        /*
+            @return a GLuint object that represents the shader program
+        */
+        GLuint getglShaderProgram() const;
     };
 } // namespace engine
 

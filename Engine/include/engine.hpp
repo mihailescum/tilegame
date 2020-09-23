@@ -19,4 +19,8 @@
 #include "map/tilesetinfo.hpp"
 #include "map/tilelayer.hpp"
 
+#include "entities/entity.hpp"
+#include "entities/freeentity.hpp"
+#include "entities/player.hpp"
+
 #endif

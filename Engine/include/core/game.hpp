@@ -11,29 +11,31 @@ namespace engine
 {
     class Game
     {
-    public:
-        Game() {}
-        Game(const Game& game) = delete;
-        ~Game();
-        void run();
-
     private:
-        bool shouldRun;
         static const int DEFAULT_WINDOW_WIDTH = 800;
         static const int DEFAULT_WINDOW_HEIGHT = 600;
 
+        bool shouldRun;
+
     protected:
+        std::unique_ptr<Window> window;
+        std::unique_ptr<GraphicsDevice> graphicsDevice;
+        std::unique_ptr<SpriteBatch> spriteBatch;
+        double timeStep;
+
         virtual void initialize();
         virtual void loadContent();
         virtual void unloadContent();
         virtual void update(const double deltaTime) = 0;
         virtual void draw() = 0;
         virtual void resize(const int width, const int height);
-        std::unique_ptr<Window> window;
-        double timeStep;
 
-        std::unique_ptr<GraphicsDevice> graphicsDevice;
-        std::unique_ptr<SpriteBatch> spriteBatch;
+    public:
+        Game() {}
+        Game(const Game &game) = delete;
+        ~Game();
+        
+        void run();
     };
 } // namespace engine
 

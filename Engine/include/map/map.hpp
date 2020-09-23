@@ -25,6 +25,7 @@ namespace engine
         Map();
         Map(const Map &map) = delete;
         ~Map() {}
+        
         void loadFromFile(const std::string &path, const std::string &filename);
 
         const TilesetInfo &getTilesetInfo() const;

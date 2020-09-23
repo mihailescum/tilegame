@@ -27,9 +27,11 @@ namespace engine
             Tileset() {}
             Tileset(const Tileset &tileset) = delete;
             ~Tileset() {}
+
             void loadFromFile(const std::string &path, const std::string &filename);
-            const Texture2D &getTexture() const;
             const Tile &getTile(const unsigned index) const;
+
+            const Texture2D &getTexture() const;
             unsigned getTileWidth() const;
             unsigned getTileHeight() const;
     };
