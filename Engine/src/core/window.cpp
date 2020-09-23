@@ -119,7 +119,11 @@ namespace engine
         if (!glfwWindow)
             return true;
         else
-            return glfwWindowShouldClose(glfwWindow);
+            return glfwWindowShouldClose(this->glfwWindow);
+    }
+
+    bool Window::isKeyPressed(int keyCode) const {
+        return glfwGetKey(this->glfwWindow, keyCode);
     }
 
     GLFWwindow *Window::getGLFWwindow() const

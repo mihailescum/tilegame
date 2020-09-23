@@ -30,6 +30,7 @@ namespace engine
         */
         bool shouldClose() const;
         void setPosition(const int x, const int y);
+        bool isKeyPressed(int keyCode) const;
 
         GLFWwindow *getGLFWwindow() const;
         bool isResizable();

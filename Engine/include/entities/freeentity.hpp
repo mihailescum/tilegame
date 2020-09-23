@@ -14,11 +14,11 @@ namespace engine
     public:
         FreeEntity();
 
-        virtual void update(const double deltaTime);
-        virtual void moveLeft();
-        virtual void moveRight();
-        virtual void moveUp();
-        virtual void moveDown();
+        virtual void update(const double deltaTime) override;
+        virtual void moveLeft() override;
+        virtual void moveRight() override;
+        virtual void moveUp() override;
+        virtual void moveDown() override;
     };
 } // namespace engine
 

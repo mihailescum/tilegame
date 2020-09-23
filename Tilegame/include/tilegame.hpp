@@ -13,11 +13,12 @@ namespace tilegame
         ~Tilegame() {}
 
     protected:
-        void initialize();
-        void loadContent();
-        void unloadContent();
-        void update(const double timeStep);
-        void draw();
+        virtual void initialize() override;
+        virtual void loadContent() override;
+        virtual void unloadContent() override;
+        virtual void processInput() override;
+        virtual void update(const double timeStep) override;
+        virtual void draw() override;
 
     private:
         int frames = 0;

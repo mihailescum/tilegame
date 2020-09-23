@@ -44,9 +44,19 @@ namespace tilegame
         Game::unloadContent();
     }
 
+    void Tilegame::processInput() {
+        if (window->isKeyPressed(GLFW_KEY_LEFT))
+            player->moveLeft();
+        if (window->isKeyPressed(GLFW_KEY_RIGHT))
+            player->moveRight();
+        if (window->isKeyPressed(GLFW_KEY_UP))
+            player->moveUp();
+        if (window->isKeyPressed(GLFW_KEY_DOWN))
+            player->moveDown();
+    }
+
     void Tilegame::update(const double deltaTime)
     {   
-        player->moveLeft();
         player->update(deltaTime);
 
         timer += deltaTime;

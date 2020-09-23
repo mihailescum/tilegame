@@ -26,6 +26,7 @@ namespace engine
         virtual void initialize();
         virtual void loadContent();
         virtual void unloadContent();
+        virtual void processInput() = 0;
         virtual void update(const double deltaTime) = 0;
         virtual void draw() = 0;
         virtual void resize(const int width, const int height);

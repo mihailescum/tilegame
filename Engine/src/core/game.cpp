@@ -22,13 +22,14 @@ namespace engine
         // - While window is alive
         while (this->shouldRun)
         {
-            this->shouldRun = !window->shouldClose();
-
             // - Measure time
             lastTime = nowTime;
             nowTime = glfwGetTime();
             deltaTime = (nowTime - lastTime);
             accumulatedTime += deltaTime;
+
+            glfwPollEvents();
+            processInput();
 
             // - Update at X FPS
             while (accumulatedTime >= timeStep)
@@ -39,7 +40,8 @@ namespace engine
             // - Render at maximum possible frames
             draw(); // - Render function
             glfwSwapBuffers(window->getGLFWwindow());
-            glfwPollEvents();
+
+            this->shouldRun = !window->shouldClose();
         }
         unloadContent();
     }
