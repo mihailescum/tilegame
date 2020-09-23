@@ -14,7 +14,7 @@ namespace engine
     public:
         Game() {}
         Game(const Game& game) = delete;
-        ~Game() {}
+        ~Game();
         void run();
 
     private:
@@ -24,8 +24,8 @@ namespace engine
 
     protected:
         virtual void initialize();
-        virtual void loadContent() = 0;
-        virtual void unloadContent() = 0;
+        virtual void loadContent();
+        virtual void unloadContent();
         virtual void update(const double deltaTime) = 0;
         virtual void draw() = 0;
         virtual void resize(const int width, const int height);

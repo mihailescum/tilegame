@@ -4,6 +4,9 @@
 
 namespace engine
 {
+    Game::~Game() {
+    }
+
     void Game::run()
     {
         this->shouldRun = true;
@@ -62,7 +65,17 @@ namespace engine
         }
 
         this->spriteBatch = std::unique_ptr<SpriteBatch>(new SpriteBatch(*this->graphicsDevice));
-        spriteBatch->create();
+    }
+
+    void Game::loadContent()
+    {
+        this->spriteBatch->create();
+    }
+
+    void Game::unloadContent()
+    {
+        this->spriteBatch.reset();
+        this->graphicsDevice.reset();
     }
 
     void Game::resize(const int width, const int height) {

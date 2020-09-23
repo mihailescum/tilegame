@@ -8,14 +8,15 @@
 
 namespace tilegame
 {
-    engine::Map map1;
+    std::unique_ptr<engine::Map> map1;
     std::unique_ptr<engine::MapRenderer> map1Renderer;
 
     void Tilegame::initialize()
     {
         Game::initialize();
 
-        map1Renderer = std::unique_ptr<engine::MapRenderer>(new engine::MapRenderer(map1));
+        map1 = std::unique_ptr<engine::Map>(new engine::Map());
+        map1Renderer = std::unique_ptr<engine::MapRenderer>(new engine::MapRenderer(*map1));
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
@@ -23,12 +24,18 @@ namespace tilegame
 
     void Tilegame::loadContent()
     {
-        map1.loadFromFile("content/world/", "map1.tmx");
+        map1->loadFromFile("content/world/", "map1.tmx");
         map1Renderer->initialize();
+
+        Game::loadContent();
     }
 
     void Tilegame::unloadContent()
     {
+        map1.reset();
+        map1Renderer.reset();
+
+        Game::unloadContent();
     }
 
     void Tilegame::update(const double deltaTime)
