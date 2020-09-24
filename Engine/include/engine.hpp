@@ -6,6 +6,7 @@
 #include "core/graphicsdevice.hpp"
 #include "core/log.hpp"
 #include "core/rectangle.hpp"
+#include "core/resourcemanager.hpp"
 #include "core/shader.hpp"
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"

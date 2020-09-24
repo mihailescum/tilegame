@@ -27,8 +27,8 @@ namespace engine
         glGenBuffers(1, &this->VBO);
         glGenVertexArrays(1, &this->VAO);
 
-        this->shader = std::unique_ptr<Shader>(new Shader());
-        this->shader->loadShaderFromSource(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
+        this->shader = std::make_unique<Shader>(Shader());
+        this->shader->compile(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
     }
 
     void SpriteBatch::begin(const bool alphaBlendingEnabled)

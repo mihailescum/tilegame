@@ -8,44 +8,68 @@
 
 namespace engine
 {
-    Texture2D::~Texture2D() {
-        this->deleteTexture();
+    Texture2D::Texture2D() : internalFormat(GL_RGB),
+                             imageFormat(GL_RGB),
+                             wrapS(GL_REPEAT),
+                             wrapT(GL_REPEAT),
+                             filterMin(GL_LINEAR),
+                             filterMax(GL_LINEAR)
+    {
     }
 
-    void Texture2D::createTextureFromRawData(const int width, const int height, const GLenum colorFormat, const GLenum dataType, const bool generateMipmap, const void *data)
+    void Texture2D::unloadResource()
     {
-        glGenTextures(1, &glTexture);
-        glBindTexture(GL_TEXTURE_2D, glTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, colorFormat, width, height, 0, colorFormat, dataType, data);
-        if (generateMipmap)
-            glGenerateMipmap(GL_TEXTURE_2D);
+        if (this->glTexture != 0)
+        {
+            glDeleteTextures(1, &this->glTexture);
+            this->glTexture = 0;
+        }
     }
 
-    int Texture2D::loadTexture(const std::string path, const GLenum colorFormat, const bool flipVertically)
+    bool Texture2D::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
-        int nrChannels;
-        stbi_set_flip_vertically_on_load(flipVertically);
-        unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, &nrChannels, 0);
+        bool hasAlphaChannel = va_arg(args, int);
+        if (hasAlphaChannel)
+        {
+            this->setInternalFormat(GL_RGBA);
+            this->setImageFormat(GL_RGBA);
+        }
+        // load image
+        int width, height, nrChannels;
+        unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+        // now generate texture
         if (data)
         {
-            createTextureFromRawData(width, height, colorFormat, GL_UNSIGNED_BYTE, true, data);
+            this->createTextureFromRawData(width, height, data);
+            // and finally free image data
+            stbi_image_free(data);
         }
         else
         {
             std::stringstream error;
-            error << "Failed to load texture. FILE: " << path;
+            error << "Failed to load texture. FILE: " << filename;
             Log::e(error.str());
-            return 0;
+            return false;
         }
 
-        stbi_image_free(data);
-        return 1;
+        return true;
     }
 
-    void Texture2D::deleteTexture()
+    void Texture2D::createTextureFromRawData(const int width, const int height, unsigned char *data)
     {
-        if (glTexture != 0)
-            glDeleteTextures(1, &glTexture);
+        this->width = width;
+        this->height = height;
+
+        glGenTextures(1, &glTexture);
+        glBindTexture(GL_TEXTURE_2D, glTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, this->internalFormat, this->width, this->height, 0, this->imageFormat, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->wrapS);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->wrapT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this->filterMin);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this->filterMax);
+
+        // unbind texture
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     void Texture2D::use(const unsigned char unit) const
@@ -54,18 +78,10 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, glTexture);
     }
 
-    GLuint Texture2D::getglTexture() const
-    {
-        return this->glTexture;
-    }
+    GLuint Texture2D::getglTexture() const { return this->glTexture; }
+    int Texture2D::getWidth() const { return this->width; }
+    int Texture2D::getHeight() const { return this->height; }
 
-    int Texture2D::getWidth() const
-    {
-        return this->width;
-    }
-
-    int Texture2D::getHeight() const
-    {
-        return this->height;
-    }
+    void Texture2D::setInternalFormat(const GLuint internalFormat) { this->internalFormat = internalFormat; }
+    void Texture2D::setImageFormat(const GLuint imageFormat) { this->imageFormat = imageFormat; }
 } // namespace engine

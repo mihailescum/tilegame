@@ -10,7 +10,6 @@ namespace engine{
         public:
             TilesetInfo() {}
             TilesetInfo(const TilesetInfo &tilesetInfo) = delete;
-            ~TilesetInfo() {}
 
             unsigned firstGid;
             std::unique_ptr<Tileset> tileset;

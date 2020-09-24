@@ -21,7 +21,6 @@ namespace engine
 
     public:
         MapRenderer(const Map &map) : map(map) {}
-        ~MapRenderer() {}
         
         void draw(SpriteBatch &spriteBatch, const Camera &camera) const;
         void initialize();

@@ -8,7 +8,7 @@ namespace engine
     class FreeEntity : public Entity
     {
     private:
-        double speed = 32.0;
+        double speed = 128.0;
         MovingDirection movingDirection;
 
     public:

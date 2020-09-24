@@ -17,7 +17,6 @@ namespace engine
 
     public:
         GraphicsDevice(const Window &window);
-        ~GraphicsDevice() {}
 
         int create();
         void clear(const Color &color) const;

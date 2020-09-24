@@ -19,7 +19,7 @@ namespace engine
 
     public:
         Window(const int width, const int height);
-        ~Window();
+        virtual ~Window();
 
         /*
             Creates and show a window using the given dimensions
@@ -36,7 +36,7 @@ namespace engine
         bool isResizable();
         void setResizable(const bool resizable);
         std::string getTitle() const;
-        void setTitle(const std::string title);
+        void setTitle(const std::string &title);
         int getWindowWidth() const;
         int getWindowHeight() const;
         /*

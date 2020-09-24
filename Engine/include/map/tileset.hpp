@@ -24,9 +24,7 @@ namespace engine
             std::unique_ptr<Texture2D> texture;
 
         public:
-            Tileset() {}
             Tileset(const Tileset &tileset) = delete;
-            ~Tileset() {}
 
             void loadFromFile(const std::string &path, const std::string &filename);
             const Tile &getTile(const unsigned index) const;

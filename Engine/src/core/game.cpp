@@ -1,5 +1,7 @@
 #include "core/game.hpp"
 
+#include <memory>
+
 #include <GLFW/glfw3.h>
 
 namespace engine
@@ -50,7 +52,10 @@ namespace engine
     {
         timeStep = 1.0 / 60;
 
-        this->window = std::unique_ptr<Window>(new Window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT));
+        int width = DEFAULT_WINDOW_WIDTH;
+        int height = DEFAULT_WINDOW_HEIGHT;
+        this->window = std::make_unique<Window>(width, height);
+        
         int windowResult = window->initialize();
         if (!windowResult)
         {
@@ -58,7 +63,7 @@ namespace engine
             return;
         }
         
-        this->graphicsDevice = std::unique_ptr<GraphicsDevice>(new GraphicsDevice(*this->window));
+        this->graphicsDevice = std::make_unique<GraphicsDevice>(*this->window);
         int graphicsDeviceResult = graphicsDevice->create();
         if (!graphicsDeviceResult)
         {
@@ -66,7 +71,8 @@ namespace engine
             return;
         }
 
-        this->spriteBatch = std::unique_ptr<SpriteBatch>(new SpriteBatch(*this->graphicsDevice));
+        this->resourceManager = std::make_unique<ResourceManager>();
+        this->spriteBatch = std::make_unique<SpriteBatch>(*this->graphicsDevice);
     }
 
     void Game::loadContent()
@@ -77,6 +83,7 @@ namespace engine
     void Game::unloadContent()
     {
         this->spriteBatch.reset();
+        this->resourceManager.reset();
         this->graphicsDevice.reset();
     }
 

@@ -12,6 +12,8 @@ set (SOURCES_ENGINE_CORE
         ${SOURCES_PATH}/core/spritebatch.cpp
         ${SOURCES_PATH}/core/color.cpp
         ${SOURCES_PATH}/core/camera.cpp
+        ${SOURCES_PATH}/core/resource.cpp
+        ${SOURCES_PATH}/core/resourcemanager.cpp
 )
 
 set (SOURCES_ENGINE_MAP
@@ -45,6 +47,8 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/spritebatch.hpp
         ${HEADER_PATH}/core/color.hpp
         ${HEADER_PATH}/core/camera.hpp
+        ${HEADER_PATH}/core/resource.hpp
+        ${HEADER_PATH}/core/resourcemanager.hpp
 )
 
 set (HEADER_ENGINE_MAP

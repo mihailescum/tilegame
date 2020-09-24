@@ -21,8 +21,8 @@ namespace engine
         tinyxml2::XMLElement *image = root->FirstChildElement("image");
         std::string imageSource = image->Attribute("source");
 
-        this->texture = std::unique_ptr<Texture2D>(new Texture2D());
-        this->texture->loadTexture(path + imageSource, GL_RGBA, false);
+        this->texture = std::make_unique<Texture2D>();
+        //this->texture->loadTexture(path + imageSource, GL_RGBA, false);
 
         for (int y = 0; y < this->rows; y++)
         {

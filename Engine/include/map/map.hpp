@@ -22,9 +22,8 @@ namespace engine
         void parseTilesetElement(const std::string &path, const tinyxml2::XMLElement *element);
 
     public:
-        Map();
+        Map() {}
         Map(const Map &map) = delete;
-        ~Map() {}
         
         void loadFromFile(const std::string &path, const std::string &filename);
 

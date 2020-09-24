@@ -8,9 +8,6 @@ namespace engine
     struct Tile
     {
         public:
-            Tile() {}
-            ~Tile() {}
-            
             Rectangle sourceRect;
     };
 } // namespace engine

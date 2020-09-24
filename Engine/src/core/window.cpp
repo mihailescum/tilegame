@@ -23,7 +23,7 @@ namespace engine
         return this->title;
     }
 
-    void Window::setTitle(const std::string title)
+    void Window::setTitle(const std::string &title)
     {
         if (this->glfwWindow)
         {

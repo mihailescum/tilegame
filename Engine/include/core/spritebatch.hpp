@@ -39,7 +39,7 @@ namespace engine
     public:
         SpriteBatch(const GraphicsDevice &graphicsDevice);
         SpriteBatch(const SpriteBatch &spriteBatch) = delete;
-        ~SpriteBatch();
+        virtual ~SpriteBatch();
         
         void create();
         void begin(const bool alphaBlendingEnabled);

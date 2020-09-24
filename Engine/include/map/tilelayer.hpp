@@ -15,9 +15,6 @@ namespace engine
         void parseCSV(const std::string &csv);
 
     public:
-        TileLayer() {}
-        ~TileLayer() {}
-
         void loadFromXMLElement(const tinyxml2::XMLElement *element);
         const std::vector<unsigned> &getData() const;
     };

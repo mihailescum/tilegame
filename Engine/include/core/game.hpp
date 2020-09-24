@@ -6,6 +6,7 @@
 #include "core/graphicsdevice.hpp"
 #include "core/spritebatch.hpp"
 #include "core/window.hpp"
+#include "resourcemanager.hpp"
 
 namespace engine
 {
@@ -20,6 +21,7 @@ namespace engine
     protected:
         std::unique_ptr<Window> window;
         std::unique_ptr<GraphicsDevice> graphicsDevice;
+        std::unique_ptr<ResourceManager> resourceManager;
         std::unique_ptr<SpriteBatch> spriteBatch;
         double timeStep;
 
@@ -34,7 +36,7 @@ namespace engine
     public:
         Game() {}
         Game(const Game &game) = delete;
-        ~Game();
+        virtual ~Game();
         
         void run();
     };

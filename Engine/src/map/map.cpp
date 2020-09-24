@@ -6,10 +6,6 @@
 
 namespace engine
 {
-    Map::Map()
-    {
-    }
-
     void Map::loadFromFile(const std::string &path, const std::string &filename)
     {
         tinyxml2::XMLDocument doc;
@@ -32,10 +28,10 @@ namespace engine
             }
             else if (value == "layer")
             {
-                std::unique_ptr<TileLayer> layer(new TileLayer());
-                layer->loadFromXMLElement(element);
+                //std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
+                //layer->loadFromXMLElement(element);
 
-                layers.push_back(std::move(layer));
+                //layers.push_back(std::move(layer));
             }
 
             element = element->NextSiblingElement();
@@ -47,11 +43,11 @@ namespace engine
         int firstGid = element->UnsignedAttribute("firstgid");
 
         std::string tilesetSource = element->Attribute("source");
-        std::unique_ptr<Tileset> tileset(new Tileset());
+        /*std::unique_ptr<Tileset> = std::make_unique<Tileset>();
         tileset->loadFromFile(path, tilesetSource);
 
         this->tilesetInfo.firstGid = firstGid;
-        this->tilesetInfo.tileset = std::move(tileset);
+        this->tilesetInfo.tileset = std::move(tileset);*/
     }
 
     unsigned Map::getWidth() const { return this->width; }

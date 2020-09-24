@@ -14,6 +14,8 @@ namespace tilegame
     std::unique_ptr<engine::FreeEntity> entity;
     std::unique_ptr<engine::Player> player;
 
+    engine::Texture2D *texture;
+
     void Tilegame::initialize()
     {
         Game::initialize();
@@ -30,10 +32,12 @@ namespace tilegame
 
     void Tilegame::loadContent()
     {
+        Game::loadContent();
+
         map1->loadFromFile("content/world/", "map1.tmx");
         map1Renderer->initialize();
 
-        Game::loadContent();
+        texture = this->resourceManager->loadResource<engine::Texture2D>("texture1", "content/world/tileset1.png", true);
     }
 
     void Tilegame::unloadContent()
@@ -76,7 +80,7 @@ namespace tilegame
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
-        map1Renderer->draw(*spriteBatch, player->getCamera());
+        //map1Renderer->draw(*spriteBatch, player->getCamera());
 
         frames++;
     }
