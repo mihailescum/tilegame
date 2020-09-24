@@ -6,7 +6,10 @@
 
 namespace engine
 {
-    Game::~Game() {
+    Game::~Game()
+    {
+        // Calls unloadContent() of Game class
+        this->unloadContent();
     }
 
     void Game::run()
@@ -45,7 +48,9 @@ namespace engine
 
             this->shouldRun = !window->shouldClose();
         }
-        unloadContent();
+
+        // Calls unloadContent() of derived class
+        this->unloadContent();
     }
 
     void Game::initialize()
@@ -55,14 +60,14 @@ namespace engine
         int width = DEFAULT_WINDOW_WIDTH;
         int height = DEFAULT_WINDOW_HEIGHT;
         this->window = std::make_unique<Window>(width, height);
-        
+
         int windowResult = window->initialize();
         if (!windowResult)
         {
             this->shouldRun = false;
             return;
         }
-        
+
         this->graphicsDevice = std::make_unique<GraphicsDevice>(*this->window);
         int graphicsDeviceResult = graphicsDevice->create();
         if (!graphicsDeviceResult)
@@ -87,7 +92,8 @@ namespace engine
         this->graphicsDevice.reset();
     }
 
-    void Game::resize(const int width, const int height) {
+    void Game::resize(const int width, const int height)
+    {
         Viewport currentViewport = graphicsDevice->getViewport();
         currentViewport.width = width;
         currentViewport.height = height;

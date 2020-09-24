@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <cstdarg>
 
 #include <glad/glad.h>
 
@@ -33,15 +34,18 @@ namespace engine
             (void)static_cast<Resource *>((T *)0);
             if (this->resources.count(name) == 0)
             {
-                va_list args;
-
                 std::unique_ptr<T> res = std::make_unique<T>();
-                if (res->loadResource(*this, filename, args))
-                {
-                    res->setResourceId(this->resources.size());
-                    res->setResourcePath(filename);
+                res->setResourceId(this->resources.size());
+                res->setResourcePath(filename);
+                res->setResourceName(name);
+
+                va_list args;
+                va_start(args, filename);
+                bool loadingSucceded = res->loadResource(*this, filename, args);
+                va_end(args);
+
+                if (loadingSucceded)
                     this->resources.emplace(name, std::move(res));
-                }
             }
 
             if (this->resources.count(name) != 0)

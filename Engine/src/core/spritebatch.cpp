@@ -27,7 +27,7 @@ namespace engine
         glGenBuffers(1, &this->VBO);
         glGenVertexArrays(1, &this->VAO);
 
-        this->shader = std::make_unique<Shader>(Shader());
+        this->shader = std::make_unique<Shader>();
         this->shader->compile(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
     }
 
@@ -127,17 +127,17 @@ namespace engine
             double textureWidth = texture.getWidth();
             double textureHeight = texture.getHeight();
 
-            uvTopLeft.x = (float)sourceRectangle->x / textureWidth;
-            uvTopLeft.y = (float)sourceRectangle->y / textureHeight;
+            uvTopLeft.x = (GLfloat)sourceRectangle->x / textureWidth;
+            uvTopLeft.y = (GLfloat)sourceRectangle->y / textureHeight;
 
-            uvTopRight.x = (float)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
-            uvTopRight.y = (float)sourceRectangle->y / textureHeight;
+            uvTopRight.x = (GLfloat)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
+            uvTopRight.y = (GLfloat)sourceRectangle->y / textureHeight;
 
-            uvBottomLeft.x = (float)sourceRectangle->x / textureWidth;
-            uvBottomLeft.y = (float)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
+            uvBottomLeft.x = (GLfloat)sourceRectangle->x / textureWidth;
+            uvBottomLeft.y = (GLfloat)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
 
-            uvBottomRight.x = (float)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
-            uvBottomRight.y = (float)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
+            uvBottomRight.x = (GLfloat)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
+            uvBottomRight.y = (GLfloat)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
         }
 
         int offset = this->num_active_sprites * 24;

@@ -26,9 +26,9 @@ namespace engine
 
     bool Shader::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
-        std::string vertexPath = va_arg(args, std::string);
-        std::string geometryPath = va_arg(args, std::string);
-        std::string fragmentPath = va_arg(args, std::string);
+        std::string vertexPath(va_arg(args, const char*));
+        std::string geometryPath(va_arg(args, const char*));
+        std::string fragmentPath(va_arg(args, const char*));
 
         std::string vertexSource = this->loadShaderSource(vertexPath);
         if (vertexSource.empty())
@@ -77,7 +77,9 @@ namespace engine
         result = glCreateShader(shaderType);
         glShaderSource(result, 1, &shaderCode, NULL);
         glCompileShader(result);
-        if (!this->checkCompileErrors(result, name))
+
+        bool errors = this->checkCompileErrors(result, name);
+        if (errors)
             return 0;
         else
             return result;
@@ -99,8 +101,8 @@ namespace engine
             glDeleteShader(geometry);
         glDeleteShader(fragment);
 
-        int errors = checkCompileErrors(glShaderProgram, "PROGRAM");
-        if (errors != 0)
+        bool errors = checkCompileErrors(glShaderProgram, "PROGRAM");
+        if (errors)
         {
             this->unloadResource();
             return false;
@@ -134,7 +136,8 @@ namespace engine
         if (!fragment)
             return false;
 
-        return this->compileProgram(vertex, geometry, fragment);
+        bool compileSuccess = this->compileProgram(vertex, geometry, fragment);
+        return compileSuccess;
     }
 
     GLuint Shader::getglShaderProgram() const
@@ -172,7 +175,7 @@ namespace engine
         glUniformMatrix4fv(glGetUniformLocation(glShaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    int Shader::checkCompileErrors(unsigned int shader, std::string type) const
+    bool Shader::checkCompileErrors(unsigned int shader, std::string type) const
     {
         int success;
         char infoLog[1024];
@@ -185,7 +188,7 @@ namespace engine
                 std::stringstream err;
                 err << "SHADER_COMPILATION_ERROR in " << type << " of type: " << infoLog;
                 Log::e(err.str());
-                return 0;
+                return true;
             }
         }
         else
@@ -196,9 +199,9 @@ namespace engine
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 Log::e("PROGRAM_LINKER_ERROR of type: ");
                 Log::e(infoLog);
-                return 0;
+                return true;
             }
         }
-        return 1;
+        return false;
     }
 } // namespace engine

@@ -3,12 +3,18 @@
 #include <string>
 #include "tinyxml2.h"
 
+#include "core/resourcemanager.hpp"
+
 namespace engine
 {
-    void Tileset::loadFromFile(const std::string &path, const std::string &filename)
+    void Tileset::unloadResource() { }
+
+    bool Tileset::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
+        std::string path(va_arg(args, const char*));
+
         tinyxml2::XMLDocument doc;
-        doc.LoadFile((path + filename).c_str());
+        doc.LoadFile(filename.c_str());
 
         tinyxml2::XMLElement *root = doc.FirstChildElement();
         this->name = root->Attribute("name");
@@ -20,9 +26,9 @@ namespace engine
 
         tinyxml2::XMLElement *image = root->FirstChildElement("image");
         std::string imageSource = image->Attribute("source");
+        std::string imagePath = path + imageSource;
 
-        this->texture = std::make_unique<Texture2D>();
-        //this->texture->loadTexture(path + imageSource, GL_RGBA, false);
+        this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath.c_str(), true);
 
         for (int y = 0; y < this->rows; y++)
         {
@@ -37,6 +43,8 @@ namespace engine
                 this->tiles.push_back(tile);
             }
         }
+
+        return true;
     }
 
     const Texture2D &Tileset::getTexture() const { return *this->texture; }

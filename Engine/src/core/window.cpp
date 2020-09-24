@@ -73,6 +73,7 @@ namespace engine
 
     int Window::initialize()
     {
+        glfwSetErrorCallback(errorCallback);
         int glfwInitRes = glfwInit();
         if (!glfwInitRes)
         {

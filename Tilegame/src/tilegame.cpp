@@ -8,20 +8,15 @@
 
 namespace tilegame
 {
-    std::unique_ptr<engine::Map> map1;
+    engine::Map *map1;
     std::unique_ptr<engine::MapRenderer> map1Renderer;
 
     std::unique_ptr<engine::FreeEntity> entity;
     std::unique_ptr<engine::Player> player;
 
-    engine::Texture2D *texture;
-
     void Tilegame::initialize()
     {
         Game::initialize();
-
-        map1 = std::unique_ptr<engine::Map>(new engine::Map());
-        map1Renderer = std::unique_ptr<engine::MapRenderer>(new engine::MapRenderer(*map1));
 
         entity = std::unique_ptr<engine::FreeEntity>(new engine::FreeEntity());
         player = std::unique_ptr<engine::Player>(new engine::Player(entity.get(), this->graphicsDevice->getViewport()));
@@ -34,21 +29,20 @@ namespace tilegame
     {
         Game::loadContent();
 
-        map1->loadFromFile("content/world/", "map1.tmx");
-        map1Renderer->initialize();
+        //map1->loadFromFile("content/world/", "map1.tmx");
 
-        texture = this->resourceManager->loadResource<engine::Texture2D>("texture1", "content/world/tileset1.png", true);
+        map1 = this->resourceManager->loadResource<engine::Map>("map1", "content/world/map1.tmx", "content/world/");
+        map1Renderer = std::make_unique<engine::MapRenderer>(*map1);
+        map1Renderer->initialize();
     }
 
     void Tilegame::unloadContent()
     {
-        map1.reset();
-        map1Renderer.reset();
-
-        Game::unloadContent();
+        //map1Renderer.reset();
     }
 
-    void Tilegame::processInput() {
+    void Tilegame::processInput()
+    {
         if (window->isKeyPressed(GLFW_KEY_LEFT))
             player->moveLeft();
         if (window->isKeyPressed(GLFW_KEY_RIGHT))
@@ -60,7 +54,7 @@ namespace tilegame
     }
 
     void Tilegame::update(const double deltaTime)
-    {   
+    {
         player->update(deltaTime);
 
         timer += deltaTime;
@@ -79,8 +73,7 @@ namespace tilegame
     void Tilegame::draw()
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
-
-        //map1Renderer->draw(*spriteBatch, player->getCamera());
+        map1Renderer->draw(*spriteBatch, player->getCamera());
 
         frames++;
     }

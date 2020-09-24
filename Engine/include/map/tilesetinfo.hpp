@@ -12,7 +12,7 @@ namespace engine{
             TilesetInfo(const TilesetInfo &tilesetInfo) = delete;
 
             unsigned firstGid;
-            std::unique_ptr<Tileset> tileset;
+            Tileset *tileset;
     };
 }
 

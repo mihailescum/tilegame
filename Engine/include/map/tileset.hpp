@@ -4,34 +4,39 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <cstdarg>
+
+#include "core/resource.hpp"
+#include "core/texture2D.hpp"
 
 #include "map/tile.hpp"
-#include "core/texture2D.hpp"
 
 namespace engine
 {
-    class Tileset
+    class Tileset : public Resource
     {
-        private:
-            std::vector<Tile> tiles;
+    private:
+        std::vector<Tile> tiles;
 
-            std::string name;
-            unsigned tileWidth;
-            unsigned tileHeight;
-            unsigned tileCount;
-            unsigned columns;
-            unsigned rows;
-            std::unique_ptr<Texture2D> texture;
+        std::string name;
+        unsigned tileWidth;
+        unsigned tileHeight;
+        unsigned tileCount;
+        unsigned columns;
+        unsigned rows;
+        Texture2D *texture;
 
-        public:
-            Tileset(const Tileset &tileset) = delete;
+    public:
+        Tileset() {}
+        Tileset(const Tileset &tileset) = delete;
 
-            void loadFromFile(const std::string &path, const std::string &filename);
-            const Tile &getTile(const unsigned index) const;
+        virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;
+        virtual void unloadResource() override;
+        const Tile &getTile(const unsigned index) const;
 
-            const Texture2D &getTexture() const;
-            unsigned getTileWidth() const;
-            unsigned getTileHeight() const;
+        const Texture2D &getTexture() const;
+        unsigned getTileWidth() const;
+        unsigned getTileHeight() const;
     };
 } // namespace engine
 

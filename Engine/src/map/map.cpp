@@ -1,15 +1,20 @@
 #include "map/map.hpp"
 
+#include <cstdarg>
 #include "tinyxml2.h"
+
+#include "core/resourcemanager.hpp"
 
 #include "map/tileset.hpp"
 
 namespace engine
 {
-    void Map::loadFromFile(const std::string &path, const std::string &filename)
+    bool Map::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
+        std::string path(va_arg(args, const char*));
+
         tinyxml2::XMLDocument doc;
-        doc.LoadFile((path + filename).c_str());
+        doc.LoadFile(filename.c_str());
 
         // Root element
         tinyxml2::XMLElement *root = doc.FirstChildElement();
@@ -24,30 +29,31 @@ namespace engine
             std::string value(element->Value());
             if (value == "tileset")
             {
-                this->parseTilesetElement(path, element);
+                this->parseTilesetElement(resourceManager, path, element);
             }
             else if (value == "layer")
             {
-                //std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
-                //layer->loadFromXMLElement(element);
+                std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
+                layer->loadFromXMLElement(element);
 
-                //layers.push_back(std::move(layer));
+                layers.push_back(std::move(layer));
             }
 
             element = element->NextSiblingElement();
         }
     }
 
-    void Map::parseTilesetElement(const std::string &path, const tinyxml2::XMLElement *element)
+    void Map::unloadResource() {}
+
+    void Map::parseTilesetElement(ResourceManager &resourceManager, const std::string &path, const tinyxml2::XMLElement *element)
     {
         int firstGid = element->UnsignedAttribute("firstgid");
 
         std::string tilesetSource = element->Attribute("source");
-        /*std::unique_ptr<Tileset> = std::make_unique<Tileset>();
-        tileset->loadFromFile(path, tilesetSource);
+        tilesetSource = path + tilesetSource;
 
         this->tilesetInfo.firstGid = firstGid;
-        this->tilesetInfo.tileset = std::move(tileset);*/
+        this->tilesetInfo.tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetSource, path.c_str());
     }
 
     unsigned Map::getWidth() const { return this->width; }

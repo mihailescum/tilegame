@@ -4,14 +4,17 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <cstdarg>
 #include "tinyxml2.h"
+
+#include "core/resource.hpp"
 
 #include "map/tilesetinfo.hpp"
 #include "map/tilelayer.hpp"
 
 namespace engine
 {
-    class Map
+    class Map : public Resource
     {
     private:
         TilesetInfo tilesetInfo;
@@ -19,13 +22,14 @@ namespace engine
         unsigned height;
         std::vector<std::unique_ptr<TileLayer>> layers;
 
-        void parseTilesetElement(const std::string &path, const tinyxml2::XMLElement *element);
+        void parseTilesetElement(ResourceManager &resourceManager, const std::string &path, const tinyxml2::XMLElement *element);
 
     public:
         Map() {}
         Map(const Map &map) = delete;
         
-        void loadFromFile(const std::string &path, const std::string &filename);
+        virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;
+        virtual void unloadResource() override;
 
         const TilesetInfo &getTilesetInfo() const;
         unsigned getWidth() const;

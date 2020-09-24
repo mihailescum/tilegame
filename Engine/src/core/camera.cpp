@@ -27,7 +27,8 @@ namespace engine
     void Camera::recomputeTransform()
     {
         // translation - Inverting coorinates because translation matrix has to 'move' the objects into the different direction
-        this->transform[3][0] = -(this->position.x - this->viewport.width / 2);
-        this->transform[3][1] = -(this->position.y - this->viewport.height / 2);
+        // translation is clipped to integers
+        this->transform[3][0] = -(int)(this->position.x - this->viewport.width / 2);
+        this->transform[3][1] = -(int)(this->position.y - this->viewport.height / 2);
     }
 } // namespace engine
