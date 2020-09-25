@@ -1,16 +1,16 @@
-#include "map/maprenderer.hpp"
+#include "map/renderer.hpp"
 #include "map/map.hpp"
 
 namespace engine
 {
-    void MapRenderer::initialize()
+    void Renderer::initialize()
     {
         this->tilesetInfo = &map.getTilesetInfo();
         this->mapWidth = map.getWidth();
         this->mapHeight = map.getHeight();
     }
 
-    void MapRenderer::draw(SpriteBatch &spriteBatch, const Camera &camera) const
+    void Renderer::draw(SpriteBatch &spriteBatch, const Camera &camera) const
     {
         spriteBatch.begin(camera.getTransform(), true);
 

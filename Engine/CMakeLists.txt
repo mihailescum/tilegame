@@ -18,17 +18,19 @@ set (SOURCES_ENGINE_CORE
 
 set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/map.cpp
-        ${SOURCES_PATH}/map/maprenderer.cpp
+        ${SOURCES_PATH}/map/renderer.cpp
         ${SOURCES_PATH}/map/tile.cpp
         ${SOURCES_PATH}/map/tileset.cpp
         ${SOURCES_PATH}/map/tilesetinfo.cpp
         ${SOURCES_PATH}/map/tilelayer.cpp
+        ${SOURCES_PATH}/map/objectlayer.cpp
 )
 
 set (SOURCES_ENGINE_ENTITIES
         ${SOURCES_PATH}/entities/entity.cpp
         ${SOURCES_PATH}/entities/freeentity.cpp
         ${SOURCES_PATH}/entities/player.cpp
+        ${SOURCES_PATH}/entities/character.cpp
 )
 
 # Header Files
@@ -53,17 +55,19 @@ set (HEADER_ENGINE_CORE
 
 set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/map.hpp
-        ${HEADER_PATH}/map/maprenderer.hpp
+        ${HEADER_PATH}/map/renderer.hpp
         ${HEADER_PATH}/map/tile.hpp
         ${HEADER_PATH}/map/tileset.hpp
         ${HEADER_PATH}/map/tilesetinfo.hpp
         ${HEADER_PATH}/map/tilelayer.hpp
+        ${HEADER_PATH}/map/objectlayer.hpp
 )
 
 set (HEADER_ENGINE_ENTITIES
         ${HEADER_PATH}/entities/entity.hpp
         ${HEADER_PATH}/entities/freeentity.hpp
         ${HEADER_PATH}/entities/player.hpp
+        ${HEADER_PATH}/entities/character.hpp
 )
 
 # Create Library
@@ -101,6 +105,9 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 
 # Link with tinyxml2
 target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)
+
+# Link with std::filesystem library
+target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 
 #GLFW
 find_package(glfw3 3.3 REQUIRED)

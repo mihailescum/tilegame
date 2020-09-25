@@ -1,6 +1,7 @@
 #include "map/tileset.hpp"
 
 #include <string>
+#include <filesystem>
 #include "tinyxml2.h"
 
 #include "core/resourcemanager.hpp"
@@ -11,8 +12,6 @@ namespace engine
 
     bool Tileset::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
-        std::string path(va_arg(args, const char*));
-
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
 
@@ -26,9 +25,9 @@ namespace engine
 
         tinyxml2::XMLElement *image = root->FirstChildElement("image");
         std::string imageSource = image->Attribute("source");
-        std::string imagePath = path + imageSource;
+        std::filesystem::path imagePath = std::filesystem::canonical(std::filesystem::absolute(filename).parent_path() / imageSource);
 
-        this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath.c_str(), true);
+        this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath, true);
 
         for (int y = 0; y < this->rows; y++)
         {

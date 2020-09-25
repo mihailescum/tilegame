@@ -1,8 +1,6 @@
 .vscode/
 .directory
 build/
-# Allow content directory
-!buld/bin/content/
 
 # Make and CMake
 *Makefile

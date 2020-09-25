@@ -1,6 +1,7 @@
 #include "map/map.hpp"
 
 #include <cstdarg>
+#include <filesystem>
 #include "tinyxml2.h"
 
 #include "core/resourcemanager.hpp"
@@ -11,10 +12,9 @@ namespace engine
 {
     bool Map::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
     {
-        std::string path(va_arg(args, const char*));
-
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
+        std::filesystem::path directory = std::filesystem::path(filename).parent_path();
 
         // Root element
         tinyxml2::XMLElement *root = doc.FirstChildElement();
@@ -29,7 +29,7 @@ namespace engine
             std::string value(element->Value());
             if (value == "tileset")
             {
-                this->parseTilesetElement(resourceManager, path, element);
+                this->parseTilesetElement(resourceManager, directory, element);
             }
             else if (value == "layer")
             {
@@ -41,19 +41,21 @@ namespace engine
 
             element = element->NextSiblingElement();
         }
+
+        return true;
     }
 
     void Map::unloadResource() {}
 
-    void Map::parseTilesetElement(ResourceManager &resourceManager, const std::string &path, const tinyxml2::XMLElement *element)
+    void Map::parseTilesetElement(ResourceManager &resourceManager, const std::filesystem::path &directory, const tinyxml2::XMLElement *element)
     {
         int firstGid = element->UnsignedAttribute("firstgid");
 
         std::string tilesetSource = element->Attribute("source");
-        tilesetSource = path + tilesetSource;
+        std::filesystem::path tilesetPath = std::filesystem::canonical(std::filesystem::absolute(directory) / tilesetSource);
 
         this->tilesetInfo.firstGid = firstGid;
-        this->tilesetInfo.tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetSource, path.c_str());
+        this->tilesetInfo.tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetPath);
     }
 
     unsigned Map::getWidth() const { return this->width; }

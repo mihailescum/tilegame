@@ -11,7 +11,7 @@ namespace engine
 {
     class Map;
 
-    class MapRenderer
+    class Renderer
     {
     private:
         const Map &map;
@@ -20,7 +20,7 @@ namespace engine
         unsigned mapHeight;
 
     public:
-        MapRenderer(const Map &map) : map(map) {}
+        Renderer(const Map &map) : map(map) {}
         
         void draw(SpriteBatch &spriteBatch, const Camera &camera) const;
         void initialize();

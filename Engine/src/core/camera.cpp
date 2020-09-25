@@ -1,5 +1,7 @@
 #include "core/camera.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace engine
 {
     Camera::Camera(const Viewport &viewport) :
@@ -26,9 +28,16 @@ namespace engine
 
     void Camera::recomputeTransform()
     {
+        float scale = 1.0;
+        this->transform = glm::scale(glm::mat4(1.0), glm::vec3(scale));
+
         // translation - Inverting coorinates because translation matrix has to 'move' the objects into the different direction
         // translation is clipped to integers
-        this->transform[3][0] = -(int)(this->position.x - this->viewport.width / 2);
-        this->transform[3][1] = -(int)(this->position.y - this->viewport.height / 2);
+        glm::vec3 translation(
+            floor(-(this->position.x - this->viewport.width / 2) * scale) / scale,
+            floor(-(this->position.y - this->viewport.height / 2) * scale) / scale,
+            0.0
+        );
+        this->transform = glm::translate(this->transform, translation);
     }
 } // namespace engine

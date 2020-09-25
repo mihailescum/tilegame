@@ -9,7 +9,7 @@
 namespace tilegame
 {
     engine::Map *map1;
-    std::unique_ptr<engine::MapRenderer> map1Renderer;
+    std::unique_ptr<engine::Renderer> map1Renderer;
 
     std::unique_ptr<engine::FreeEntity> entity;
     std::unique_ptr<engine::Player> player;
@@ -32,7 +32,7 @@ namespace tilegame
         //map1->loadFromFile("content/world/", "map1.tmx");
 
         map1 = this->resourceManager->loadResource<engine::Map>("map1", "content/world/map1.tmx", "content/world/");
-        map1Renderer = std::make_unique<engine::MapRenderer>(*map1);
+        map1Renderer = std::make_unique<engine::Renderer>(*map1);
         map1Renderer->initialize();
     }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="NPC" color="#a0a0a4">
+  <property name="id" type="int" default="-1"/>
+  <property name="script_source" type="string"/>
+  <property name="sprite_id" type="int" default="0"/>
+  <property name="sprite_sheet" type="file" default=""/>
+ </objecttype>
+</objecttypes>

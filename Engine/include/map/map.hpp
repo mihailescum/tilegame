@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <cstdarg>
+#include <filesystem>
 #include "tinyxml2.h"
 
 #include "core/resource.hpp"
@@ -22,7 +23,7 @@ namespace engine
         unsigned height;
         std::vector<std::unique_ptr<TileLayer>> layers;
 
-        void parseTilesetElement(ResourceManager &resourceManager, const std::string &path, const tinyxml2::XMLElement *element);
+        void parseTilesetElement(ResourceManager &resourceManager, const std::filesystem::path &directory, const tinyxml2::XMLElement *element);
 
     public:
         Map() {}

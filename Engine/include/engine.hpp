@@ -14,11 +14,12 @@
 #include "core/window.hpp"
 
 #include "map/map.hpp"
-#include "map/maprenderer.hpp"
+#include "map/renderer.hpp"
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/tilesetinfo.hpp"
 #include "map/tilelayer.hpp"
+#include "map/objectlayer.hpp"
 
 #include "entities/entity.hpp"
 #include "entities/freeentity.hpp"
