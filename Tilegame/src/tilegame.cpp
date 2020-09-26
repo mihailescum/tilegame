@@ -76,6 +76,10 @@ namespace tilegame
         graphicsDevice->clear(engine::Color::CornflowerBlue);
         map1Renderer->draw(*spriteBatch, player->getCamera());
 
+        spriteBatch->begin(player->getCamera().getTransform(), true);
+        playerCharacter->draw(*spriteBatch);
+        spriteBatch->end();
+
         frames++;
     }
 } // namespace tilegame

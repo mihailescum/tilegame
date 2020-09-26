@@ -26,7 +26,16 @@ namespace engine
                 if (cell.empty())
                     continue;
 
-                this->data.push_back(std::stoi(cell));
+                int gid = std::stoi(cell);
+
+                bool flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
+                bool flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
+                bool flipped_diagonally = (gid & FLIPPED_DIAGONALLY_FLAG);
+                gid &= ~(FLIPPED_HORIZONTALLY_FLAG |
+                         FLIPPED_VERTICALLY_FLAG |
+                         FLIPPED_DIAGONALLY_FLAG);
+
+                this->data.push_back(gid);
             }
         }
     }

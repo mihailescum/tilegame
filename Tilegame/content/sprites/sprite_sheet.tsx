@@ -4,22 +4,22 @@
  <terraintypes>
   <terrain name="Captain" tile="2">
    <properties>
-    <property name="id" state="int" value="0"/>
+    <property name="id" value="0"/>
    </properties>
   </terrain>
   <terrain name="Old_Guy" tile="6">
    <properties>
-    <property name="id" state="int" value="1"/>
+    <property name="id" value="1"/>
    </properties>
   </terrain>
   <terrain name="Soldier" tile="42">
    <properties>
-    <property name="id" state="int" value="2"/>
+    <property name="id" value="2"/>
    </properties>
   </terrain>
   <terrain name="Villager_Girl" tile="46">
    <properties>
-    <property name="id" state="int" value="3"/>
+    <property name="id" value="3"/>
    </properties>
   </terrain>
  </terraintypes>
@@ -198,7 +198,7 @@
    <property name="state" value="BACK_MOVING"/>
   </properties>
  </tile>
- <tile id="53" terrain="3spritesElement,3,3,3">
+ <tile id="53" terrain="0,3,3,3">
   <properties>
    <property name="state" value="BACK_MOVING"/>
   </properties>

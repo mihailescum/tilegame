@@ -38,6 +38,8 @@ namespace engine
         const tinyxml2::XMLElement *spriteElement = spritesElement->FirstChildElement("terrain");
         while (spriteElement)
         {
+            const int defaultState = spriteElement->IntAttribute("tile");
+
             const tinyxml2::XMLElement *propertiesElement = spriteElement->FirstChildElement("properties");
             const tinyxml2::XMLElement *propertyElement = propertiesElement->FirstChildElement();
             int id;
@@ -49,7 +51,7 @@ namespace engine
 
                 propertyElement = propertyElement->NextSiblingElement();
             }
-            std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>(id, *this->texture, this->frameWidth, this->frameHeight, this->columns, this->rows);
+            std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>(id, defaultState, *this->texture, this->frameWidth, this->frameHeight, this->columns, this->rows);
             this->sprites.emplace(id, std::move(sprite));
 
             spriteElement = spriteElement->NextSiblingElement();

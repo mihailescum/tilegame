@@ -5,6 +5,7 @@
 #include "tinyxml2.h"
 
 #include "core/resourcemanager.hpp"
+#include "core/rectangle.hpp"
 
 #include "sprites/spritesheet.hpp"
 
@@ -50,5 +51,9 @@ namespace engine
 
     void Character::draw(SpriteBatch &spriteBatch) const
     {
+        Rectangle destinationRect(0, 0, 16, 16);
+        const Rectangle &sourceRect = this->sprite->getCurrentSourceRect();
+
+        spriteBatch.draw(sprite->getTexture(), destinationRect, &sourceRect, Color::White);
     }
 } // namespace engine

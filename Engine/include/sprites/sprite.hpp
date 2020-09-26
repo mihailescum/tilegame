@@ -6,12 +6,14 @@
 #include <string>
 
 #include "core/texture2D.hpp"
+#include "core/rectangle.hpp"
 
 namespace engine
 {
     class Sprite
     {
     private:
+
         const int id;
         const Texture2D &texture;
         const int frameWidth;
@@ -19,11 +21,17 @@ namespace engine
         const int rowsSpriteSheet;
         const int columnsSpriteSheet;
 
+        std::string currentState;
         std::unordered_map<std::string, std::vector<int>> spriteStates;
+        int currentFrame;
 
     public:
-        Sprite(const int id, const Texture2D &texture, const int frameWidth, const int frameHeight, const int columnsSpriteSheet, const int rowsSpriteSheet);
+        static const std::string DEFAULT_STATE;
+
+        Sprite(const int id, const int defaultFrame, const Texture2D &texture, const int frameWidth, const int frameHeight, const int columnsSpriteSheet, const int rowsSpriteSheet);
         void addSpriteState(const std::string &name, const int frameNumber);
+        Rectangle getCurrentSourceRect() const;
+        const Texture2D &getTexture() const;
     };
 } // namespace engine
 

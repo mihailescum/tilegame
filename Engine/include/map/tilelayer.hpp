@@ -12,8 +12,12 @@ namespace engine
     class TileLayer : public MapLayer
     {
     private:
+        static const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+        static const unsigned FLIPPED_VERTICALLY_FLAG = 0x40000000;
+        static const unsigned FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+
         std::vector<unsigned> data;
-        
+
         void parseCSV(const std::string &csv);
 
     public:
