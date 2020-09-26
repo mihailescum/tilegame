@@ -17,7 +17,7 @@ namespace engine
     {
     private:
         int id;
-        std::unique_ptr<Sprite> sprite;
+        Sprite *sprite;
 
     public:
         virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;

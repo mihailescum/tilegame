@@ -21,7 +21,7 @@ namespace engine
     Resource *ResourceManager::getResource(const std::string &name) const
     {
         if (this->resources.count(name) != 0)
-            return this->resources.find(name)->second.get();
+            return this->resources.at(name).get();
         else
             return nullptr;
     }

@@ -91,4 +91,9 @@ namespace engine
             spriteInfoElement = spriteInfoElement->NextSiblingElement();
         }
     }
+
+    Sprite *SpriteSheet::getSprite(const int spriteId) const
+    {
+        return this->sprites.at(spriteId).get();
+    }
 } // namespace engine

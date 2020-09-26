@@ -37,6 +37,7 @@ namespace engine
 
             property = property->NextSiblingElement();
         }
+        this->sprite = spriteSheet->getSprite(spriteId);
 
         //this->sprite = spriteSheet->getSprite(spriteId);
         return true;
