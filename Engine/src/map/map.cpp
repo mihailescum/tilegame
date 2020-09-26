@@ -5,6 +5,7 @@
 #include "tinyxml2.h"
 
 #include "core/resourcemanager.hpp"
+#include "map/objectlayer.hpp"
 
 #include "map/tileset.hpp"
 
@@ -17,7 +18,7 @@ namespace engine
         std::filesystem::path directory = std::filesystem::path(filename).parent_path();
 
         // Root element
-        tinyxml2::XMLElement *root = doc.FirstChildElement();
+        const tinyxml2::XMLElement *root = doc.FirstChildElement();
         this->width = root->UnsignedAttribute("width");
         this->height = root->UnsignedAttribute("height");
 
@@ -26,7 +27,7 @@ namespace engine
         while (element)
         {
             // Tileset data
-            std::string value(element->Value());
+            std::string value = element->Value();
             if (value == "tileset")
             {
                 this->parseTilesetElement(resourceManager, directory, element);
@@ -37,6 +38,12 @@ namespace engine
                 layer->loadFromXMLElement(element);
 
                 layers.push_back(std::move(layer));
+            }
+            else if (value == "objectgroup") {
+                std::unique_ptr<ObjectLayer> layer = std::make_unique<ObjectLayer>();
+                layer->loadFromXMLElement(element);
+
+                //layers.push_back(std::move(layer));
             }
 
             element = element->NextSiblingElement();

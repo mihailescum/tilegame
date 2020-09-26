@@ -22,6 +22,7 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/tile.cpp
         ${SOURCES_PATH}/map/tileset.cpp
         ${SOURCES_PATH}/map/tilesetinfo.cpp
+        ${SOURCES_PATH}/map/maplayer.cpp
         ${SOURCES_PATH}/map/tilelayer.cpp
         ${SOURCES_PATH}/map/objectlayer.cpp
 )
@@ -31,6 +32,11 @@ set (SOURCES_ENGINE_ENTITIES
         ${SOURCES_PATH}/entities/freeentity.cpp
         ${SOURCES_PATH}/entities/player.cpp
         ${SOURCES_PATH}/entities/character.cpp
+)
+
+set (SOURCES_ENGINE_SPRITES
+        ${SOURCES_PATH}/sprites/sprite.cpp
+        ${SOURCES_PATH}/sprites/spritesheet.cpp
 )
 
 # Header Files
@@ -59,6 +65,7 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/tile.hpp
         ${HEADER_PATH}/map/tileset.hpp
         ${HEADER_PATH}/map/tilesetinfo.hpp
+        ${HEADER_PATH}/map/maplayer.hpp
         ${HEADER_PATH}/map/tilelayer.hpp
         ${HEADER_PATH}/map/objectlayer.hpp
 )
@@ -70,17 +77,26 @@ set (HEADER_ENGINE_ENTITIES
         ${HEADER_PATH}/entities/character.hpp
 )
 
+set (HEADER_ENGINE_SPRITES
+        ${HEADER_PATH}/sprites/sprite.hpp
+        ${HEADER_PATH}/sprites/spritesheet.hpp
+)
+
 # Create Library
 set (LIBRARY_NAME engine)
 add_library(${LIBRARY_NAME} 
         STATIC 
                 ${HEADER_PATH}/engine.hpp
+
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_MAP}
                 ${SOURCES_ENGINE_ENTITIES}
+                ${SOURCES_ENGINE_SPRITES}
+
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_MAP}
                 ${HEADER_ENGINE_ENTITIES}
+                ${HEADER_ENGINE_SPRITES}
 )
 
 set_target_properties(

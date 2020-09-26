@@ -18,11 +18,17 @@
 #include "map/tile.hpp"
 #include "map/tileset.hpp"
 #include "map/tilesetinfo.hpp"
+#include "map/maplayer.hpp"
 #include "map/tilelayer.hpp"
 #include "map/objectlayer.hpp"
 
 #include "entities/entity.hpp"
 #include "entities/freeentity.hpp"
 #include "entities/player.hpp"
+#include "entities/character.hpp"
+
+
+#include "sprites/sprite.hpp"
+#include "sprites/spritesheet.hpp"
 
 #endif

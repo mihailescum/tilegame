@@ -15,7 +15,7 @@ namespace engine
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
 
-        tinyxml2::XMLElement *root = doc.FirstChildElement();
+        const tinyxml2::XMLElement *root = doc.FirstChildElement();
         this->name = root->Attribute("name");
         this->tileWidth = root->UnsignedAttribute("tilewidth");
         this->tileHeight = root->UnsignedAttribute("tileheight");
@@ -23,7 +23,7 @@ namespace engine
         this->columns = root->UnsignedAttribute("columns");
         this->rows = this->tileCount / this->columns;
 
-        tinyxml2::XMLElement *image = root->FirstChildElement("image");
+        const tinyxml2::XMLElement *image = root->FirstChildElement("image");
         std::string imageSource = image->Attribute("source");
         std::filesystem::path imagePath = std::filesystem::canonical(std::filesystem::absolute(filename).parent_path() / imageSource);
 

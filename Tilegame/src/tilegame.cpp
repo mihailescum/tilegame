@@ -13,13 +13,14 @@ namespace tilegame
 
     std::unique_ptr<engine::FreeEntity> entity;
     std::unique_ptr<engine::Player> player;
+    engine::Character *playerCharacter;
 
     void Tilegame::initialize()
     {
         Game::initialize();
 
-        entity = std::unique_ptr<engine::FreeEntity>(new engine::FreeEntity());
-        player = std::unique_ptr<engine::Player>(new engine::Player(entity.get(), this->graphicsDevice->getViewport()));
+        entity = std::make_unique<engine::FreeEntity>();
+        player = std::make_unique<engine::Player>(entity.get(), this->graphicsDevice->getViewport());
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
@@ -29,11 +30,11 @@ namespace tilegame
     {
         Game::loadContent();
 
-        //map1->loadFromFile("content/world/", "map1.tmx");
-
         map1 = this->resourceManager->loadResource<engine::Map>("map1", "content/world/map1.tmx", "content/world/");
         map1Renderer = std::make_unique<engine::Renderer>(*map1);
         map1Renderer->initialize();
+
+        playerCharacter = this->resourceManager->loadResource<engine::Character>("playerCharacter", "content/characters/player.chr");
     }
 
     void Tilegame::unloadContent()

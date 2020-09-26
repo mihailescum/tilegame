@@ -3,13 +3,17 @@
 
 #include "tinyxml2.h"
 
+#include "map/maplayer.hpp"
+
 namespace engine
 {
-    class ObjectLayer
+    class ObjectLayer : MapLayer
     {
     private:
+        void parseNPC(const tinyxml2::XMLElement *object, const int x, const int y, const int width, const int height);
+
     public:
-        void loadFromXMLElement(const tinyxml2::XMLElement *element);
+        virtual void loadFromXMLElement(const tinyxml2::XMLElement *element) override;
     };
 } // namespace engine
 

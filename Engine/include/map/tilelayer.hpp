@@ -5,9 +5,11 @@
 #include <string>
 #include "tinyxml2.h"
 
+#include "map/maplayer.hpp"
+
 namespace engine
 {
-    class TileLayer
+    class TileLayer : public MapLayer
     {
     private:
         std::vector<unsigned> data;
@@ -15,7 +17,7 @@ namespace engine
         void parseCSV(const std::string &csv);
 
     public:
-        void loadFromXMLElement(const tinyxml2::XMLElement *element);
+        virtual void loadFromXMLElement(const tinyxml2::XMLElement *element) override;
         const std::vector<unsigned> &getData() const;
     };
 } // namespace engine
