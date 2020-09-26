@@ -11,11 +11,10 @@
 
 namespace engine
 {
-    bool Map::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
+    bool Map::loadResource(ResourceManager &resourceManager, va_list args)
     {
         tinyxml2::XMLDocument doc;
-        doc.LoadFile(filename.c_str());
-        std::filesystem::path directory = std::filesystem::path(filename).parent_path();
+        doc.LoadFile(this->resourcePath.c_str());
 
         // Root element
         const tinyxml2::XMLElement *root = doc.FirstChildElement();
@@ -30,7 +29,7 @@ namespace engine
             std::string value = element->Value();
             if (value == "tileset")
             {
-                this->parseTilesetElement(resourceManager, directory, element);
+                this->parseTilesetElement(resourceManager, element);
             }
             else if (value == "layer")
             {
@@ -54,12 +53,12 @@ namespace engine
 
     void Map::unloadResource() {}
 
-    void Map::parseTilesetElement(ResourceManager &resourceManager, const std::filesystem::path &directory, const tinyxml2::XMLElement *element)
+    void Map::parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element)
     {
         int firstGid = element->UnsignedAttribute("firstgid");
 
         std::string tilesetSource = element->Attribute("source");
-        std::filesystem::path tilesetPath = std::filesystem::canonical(std::filesystem::absolute(directory) / tilesetSource);
+        std::filesystem::path tilesetPath = std::filesystem::canonical(this->resourcePath.parent_path() / tilesetSource);
 
         this->tilesetInfo.firstGid = firstGid;
         this->tilesetInfo.tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetPath);

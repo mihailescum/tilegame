@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <cstdarg>
+#include <filesystem>
 
 #include <glad/glad.h>
 
@@ -36,12 +37,12 @@ namespace engine
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
                 res->setResourceId(this->resources.size());
-                res->setResourcePath(filename);
+                res->setResourcePath(std::filesystem::absolute(filename));
                 res->setResourceName(name);
 
                 va_list args;
                 va_start(args, filename);
-                bool loadingSucceded = res->loadResource(*this, filename, args);
+                bool loadingSucceded = res->loadResource(*this, args);
                 va_end(args);
 
                 if (loadingSucceded)

@@ -26,7 +26,7 @@ namespace engine
     public:
         Shader();
 
-        virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;
+        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
         void setBool(const std::string &name, GLboolean value) const;

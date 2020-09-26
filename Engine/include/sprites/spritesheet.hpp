@@ -34,7 +34,7 @@ namespace engine
         SpriteSheet(const SpriteSheet &spriteSheet) = delete;
         ~SpriteSheet() {}
 
-        virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;
+        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override {}
 
         Sprite *getSprite(const int spriteId) const;

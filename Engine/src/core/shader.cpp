@@ -24,7 +24,7 @@ namespace engine
         }
     }
 
-    bool Shader::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
+    bool Shader::loadResource(ResourceManager &resourceManager, va_list args)
     {
         std::string vertexPath(va_arg(args, const char*));
         std::string geometryPath(va_arg(args, const char*));

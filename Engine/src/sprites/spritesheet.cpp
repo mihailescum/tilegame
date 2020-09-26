@@ -6,10 +6,10 @@
 
 namespace engine
 {
-    bool SpriteSheet::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
+    bool SpriteSheet::loadResource(ResourceManager &resourceManager, va_list args)
     {
         tinyxml2::XMLDocument doc;
-        doc.LoadFile(filename.c_str());
+        doc.LoadFile(this->resourcePath.c_str());
 
         const tinyxml2::XMLElement *root = doc.FirstChildElement();
         this->setResourceName(root->Attribute("name"));
@@ -22,7 +22,7 @@ namespace engine
         // Load Image
         const tinyxml2::XMLElement *image = root->FirstChildElement("image");
         std::string imageSource = image->Attribute("source");
-        std::filesystem::path imagePath = std::filesystem::canonical(std::filesystem::absolute(filename).parent_path() / imageSource);
+        std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
         this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
 
         // Each sprite is represented by one terrain type

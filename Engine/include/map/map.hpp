@@ -23,13 +23,13 @@ namespace engine
         unsigned height;
         std::vector<std::unique_ptr<TileLayer>> layers;
 
-        void parseTilesetElement(ResourceManager &resourceManager, const std::filesystem::path &directory, const tinyxml2::XMLElement *element);
+        void parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element);
 
     public:
         Map() {}
         Map(const Map &map) = delete;
         
-        virtual bool loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args) override;
+        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
         const TilesetInfo &getTilesetInfo() const;

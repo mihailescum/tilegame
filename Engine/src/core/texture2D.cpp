@@ -26,7 +26,7 @@ namespace engine
         }
     }
 
-    bool Texture2D::loadResource(ResourceManager &resourceManager, const std::string &filename, va_list args)
+    bool Texture2D::loadResource(ResourceManager &resourceManager, va_list args)
     {
         bool hasAlphaChannel = va_arg(args, int);
         if (hasAlphaChannel)
@@ -36,7 +36,7 @@ namespace engine
         }
         // load image
         int width, height, nrChannels;
-        unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(this->resourcePath.c_str(), &width, &height, &nrChannels, 0);
         // now generate texture
         if (data)
         {
@@ -47,7 +47,7 @@ namespace engine
         else
         {
             std::stringstream error;
-            error << "Failed to load texture. FILE: " << filename;
+            error << "Failed to load texture. FILE: " << this->resourcePath;
             Log::e(error.str());
             return false;
         }
