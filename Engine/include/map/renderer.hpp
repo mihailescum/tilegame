@@ -1,5 +1,4 @@
-#ifndef __ENGINE_MAPRENDERER_H__
-#define __ENGINE_MAPRENDERER_H__
+#pragma once
 
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"
@@ -26,5 +25,3 @@ namespace engine
         void initialize();
     };
 } // namespace engine
-
-#endif

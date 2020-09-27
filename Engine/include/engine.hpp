@@ -1,5 +1,4 @@
-#ifndef __ENGINE_ENGINE_H__
-#define __ENGINE_ENGINE_H__
+#pragma once
 
 #include "core/color.hpp"
 #include "core/game.hpp"
@@ -30,5 +29,3 @@
 
 #include "sprites/sprite.hpp"
 #include "sprites/spritesheet.hpp"
-
-#endif

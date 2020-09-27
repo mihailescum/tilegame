@@ -1,5 +1,4 @@
-#ifndef __ENGINE_COLOR_H__
-#define __ENGINE_COLOR_H__
+#pragma once
 
 namespace engine
 {
@@ -18,5 +17,3 @@ namespace engine
         static const Color CornflowerBlue;
     };
 } // namespace engine
-
-#endif

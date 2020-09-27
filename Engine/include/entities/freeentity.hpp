@@ -1,5 +1,4 @@
-#ifndef __ENGINE_FREEENTITY_H__
-#define __ENGINE_FREEENTITY_H__
+#pragma once
 
 #include "entities/entity.hpp"
 
@@ -21,5 +20,3 @@ namespace engine
         virtual void moveDown() override;
     };
 } // namespace engine
-
-#endif

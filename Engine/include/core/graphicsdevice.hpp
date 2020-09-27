@@ -1,5 +1,4 @@
-#ifndef __ENGINE_GRAPHICSDEVICE_H__
-#define __ENGINE_GRAPHICSDEVICE_H__
+#pragma once
 
 #include "glad/glad.h"
 
@@ -25,5 +24,3 @@ namespace engine
         void setViewport(const Viewport &viewport);
     };
 } // namespace engine
-
-#endif

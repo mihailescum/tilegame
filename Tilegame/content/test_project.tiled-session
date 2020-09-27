@@ -5,9 +5,9 @@
     },
     "activeFile": "world/map1.tmx",
     "expandedProjectPaths": [
+        "textures",
         "sprites",
-        "world",
-        "textures"
+        "world"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -20,7 +20,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 174.5,
-                "y": 27.25
+                "y": 510.25
             }
         },
         "world/tileset1.tsx": {

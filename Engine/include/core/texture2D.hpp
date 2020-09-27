@@ -1,5 +1,4 @@
-#ifndef __ENGINE_TEXTURE2D_H__
-#define __ENGINE_TEXTURE2D_H__
+#pragma once
 
 #include "glad/glad.h"
 
@@ -47,5 +46,3 @@ namespace engine
         friend bool operator!=(const Texture2D &lhs, const Texture2D &rhs) { return !(lhs == rhs); }
     };
 } // namespace engine
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __ENGINE_TILELAYER_H__
-#define __ENGINE_TILELAYER_H__
+#pragma once
 
 #include <vector>
 #include <string>
@@ -25,5 +24,3 @@ namespace engine
         const std::vector<unsigned> &getData() const;
     };
 } // namespace engine
-
-#endif

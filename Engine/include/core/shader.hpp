@@ -1,5 +1,4 @@
-#ifndef __ENGINE_SHADER_H__
-#define __ENGINE_SHADER_H__
+#pragma once
 
 #include <string>
 
@@ -44,5 +43,3 @@ namespace engine
         GLuint getglShaderProgram() const;
     };
 } // namespace engine
-
-#endif

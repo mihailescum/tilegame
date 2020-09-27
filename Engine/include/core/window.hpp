@@ -1,5 +1,4 @@
-#ifndef __ENGINE_WINDOW_H__
-#define __ENGINE_WINDOW_H__
+#pragma once
 
 #include <string>
 
@@ -47,5 +46,3 @@ namespace engine
         //__event void windowSizeChanged(int width, int height);
     };
 } // namespace engine
-
-#endif

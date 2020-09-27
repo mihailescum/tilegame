@@ -1,5 +1,4 @@
-#ifndef __ENGINE_SPRITESHEET_H__
-#define __ENGINE_SPRITESHEET_H__
+#pragma once
 
 #include <string>
 #include <cstdarg>
@@ -40,5 +39,3 @@ namespace engine
         Sprite *getSprite(const int spriteId) const;
     };
 } // namespace engine
-
-#endif

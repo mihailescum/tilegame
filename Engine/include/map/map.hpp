@@ -1,5 +1,4 @@
-#ifndef __ENGINE_MAP_H__
-#define __ENGINE_MAP_H__
+#pragma once
 
 #include <string>
 #include <memory>
@@ -38,5 +37,3 @@ namespace engine
         const std::vector<std::unique_ptr<TileLayer>> &getLayers() const;
     };
 } // namespace engine
-
-#endif

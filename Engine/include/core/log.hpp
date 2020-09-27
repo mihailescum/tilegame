@@ -1,5 +1,4 @@
-#ifndef __ENGINE_LOG_H__
-#define __ENGINE_LOG_H__
+#pragma once
 
 #include <string>
 
@@ -16,5 +15,3 @@ namespace engine
         static void l(std::string message);
     };
 } // namespace engine
-
-#endif

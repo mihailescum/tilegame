@@ -1,5 +1,4 @@
-#ifndef __ENGINE_GAME_H__
-#define __ENGINE_GAME_H__
+#pragma once
 
 #include <memory>
 
@@ -41,5 +40,3 @@ namespace engine
         void run();
     };
 } // namespace engine
-
-#endif

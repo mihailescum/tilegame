@@ -1,5 +1,4 @@
-#ifndef __ENGINE_ENTITY_H__
-#define __ENGINE_ENTITY_H__
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -43,5 +42,3 @@ namespace engine
         }
     };
 } // namespace engine
-
-#endif

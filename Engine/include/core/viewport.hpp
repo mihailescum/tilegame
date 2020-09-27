@@ -1,5 +1,4 @@
-#ifndef __ENGINE_VIEWPORT_H__
-#define __ENGINE_VIEWPORT_H__
+#pragma once
 
 #include "glad/glad.h"
 
@@ -19,5 +18,3 @@ namespace engine
         int height;
     };
 } // namespace engine
-
-#endif

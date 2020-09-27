@@ -1,5 +1,4 @@
-#ifndef __ENGINE_PLAYER_H__
-#define __ENGINE_PLAYER_H__
+#pragma once
 
 #include <memory>
 #include "glm/glm.hpp"
@@ -27,5 +26,3 @@ namespace engine
         const Camera& getCamera() const;
     };
 } // namespace engine
-
-#endif

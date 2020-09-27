@@ -1,5 +1,4 @@
-#ifndef __ENGINE_SPRITEBATCH_H__
-#define __ENGINE_SPRITEBATCH_H__
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -49,5 +48,3 @@ namespace engine
         void end();
     };
 } // namespace engine
-
-#endif

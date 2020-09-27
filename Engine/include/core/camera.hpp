@@ -1,5 +1,4 @@
-#ifndef __ENGINE_CAMERA_H__
-#define __ENGINE_CAMERA_H__
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -25,5 +24,3 @@ namespace engine
             void setViewport(const Viewport &viewport);
     };
 } // namespace engine
-
-#endif

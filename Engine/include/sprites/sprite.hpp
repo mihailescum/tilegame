@@ -1,5 +1,4 @@
-#ifndef __ENGINE_SPRITE_H__
-#define __ENGINE_SPRITE_H__
+#pragma once
 
 #include <unordered_map>
 #include <vector>
@@ -34,5 +33,3 @@ namespace engine
         const Texture2D &getTexture() const;
     };
 } // namespace engine
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __ENGINE_TILE_H__
-#define __ENGINE_TILE_H__
+#pragma once
 
 #include "core/rectangle.hpp"
 
@@ -11,5 +10,3 @@ namespace engine
             Rectangle sourceRect;
     };
 } // namespace engine
-
-#endif

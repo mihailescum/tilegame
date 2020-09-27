@@ -1,5 +1,4 @@
-#ifndef __ENGINE_RECTANGLE_H__
-#define __ENGINE_RECTANGLE_H__
+#pragma once
 
 namespace engine
 {
@@ -15,5 +14,3 @@ namespace engine
         int width;
     };
 } // namespace engine
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef __ENGINE_TILESET_H__
-#define __ENGINE_TILESET_H__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -39,5 +38,3 @@ namespace engine
         unsigned getTileHeight() const;
     };
 } // namespace engine
-
-#endif

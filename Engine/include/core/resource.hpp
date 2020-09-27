@@ -1,5 +1,4 @@
-#ifndef __ENGINE_RESOURCE_H__
-#define __ENGINE_RESOURCE_H__
+#pragma once
 
 #include <string>
 #include <filesystem>
@@ -32,5 +31,3 @@ namespace engine
         std::string getResourceName() const;
     };
 } // namespace engine
-
-#endif

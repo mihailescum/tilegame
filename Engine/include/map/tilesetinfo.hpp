@@ -1,5 +1,4 @@
-#ifndef __ENGINE_TILESETINFO_H__
-#define __ENGINE_TILESETINFO_H__
+#pragma once
 
 #include <memory>
 
@@ -15,5 +14,3 @@ namespace engine{
             Tileset *tileset;
     };
 }
-
-#endif

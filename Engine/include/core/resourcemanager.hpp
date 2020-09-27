@@ -1,5 +1,4 @@
-#ifndef __ENGINE_RESOURCEMANAGER_H__
-#define __ENGINE_RESOURCEMANAGER_H__
+#pragma once
 
 #include <unordered_map>
 #include <memory>
@@ -57,4 +56,3 @@ namespace engine
     };
 } // namespace engine
 
-#endif

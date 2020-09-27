@@ -1,5 +1,4 @@
-#ifndef __ENGINE_OBJECTLAYER_H__
-#define __ENGINE_OBJECTLAYER_H__
+#pragma once
 
 #include "tinyxml2.h"
 
@@ -16,5 +15,3 @@ namespace engine
         virtual void loadFromXMLElement(const tinyxml2::XMLElement *element) override;
     };
 } // namespace engine
-
-#endif

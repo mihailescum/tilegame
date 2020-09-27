@@ -1,5 +1,4 @@
-#ifndef __ENGINE_CHARACTER_H__
-#define __ENGINE_CHARACTER_H__
+#pragma once
 
 #include <memory>
 #include <string>
@@ -30,5 +29,3 @@ namespace engine
         void draw(SpriteBatch &spriteBatch) const;
     };
 } // namespace engine
-
-#endif
