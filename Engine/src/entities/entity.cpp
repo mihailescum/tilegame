@@ -2,7 +2,7 @@
 
 namespace engine
 {
-    Entity::Entity() : position(0.0)
+    Entity::Entity() : position(0.0), Scriptable("")
     {
     }
 

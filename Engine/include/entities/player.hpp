@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include "core/camera.hpp"
 #include "entities/entity.hpp"

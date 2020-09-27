@@ -12,6 +12,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #Subdirectories
 add_subdirectory(ExternalLibraries/glad)
-add_subdirectory(ExternalLibraries/tinyxml2)
 add_subdirectory(Engine)
 add_subdirectory(Tilegame)

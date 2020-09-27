@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdarg>
 #include <filesystem>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 #include "core/resource.hpp"
 

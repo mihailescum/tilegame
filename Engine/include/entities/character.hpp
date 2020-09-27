@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <cstdarg>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 #include "core/resource.hpp"
 #include "core/spritebatch.hpp"

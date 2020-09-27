@@ -39,6 +39,11 @@ set (SOURCES_ENGINE_SPRITES
         ${SOURCES_PATH}/sprites/spritesheet.cpp
 )
 
+set (SOURCES_ENGINE_SCRIPTING
+        ${SOURCES_PATH}/scripting/scriptable.cpp
+        ${SOURCES_PATH}/scripting/scriptengine.cpp
+)
+
 # Header Files
 set (HEADER_PATH include)
 
@@ -82,6 +87,11 @@ set (HEADER_ENGINE_SPRITES
         ${HEADER_PATH}/sprites/spritesheet.hpp
 )
 
+set (HEADER_ENGINE_SCRIPTING
+        ${HEADER_PATH}/scripting/scriptable.hpp
+        ${HEADER_PATH}/scripting/scriptengine.hpp
+)
+
 # Create Library
 set (LIBRARY_NAME engine)
 add_library(${LIBRARY_NAME} 
@@ -107,20 +117,11 @@ set_target_properties(
 # Include Project Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 
-# Include glm Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glm/include)
-
 # Include glad Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glad/include)
 
-# Include tinyxml2 Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/tinyxml2/include)
-
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
-
-# Link with tinyxml2
-target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)
 
 # Link with std::filesystem library
 target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
@@ -128,3 +129,8 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 #GLFW
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
+
+#tinyxml2
+find_package(tinyxml2)
+target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)
+

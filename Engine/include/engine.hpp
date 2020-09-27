@@ -26,6 +26,8 @@
 #include "entities/player.hpp"
 #include "entities/character.hpp"
 
-
 #include "sprites/sprite.hpp"
 #include "sprites/spritesheet.hpp"
+
+#include "scripting/scriptable.hpp"
+#include "scripting/scriptengine.hpp"

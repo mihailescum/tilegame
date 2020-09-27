@@ -1,6 +1,6 @@
 #include "entities/freeentity.hpp"
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 namespace engine
 {

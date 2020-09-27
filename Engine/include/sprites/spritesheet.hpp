@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdarg>
 #include <unordered_map>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"

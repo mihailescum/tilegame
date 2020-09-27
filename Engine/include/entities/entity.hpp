@@ -1,10 +1,12 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
+
+#include "scripting/scriptable.hpp"
 
 namespace engine
 {
-    class Entity
+    class Entity : public Scriptable
     {
     protected:
         glm::vec2 position;
@@ -28,15 +30,18 @@ namespace engine
             Down = 8
         };
 
-        friend MovingDirection operator|(const MovingDirection &a, const MovingDirection &b) {
+        friend MovingDirection operator|(const MovingDirection &a, const MovingDirection &b)
+        {
             return static_cast<MovingDirection>(static_cast<int>(a) | static_cast<int>(b));
         }
 
-        friend MovingDirection operator&(const MovingDirection &a, const MovingDirection &b) {
+        friend MovingDirection operator&(const MovingDirection &a, const MovingDirection &b)
+        {
             return static_cast<MovingDirection>(static_cast<int>(a) & static_cast<int>(b));
         }
 
-        friend MovingDirection &operator|=(MovingDirection &a, const MovingDirection &b) {
+        friend MovingDirection &operator|=(MovingDirection &a, const MovingDirection &b)
+        {
             a = a | b;
             return a;
         }

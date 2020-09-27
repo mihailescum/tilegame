@@ -2,7 +2,7 @@
 
 #include <string>
 #include <filesystem>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 #include "core/resourcemanager.hpp"
 #include "core/rectangle.hpp"

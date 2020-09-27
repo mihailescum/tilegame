@@ -4,9 +4,9 @@
 #include <fstream>
 #include <sstream>
 #include <cstdarg>
+#include <glm/ext.hpp>
 
 #include "core/log.hpp"
-#include "glm/ext.hpp"
 
 namespace engine
 {
