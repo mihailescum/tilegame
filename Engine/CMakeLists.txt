@@ -120,6 +120,9 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 # Include glad Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glad/include)
 
+#EnTT Header Files
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 
@@ -133,4 +136,3 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
 #tinyxml2
 find_package(tinyxml2)
 target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)
-
