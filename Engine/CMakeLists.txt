@@ -27,6 +27,11 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/map/objectlayer.cpp
 )
 
+set (SOURCES_ENGINE_SCENE
+        ${SOURCES_PATH}/scene/scene.cpp
+        ${SOURCES_PATH}/scene/entity.cpp
+)
+
 set (SOURCES_ENGINE_ENTITIES
         ${SOURCES_PATH}/entities/entity.cpp
         ${SOURCES_PATH}/entities/freeentity.cpp
@@ -75,6 +80,15 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/map/objectlayer.hpp
 )
 
+set (HEADER_ENGINE_SCENE
+        ${HEADER_PATH}/scene/scene.hpp
+        ${HEADER_PATH}/scene/entity.hpp
+        ${HEADER_PATH}/scene/tagcomponent.hpp
+        ${HEADER_PATH}/scene/positioncomponent.hpp
+        ${HEADER_PATH}/scene/movecomponent.hpp
+        ${HEADER_PATH}/scene/cameracomponent.hpp
+)
+
 set (HEADER_ENGINE_ENTITIES
         ${HEADER_PATH}/entities/entity.hpp
         ${HEADER_PATH}/entities/freeentity.hpp
@@ -100,11 +114,13 @@ add_library(${LIBRARY_NAME}
 
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_MAP}
+                ${SOURCES_ENGINE_SCENE}
                 ${SOURCES_ENGINE_ENTITIES}
                 ${SOURCES_ENGINE_SPRITES}
 
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_MAP}
+                ${HEADER_ENGINE_SCENE}
                 ${HEADER_ENGINE_ENTITIES}
                 ${HEADER_ENGINE_SPRITES}
 )
@@ -121,7 +137,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glad/include)
 
 #EnTT Header Files
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
 
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

@@ -24,7 +24,7 @@ add_custom_command(TARGET tilegame POST_BUILD
 # Include Project Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${HEADER_PATH})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/Engine/include)
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+target_include_directories(${EXECUTABLE_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
 
 # Link with Engine
 target_link_libraries(${EXECUTABLE_NAME} engine)
