@@ -21,32 +21,38 @@ namespace engine
 
         template<class Component, class... Args>
         Component &add(Args&&... args) const {
-            return scene->registry.emplace_or_replace<Component>(this->handle, args...);
+            return scene->getRegistry().emplace_or_replace<Component>(this->handle);
+        }
+
+        template<class Component, class... Func>
+        Component &patch(Func&&... func) const {
+            return scene->getRegistry().patch<Component>(this->handle, func...);
         }
 
         template<class... Components>
         void remove() const {
-            scene->registry.remove_if_exists<Components...>(this->handle);
+            scene->getRegistry().remove_if_exists<Components...>(this->handle);
         }
 
         template<class Component>
         Component &get() {
-            return scene->registry.get<Component>(this->handle);
+            return scene->getRegistry().get<Component>(this->handle);
         }
 
         template<class... Components>
         bool has() const {
-            return scene->registry.has<Components...>(this->handle);
+            return scene->getRegistry().has<Components...>(this->handle);
         }
 
         template<class... Components>
         bool any() const {
-            return scene->registry.any<Components...>(this->handle);
+            return scene->getRegistry().any<Components...>(this->handle);
         }
 
         void addTag(const std::string &tag);
         void removeTag();
 
 		operator bool() const { return this->handle != entt::null; }
+        operator entt::entity() const {return this->handle; }
     };
 } // namespace engine

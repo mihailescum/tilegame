@@ -6,7 +6,7 @@
 
 namespace engine
 {
-    class Entity : public Scriptable
+    /*class Entity : public Scriptable
     {
     protected:
         glm::vec2 position;
@@ -45,5 +45,5 @@ namespace engine
             a = a | b;
             return a;
         }
-    };
+    };*/
 } // namespace engine

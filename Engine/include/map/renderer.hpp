@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"
-#include "core/camera.hpp"
 
 #include "map/tilesetinfo.hpp"
 
@@ -21,7 +22,7 @@ namespace engine
     public:
         Renderer(const Map &map) : map(map) {}
         
-        void draw(SpriteBatch &spriteBatch, const Camera &camera) const;
+        void draw(SpriteBatch &spriteBatch, const glm::mat4 &transform) const;
         void initialize();
     };
 } // namespace engine

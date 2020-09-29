@@ -9,6 +9,7 @@ namespace engine
     struct Viewport
     {
     public:
+        Viewport() = default;
         Viewport(const int x, const int y, const int width, const int height) : x(x), y(y), width(width), height(height) {}
         Viewport(const Rectangle &rect) : Viewport(rect.x, rect.y, rect.width, rect.height) {}
         

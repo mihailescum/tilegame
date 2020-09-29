@@ -11,7 +11,6 @@ set (SOURCES_ENGINE_CORE
         ${SOURCES_PATH}/core/viewport.cpp
         ${SOURCES_PATH}/core/spritebatch.cpp
         ${SOURCES_PATH}/core/color.cpp
-        ${SOURCES_PATH}/core/camera.cpp
         ${SOURCES_PATH}/core/resource.cpp
         ${SOURCES_PATH}/core/resourcemanager.cpp
 )
@@ -30,23 +29,14 @@ set (SOURCES_ENGINE_MAP
 set (SOURCES_ENGINE_SCENE
         ${SOURCES_PATH}/scene/scene.cpp
         ${SOURCES_PATH}/scene/entity.cpp
-)
-
-set (SOURCES_ENGINE_ENTITIES
-        ${SOURCES_PATH}/entities/entity.cpp
-        ${SOURCES_PATH}/entities/freeentity.cpp
-        ${SOURCES_PATH}/entities/player.cpp
-        ${SOURCES_PATH}/entities/character.cpp
+        ${SOURCES_PATH}/scene/observer.cpp
+        ${SOURCES_PATH}/scene/components/positioncomponent.cpp
+        ${SOURCES_PATH}/scene/components/cameracomponent.cpp
 )
 
 set (SOURCES_ENGINE_SPRITES
         ${SOURCES_PATH}/sprites/sprite.cpp
         ${SOURCES_PATH}/sprites/spritesheet.cpp
-)
-
-set (SOURCES_ENGINE_SCRIPTING
-        ${SOURCES_PATH}/scripting/scriptable.cpp
-        ${SOURCES_PATH}/scripting/scriptengine.cpp
 )
 
 # Header Files
@@ -64,7 +54,6 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/rectangle.hpp
         ${HEADER_PATH}/core/spritebatch.hpp
         ${HEADER_PATH}/core/color.hpp
-        ${HEADER_PATH}/core/camera.hpp
         ${HEADER_PATH}/core/resource.hpp
         ${HEADER_PATH}/core/resourcemanager.hpp
 )
@@ -83,27 +72,17 @@ set (HEADER_ENGINE_MAP
 set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/scene.hpp
         ${HEADER_PATH}/scene/entity.hpp
-        ${HEADER_PATH}/scene/tagcomponent.hpp
-        ${HEADER_PATH}/scene/positioncomponent.hpp
-        ${HEADER_PATH}/scene/movecomponent.hpp
-        ${HEADER_PATH}/scene/cameracomponent.hpp
-)
-
-set (HEADER_ENGINE_ENTITIES
-        ${HEADER_PATH}/entities/entity.hpp
-        ${HEADER_PATH}/entities/freeentity.hpp
-        ${HEADER_PATH}/entities/player.hpp
-        ${HEADER_PATH}/entities/character.hpp
+        ${HEADER_PATH}/scene/observer.hpp
+        ${HEADER_PATH}/scene/components/childcomponent.hpp
+        ${HEADER_PATH}/scene/components/positioncomponent.hpp
+        ${HEADER_PATH}/scene/components/movecomponent.hpp
+        ${HEADER_PATH}/scene/components/cameracomponent.hpp
+        ${HEADER_PATH}/scene/components/tagcomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES
         ${HEADER_PATH}/sprites/sprite.hpp
         ${HEADER_PATH}/sprites/spritesheet.hpp
-)
-
-set (HEADER_ENGINE_SCRIPTING
-        ${HEADER_PATH}/scripting/scriptable.hpp
-        ${HEADER_PATH}/scripting/scriptengine.hpp
 )
 
 # Create Library
@@ -115,13 +94,11 @@ add_library(${LIBRARY_NAME}
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_MAP}
                 ${SOURCES_ENGINE_SCENE}
-                ${SOURCES_ENGINE_ENTITIES}
                 ${SOURCES_ENGINE_SPRITES}
 
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_MAP}
                 ${HEADER_ENGINE_SCENE}
-                ${HEADER_ENGINE_ENTITIES}
                 ${HEADER_ENGINE_SPRITES}
 )
 

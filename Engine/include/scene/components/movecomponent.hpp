@@ -30,7 +30,7 @@ namespace engine
             return a;
         }
 
-        MoveDirection direction{0};
+        MoveDirection direction;
         double speed;
 
         MoveComponent() = default;

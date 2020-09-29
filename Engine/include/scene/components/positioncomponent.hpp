@@ -6,12 +6,11 @@ namespace engine
 {
     struct PositionComponent
     {
-        glm::vec2 position{0.0};
+        glm::vec2 position;
 
-        PositionComponent() = default;
+        PositionComponent();
         PositionComponent(const PositionComponent &) = default;
-        PositionComponent(const glm::vec2 &position)
-            : position(position) {}
+        PositionComponent(const glm::vec2 &position);
 
         operator glm::vec2 &() { return this->position; }
         operator const glm::vec2 &() const { return this->position; }

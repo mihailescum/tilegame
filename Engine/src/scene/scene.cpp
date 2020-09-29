@@ -15,4 +15,6 @@ namespace engine
         Entity result(handle, this);
         return result;
     }
+
+    entt::registry &Scene::getRegistry() { return this->registry; }
 } // namespace engine

@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "world/map1.tmx",
+    "activeFile": "world/tileset1.tsx",
     "expandedProjectPaths": [
         "textures",
-        "sprites",
-        "world"
+        "world",
+        "sprites"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -16,11 +16,11 @@
             "scaleInEditor": 4
         },
         "world/map1.tmx": {
-            "scale": 2,
-            "selectedLayer": 1,
+            "scale": 0.75,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 174.5,
-                "y": 510.25
+                "x": 505.99999999999994,
+                "y": 336.66666666666663
             }
         },
         "world/tileset1.tsx": {
@@ -40,8 +40,8 @@
     "project": "test_project.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "world/tileset1.tsx",
         "world/map1.tmx",
+        "world/tileset1.tsx",
         "sprites/sprite_sheet.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

@@ -21,13 +21,14 @@
 #include "map/tilelayer.hpp"
 #include "map/objectlayer.hpp"
 
-#include "entities/entity.hpp"
-#include "entities/freeentity.hpp"
-#include "entities/player.hpp"
-#include "entities/character.hpp"
+#include "scene/scene.hpp"
+#include "scene/entity.hpp"
+#include "scene/observer.hpp"
+#include "scene/components/childcomponent.hpp"
+#include "scene/components/movecomponent.hpp"
+#include "scene/components/positioncomponent.hpp"
+#include "scene/components/tagcomponent.hpp"
+#include "scene/components/cameracomponent.hpp"
 
 #include "sprites/sprite.hpp"
 #include "sprites/spritesheet.hpp"
-
-#include "scripting/scriptable.hpp"
-#include "scripting/scriptengine.hpp"

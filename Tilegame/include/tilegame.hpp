@@ -24,6 +24,8 @@ namespace tilegame
         int frames = 0;
         int updates = 0;
         double timer = 0;
+
+        void updateCameras();
     };
 } // namespace tilegame
 
