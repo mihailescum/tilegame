@@ -2,14 +2,18 @@
 
 #include "entt.hpp"
 
+#include "core/game.hpp"
+
 namespace engine
 {
     class Entity;
     class Scene {
-        private:
+        protected:
             entt::registry registry;
+            Game &game;
+
         public:
-            Scene();
+            Scene(Game &game);
             const Entity createEntity();
             entt::registry &getRegistry();
 
@@ -17,5 +21,12 @@ namespace engine
             Component &getComponent(entt::entity entity) {
                 return this->registry.get<Component>(entity);
             }
+
+            virtual void initialize() {};
+            virtual void loadContent() {};
+            virtual void unloadContent() {};
+            virtual void processInput() {};
+            virtual void update(const double deltaTime) {};
+            virtual void draw() {};
     };
 }

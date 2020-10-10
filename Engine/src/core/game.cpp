@@ -77,17 +77,14 @@ namespace engine
         }
 
         this->resourceManager = std::make_unique<ResourceManager>();
-        this->spriteBatch = std::make_unique<SpriteBatch>(*this->graphicsDevice);
     }
 
     void Game::loadContent()
     {
-        this->spriteBatch->create();
     }
 
     void Game::unloadContent()
     {
-        this->spriteBatch.reset();
         this->resourceManager.reset();
         this->graphicsDevice.reset();
     }
@@ -98,5 +95,9 @@ namespace engine
         currentViewport.width = width;
         currentViewport.height = height;
         graphicsDevice->setViewport(currentViewport);
+    }
+
+    const GraphicsDevice *Game::getGraphicsDevice() const {
+        return this->graphicsDevice.get();
     }
 } // namespace engine

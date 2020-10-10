@@ -4,7 +4,7 @@
 
 namespace engine
 {
-    Scene::Scene()
+    Scene::Scene(Game &game) : game(game)
     {
         this->registry.create();
     }

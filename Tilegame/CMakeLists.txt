@@ -2,12 +2,16 @@
 set (SOURCES_PATH src)
 set (SOURCES_GAME
         ${SOURCES_PATH}/main.cpp 
-        ${SOURCES_PATH}/tilegame.cpp)
+        ${SOURCES_PATH}/tilegame.cpp
+        ${SOURCES_PATH}/worldscene.cpp
+)
         
 # Header Files
 set (HEADER_PATH include)
 set (HEADER_GAME
-        ${HEADER_PATH}/tilegame.hpp)
+        ${HEADER_PATH}/tilegame.hpp
+        ${HEADER_PATH}/worldscene.hpp
+)
  
 # Create Executable
 set(EXECUTABLE_NAME tilegame)

@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "core/graphicsdevice.hpp"
-#include "core/spritebatch.hpp"
 #include "core/window.hpp"
 #include "resourcemanager.hpp"
 
@@ -21,7 +20,6 @@ namespace engine
         std::unique_ptr<Window> window;
         std::unique_ptr<GraphicsDevice> graphicsDevice;
         std::unique_ptr<ResourceManager> resourceManager;
-        std::unique_ptr<SpriteBatch> spriteBatch;
         double timeStep;
 
         virtual void initialize();
@@ -36,6 +34,9 @@ namespace engine
         Game() {}
         Game(const Game &game) = delete;
         virtual ~Game();
+
+        const Window *getWindow() const;
+        const GraphicsDevice *getGraphicsDevice() const;
         
         void run();
     };
