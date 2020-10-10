@@ -5,8 +5,8 @@
     },
     "activeFile": "world/map1.tmx",
     "expandedProjectPaths": [
-        "textures",
         "sprites",
+        "textures",
         "world"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -16,11 +16,11 @@
             "scaleInEditor": 4
         },
         "world/map1.tmx": {
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 174.5,
-                "y": 510.25
+                "x": 477.5,
+                "y": 383.5
             }
         },
         "world/tileset1.tsx": {
