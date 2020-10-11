@@ -10,7 +10,7 @@
 #include "core/resource.hpp"
 
 #include "world/tilesetinfo.hpp"
-#include "world/tilelayer.hpp"
+#include "world/tilelayercomponent.hpp"
 
 namespace engine
 {

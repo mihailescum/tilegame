@@ -17,8 +17,7 @@
 #include "world/tile.hpp"
 #include "world/tileset.hpp"
 #include "world/tilesetinfo.hpp"
-#include "world/maplayer.hpp"
-#include "world/tilelayer.hpp"
+#include "world/tilelayercomponent.hpp"
 #include "world/objectlayer.hpp"
 
 #include "scene/scene.hpp"

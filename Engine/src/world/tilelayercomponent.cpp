@@ -1,19 +1,23 @@
-#include "world/tilelayer.hpp"
+#include "world/tilelayercomponent.hpp"
 
 #include <sstream>
 
 namespace engine
 {
-    void TileLayer::loadFromXMLElement(const tinyxml2::XMLElement *element)
+    TileLayerComponent::TileLayerComponent(const std::vector<unsigned> &data) : data(data) {}
+
+    TileLayerComponent TileLayerComponent::loadFromXMLElement(const tinyxml2::XMLElement *element)
     {
         const tinyxml2::XMLElement *dataElement = element->FirstChildElement("data");
         std::string data = dataElement->GetText();
 
-        this->parseCSV(data);
+        return TileLayerComponent::parseCSV(data);
     }
 
-    void TileLayer::parseCSV(const std::string &csv)
+    TileLayerComponent TileLayerComponent::parseCSV(const std::string &csv)
     {
+        std::vector<unsigned> data;
+
         std::istringstream ss(csv);
         for (std::string line; std::getline(ss, line);)
         {
@@ -35,10 +39,10 @@ namespace engine
                          FLIPPED_VERTICALLY_FLAG |
                          FLIPPED_DIAGONALLY_FLAG);
 
-                this->data.push_back(gid);
+                data.push_back(gid);
             }
         }
-    }
 
-    const std::vector<unsigned> &TileLayer::getData() const { return this->data; }
+        return TileLayerComponent(data);
+    }
 } // namespace engine

@@ -21,8 +21,7 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/world/tile.cpp
         ${SOURCES_PATH}/world/tileset.cpp
         ${SOURCES_PATH}/world/tilesetinfo.cpp
-        ${SOURCES_PATH}/world/maplayer.cpp
-        ${SOURCES_PATH}/world/tilelayer.cpp
+        ${SOURCES_PATH}/world/tilelayercomponent.cpp
         ${SOURCES_PATH}/world/objectlayer.cpp
 )
 
@@ -64,8 +63,7 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/world/tile.hpp
         ${HEADER_PATH}/world/tileset.hpp
         ${HEADER_PATH}/world/tilesetinfo.hpp
-        ${HEADER_PATH}/world/maplayer.hpp
-        ${HEADER_PATH}/world/tilelayer.hpp
+        ${HEADER_PATH}/world/tilelayercomponent.hpp
         ${HEADER_PATH}/world/objectlayer.hpp
 )
 
