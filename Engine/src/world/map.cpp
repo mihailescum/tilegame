@@ -1,13 +1,13 @@
-#include "map/map.hpp"
+#include "world/map.hpp"
 
 #include <cstdarg>
 #include <filesystem>
 #include <tinyxml2.h>
 
 #include "core/resourcemanager.hpp"
-#include "map/objectlayer.hpp"
+#include "world/objectlayer.hpp"
 
-#include "map/tileset.hpp"
+#include "world/tileset.hpp"
 
 namespace engine
 {

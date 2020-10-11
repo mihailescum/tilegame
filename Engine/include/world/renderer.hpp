@@ -5,7 +5,7 @@
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"
 
-#include "map/tilesetinfo.hpp"
+#include "world/tilesetinfo.hpp"
 
 namespace engine
 {

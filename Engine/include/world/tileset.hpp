@@ -8,7 +8,7 @@
 #include "core/resource.hpp"
 #include "core/texture2D.hpp"
 
-#include "map/tile.hpp"
+#include "world/tile.hpp"
 
 namespace engine
 {

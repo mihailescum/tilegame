@@ -1,5 +1,5 @@
-#include "map/renderer.hpp"
-#include "map/map.hpp"
+#include "world/renderer.hpp"
+#include "world/map.hpp"
 
 namespace engine
 {

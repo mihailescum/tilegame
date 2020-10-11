@@ -2,15 +2,18 @@
 
 #include "engine.hpp"
 
+#include "tilegame.hpp"
+
 namespace tilegame
 {
     class WorldScene : public engine::Scene
     {
     private:
-        std::unique_ptr<engine::SpriteBatch> spriteBatch;
+        std::unique_ptr<engine::Observer> cameraObserver;
+        engine::SpriteBatch &spriteBatch;
 
     public:
-        WorldScene(engine::Game &game);
+        WorldScene(Tilegame &game);
 
         virtual void initialize() override;
         virtual void loadContent() override;
@@ -18,5 +21,7 @@ namespace tilegame
         virtual void processInput() override;
         virtual void update(const double deltaTime) override;
         virtual void draw() override;
+
+        void updateCameras();
     };
 } // namespace tilegame

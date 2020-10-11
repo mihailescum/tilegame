@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "map/tileset.hpp"
+#include "world/tileset.hpp"
 
 namespace engine{
     struct TilesetInfo {

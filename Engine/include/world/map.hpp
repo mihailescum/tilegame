@@ -9,8 +9,8 @@
 
 #include "core/resource.hpp"
 
-#include "map/tilesetinfo.hpp"
-#include "map/tilelayer.hpp"
+#include "world/tilesetinfo.hpp"
+#include "world/tilelayer.hpp"
 
 namespace engine
 {

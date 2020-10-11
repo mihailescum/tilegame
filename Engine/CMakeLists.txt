@@ -16,14 +16,14 @@ set (SOURCES_ENGINE_CORE
 )
 
 set (SOURCES_ENGINE_MAP
-        ${SOURCES_PATH}/map/map.cpp
-        ${SOURCES_PATH}/map/renderer.cpp
-        ${SOURCES_PATH}/map/tile.cpp
-        ${SOURCES_PATH}/map/tileset.cpp
-        ${SOURCES_PATH}/map/tilesetinfo.cpp
-        ${SOURCES_PATH}/map/maplayer.cpp
-        ${SOURCES_PATH}/map/tilelayer.cpp
-        ${SOURCES_PATH}/map/objectlayer.cpp
+        ${SOURCES_PATH}/world/map.cpp
+        ${SOURCES_PATH}/world/renderer.cpp
+        ${SOURCES_PATH}/world/tile.cpp
+        ${SOURCES_PATH}/world/tileset.cpp
+        ${SOURCES_PATH}/world/tilesetinfo.cpp
+        ${SOURCES_PATH}/world/maplayer.cpp
+        ${SOURCES_PATH}/world/tilelayer.cpp
+        ${SOURCES_PATH}/world/objectlayer.cpp
 )
 
 set (SOURCES_ENGINE_SCENE
@@ -59,14 +59,14 @@ set (HEADER_ENGINE_CORE
 )
 
 set (HEADER_ENGINE_MAP
-        ${HEADER_PATH}/map/map.hpp
-        ${HEADER_PATH}/map/renderer.hpp
-        ${HEADER_PATH}/map/tile.hpp
-        ${HEADER_PATH}/map/tileset.hpp
-        ${HEADER_PATH}/map/tilesetinfo.hpp
-        ${HEADER_PATH}/map/maplayer.hpp
-        ${HEADER_PATH}/map/tilelayer.hpp
-        ${HEADER_PATH}/map/objectlayer.hpp
+        ${HEADER_PATH}/world/map.hpp
+        ${HEADER_PATH}/world/renderer.hpp
+        ${HEADER_PATH}/world/tile.hpp
+        ${HEADER_PATH}/world/tileset.hpp
+        ${HEADER_PATH}/world/tilesetinfo.hpp
+        ${HEADER_PATH}/world/maplayer.hpp
+        ${HEADER_PATH}/world/tilelayer.hpp
+        ${HEADER_PATH}/world/objectlayer.hpp
 )
 
 set (HEADER_ENGINE_SCENE

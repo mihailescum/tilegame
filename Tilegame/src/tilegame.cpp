@@ -18,6 +18,8 @@ namespace tilegame
     {
         Game::initialize();
 
+        this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
+
         //entity = std::make_unique<engine::FreeEntity>();
         //player = std::make_unique<engine::Player>(entity.get(), this->graphicsDevice->getViewport());
 
@@ -32,6 +34,7 @@ namespace tilegame
     {
         Game::loadContent();
 
+        this->spriteBatch->create();
         scene->loadContent();
 
         //playerCharacter = this->resourceManager->loadResource<engine::Character>("playerCharacter", "content/characters/player.chr");
@@ -40,6 +43,7 @@ namespace tilegame
     void Tilegame::unloadContent()
     {
         //map1Renderer.reset();
+        this->spriteBatch.reset();
         scene->unloadContent();
     }
 
@@ -85,5 +89,9 @@ namespace tilegame
         //spriteBatch->end();
 
         frames++;
+    }
+
+    engine::SpriteBatch *Tilegame::getSpriteBatch() const {
+        return this->spriteBatch.get();
     }
 } // namespace tilegame

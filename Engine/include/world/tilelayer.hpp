@@ -4,7 +4,7 @@
 #include <string>
 #include <tinyxml2.h>
 
-#include "map/maplayer.hpp"
+#include "world/maplayer.hpp"
 
 namespace engine
 {
