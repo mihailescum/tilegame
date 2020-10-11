@@ -100,4 +100,8 @@ namespace engine
     const GraphicsDevice *Game::getGraphicsDevice() const {
         return this->graphicsDevice.get();
     }
+
+    ResourceManager *Game::getResourceManager() const {
+        return this->resourceManager.get();
+    }
 } // namespace engine

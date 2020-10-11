@@ -5,8 +5,6 @@
 #include "core/spritebatch.hpp"
 #include "core/texture2D.hpp"
 
-#include "world/tilesetinfo.hpp"
-
 namespace engine
 {
     class Map;
@@ -15,7 +13,6 @@ namespace engine
     {
     private:
         const Map &map;
-        const TilesetInfo *tilesetInfo;
         unsigned mapWidth;
         unsigned mapHeight;
 

@@ -17,10 +17,9 @@ set (SOURCES_ENGINE_CORE
 
 set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/world/map.cpp
-        ${SOURCES_PATH}/world/renderer.cpp
+        ${SOURCES_PATH}/world/worldrendersystem.cpp
         ${SOURCES_PATH}/world/tile.cpp
         ${SOURCES_PATH}/world/tileset.cpp
-        ${SOURCES_PATH}/world/tilesetinfo.cpp
         ${SOURCES_PATH}/world/tilelayercomponent.cpp
         ${SOURCES_PATH}/world/objectlayer.cpp
 )
@@ -59,10 +58,10 @@ set (HEADER_ENGINE_CORE
 
 set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/world/map.hpp
-        ${HEADER_PATH}/world/renderer.hpp
+        ${HEADER_PATH}/world/worldrendersystem.hpp
         ${HEADER_PATH}/world/tile.hpp
         ${HEADER_PATH}/world/tileset.hpp
-        ${HEADER_PATH}/world/tilesetinfo.hpp
+        ${HEADER_PATH}/world/tilesetcomponent.hpp
         ${HEADER_PATH}/world/tilelayercomponent.hpp
         ${HEADER_PATH}/world/objectlayer.hpp
 )

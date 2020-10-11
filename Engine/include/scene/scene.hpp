@@ -14,6 +14,8 @@ namespace engine
 
         public:
             Scene(Game &game);
+            Scene(const Scene &scene) = delete;
+
             const Entity createEntity();
             entt::registry &getRegistry();
 

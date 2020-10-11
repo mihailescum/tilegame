@@ -4,17 +4,25 @@
 
 namespace engine
 {
-    TileLayerComponent::TileLayerComponent(const std::vector<unsigned> &data) : data(data) {}
+    TileLayerComponent::TileLayerComponent(const std::vector<unsigned> &data, const int widthInTiles, const int heightInTiles)
+        : data(data), widthInTiles(widthInTiles), heightInTiles(heightInTiles)
+    {
+    }
 
     TileLayerComponent TileLayerComponent::loadFromXMLElement(const tinyxml2::XMLElement *element)
     {
-        const tinyxml2::XMLElement *dataElement = element->FirstChildElement("data");
-        std::string data = dataElement->GetText();
+        const int widthInTiles = element->IntAttribute("width");
+        const int heightInTiles = element->IntAttribute("height");
 
-        return TileLayerComponent::parseCSV(data);
+        const tinyxml2::XMLElement *dataElement = element->FirstChildElement("data");
+        const std::string dataString = dataElement->GetText();
+
+        const std::vector<unsigned> data = TileLayerComponent::parseCSV(dataString);
+
+        return TileLayerComponent(data, widthInTiles, heightInTiles);
     }
 
-    TileLayerComponent TileLayerComponent::parseCSV(const std::string &csv)
+    std::vector<unsigned> TileLayerComponent::parseCSV(const std::string &csv)
     {
         std::vector<unsigned> data;
 
@@ -43,6 +51,6 @@ namespace engine
             }
         }
 
-        return TileLayerComponent(data);
+        return data;
     }
 } // namespace engine

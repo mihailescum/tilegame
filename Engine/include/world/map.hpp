@@ -8,8 +8,8 @@
 #include <tinyxml2.h>
 
 #include "core/resource.hpp"
-
-#include "world/tilesetinfo.hpp"
+#include "scene/entity.hpp"
+#include "world/tilesetcomponent.hpp"
 #include "world/tilelayercomponent.hpp"
 
 namespace engine
@@ -17,23 +17,20 @@ namespace engine
     class Map : public Resource
     {
     private:
-        TilesetInfo tilesetInfo;
         unsigned width;
         unsigned height;
-        std::vector<std::unique_ptr<TileLayer>> layers;
+        std::vector<Entity> layers;
 
-        void parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element);
+        TilesetComponent parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element);
 
     public:
         Map() {}
-        Map(const Map &map) = delete;
         
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
-        const TilesetInfo &getTilesetInfo() const;
         unsigned getWidth() const;
         unsigned getHeight() const;
-        const std::vector<std::unique_ptr<TileLayer>> &getLayers() const;
+        const std::vector<Entity> &getLayers() const;
     };
 } // namespace engine

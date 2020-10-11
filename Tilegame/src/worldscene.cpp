@@ -31,7 +31,7 @@ namespace tilegame
 
     void WorldScene::loadContent()
     {
-        //map1 = this->resourceManager->loadResource<engine::Map>("map1", "content/world/map1.tmx", "content/world/");
+        map1 = game.getResourceManager()->loadResource<engine::Map>("map1", "content/world/map1.tmx", this);
         //map1Renderer = std::make_unique<engine::Renderer>(*map1);
         //map1Renderer->initialize();
     }

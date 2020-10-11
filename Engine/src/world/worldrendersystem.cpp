@@ -1,18 +1,18 @@
-#include "world/renderer.hpp"
+#include "world/worldrendersystem.hpp"
 #include "world/map.hpp"
 
 namespace engine
 {
     void Renderer::initialize()
     {
-        this->tilesetInfo = &map.getTilesetInfo();
+        //this->tilesetInfo = &map.getTilesetInfo();
         this->mapWidth = map.getWidth();
         this->mapHeight = map.getHeight();
     }
 
     void Renderer::draw(SpriteBatch &spriteBatch, const glm::mat4 &transform) const
     {
-        spriteBatch.begin(transform, true);
+        /*spriteBatch.begin(transform, true);
 
         const Texture2D &texture = tilesetInfo->tileset->getTexture();
         unsigned firstGid = tilesetInfo->firstGid;
@@ -40,6 +40,6 @@ namespace engine
             }
         }
 
-        spriteBatch.end();
+        spriteBatch.end();*/
     }
 } // namespace engine

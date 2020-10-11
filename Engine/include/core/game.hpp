@@ -37,6 +37,7 @@ namespace engine
 
         const Window *getWindow() const;
         const GraphicsDevice *getGraphicsDevice() const;
+        ResourceManager *getResourceManager() const;
         
         void run();
     };
