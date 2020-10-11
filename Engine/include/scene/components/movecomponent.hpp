@@ -8,6 +8,7 @@ namespace engine
     {
         enum class MoveDirection
         {
+            None = 0,
             Left = 1,
             Right = 2,
             Up = 4,
@@ -27,6 +28,12 @@ namespace engine
         friend MoveDirection &operator|=(MoveDirection &a, const MoveDirection &b)
         {
             a = a | b;
+            return a;
+        }
+
+        friend MoveDirection &operator&=(MoveDirection &a, const MoveDirection &b)
+        {
+            a = a & b;
             return a;
         }
 

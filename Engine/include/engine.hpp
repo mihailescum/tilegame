@@ -29,6 +29,7 @@
 #include "scene/components/tagcomponent.hpp"
 #include "scene/components/cameracomponent.hpp"
 #include "scene/components/rendercomponent.hpp"
+#include "scene/components/inputcomponent.hpp"
 
 #include "sprites/sprite.hpp"
 #include "sprites/spritesheet.hpp"

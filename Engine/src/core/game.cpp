@@ -97,6 +97,10 @@ namespace engine
         graphicsDevice->setViewport(currentViewport);
     }
 
+    const Window *Game::getWindow() const {
+        return this->window.get();
+    }
+
     const GraphicsDevice *Game::getGraphicsDevice() const {
         return this->graphicsDevice.get();
     }

@@ -30,6 +30,7 @@ set (SOURCES_ENGINE_SCENE
         ${SOURCES_PATH}/scene/observer.cpp
         ${SOURCES_PATH}/scene/components/positioncomponent.cpp
         ${SOURCES_PATH}/scene/components/cameracomponent.cpp
+        ${SOURCES_PATH}/scene/components/inputcomponent.cpp
 )
 
 set (SOURCES_ENGINE_SPRITES
@@ -76,6 +77,7 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/cameracomponent.hpp
         ${HEADER_PATH}/scene/components/tagcomponent.hpp
         ${HEADER_PATH}/scene/components/rendercomponent.hpp
+        ${HEADER_PATH}/scene/components/inputcomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES

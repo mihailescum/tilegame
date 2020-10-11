@@ -49,9 +49,6 @@ namespace engine
             return scene->getRegistry().any<Components...>(this->handle);
         }
 
-        void addTag(const std::string &tag);
-        void removeTag();
-
 		operator bool() const { return this->handle != entt::null; }
         operator entt::entity() const {return this->handle; }
     };
