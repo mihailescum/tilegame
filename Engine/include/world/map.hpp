@@ -17,8 +17,10 @@ namespace engine
     class Map : public Resource
     {
     private:
-        unsigned width;
-        unsigned height;
+        int width;
+        int height;
+        int tileWidth;
+        int tileHeight;
         std::vector<Entity> layers;
 
         TilesetComponent parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element);

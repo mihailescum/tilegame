@@ -9,7 +9,7 @@
 namespace tilegame
 {
     engine::Map *map1;
-    std::unique_ptr<engine::Renderer> map1Renderer;
+    std::unique_ptr<engine::WorldRenderSystem> worldRenderSystem;
 
     WorldScene::WorldScene(Tilegame &game) : spriteBatch(*game.getSpriteBatch()), engine::Scene(game)
     {
@@ -32,8 +32,8 @@ namespace tilegame
     void WorldScene::loadContent()
     {
         map1 = game.getResourceManager()->loadResource<engine::Map>("map1", "content/world/map1.tmx", this);
-        //map1Renderer = std::make_unique<engine::Renderer>(*map1);
-        //map1Renderer->initialize();
+        worldRenderSystem = std::make_unique<engine::WorldRenderSystem>(*this);
+        worldRenderSystem->initialize();
     }
 
     void WorldScene::unloadContent()
@@ -74,7 +74,7 @@ namespace tilegame
 
             if (camera.viewport)
             {
-                //map1Renderer->draw(*spriteBatch, camera);
+                worldRenderSystem->draw(spriteBatch, camera);
             }
         }
     }

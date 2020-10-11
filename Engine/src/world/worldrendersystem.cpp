@@ -1,45 +1,61 @@
 #include "world/worldrendersystem.hpp"
+
+#include "core/texture2D.hpp"
+#include "scene/components/positioncomponent.hpp"
+#include "scene/components/rendercomponent.hpp"
 #include "world/map.hpp"
 
 namespace engine
 {
-    void Renderer::initialize()
+    void WorldRenderSystem::initialize()
     {
-        //this->tilesetInfo = &map.getTilesetInfo();
-        this->mapWidth = map.getWidth();
-        this->mapHeight = map.getHeight();
     }
 
-    void Renderer::draw(SpriteBatch &spriteBatch, const glm::mat4 &transform) const
+    void WorldRenderSystem::draw(SpriteBatch &spriteBatch, const CameraComponent &camera) const
     {
-        /*spriteBatch.begin(transform, true);
+        registry.sort<RenderComponent>([](const auto &lhs, const auto &rhs) {
+            return lhs.z < rhs.z;
+        });
+        auto drawables = registry.view<RenderComponent, PositionComponent>();
 
-        const Texture2D &texture = tilesetInfo->tileset->getTexture();
-        unsigned firstGid = tilesetInfo->firstGid;
-
-        for (const auto &layer : map.getLayers())
+        spriteBatch.begin(camera, true);
+        for (auto entity : drawables)
         {
-            for (unsigned y = 0; y < this->mapHeight; y++)
+            // Todo: Do frustum culling here
+            if (registry.has<TilesetComponent, TileLayerComponent>(entity))
             {
-                for (unsigned x = 0; x < this->mapWidth; x++)
-                {
-                    unsigned index = x + y * this->mapWidth;
-                    unsigned gid = layer->getData()[index];
-                    if (gid < firstGid)
-                        continue;
-
-                    const Rectangle &sourceRect = this->tilesetInfo->tileset->getTile(gid - firstGid).sourceRect;
-                    Rectangle destinationRect(
-                        x * this->tilesetInfo->tileset->getTileWidth(),
-                        y * this->tilesetInfo->tileset->getTileHeight(),
-                        this->tilesetInfo->tileset->getTileWidth(),
-                        this->tilesetInfo->tileset->getTileHeight());
-
-                    spriteBatch.draw(texture, destinationRect, &sourceRect, Color::White);
-                }
+                this->drawTileLayer(spriteBatch, entity);
             }
         }
+        spriteBatch.end();
+    }
 
-        spriteBatch.end();*/
+    void WorldRenderSystem::drawTileLayer(SpriteBatch &spriteBatch, const entt::entity &entity) const
+    {
+        const auto [tileset, tileLayer, position] = registry.get<TilesetComponent, TileLayerComponent, PositionComponent>(entity);
+
+        const Texture2D &texture = tileset.tileset->getTexture();
+        unsigned firstGid = tileset.firstGid;
+
+        for (int y = 0; y < tileLayer.heightInTiles; y++)
+        {
+            for (int x = 0; x < tileLayer.widthInTiles; x++)
+            {
+                unsigned index = x + y * tileLayer.widthInTiles;
+                unsigned gid = tileLayer.data[index];
+
+                if (gid < firstGid)
+                    continue;
+
+                const Rectangle &sourceRect = tileset.tileset->getTile(gid - firstGid).sourceRect;
+                Rectangle destinationRect(
+                    position.x() + x * tileset.tileset->getTileWidth(),
+                    position.y() + y * tileset.tileset->getTileHeight(),
+                    tileset.tileset->getTileWidth(),
+                    tileset.tileset->getTileHeight());
+
+                spriteBatch.draw(texture, destinationRect, &sourceRect, Color::White);
+            }
+        }
     }
 } // namespace engine

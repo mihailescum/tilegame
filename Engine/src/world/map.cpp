@@ -3,9 +3,12 @@
 #include <cstdarg>
 #include <filesystem>
 #include <tinyxml2.h>
+#include <glm/glm.hpp>
 
 #include "core/resourcemanager.hpp"
 #include "scene/scene.hpp"
+#include "scene/components/positioncomponent.hpp"
+#include "scene/components/rendercomponent.hpp"
 #include "world/objectlayer.hpp"
 #include "world/tileset.hpp"
 #include "world/tilesetcomponent.hpp"
@@ -24,6 +27,8 @@ namespace engine
         const tinyxml2::XMLElement *root = doc.FirstChildElement();
         this->width = root->UnsignedAttribute("width");
         this->height = root->UnsignedAttribute("height");
+        this->tileWidth = root->UnsignedAttribute("tilewidth");
+        this->tileHeight = root->UnsignedAttribute("tileheight");
 
         // TODO: Add support for multiple tilesets through an entt::hirarchy model
         TilesetComponent tilesetComponent;
@@ -33,7 +38,7 @@ namespace engine
         while (element)
         {
             std::string value = element->Value();
-            if (value == "tileset") 
+            if (value == "tileset")
             {
                 tilesetComponent = this->parseTilesetElement(resourceManager, element);
             }
@@ -54,10 +59,15 @@ namespace engine
             element = element->NextSiblingElement();
         }
 
-        // After having created all tile layer components, we add a tileset component to them
+        // We set the z value of a layer n to 1-1/2^n, so that we have an increasing sequence bounded betwenn 0 and 1
+        double q = 1;
         for (Entity tileLayer : this->layers)
         {
+            // After having created all tile layer components, we add a tileset component to them
             tileLayer.add<TilesetComponent>(tilesetComponent);
+            tileLayer.add<PositionComponent>(glm::vec2(0.0));
+            tileLayer.add<RenderComponent>(this->width * this->tileWidth, this->height * this->tileHeight, 1 - q);
+            q *= 0.5;
         }
 
         return true;

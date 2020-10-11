@@ -21,7 +21,7 @@ namespace engine
 
         template<class Component, class... Args>
         Component &add(Args&&... args) const {
-            return scene->getRegistry().emplace_or_replace<Component>(this->handle);
+            return scene->getRegistry().emplace_or_replace<Component>(this->handle, args...);
         }
 
         template<class Component, class... Func>

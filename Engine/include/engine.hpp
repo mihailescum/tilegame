@@ -13,7 +13,7 @@
 #include "core/window.hpp"
 
 #include "world/map.hpp"
-#include "world/renderer.hpp"
+#include "world/worldrendersystem.hpp"
 #include "world/tile.hpp"
 #include "world/tileset.hpp"
 #include "world/tilesetcomponent.hpp"
@@ -28,6 +28,7 @@
 #include "scene/components/positioncomponent.hpp"
 #include "scene/components/tagcomponent.hpp"
 #include "scene/components/cameracomponent.hpp"
+#include "scene/components/rendercomponent.hpp"
 
 #include "sprites/sprite.hpp"
 #include "sprites/spritesheet.hpp"

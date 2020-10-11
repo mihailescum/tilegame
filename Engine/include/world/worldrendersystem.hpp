@@ -1,25 +1,24 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "entt.hpp"
 
 #include "core/spritebatch.hpp"
-#include "core/texture2D.hpp"
+#include "scene/scene.hpp"
+#include "scene/components/cameracomponent.hpp"
 
 namespace engine
 {
-    class Map;
-
-    class Renderer
+    class WorldRenderSystem
     {
     private:
-        const Map &map;
-        unsigned mapWidth;
-        unsigned mapHeight;
+        entt::registry &registry;
+
+        void drawTileLayer(SpriteBatch &spriteBatch, const entt::entity &entity) const;
 
     public:
-        Renderer(const Map &map) : map(map) {}
-        
-        void draw(SpriteBatch &spriteBatch, const glm::mat4 &transform) const;
+        WorldRenderSystem(Scene &scene) : registry(scene.getRegistry()) {}
+
+        void draw(SpriteBatch &spriteBatch, const CameraComponent &camera) const;
         void initialize();
     };
 } // namespace engine

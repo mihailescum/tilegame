@@ -75,6 +75,7 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/movecomponent.hpp
         ${HEADER_PATH}/scene/components/cameracomponent.hpp
         ${HEADER_PATH}/scene/components/tagcomponent.hpp
+        ${HEADER_PATH}/scene/components/rendercomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES
