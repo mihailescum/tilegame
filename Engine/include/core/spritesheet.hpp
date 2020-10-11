@@ -8,8 +8,7 @@
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"
 #include "core/texture2D.hpp"
-
-#include "sprites/sprite.hpp"
+#include "core/spriteinfo.hpp"
 
 namespace engine
 {
@@ -23,7 +22,7 @@ namespace engine
         int rows;
         int columns;
 
-        std::unordered_map<int, std::unique_ptr<Sprite>> sprites;
+        std::unordered_map<int, std::unique_ptr<SpriteInfo>> sprites;
 
         void createSprites(const tinyxml2::XMLElement *spritesElement);
         void createSpriteInformation(const tinyxml2::XMLElement *rootElement);
@@ -36,6 +35,10 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override {}
 
-        Sprite *getSprite(const int spriteId) const;
+        const Texture2D *getTexture() const;
+        const int getFrameWidth() const;
+        const int getFrameHeight() const;
+
+        const SpriteInfo &getSpriteInfo(const int spriteId) const;
     };
 } // namespace engine

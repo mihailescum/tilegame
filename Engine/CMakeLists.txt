@@ -13,6 +13,8 @@ set (SOURCES_ENGINE_CORE
         ${SOURCES_PATH}/core/color.cpp
         ${SOURCES_PATH}/core/resource.cpp
         ${SOURCES_PATH}/core/resourcemanager.cpp
+        ${SOURCES_PATH}/core/spritesheet.cpp
+        ${SOURCES_PATH}/core/spriteinfo.cpp
 )
 
 set (SOURCES_ENGINE_MAP
@@ -31,11 +33,12 @@ set (SOURCES_ENGINE_SCENE
         ${SOURCES_PATH}/scene/components/positioncomponent.cpp
         ${SOURCES_PATH}/scene/components/cameracomponent.cpp
         ${SOURCES_PATH}/scene/components/inputcomponent.cpp
+        ${SOURCES_PATH}/scene/components/spritecomponent.cpp
+        ${SOURCES_PATH}/scene/components/spritesheetcomponent.cpp
 )
 
 set (SOURCES_ENGINE_SPRITES
         ${SOURCES_PATH}/sprites/sprite.cpp
-        ${SOURCES_PATH}/sprites/spritesheet.cpp
 )
 
 # Header Files
@@ -55,6 +58,8 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/color.hpp
         ${HEADER_PATH}/core/resource.hpp
         ${HEADER_PATH}/core/resourcemanager.hpp
+        ${HEADER_PATH}/core/spritesheet.hpp
+        ${HEADER_PATH}/core/spriteinfo.hpp
 )
 
 set (HEADER_ENGINE_MAP
@@ -78,11 +83,12 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/tagcomponent.hpp
         ${HEADER_PATH}/scene/components/rendercomponent.hpp
         ${HEADER_PATH}/scene/components/inputcomponent.hpp
+        ${HEADER_PATH}/scene/components/spritecomponent.hpp
+        ${HEADER_PATH}/scene/components/spritesheetcomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES
         ${HEADER_PATH}/sprites/sprite.hpp
-        ${HEADER_PATH}/sprites/spritesheet.hpp
 )
 
 # Create Library

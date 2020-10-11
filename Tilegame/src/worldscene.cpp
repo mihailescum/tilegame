@@ -10,6 +10,7 @@ namespace tilegame
 {
     engine::Map *map1;
     std::unique_ptr<engine::WorldRenderSystem> worldRenderSystem;
+    engine::Entity playerEntity;
 
     WorldScene::WorldScene(Tilegame &game) : spriteBatch(*game.getSpriteBatch()), engine::Scene(game)
     {
@@ -20,9 +21,9 @@ namespace tilegame
         this->cameraObserver = std::make_unique<engine::Observer>(this->registry);
         this->cameraObserver->connectOnUpdate<engine::PositionComponent, engine::CameraComponent>();
 
-        engine::Entity playerEntity = this->createEntity();
+        playerEntity = this->createEntity();
         playerEntity.add<engine::InputComponent>(std::vector<int>{GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN});
-        playerEntity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128);
+        playerEntity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128.0);
         playerEntity.add<engine::PositionComponent>();
         engine::CameraComponent &cameraComponent = playerEntity.add<engine::CameraComponent>();
         cameraComponent.viewport = &game.getGraphicsDevice()->getViewport();
@@ -34,6 +35,13 @@ namespace tilegame
         map1 = game.getResourceManager()->loadResource<engine::Map>("map1", "content/world/map1.tmx", this);
         worldRenderSystem = std::make_unique<engine::WorldRenderSystem>(*this);
         worldRenderSystem->initialize();
+
+        engine::SpriteSheet *sheet = game.getResourceManager()->loadResource<engine::SpriteSheet>("sheet1", "content/sprites/sprite_sheet.tsx");
+        engine::SpriteComponent &spriteComp = playerEntity.add<engine::SpriteComponent>(sheet->getTexture(), engine::Rectangle());
+        engine::SpriteSheetComponent &spriteSheetComp = playerEntity.add<engine::SpriteSheetComponent>(sheet, 0, "LEFT", 0);
+        playerEntity.add<engine::RenderComponent>(sheet->getFrameWidth(), sheet->getFrameHeight(), 1.0);
+
+        spriteComp.sourceRectangle = spriteSheetComp.spriteSheet->getSpriteInfo(spriteSheetComp.spriteId).spriteStates.at(spriteSheetComp.currentState)[spriteSheetComp.currentFrame];
     }
 
     void WorldScene::unloadContent()
@@ -123,10 +131,9 @@ namespace tilegame
 
             float scale = 1.0f;
             camera.transform = glm::scale(glm::mat4(1.0), glm::vec3(scale));
-
             glm::vec3 translate(
-                -floor(position.position.x * scale) / scale,
-                -floor(position.position.y * scale) / scale,
+                floor(-(position.x() - camera.viewport->width / 2) * scale) / scale,
+                floor(-(position.y() - camera.viewport->height / 2) * scale) / scale,
                 0.0);
             camera.transform = glm::translate(camera.transform, translate);
         }

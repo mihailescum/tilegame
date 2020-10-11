@@ -14,6 +14,7 @@ namespace engine
         entt::registry &registry;
 
         void drawTileLayer(SpriteBatch &spriteBatch, const entt::entity &entity) const;
+        void drawSprite(SpriteBatch &spriteBatch, const entt::entity &entity) const;
 
     public:
         WorldRenderSystem(Scene &scene) : registry(scene.getRegistry()) {}

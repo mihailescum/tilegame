@@ -11,6 +11,8 @@
 #include "core/texture2D.hpp"
 #include "core/viewport.hpp"
 #include "core/window.hpp"
+#include "core/spritesheet.hpp"
+#include "core/spriteinfo.hpp"
 
 #include "world/map.hpp"
 #include "world/worldrendersystem.hpp"
@@ -30,6 +32,5 @@
 #include "scene/components/cameracomponent.hpp"
 #include "scene/components/rendercomponent.hpp"
 #include "scene/components/inputcomponent.hpp"
-
-#include "sprites/sprite.hpp"
-#include "sprites/spritesheet.hpp"
+#include "scene/components/spritecomponent.hpp"
+#include "scene/components/spritesheetcomponent.hpp"

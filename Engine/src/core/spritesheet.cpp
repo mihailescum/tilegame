@@ -1,4 +1,4 @@
-#include "sprites/spritesheet.hpp"
+#include "core/spritesheet.hpp"
 
 #include <filesystem>
 #include <string>
@@ -51,7 +51,7 @@ namespace engine
 
                 propertyElement = propertyElement->NextSiblingElement();
             }
-            std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>(id, defaultState, *this->texture, this->frameWidth, this->frameHeight, this->columns, this->rows);
+            std::unique_ptr<SpriteInfo> sprite = std::make_unique<SpriteInfo>(id);
             this->sprites.emplace(id, std::move(sprite));
 
             spriteElement = spriteElement->NextSiblingElement();
@@ -87,15 +87,23 @@ namespace engine
                     propertyElement = propertyElement->NextSiblingElement();
                 }
 
-                this->sprites[spriteId]->addSpriteState(state, frameId);
+                Rectangle frameSourceRect(
+                    (frameId % this->columns) * this->frameWidth,
+                    (frameId / this->columns) * this->frameHeight,
+                    this->frameWidth,
+                    this->frameHeight);
+                this->sprites[spriteId]->addSpriteState(state, frameSourceRect);
             }
 
             spriteInfoElement = spriteInfoElement->NextSiblingElement();
         }
     }
 
-    Sprite *SpriteSheet::getSprite(const int spriteId) const
-    {
-        return this->sprites.at(spriteId).get();
+    const Texture2D *SpriteSheet::getTexture() const { return this->texture; }
+    const int SpriteSheet::getFrameWidth() const { return this->frameWidth; }
+    const int SpriteSheet::getFrameHeight() const { return this->frameHeight; }
+
+    const SpriteInfo &SpriteSheet::getSpriteInfo(const int spriteId) const {
+        return *this->sprites.at(spriteId).get();
     }
 } // namespace engine

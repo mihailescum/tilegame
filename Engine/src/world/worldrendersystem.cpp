@@ -3,7 +3,12 @@
 #include "core/texture2D.hpp"
 #include "scene/components/positioncomponent.hpp"
 #include "scene/components/rendercomponent.hpp"
-#include "world/map.hpp"
+#include "scene/components/spritecomponent.hpp"
+#include "scene/components/spritesheetcomponent.hpp"
+#include "world/tilelayercomponent.hpp"
+#include "world/tilesetcomponent.hpp"
+
+#include "core/log.hpp"
 
 namespace engine
 {
@@ -16,7 +21,7 @@ namespace engine
         registry.sort<RenderComponent>([](const auto &lhs, const auto &rhs) {
             return lhs.z < rhs.z;
         });
-        auto drawables = registry.view<RenderComponent, PositionComponent>();
+        auto drawables = this->registry.view<RenderComponent, PositionComponent>();
 
         spriteBatch.begin(camera, true);
         for (auto entity : drawables)
@@ -26,13 +31,17 @@ namespace engine
             {
                 this->drawTileLayer(spriteBatch, entity);
             }
+            if (registry.has<SpriteComponent, SpriteSheetComponent>(entity))
+            {
+                this->drawSprite(spriteBatch, entity);
+            }
         }
         spriteBatch.end();
     }
 
     void WorldRenderSystem::drawTileLayer(SpriteBatch &spriteBatch, const entt::entity &entity) const
     {
-        const auto [tileset, tileLayer, position] = registry.get<TilesetComponent, TileLayerComponent, PositionComponent>(entity);
+        const auto [tileset, tileLayer, position] = this->registry.get<TilesetComponent, TileLayerComponent, PositionComponent>(entity);
 
         const Texture2D &texture = tileset.tileset->getTexture();
         unsigned firstGid = tileset.firstGid;
@@ -57,5 +66,19 @@ namespace engine
                 spriteBatch.draw(texture, destinationRect, &sourceRect, Color::White);
             }
         }
+    }
+
+    // Draws sprite centered around center of the source rectangle
+    void WorldRenderSystem::drawSprite(SpriteBatch &spriteBatch, const entt::entity &entity) const
+    {
+        const auto [sprite, position] = this->registry.get<SpriteComponent, PositionComponent>(entity);
+
+        const Rectangle &sourceRect = sprite.sourceRectangle;
+        Rectangle destinationRect(
+            floor(position.x() - sourceRect.width / 2),
+            floor(position.y() - sourceRect.height / 2),
+            sourceRect.width,
+            sourceRect.height);
+        spriteBatch.draw(*sprite.texture, destinationRect, &sourceRect, Color::White);
     }
 } // namespace engine
