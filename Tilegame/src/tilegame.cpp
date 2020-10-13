@@ -20,9 +20,6 @@ namespace tilegame
 
         this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
 
-        //entity = std::make_unique<engine::FreeEntity>();
-        //player = std::make_unique<engine::Player>(entity.get(), this->graphicsDevice->getViewport());
-
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
 
@@ -36,15 +33,12 @@ namespace tilegame
 
         this->spriteBatch->create();
         scene->loadContent();
-
-        //playerCharacter = this->resourceManager->loadResource<engine::Character>("playerCharacter", "content/characters/player.chr");
     }
 
     void Tilegame::unloadContent()
     {
-        //map1Renderer.reset();
-        this->spriteBatch.reset();
         scene->unloadContent();
+        this->spriteBatch.reset();
     }
 
     void Tilegame::processInput()
@@ -64,7 +58,7 @@ namespace tilegame
             timer--;
             std::stringstream ss;
             ss << "FPS: " << frames << " - UPS: " << updates;
-            //window->setTitle(ss.str());
+            window->setTitle(ss.str());
             updates = 0, frames = 0;
         }
     }
@@ -74,10 +68,6 @@ namespace tilegame
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
         scene->draw();
-
-        //spriteBatch->begin(player->getCamera().getTransform(), true);
-        //playerCharacter->draw(*spriteBatch);
-        //spriteBatch->end();
 
         frames++;
     }

@@ -55,13 +55,6 @@ namespace tilegame::worldscene
     void WorldScene::loadContent()
     {
         contentSystem->loadContent();
-
-        engine::SpriteSheet *sheet = game.getResourceManager()->loadResource<engine::SpriteSheet>("sheet1", "content/sprites/sprite_sheet.tsx");
-        engine::SpriteComponent &spriteComp = playerEntity.add<engine::SpriteComponent>(sheet->getTexture(), engine::Rectangle());
-        engine::SpriteSheetComponent &spriteSheetComp = playerEntity.add<engine::SpriteSheetComponent>(sheet, 0, "LEFT", 0);
-        playerEntity.add<engine::RenderComponent>(sheet->getFrameWidth(), sheet->getFrameHeight(), 1.0);
-
-        spriteComp.sourceRectangle = spriteSheetComp.spriteSheet->getSpriteInfo(spriteSheetComp.spriteId).spriteStates.at(spriteSheetComp.currentState)[spriteSheetComp.currentFrame];
     }
 
     void WorldScene::unloadContent()
@@ -84,4 +77,4 @@ namespace tilegame::worldscene
     {
         renderSystem->draw();
     }
-} // namespace tilegame
+} // namespace tilegame::worldscene

@@ -21,6 +21,7 @@
 #include "world/tilesetcomponent.hpp"
 #include "world/tilelayercomponent.hpp"
 #include "world/objectlayer.hpp"
+#include "world/character.hpp"
 
 #include "scene/scene.hpp"
 #include "scene/entity.hpp"

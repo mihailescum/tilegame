@@ -24,6 +24,7 @@ set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/world/tile.cpp
         ${SOURCES_PATH}/world/tilelayercomponent.cpp
         ${SOURCES_PATH}/world/objectlayer.cpp
+        ${SOURCES_PATH}/world/character.cpp
 )
 
 set (SOURCES_ENGINE_SCENE
@@ -69,6 +70,7 @@ set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/world/tilelayercomponent.hpp
         ${HEADER_PATH}/world/tilesetcomponent.hpp
         ${HEADER_PATH}/world/objectlayer.hpp
+        ${HEADER_PATH}/world/character.hpp
 )
 
 set (HEADER_ENGINE_SCENE
@@ -123,6 +125,9 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/External
 
 # stb_image Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/stb_image/include)
+
+# nlohmann/json Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/json/include)
 
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

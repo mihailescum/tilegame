@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<character id="0">
-  <properties>
-    <property name="sprite_id" value="0" />
-    <property name="sprite_sheet" value="../sprites/sprite_sheet.tsx" />
-  </properties>
-</character>

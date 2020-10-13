@@ -10,7 +10,10 @@ namespace tilegame::worldscene
         engine::Scene &scene;
         engine::ResourceManager &resourceManager;
 
-        void createMapEntities(engine::Map &map) const;
+        void loadCharacters() const;
+
+        void createMapEntity(engine::Map &map) const;
+        void createCharacterEntity(engine::Character &character) const;
 
     public:
         ContentSystem(engine::Scene &scene, engine::ResourceManager &resourceManager) : scene(scene), resourceManager(resourceManager) {}

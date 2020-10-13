@@ -12,7 +12,6 @@ namespace engine
         doc.LoadFile(this->resourcePath.c_str());
 
         const tinyxml2::XMLElement *root = doc.FirstChildElement();
-        this->setResourceName(root->Attribute("name"));
         this->frameWidth = root->IntAttribute("tilewidth");
         this->frameHeight = root->IntAttribute("tileheight");
         this->frameCount = root->UnsignedAttribute("tilecount");

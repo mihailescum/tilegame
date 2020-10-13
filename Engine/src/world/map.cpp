@@ -30,7 +30,7 @@ namespace engine
             std::string value = element->Value();
             if (value == "tileset")
             {
-                std::pair<const Tileset*, const int> tileset = this->parseTilesetElement(element, resourceManager);
+                std::pair<const Tileset *, const int> tileset = this->parseTilesetElement(element, resourceManager);
                 if (tileset.first)
                     tilesets.push_back(tileset);
                 else
@@ -55,23 +55,12 @@ namespace engine
             element = element->NextSiblingElement();
         }
 
-        // We set the z value of a layer n to 1-1/2^n, so that we have an increasing sequence bounded betwenn 0 and 1
-        /*double q = 1;
-        for (Entity tileLayer : this->layers)
-        {
-            // After having created all tile layer components, we add a tileset component to them
-            tileLayer.add<TilesetComponent>(tilesetComponent);
-            tileLayer.add<PositionComponent>(glm::vec2(0.0));
-            tileLayer.add<RenderComponent>(this->width * this->tileWidth, this->height * this->tileHeight, 1 - q);
-            q *= 0.5;
-        }*/
-
         return true;
     }
 
     void Map::unloadResource() {}
 
-    std::pair<const Tileset*, const int> Map::parseTilesetElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager)
+    std::pair<const Tileset *, const int> Map::parseTilesetElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager)
     {
         int firstGid = element->UnsignedAttribute("firstgid");
 
@@ -84,7 +73,8 @@ namespace engine
 
     std::unique_ptr<const TileLayer> Map::parseTileLayerElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager)
     {
-        std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();;
+        std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
+        ;
         bool result = layer->loadFromXMLElement(element);
 
         if (result)
@@ -97,6 +87,6 @@ namespace engine
     int Map::getHeight() const { return this->height; }
     int Map::getTileWidth() const { return this->tileWidth; }
     int Map::getTileHeight() const { return this->tileHeight; }
-    const std::vector<std::pair<const Tileset*, const int>> &Map::getTilesets() const { return this->tilesets; }
+    const std::vector<std::pair<const Tileset *, const int>> &Map::getTilesets() const { return this->tilesets; }
     const std::vector<std::unique_ptr<const TileLayer>> &Map::getLayers() const { return this->layers; }
 } // namespace engine
