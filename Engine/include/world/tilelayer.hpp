@@ -22,5 +22,6 @@ namespace engine
         TileLayer(const TileLayer &layer) = default;
 
         bool loadFromXMLElement(const tinyxml2::XMLElement *element);
+        const std::vector<unsigned> &getData() const;
     };
 } // namespace engine

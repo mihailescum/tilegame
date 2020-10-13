@@ -33,8 +33,10 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
-        unsigned getWidth() const;
-        unsigned getHeight() const;
+        int getWidth() const;
+        int getHeight() const;
+        int getTileWidth() const;
+        int getTileHeight() const;
         const std::vector<std::pair<const Tileset*, const int>> &getTilesets() const;
         const std::vector<std::unique_ptr<const TileLayer>> &getLayers() const;
     };

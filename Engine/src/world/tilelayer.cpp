@@ -44,4 +44,9 @@ namespace engine
 
         return data;
     }
+
+    const std::vector<unsigned> &TileLayer::getData() const
+    {
+        return this->data;
+    }
 } // namespace engine

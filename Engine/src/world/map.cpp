@@ -93,8 +93,10 @@ namespace engine
             return nullptr;
     }
 
-    unsigned Map::getWidth() const { return this->width; }
-    unsigned Map::getHeight() const { return this->height; }
+    int Map::getWidth() const { return this->width; }
+    int Map::getHeight() const { return this->height; }
+    int Map::getTileWidth() const { return this->tileWidth; }
+    int Map::getTileHeight() const { return this->tileHeight; }
     const std::vector<std::pair<const Tileset*, const int>> &Map::getTilesets() const { return this->tilesets; }
     const std::vector<std::unique_ptr<const TileLayer>> &Map::getLayers() const { return this->layers; }
 } // namespace engine
