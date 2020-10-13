@@ -9,6 +9,7 @@
 #include "worldscene/inputsystem.hpp"
 #include "worldscene/camerasystem.hpp"
 #include "worldscene/movementsystem.hpp"
+#include "worldscene/rendersystem.hpp"
 
 namespace tilegame::worldscene
 {
@@ -23,7 +24,7 @@ namespace tilegame::worldscene
         std::unique_ptr<InputSystem> inputSystem;
         std::unique_ptr<CameraSystem> cameraSystem;
         std::unique_ptr<MovementSystem> movementSystem;
-        std::unique_ptr<engine::WorldRenderSystem> worldRenderSystem;
+        std::unique_ptr<RenderSystem> renderSystem;
 
         void createSystems();
 

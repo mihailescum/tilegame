@@ -7,6 +7,11 @@
 #include "engine.hpp"
 
 #include "tilegame.hpp"
+#include "worldscene/contentsystem.hpp"
+#include "worldscene/inputsystem.hpp"
+#include "worldscene/camerasystem.hpp"
+#include "worldscene/movementsystem.hpp"
+#include "worldscene/rendersystem.hpp"
 
 namespace tilegame::worldscene
 {
@@ -43,8 +48,8 @@ namespace tilegame::worldscene
         this->movementSystem = std::make_unique<MovementSystem>(*this);
         this->movementSystem->initialize();
 
-        this->worldRenderSystem = std::make_unique<engine::WorldRenderSystem>(*this);
-        this->worldRenderSystem->initialize();
+        this->renderSystem = std::make_unique<RenderSystem>(*this, this->spriteBatch);
+        this->renderSystem->initialize();
     }
 
     void WorldScene::loadContent()
@@ -77,15 +82,6 @@ namespace tilegame::worldscene
 
     void WorldScene::draw()
     {
-        auto cameras = this->registry.view<engine::CameraComponent>();
-        for (auto entity : cameras)
-        {
-            const engine::CameraComponent &camera = cameras.get(entity);
-
-            if (camera.viewport)
-            {
-                worldRenderSystem->draw(spriteBatch, camera);
-            }
-        }
+        renderSystem->draw();
     }
 } // namespace tilegame
