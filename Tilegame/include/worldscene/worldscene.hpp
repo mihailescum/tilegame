@@ -5,18 +5,27 @@
 #include "engine.hpp"
 
 #include "tilegame.hpp"
+#include "worldscene/contentsystem.hpp"
+#include "worldscene/inputsystem.hpp"
+#include "worldscene/camerasystem.hpp"
+#include "worldscene/movementsystem.hpp"
 
-namespace tilegame
+namespace tilegame::worldscene
 {
+    //class Tilegame;
+
     class WorldScene : public engine::Scene
     {
     private:
-        std::unique_ptr<engine::Observer> cameraObserver;
         engine::SpriteBatch &spriteBatch;
 
-        void updateCameras();
-        void updateMovables(const double deltaTime);
-        void handlePlayerInput(const entt::entity &entity, int key, const std::pair<bool, bool> keyPressed);
+        std::unique_ptr<ContentSystem> contentSystem;
+        std::unique_ptr<InputSystem> inputSystem;
+        std::unique_ptr<CameraSystem> cameraSystem;
+        std::unique_ptr<MovementSystem> movementSystem;
+        std::unique_ptr<engine::WorldRenderSystem> worldRenderSystem;
+
+        void createSystems();
 
     public:
         WorldScene(Tilegame &game);

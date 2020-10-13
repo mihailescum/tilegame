@@ -8,11 +8,11 @@
 
 #include "engine.hpp"
 
-#include "worldscene.hpp"
+#include "worldscene/worldscene.hpp"
 
 namespace tilegame
 {
-    std::unique_ptr<WorldScene> scene;
+    std::unique_ptr<worldscene::WorldScene> scene;
 
     void Tilegame::initialize()
     {
@@ -26,7 +26,7 @@ namespace tilegame
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
 
-        scene = std::make_unique<WorldScene>(*this);
+        scene = std::make_unique<worldscene::WorldScene>(*this);
         scene->initialize();
     }
 

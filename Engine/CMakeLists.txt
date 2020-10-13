@@ -19,9 +19,10 @@ set (SOURCES_ENGINE_CORE
 
 set (SOURCES_ENGINE_MAP
         ${SOURCES_PATH}/world/map.cpp
-        ${SOURCES_PATH}/world/worldrendersystem.cpp
-        ${SOURCES_PATH}/world/tile.cpp
+        ${SOURCES_PATH}/world/tilelayer.cpp
         ${SOURCES_PATH}/world/tileset.cpp
+        ${SOURCES_PATH}/world/tile.cpp
+        ${SOURCES_PATH}/world/worldrendersystem.cpp
         ${SOURCES_PATH}/world/tilelayercomponent.cpp
         ${SOURCES_PATH}/world/objectlayer.cpp
 )
@@ -49,7 +50,6 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/window.hpp
         ${HEADER_PATH}/core/shader.hpp
         ${HEADER_PATH}/core/texture2D.hpp
-        ${HEADER_PATH}/core/stb_image.hpp
         ${HEADER_PATH}/core/log.hpp
         ${HEADER_PATH}/core/graphicsdevice.hpp
         ${HEADER_PATH}/core/viewport.hpp
@@ -64,11 +64,12 @@ set (HEADER_ENGINE_CORE
 
 set (HEADER_ENGINE_MAP
         ${HEADER_PATH}/world/map.hpp
-        ${HEADER_PATH}/world/worldrendersystem.hpp
-        ${HEADER_PATH}/world/tile.hpp
+        ${HEADER_PATH}/world/tilelayer.hpp
         ${HEADER_PATH}/world/tileset.hpp
-        ${HEADER_PATH}/world/tilesetcomponent.hpp
+        ${HEADER_PATH}/world/tile.hpp
+        ${HEADER_PATH}/world/worldrendersystem.hpp
         ${HEADER_PATH}/world/tilelayercomponent.hpp
+        ${HEADER_PATH}/world/tilesetcomponent.hpp
         ${HEADER_PATH}/world/objectlayer.hpp
 )
 
@@ -121,6 +122,9 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/External
 
 #EnTT Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+
+# stb_image Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/stb_image/include)
 
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

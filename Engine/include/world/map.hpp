@@ -1,16 +1,16 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <vector>
-#include <cstdarg>
 #include <filesystem>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 #include <tinyxml2.h>
 
 #include "core/resource.hpp"
 #include "scene/entity.hpp"
-#include "world/tilesetcomponent.hpp"
-#include "world/tilelayercomponent.hpp"
+#include "world/tilelayer.hpp"
+#include "world/tileset.hpp"
 
 namespace engine
 {
@@ -21,9 +21,11 @@ namespace engine
         int height;
         int tileWidth;
         int tileHeight;
-        std::vector<Entity> layers;
+        std::vector<std::unique_ptr<const TileLayer>> layers;
+        std::vector<std::pair<const Tileset*, const int>> tilesets;
 
-        TilesetComponent parseTilesetElement(ResourceManager &resourceManager, const tinyxml2::XMLElement *element);
+        std::pair<const Tileset*, const int> parseTilesetElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager);
+        std::unique_ptr<const TileLayer> parseTileLayerElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager);
 
     public:
         Map() {}
@@ -33,6 +35,7 @@ namespace engine
 
         unsigned getWidth() const;
         unsigned getHeight() const;
-        const std::vector<Entity> &getLayers() const;
+        const std::vector<std::pair<const Tileset*, const int>> &getTilesets() const;
+        const std::vector<std::unique_ptr<const TileLayer>> &getLayers() const;
     };
 } // namespace engine
