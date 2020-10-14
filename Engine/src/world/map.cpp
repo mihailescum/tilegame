@@ -2,57 +2,101 @@
 
 #include <cstdarg>
 #include <filesystem>
-#include <tinyxml2.h>
+#include <fstream>
 #include <glm/glm.hpp>
+#include <sstream>
 
 #include "core/resourcemanager.hpp"
+#include "core/log.hpp"
 #include "world/objectlayer.hpp"
 #include "world/tileset.hpp"
 
 namespace engine
 {
+    const std::unique_ptr<nlohmann::json> Map::loadJsonDocument() const
+    {
+        std::unique_ptr<nlohmann::json> result = std::make_unique<nlohmann::json>();
+
+        std::ifstream fileStream(this->resourcePath, std::ifstream::in);
+        if (!fileStream.is_open())
+        {
+            return nullptr;
+        }
+        else
+        {
+            fileStream >> *result;
+        }
+        return result;
+    }
+
     bool Map::loadResource(ResourceManager &resourceManager, va_list args)
     {
-        tinyxml2::XMLDocument doc;
-        doc.LoadFile(this->resourcePath.c_str());
-
-        // Root element
-        const tinyxml2::XMLElement *root = doc.FirstChildElement();
-        this->width = root->UnsignedAttribute("width");
-        this->height = root->UnsignedAttribute("height");
-        this->tileWidth = root->UnsignedAttribute("tilewidth");
-        this->tileHeight = root->UnsignedAttribute("tileheight");
-
-        // All other nodes
-        const tinyxml2::XMLElement *element = root->FirstChildElement();
-        while (element)
+        std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
+        if (!jsonDocument)
         {
-            std::string value = element->Value();
-            if (value == "tileset")
+            Log::e("File could not be loaded (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->width = jsonDocument->value("width", 0);
+        if (this->width <= 0)
+        {
+            Log::e("Map width (", this->width, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->height = jsonDocument->value("height", 0);
+        if (this->height <= 0)
+        {
+            Log::e("Map height (", this->height, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->tileWidth = jsonDocument->value("tilewidth", 0);
+        if (this->tileWidth <= 0)
+        {
+            Log::e("Tile width (", this->tileWidth, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->tileHeight = jsonDocument->value("tileheight", 0);
+        if (this->tileHeight <= 0)
+        {
+            Log::e("Tile hidth (", this->tileHeight, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        nlohmann::json tilesetsDocument = jsonDocument->at("tilesets");
+        for (nlohmann::json tilesetDocument : tilesetsDocument)
+        {
+            std::pair<const Tileset *, const int> tileset = this->parseTilesetDocument(tilesetDocument, resourceManager);
+            if (tileset.first)
+                tilesets.push_back(tileset);
+            else
+                return false;
+        }
+        if (this->tilesets.empty())
+        {
+            Log::w("No tilesets loaded (file: ", this->resourcePath, ").");
+        }
+
+        nlohmann::json layersDocument = jsonDocument->at("layers");
+        for (nlohmann::json layerDocument : layersDocument)
+        {
+            std::string layertype = layerDocument.at("type");
+
+            if (layertype == "tilelayer")
             {
-                std::pair<const Tileset *, const int> tileset = this->parseTilesetElement(element, resourceManager);
-                if (tileset.first)
-                    tilesets.push_back(tileset);
-                else
-                    return false;
-            }
-            else if (value == "layer")
-            {
-                std::unique_ptr<const TileLayer> layer = this->parseTileLayerElement(element, resourceManager);
+                std::unique_ptr<const TileLayer> layer = this->parseTileLayerDocument(layerDocument, resourceManager);
                 if (layer)
                     layers.push_back(std::move(layer));
                 else
                     return false;
             }
-            else if (value == "objectgroup")
-            {
-                //std::unique_ptr<ObjectLayer> layer = std::make_unique<ObjectLayer>();
-                //layer->loadFromXMLElement(element);
-
-                //layers.push_back(std::move(layer));
-            }
-
-            element = element->NextSiblingElement();
+        }
+        if (this->layers.empty())
+        {
+            Log::w("No tile layers loaded (file: ", this->resourcePath, ").");
         }
 
         return true;
@@ -60,22 +104,26 @@ namespace engine
 
     void Map::unloadResource() {}
 
-    std::pair<const Tileset *, const int> Map::parseTilesetElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager)
+    std::pair<const Tileset *, const int> Map::parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager)
     {
-        int firstGid = element->UnsignedAttribute("firstgid");
+        int firstGid = document.value("firstgid", 0);
+        if (firstGid <= 0)
+            return {nullptr, 0};
 
-        std::string tilesetSource = element->Attribute("source");
+        std::string tilesetSource = document.value("source", "");
+        if (tilesetSource.empty())
+            return {nullptr, 0};
+
         std::filesystem::path tilesetPath = std::filesystem::canonical(this->resourcePath.parent_path() / tilesetSource);
         const Tileset *tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetPath);
 
         return {tileset, firstGid};
     }
 
-    std::unique_ptr<const TileLayer> Map::parseTileLayerElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager)
+    std::unique_ptr<const TileLayer> Map::parseTileLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager)
     {
         std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
-        ;
-        bool result = layer->loadFromXMLElement(element);
+        bool result = layer->loadFromJsonDocument(document);
 
         if (result)
             return layer;

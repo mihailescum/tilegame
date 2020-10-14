@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <cstdarg>
+#include "nlohmann/json.hpp"
 
 #include "core/resource.hpp"
 #include "core/texture2D.hpp"
@@ -24,6 +25,8 @@ namespace engine
         unsigned columns;
         unsigned rows;
         Texture2D *texture;
+
+        const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
 
     public:
         Tileset() {}

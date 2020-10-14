@@ -1,10 +1,11 @@
 #include "core/log.hpp"
 
+#include <cstdarg>
 #include <iostream>
 
 namespace engine
 {
-    void Log::d(std::string message)
+    /*void Log::d(const char* msg, ...)
     {
         std::cout << "[DEBUG] " << message << std::endl;
     }
@@ -17,5 +18,5 @@ namespace engine
     void Log::l(std::string message)
     {
         std::cout << "[LOG] " << message << std::endl;
-    }
+    }*/
 } // namespace engine

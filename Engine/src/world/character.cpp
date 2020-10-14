@@ -9,29 +9,35 @@
 
 namespace engine
 {
+    const std::unique_ptr<nlohmann::json> Character::loadJsonDocument() const
+    {
+        std::unique_ptr<nlohmann::json> result = std::make_unique<nlohmann::json>();
+
+        std::ifstream fileStream(this->resourcePath, std::ifstream::in);
+        if (!fileStream.is_open())
+        {
+            std::stringstream ss;
+            ss << "File could not be loaded (file: " << this->resourcePath << ")." << std::endl;
+            Log::e(ss.str());
+            return nullptr;
+        }
+        else
+        {
+            fileStream >> *result;
+        }
+        return result;
+    }
+
     bool Character::loadResource(ResourceManager &resourceManager, va_list args)
     {
-        nlohmann::json data;
-
-        {
-            std::ifstream fileStream(this->resourcePath, std::ifstream::in);
-            if (!fileStream.is_open())
-            {
-                std::stringstream ss;
-                ss << "File could not be loaded (file: " << this->resourcePath << ")." << std::endl;
-                Log::e(ss.str());
-                return false;
-            }
-            else
-            {
-                fileStream >> data;
-            }
-        }
+        std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
+        if (!jsonDocument)
+            return false;
 
         this->id = va_arg(args, const char *);
 
-        int spriteId = data.value("sprite_id", 0);
-        std::string spriteSheetSource = data.value("sprite_sheet", "");
+        int spriteId = jsonDocument->value("sprite_id", 0);
+        std::string spriteSheetSource = jsonDocument->value("sprite_sheet", "");
         if (spriteSheetSource.empty())
         {
             std::stringstream ss;

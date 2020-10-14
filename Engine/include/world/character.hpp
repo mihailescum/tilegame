@@ -1,5 +1,10 @@
 #pragma once
 
+#include <cstdarg>
+#include <memory>
+#include <string>
+#include "nlohmann/json.hpp"
+
 #include "core/resource.hpp"
 #include "core/spritesheet.hpp"
 #include "core/spriteinfo.hpp"
@@ -12,6 +17,8 @@ namespace engine
         std::string id;
         const SpriteSheet *spriteSheet;
         const SpriteInfo *spriteInfo;
+
+        const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
 
     public:
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;

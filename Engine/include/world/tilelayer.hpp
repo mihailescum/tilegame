@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <tinyxml2.h>
+#include "nlohmann/json.hpp"
 
 namespace engine
 {
@@ -15,13 +15,13 @@ namespace engine
 
         std::vector<unsigned> data;
 
-        std::vector<unsigned> parseCSV(const std::string &csv);
+        std::vector<unsigned> parseVector(const std::vector<unsigned> &data);
 
     public:
         TileLayer() = default;
         TileLayer(const TileLayer &layer) = default;
 
-        bool loadFromXMLElement(const tinyxml2::XMLElement *element);
+        bool loadFromJsonDocument(const nlohmann::json &document);
         const std::vector<unsigned> &getData() const;
     };
 } // namespace engine

@@ -5,7 +5,8 @@
 
 namespace engine
 {
-    Window::Window(const int width, const int height) : windowWidth(width), windowHeight(height) {
+    Window::Window(const int width, const int height) : windowWidth(width), windowHeight(height)
+    {
     }
 
     bool Window::isResizable()
@@ -55,15 +56,14 @@ namespace engine
         }
     }
 
-    void Window::setPosition(const int x, const int y) {
+    void Window::setPosition(const int x, const int y)
+    {
         glfwSetWindowPos(this->glfwWindow, 700, 400);
     }
 
     void errorCallback(int error, const char *description)
     {
-        std::stringstream msg;
-        msg << "GLFW error " << error << ": " << description << std::endl;
-        Log::e(msg.str());
+        Log::e("GLFW error ", error, ": ", description);
     }
 
     void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -77,9 +77,7 @@ namespace engine
         int glfwInitRes = glfwInit();
         if (!glfwInitRes)
         {
-            std::stringstream msg;
-            msg << "Unable to initialize GLFW." << std::endl;
-            Log::e(msg.str());
+            Log::e("Unable to initialize GLFW.");
         }
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -91,9 +89,7 @@ namespace engine
         this->glfwWindow = glfwCreateWindow(windowWidth, windowHeight, "InitGL", nullptr, nullptr);
         if (!this->glfwWindow)
         {
-            std::stringstream msg;
-            msg << "Unable to create GLFW window" << std::endl;
-            Log::e(msg.str());
+            Log::e("Unable to create GLFW window");
 
             glfwTerminate();
             this->glfwWindow = nullptr;
@@ -123,7 +119,8 @@ namespace engine
             return glfwWindowShouldClose(this->glfwWindow);
     }
 
-    bool Window::isKeyPressed(int keyCode) const {
+    bool Window::isKeyPressed(int keyCode) const
+    {
         return glfwGetKey(this->glfwWindow, keyCode);
     }
 

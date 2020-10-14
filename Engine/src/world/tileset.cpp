@@ -2,29 +2,79 @@
 
 #include <string>
 #include <filesystem>
-#include <tinyxml2.h>
+#include <fstream>
+#include "nlohmann/json.hpp"
 
 #include "core/resourcemanager.hpp"
+#include "core/log.hpp"
 
 namespace engine
 {
-    void Tileset::unloadResource() { }
+    void Tileset::unloadResource() {}
+
+    const std::unique_ptr<nlohmann::json> Tileset::loadJsonDocument() const
+    {
+        std::unique_ptr<nlohmann::json> result = std::make_unique<nlohmann::json>();
+
+        std::ifstream fileStream(this->resourcePath, std::ifstream::in);
+        if (!fileStream.is_open())
+        {
+            return nullptr;
+        }
+        else
+        {
+            fileStream >> *result;
+        }
+        return result;
+    }
 
     bool Tileset::loadResource(ResourceManager &resourceManager, va_list args)
     {
-        tinyxml2::XMLDocument doc;
-        doc.LoadFile(this->resourcePath.c_str());
+        std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
+        if (!jsonDocument)
+        {
+            Log::e("File could not be loaded (file: ", this->resourcePath, ").");
+            return false;
+        }
 
-        const tinyxml2::XMLElement *root = doc.FirstChildElement();
-        this->name = root->Attribute("name");
-        this->tileWidth = root->UnsignedAttribute("tilewidth");
-        this->tileHeight = root->UnsignedAttribute("tileheight");
-        this->tileCount = root->UnsignedAttribute("tilecount");
-        this->columns = root->UnsignedAttribute("columns");
+        this->name = jsonDocument->value("name", "");
+        this->tileWidth = jsonDocument->value("tilewidth", 0);
+        if (this->tileWidth <= 0)
+        {
+            Log::e("Tile width (", this->tileWidth, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->tileHeight = jsonDocument->value("tileheight", 0);
+        if (this->tileHeight <= 0)
+        {
+            Log::e("Tile height (", this->tileHeight, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->tileCount = jsonDocument->value("tilecount", 0);
+        if (this->tileCount <= 0)
+        {
+            Log::e("Tile count (", this->tileCount, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->columns = jsonDocument->value("columns", 0);
+        if (this->columns <= 0)
+        {
+            Log::e("Number of columns (", this->columns, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
         this->rows = this->tileCount / this->columns;
+;
+        std::string imageSource = jsonDocument->value("image", "");
+        if (imageSource.empty())
+        {
+            Log::e("Image (", imageSource, ") has to be a valid path (file: ", this->resourcePath, ").");
+            return false;
+        }
 
-        const tinyxml2::XMLElement *image = root->FirstChildElement("image");
-        std::string imageSource = image->Attribute("source");
         std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
 
         this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath, true);

@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <tinyxml2.h>
+#include "nlohmann/json.hpp"
 
 #include "core/resource.hpp"
 #include "scene/entity.hpp"
@@ -24,8 +24,9 @@ namespace engine
         std::vector<std::unique_ptr<const TileLayer>> layers;
         std::vector<std::pair<const Tileset*, const int>> tilesets;
 
-        std::pair<const Tileset*, const int> parseTilesetElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager);
-        std::unique_ptr<const TileLayer> parseTileLayerElement(const tinyxml2::XMLElement *element, ResourceManager &resourceManager);
+        const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
+        std::pair<const Tileset*, const int> parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager);
+        std::unique_ptr<const TileLayer> parseTileLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager);
 
     public:
         Map() {}

@@ -4,45 +4,34 @@
 
 namespace engine
 {
-    bool TileLayer::loadFromXMLElement(const tinyxml2::XMLElement *element)
+    bool TileLayer::loadFromJsonDocument(const nlohmann::json &document)
     {
-        const tinyxml2::XMLElement *dataElement = element->FirstChildElement("data");
-        const std::string dataString = dataElement->GetText();
-        this->data = this->parseCSV(dataString);
+        std::vector<unsigned> data = document.value<std::vector<unsigned>>("data", {});
+        if (data.empty())
+            return false;
+
+        this->data = this->parseVector(data);
 
         return true;
     }
 
-    std::vector<unsigned> TileLayer::parseCSV(const std::string &csv)
+    std::vector<unsigned> TileLayer::parseVector(const std::vector<unsigned> &data)
     {
-        std::vector<unsigned> data;
+        std::vector<unsigned> result;
 
-        std::istringstream ss(csv);
-        for (std::string line; std::getline(ss, line);)
+        for (unsigned gid : data)
         {
-            if (line.empty())
-                continue;
+            bool flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
+            bool flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
+            bool flipped_diagonally = (gid & FLIPPED_DIAGONALLY_FLAG);
+            gid &= ~(FLIPPED_HORIZONTALLY_FLAG |
+                     FLIPPED_VERTICALLY_FLAG |
+                     FLIPPED_DIAGONALLY_FLAG);
 
-            std::istringstream liness(line);
-            for (std::string cell; std::getline(liness, cell, ',');)
-            {
-                if (cell.empty())
-                    continue;
-
-                int gid = std::stoi(cell);
-
-                bool flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
-                bool flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
-                bool flipped_diagonally = (gid & FLIPPED_DIAGONALLY_FLAG);
-                gid &= ~(FLIPPED_HORIZONTALLY_FLAG |
-                         FLIPPED_VERTICALLY_FLAG |
-                         FLIPPED_DIAGONALLY_FLAG);
-
-                data.push_back(gid);
-            }
+            result.push_back(gid);
         }
 
-        return data;
+        return result;
     }
 
     const std::vector<unsigned> &TileLayer::getData() const

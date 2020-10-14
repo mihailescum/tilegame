@@ -14,7 +14,7 @@ namespace tilegame::worldscene
     {
         this->loadCharacters();
 
-        engine::Map *map1 = resourceManager.loadResource<engine::Map>("map1", "content/world/map1.tmx", this);
+        engine::Map *map1 = resourceManager.loadResource<engine::Map>("map1", "content/world/map1.json", this);
         this->createMapEntity(*map1);
     }
 

@@ -16,9 +16,7 @@ namespace engine
         int gladInitRes = gladLoadGL();
         if (!gladInitRes)
         {
-            std::stringstream error;
-            error << "Unable to initialize glad" << std::endl;
-            Log::e(error.str());
+            Log::e("Unable to initialize glad");
             return 0;
         }
 

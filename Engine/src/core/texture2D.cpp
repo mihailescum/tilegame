@@ -46,9 +46,7 @@ namespace engine
         }
         else
         {
-            std::stringstream error;
-            error << "Failed to load texture. FILE: " << this->resourcePath;
-            Log::e(error.str());
+            Log::e("Failed to load texture. FILE: ", this->resourcePath);
             return false;
         }
 
