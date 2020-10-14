@@ -9,7 +9,7 @@ namespace engine
         this->registry.create();
     }
 
-    const Entity Scene::createEntity()
+    Entity Scene::createEntity()
     {
         entt::entity handle = this->registry.create();
         Entity result(handle, this);
@@ -17,4 +17,5 @@ namespace engine
     }
 
     entt::registry &Scene::getRegistry() { return this->registry; }
+    const Game &Scene::getGame() const { return this->game; }
 } // namespace engine

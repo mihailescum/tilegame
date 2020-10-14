@@ -24,14 +24,6 @@ namespace tilegame::worldscene
     void WorldScene::initialize()
     {
         this->createSystems();
-
-        playerEntity = this->createEntity();
-        playerEntity.add<engine::InputComponent>(std::vector<int>{GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN});
-        playerEntity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128.0);
-        playerEntity.add<engine::PositionComponent>();
-        engine::CameraComponent &cameraComponent = playerEntity.add<engine::CameraComponent>();
-        cameraComponent.viewport = &game.getGraphicsDevice()->getViewport();
-        this->registry.patch<engine::PositionComponent>(playerEntity, [](auto &pos) { pos.position = glm::vec2(0.0); });
     }
 
     void WorldScene::createSystems()

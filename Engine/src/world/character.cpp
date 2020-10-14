@@ -28,7 +28,7 @@ namespace engine
             }
         }
 
-        this->id = va_arg(args, int);
+        this->id = va_arg(args, const char *);
 
         int spriteId = data.value("sprite_id", 0);
         std::string spriteSheetSource = data.value("sprite_sheet", "");
@@ -46,7 +46,7 @@ namespace engine
         return true;
     }
 
-    int Character::getId() const { return this->id; }
+    const std::string &Character::getId() const { return this->id; }
     const SpriteSheet *Character::getSpriteSheet() const { return this->spriteSheet; }
     const SpriteInfo *Character::getSpriteInfo() const { return this->spriteInfo; }
 

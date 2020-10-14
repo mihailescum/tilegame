@@ -16,13 +16,15 @@ namespace engine
             Scene(Game &game);
             Scene(const Scene &scene) = delete;
 
-            const Entity createEntity();
+            Entity createEntity();
             entt::registry &getRegistry();
 
             template<class Component>
             Component &getComponent(entt::entity entity) {
                 return this->registry.get<Component>(entity);
             }
+
+            const Game &getGame() const;
 
             virtual void initialize() {};
             virtual void loadContent() {};

@@ -9,7 +9,7 @@ namespace engine
     class Character : public Resource
     {
     private:
-        int id;
+        std::string id;
         const SpriteSheet *spriteSheet;
         const SpriteInfo *spriteInfo;
 
@@ -17,7 +17,7 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override {}
 
-        int getId() const;
+        const std::string &getId() const;
         const SpriteSheet *getSpriteSheet() const;
         const SpriteInfo *getSpriteInfo() const;
     };

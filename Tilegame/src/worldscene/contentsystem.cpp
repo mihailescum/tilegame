@@ -63,19 +63,48 @@ namespace tilegame::worldscene
 
         for (auto characterData : data.at("characters"))
         {
-            int id = characterData.value("id", -1);
             std::string characterSource = characterData.value("file", "");
+            std::string characterId;
+            if (characterData.at("id").type() == nlohmann::json::value_t::string)
+            {
+                characterId = characterData.value("id", "");
+            }
+            else if (characterData.at("id").type() == nlohmann::json::value_t::number_integer || characterData.at("id").type() == nlohmann::json::value_t::number_unsigned)
+            {
+                int intId = characterData.value("id", -1);
+                characterId = (intId == -1) ? "" : std::to_string(intId);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "Id of character '" << characterSource << "'must be string or unsigned int (file: " << charactersPath << ")." << std::endl;
+                engine::Log::e(ss.str());
+                continue;
+            }
 
             std::filesystem::path characterPath = std::filesystem::canonical(charactersPath.parent_path() / characterSource);
-            engine::Character *character = resourceManager.loadResource<engine::Character>("", characterPath, 0);
+            engine::Character *character = resourceManager.loadResource<engine::Character>("", characterPath, characterId.c_str());
             if (character)
             {
-                this->createCharacterEntity(*character);
+                engine::Entity entity = this->createCharacterEntity(*character);
+
+                // TODO move this to startup script
+
+                // If the entity is the player, we assign the necessary components
+                if (character->getId() == "0")
+                {
+                    entity.add<engine::InputComponent>(std::vector<int>{GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN});
+                    entity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128.0);
+                    entity.add<engine::PositionComponent>();
+                    engine::CameraComponent &cameraComponent = entity.add<engine::CameraComponent>();
+                    cameraComponent.viewport = &scene.getGame().getGraphicsDevice()->getViewport();
+                    this->scene.getRegistry().patch<engine::PositionComponent>(entity, [](auto &pos) { pos.position = glm::vec2(0.0); });
+                }
             }
         }
     }
 
-    void ContentSystem::createCharacterEntity(engine::Character &character) const
+    engine::Entity ContentSystem::createCharacterEntity(engine::Character &character) const
     {
         engine::Entity entity = scene.createEntity();
         engine::SpriteComponent &spriteComponent = entity.add<engine::SpriteComponent>(character.getSpriteSheet()->getTexture(), engine::Rectangle());
@@ -84,5 +113,6 @@ namespace tilegame::worldscene
 
         const engine::SpriteInfo *spriteInfo = character.getSpriteInfo();
         spriteComponent.sourceRectangle = spriteInfo->spriteStates.at(spriteSheetComponent.currentState)[spriteSheetComponent.currentFrame];
+        return entity;
     }
 } // namespace tilegame::worldscene
