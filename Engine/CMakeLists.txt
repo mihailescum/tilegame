@@ -11,37 +11,35 @@ set (SOURCES_ENGINE_CORE
         ${SOURCES_PATH}/core/viewport.cpp
         ${SOURCES_PATH}/core/spritebatch.cpp
         ${SOURCES_PATH}/core/color.cpp
-        ${SOURCES_PATH}/core/camera.cpp
         ${SOURCES_PATH}/core/resource.cpp
         ${SOURCES_PATH}/core/resourcemanager.cpp
+        ${SOURCES_PATH}/core/spritesheet.cpp
+        ${SOURCES_PATH}/core/spriteinfo.cpp
 )
 
 set (SOURCES_ENGINE_MAP
-        ${SOURCES_PATH}/map/map.cpp
-        ${SOURCES_PATH}/map/renderer.cpp
-        ${SOURCES_PATH}/map/tile.cpp
-        ${SOURCES_PATH}/map/tileset.cpp
-        ${SOURCES_PATH}/map/tilesetinfo.cpp
-        ${SOURCES_PATH}/map/maplayer.cpp
-        ${SOURCES_PATH}/map/tilelayer.cpp
-        ${SOURCES_PATH}/map/objectlayer.cpp
+        ${SOURCES_PATH}/world/map.cpp
+        ${SOURCES_PATH}/world/tilelayer.cpp
+        ${SOURCES_PATH}/world/tileset.cpp
+        ${SOURCES_PATH}/world/tile.cpp
+        ${SOURCES_PATH}/world/tilelayercomponent.cpp
+        ${SOURCES_PATH}/world/objectlayer.cpp
+        ${SOURCES_PATH}/world/character.cpp
 )
 
-set (SOURCES_ENGINE_ENTITIES
-        ${SOURCES_PATH}/entities/entity.cpp
-        ${SOURCES_PATH}/entities/freeentity.cpp
-        ${SOURCES_PATH}/entities/player.cpp
-        ${SOURCES_PATH}/entities/character.cpp
+set (SOURCES_ENGINE_SCENE
+        ${SOURCES_PATH}/scene/scene.cpp
+        ${SOURCES_PATH}/scene/entity.cpp
+        ${SOURCES_PATH}/scene/observer.cpp
+        ${SOURCES_PATH}/scene/components/positioncomponent.cpp
+        ${SOURCES_PATH}/scene/components/cameracomponent.cpp
+        ${SOURCES_PATH}/scene/components/inputcomponent.cpp
+        ${SOURCES_PATH}/scene/components/spritecomponent.cpp
+        ${SOURCES_PATH}/scene/components/spritesheetcomponent.cpp
 )
 
 set (SOURCES_ENGINE_SPRITES
         ${SOURCES_PATH}/sprites/sprite.cpp
-        ${SOURCES_PATH}/sprites/spritesheet.cpp
-)
-
-set (SOURCES_ENGINE_SCRIPTING
-        ${SOURCES_PATH}/scripting/scriptable.cpp
-        ${SOURCES_PATH}/scripting/scriptengine.cpp
 )
 
 # Header Files
@@ -52,44 +50,46 @@ set (HEADER_ENGINE_CORE
         ${HEADER_PATH}/core/window.hpp
         ${HEADER_PATH}/core/shader.hpp
         ${HEADER_PATH}/core/texture2D.hpp
-        ${HEADER_PATH}/core/stb_image.hpp
         ${HEADER_PATH}/core/log.hpp
         ${HEADER_PATH}/core/graphicsdevice.hpp
         ${HEADER_PATH}/core/viewport.hpp
         ${HEADER_PATH}/core/rectangle.hpp
         ${HEADER_PATH}/core/spritebatch.hpp
         ${HEADER_PATH}/core/color.hpp
-        ${HEADER_PATH}/core/camera.hpp
         ${HEADER_PATH}/core/resource.hpp
         ${HEADER_PATH}/core/resourcemanager.hpp
+        ${HEADER_PATH}/core/spritesheet.hpp
+        ${HEADER_PATH}/core/spriteinfo.hpp
 )
 
 set (HEADER_ENGINE_MAP
-        ${HEADER_PATH}/map/map.hpp
-        ${HEADER_PATH}/map/renderer.hpp
-        ${HEADER_PATH}/map/tile.hpp
-        ${HEADER_PATH}/map/tileset.hpp
-        ${HEADER_PATH}/map/tilesetinfo.hpp
-        ${HEADER_PATH}/map/maplayer.hpp
-        ${HEADER_PATH}/map/tilelayer.hpp
-        ${HEADER_PATH}/map/objectlayer.hpp
+        ${HEADER_PATH}/world/map.hpp
+        ${HEADER_PATH}/world/tilelayer.hpp
+        ${HEADER_PATH}/world/tileset.hpp
+        ${HEADER_PATH}/world/tile.hpp
+        ${HEADER_PATH}/world/tilelayercomponent.hpp
+        ${HEADER_PATH}/world/tilesetcomponent.hpp
+        ${HEADER_PATH}/world/objectlayer.hpp
+        ${HEADER_PATH}/world/character.hpp
 )
 
-set (HEADER_ENGINE_ENTITIES
-        ${HEADER_PATH}/entities/entity.hpp
-        ${HEADER_PATH}/entities/freeentity.hpp
-        ${HEADER_PATH}/entities/player.hpp
-        ${HEADER_PATH}/entities/character.hpp
+set (HEADER_ENGINE_SCENE
+        ${HEADER_PATH}/scene/scene.hpp
+        ${HEADER_PATH}/scene/entity.hpp
+        ${HEADER_PATH}/scene/observer.hpp
+        ${HEADER_PATH}/scene/components/childcomponent.hpp
+        ${HEADER_PATH}/scene/components/positioncomponent.hpp
+        ${HEADER_PATH}/scene/components/movecomponent.hpp
+        ${HEADER_PATH}/scene/components/cameracomponent.hpp
+        ${HEADER_PATH}/scene/components/tagcomponent.hpp
+        ${HEADER_PATH}/scene/components/rendercomponent.hpp
+        ${HEADER_PATH}/scene/components/inputcomponent.hpp
+        ${HEADER_PATH}/scene/components/spritecomponent.hpp
+        ${HEADER_PATH}/scene/components/spritesheetcomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES
         ${HEADER_PATH}/sprites/sprite.hpp
-        ${HEADER_PATH}/sprites/spritesheet.hpp
-)
-
-set (HEADER_ENGINE_SCRIPTING
-        ${HEADER_PATH}/scripting/scriptable.hpp
-        ${HEADER_PATH}/scripting/scriptengine.hpp
 )
 
 # Create Library
@@ -100,12 +100,12 @@ add_library(${LIBRARY_NAME}
 
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_MAP}
-                ${SOURCES_ENGINE_ENTITIES}
+                ${SOURCES_ENGINE_SCENE}
                 ${SOURCES_ENGINE_SPRITES}
 
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_MAP}
-                ${HEADER_ENGINE_ENTITIES}
+                ${HEADER_ENGINE_SCENE}
                 ${HEADER_ENGINE_SPRITES}
 )
 
@@ -120,6 +120,15 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 # Include glad Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glad/include)
 
+#EnTT Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+
+# stb_image Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/stb_image/include)
+
+# nlohmann/json Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/json/include)
+
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 
@@ -133,4 +142,3 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
 #tinyxml2
 find_package(tinyxml2)
 target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)
-

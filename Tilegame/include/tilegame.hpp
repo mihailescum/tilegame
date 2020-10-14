@@ -12,6 +12,8 @@ namespace tilegame
         Tilegame(const Tilegame& game) = delete;
         ~Tilegame() {}
 
+        engine::SpriteBatch *getSpriteBatch() const;
+
     protected:
         virtual void initialize() override;
         virtual void loadContent() override;
@@ -24,6 +26,8 @@ namespace tilegame
         int frames = 0;
         int updates = 0;
         double timer = 0;
+
+        std::unique_ptr<engine::SpriteBatch> spriteBatch;
     };
 } // namespace tilegame
 

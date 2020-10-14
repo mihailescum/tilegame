@@ -3,7 +3,7 @@
 #include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "core/stb_image.hpp"
+#include "stb_image.hpp"
 #include "core/log.hpp"
 
 namespace engine

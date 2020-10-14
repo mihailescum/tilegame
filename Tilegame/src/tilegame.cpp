@@ -3,60 +3,52 @@
 #include <vector>
 #include <memory>
 #include <sstream>
+#include <string>
+#include <glm/gtx/transform.hpp>
 
 #include "engine.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame
 {
-    engine::Map *map1;
-    std::unique_ptr<engine::Renderer> map1Renderer;
-
-    std::unique_ptr<engine::FreeEntity> entity;
-    std::unique_ptr<engine::Player> player;
-    engine::Character *playerCharacter;
+    std::unique_ptr<worldscene::WorldScene> scene;
 
     void Tilegame::initialize()
     {
         Game::initialize();
 
-        entity = std::make_unique<engine::FreeEntity>();
-        player = std::make_unique<engine::Player>(entity.get(), this->graphicsDevice->getViewport());
+        this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
 
         //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window->setPosition(700, 400);
+
+        scene = std::make_unique<worldscene::WorldScene>(*this);
+        scene->initialize();
     }
 
     void Tilegame::loadContent()
     {
         Game::loadContent();
 
-        map1 = this->resourceManager->loadResource<engine::Map>("map1", "content/world/map1.tmx", "content/world/");
-        map1Renderer = std::make_unique<engine::Renderer>(*map1);
-        map1Renderer->initialize();
-
-        playerCharacter = this->resourceManager->loadResource<engine::Character>("playerCharacter", "content/characters/player.chr");
+        this->spriteBatch->create();
+        scene->loadContent();
     }
 
     void Tilegame::unloadContent()
     {
-        //map1Renderer.reset();
+        scene->unloadContent();
+        this->spriteBatch.reset();
     }
 
     void Tilegame::processInput()
     {
-        if (window->isKeyPressed(GLFW_KEY_LEFT))
-            player->moveLeft();
-        if (window->isKeyPressed(GLFW_KEY_RIGHT))
-            player->moveRight();
-        if (window->isKeyPressed(GLFW_KEY_UP))
-            player->moveUp();
-        if (window->isKeyPressed(GLFW_KEY_DOWN))
-            player->moveDown();
+        scene->processInput();
     }
 
     void Tilegame::update(const double deltaTime)
     {
-        player->update(deltaTime);
+        scene->update(deltaTime);
 
         timer += deltaTime;
         updates++;
@@ -74,12 +66,13 @@ namespace tilegame
     void Tilegame::draw()
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
-        map1Renderer->draw(*spriteBatch, player->getCamera());
 
-        spriteBatch->begin(player->getCamera().getTransform(), true);
-        playerCharacter->draw(*spriteBatch);
-        spriteBatch->end();
+        scene->draw();
 
         frames++;
+    }
+
+    engine::SpriteBatch *Tilegame::getSpriteBatch() const {
+        return this->spriteBatch.get();
     }
 } // namespace tilegame
