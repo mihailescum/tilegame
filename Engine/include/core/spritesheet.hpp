@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
 #include <cstdarg>
+#include <memory>
+#include <string>
 #include <unordered_map>
-#include <tinyxml2.h>
+#include "nlohmann/json.hpp"
 
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"
@@ -24,8 +25,9 @@ namespace engine
 
         std::unordered_map<int, std::unique_ptr<SpriteInfo>> sprites;
 
-        void createSprites(const tinyxml2::XMLElement *spritesElement);
-        void createSpriteInformation(const tinyxml2::XMLElement *rootElement);
+        const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
+        void createSprites(const nlohmann::json &spritesDocument);
+        void createSpriteInformation(const nlohmann::json &spriteInformationsElement);
 
     public:
         SpriteSheet() {}

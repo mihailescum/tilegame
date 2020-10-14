@@ -1,100 +1,148 @@
 #include "core/spritesheet.hpp"
 
 #include <filesystem>
+#include <fstream>
 #include <string>
-#include <tinyxml2.h>
+
+#include "core/log.hpp"
 
 namespace engine
 {
+    const std::unique_ptr<nlohmann::json> SpriteSheet::loadJsonDocument() const
+    {
+        std::unique_ptr<nlohmann::json> result = std::make_unique<nlohmann::json>();
+
+        std::ifstream fileStream(this->resourcePath, std::ifstream::in);
+        if (!fileStream.is_open())
+        {
+            return nullptr;
+        }
+        else
+        {
+            fileStream >> *result;
+        }
+        return result;
+    }
+
     bool SpriteSheet::loadResource(ResourceManager &resourceManager, va_list args)
     {
-        tinyxml2::XMLDocument doc;
-        doc.LoadFile(this->resourcePath.c_str());
+        std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
+        if (!jsonDocument)
+        {
+            Log::e("File could not be loaded (file: ", this->resourcePath, ").");
+            return false;
+        }
 
-        const tinyxml2::XMLElement *root = doc.FirstChildElement();
-        this->frameWidth = root->IntAttribute("tilewidth");
-        this->frameHeight = root->IntAttribute("tileheight");
-        this->frameCount = root->UnsignedAttribute("tilecount");
-        this->columns = root->UnsignedAttribute("columns");
+        this->frameWidth = jsonDocument->value("tilewidth", 0);
+        if (this->frameWidth <= 0)
+        {
+            Log::e("Tile width (", this->frameWidth, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->frameHeight = jsonDocument->value("tileheight", 0);
+        if (this->frameHeight <= 0)
+        {
+            Log::e("Tile height (", this->frameHeight, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->frameCount = jsonDocument->value("tilecount", 0);
+        if (this->frameCount <= 0)
+        {
+            Log::e("Tile count (", this->frameCount, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
+        this->columns = jsonDocument->value("columns", 0);
+        if (this->columns <= 0)
+        {
+            Log::e("Number of columns (", this->columns, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            return false;
+        }
+
         this->rows = this->frameCount / this->columns;
-
-        // Load Image
-        const tinyxml2::XMLElement *image = root->FirstChildElement("image");
-        std::string imageSource = image->Attribute("source");
+        ;
+        std::string imageSource = jsonDocument->value("image", "");
+        if (imageSource.empty())
+        {
+            Log::e("Image (", imageSource, ") has to be a valid path (file: ", this->resourcePath, ").");
+            return false;
+        }
         std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
         this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
 
         // Each sprite is represented by one terrain type
-        const tinyxml2::XMLElement *spritesElement = root->FirstChildElement("terraintypes");
+        const nlohmann::json &spritesElement = jsonDocument->at("terrains");
         this->createSprites(spritesElement);
-        this->createSpriteInformation(root);
+        const nlohmann::json &spriteInformationsElement = jsonDocument->at("tiles");
+        this->createSpriteInformation(spriteInformationsElement);
 
         return true;
     }
 
-    void SpriteSheet::createSprites(const tinyxml2::XMLElement *spritesElement)
+    void SpriteSheet::createSprites(const nlohmann::json &spritesDocument)
     {
-        const tinyxml2::XMLElement *spriteElement = spritesElement->FirstChildElement("terrain");
-        while (spriteElement)
+        for (const nlohmann::json &spriteDocument : spritesDocument)
         {
-            const int defaultState = spriteElement->IntAttribute("tile");
+            const int defaultState = spriteDocument.at("tile");
 
-            const tinyxml2::XMLElement *propertiesElement = spriteElement->FirstChildElement("properties");
-            const tinyxml2::XMLElement *propertyElement = propertiesElement->FirstChildElement();
+            const nlohmann::json &propertiesDocument = spriteDocument.at("properties");
             int id;
-            while (propertyElement)
+            for (const nlohmann::json &propertyDocument : propertiesDocument)
             {
-                std::string propertyName = propertyElement->Attribute("name");
+                const std::string propertyName = propertyDocument.value("name", "");
+                const std::string propertyType = propertyDocument.value("type", "");
                 if (propertyName == "id")
-                    id = propertyElement->IntAttribute("value");
-
-                propertyElement = propertyElement->NextSiblingElement();
+                {
+                    if (propertyType == "int")
+                        id = propertyDocument.value("value", -1);
+                    else if (propertyType == "string")
+                        id = std::stoi(propertyDocument.value("value", "-1"));
+                }
             }
             std::unique_ptr<SpriteInfo> sprite = std::make_unique<SpriteInfo>(id);
             this->sprites.emplace(id, std::move(sprite));
-
-            spriteElement = spriteElement->NextSiblingElement();
         }
     }
 
-    void SpriteSheet::createSpriteInformation(const tinyxml2::XMLElement *rootElement)
+    void SpriteSheet::createSpriteInformation(const nlohmann::json &spriteInformationsElement)
     {
-        const tinyxml2::XMLElement *spriteInfoElement = rootElement->FirstChildElement("tile");
-        while (spriteInfoElement)
+        for (const nlohmann::json &spriteInformationDocument : spriteInformationsElement)
         {
-            const int frameId = spriteInfoElement->IntAttribute("id");
-            const char *spriteIdRaw = spriteInfoElement->Attribute("terrain");
-            if (!spriteIdRaw)
+            const int frameId = spriteInformationDocument.at("id");
+            const std::vector<int> terrain = spriteInformationDocument.value<std::vector<int>>("terrain", {});
+            int spriteId = -1;
+            for (int id : terrain)
+            {
+                if (id >= 0)
+                {
+                    spriteId = id;
+                    break;
+                }
+            }
+            if (spriteId < 0)
                 continue;
 
-            std::string spriteIdString(spriteIdRaw);
-            spriteIdString = spriteIdString.substr(0, spriteIdString.find(','));
-            if (!spriteIdString.empty())
+            const nlohmann::json &propertiesDocument = spriteInformationDocument.at("properties");
+            std::string state;
+            for (const nlohmann::json &propertyDocument : propertiesDocument)
             {
-                const int spriteId = std::stoi(spriteIdString);
-
-                const tinyxml2::XMLElement *propertiesElement = spriteInfoElement->FirstChildElement("properties");
-                const tinyxml2::XMLElement *propertyElement = propertiesElement->FirstChildElement();
-
-                std::string state;
-                while (propertyElement)
+                const std::string propertyName = propertyDocument.value("name", "");
+                const std::string propertyType = propertyDocument.value("type", "");
+                if (propertyName == "state")
                 {
-                    const std::string propertyName = propertyElement->Attribute("name");
-                    if (propertyName == "state")
-                        state = propertyElement->Attribute("value");
-
-                    propertyElement = propertyElement->NextSiblingElement();
+                    if (propertyType == "string")
+                        state = propertyDocument.value("value", "");
                 }
-
-                Rectangle frameSourceRect(
-                    (frameId % this->columns) * this->frameWidth,
-                    (frameId / this->columns) * this->frameHeight,
-                    this->frameWidth,
-                    this->frameHeight);
-                this->sprites[spriteId]->addSpriteState(state, frameSourceRect);
             }
 
-            spriteInfoElement = spriteInfoElement->NextSiblingElement();
+            Rectangle frameSourceRect(
+                (frameId % this->columns) * this->frameWidth,
+                (frameId / this->columns) * this->frameHeight,
+                this->frameWidth,
+                this->frameHeight);
+            this->sprites[spriteId]->addSpriteState(state, frameSourceRect);
         }
     }
 
@@ -102,7 +150,8 @@ namespace engine
     const int SpriteSheet::getFrameWidth() const { return this->frameWidth; }
     const int SpriteSheet::getFrameHeight() const { return this->frameHeight; }
 
-    const SpriteInfo &SpriteSheet::getSpriteInfo(const int spriteId) const {
+    const SpriteInfo &SpriteSheet::getSpriteInfo(const int spriteId) const
+    {
         return *this->sprites.at(spriteId).get();
     }
 } // namespace engine

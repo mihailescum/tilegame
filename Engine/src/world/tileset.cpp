@@ -76,7 +76,6 @@ namespace engine
         }
 
         std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
-
         this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath, true);
 
         for (int y = 0; y < this->rows; y++)

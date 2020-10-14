@@ -138,7 +138,3 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 #GLFW
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
-
-#tinyxml2
-find_package(tinyxml2)
-target_link_libraries(${LIBRARY_NAME} PUBLIC tinyxml2)

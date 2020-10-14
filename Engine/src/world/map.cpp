@@ -66,7 +66,7 @@ namespace engine
             return false;
         }
 
-        nlohmann::json tilesetsDocument = jsonDocument->at("tilesets");
+        const nlohmann::json &tilesetsDocument = jsonDocument->at("tilesets");
         for (nlohmann::json tilesetDocument : tilesetsDocument)
         {
             std::pair<const Tileset *, const int> tileset = this->parseTilesetDocument(tilesetDocument, resourceManager);
@@ -80,7 +80,7 @@ namespace engine
             Log::w("No tilesets loaded (file: ", this->resourcePath, ").");
         }
 
-        nlohmann::json layersDocument = jsonDocument->at("layers");
+        const nlohmann::json &layersDocument = jsonDocument->at("layers");
         for (nlohmann::json layerDocument : layersDocument)
         {
             std::string layertype = layerDocument.at("type");
