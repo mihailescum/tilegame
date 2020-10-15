@@ -24,6 +24,11 @@ namespace engine
             return scene->getRegistry().emplace_or_replace<Component>(this->handle, args...);
         }
 
+        template<class Component>
+        Component &add() const {
+            return scene->getRegistry().emplace_or_replace<Component>(this->handle);
+        }
+
         template<class Component, class... Func>
         Component &patch(Func&&... func) const {
             return scene->getRegistry().patch<Component>(this->handle, func...);

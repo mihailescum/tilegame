@@ -6,6 +6,7 @@ namespace engine
 {
     bool TileLayer::loadFromJsonDocument(const nlohmann::json &document)
     {
+        this->visible = document.value("visible", true);
         std::vector<unsigned> data = document.value<std::vector<unsigned>>("data", {});
         if (data.empty())
             return false;
@@ -34,8 +35,6 @@ namespace engine
         return result;
     }
 
-    const std::vector<unsigned> &TileLayer::getData() const
-    {
-        return this->data;
-    }
+    const std::vector<unsigned> &TileLayer::getData() const { return this->data; }
+    bool TileLayer::isVisible() const { return this->visible; }
 } // namespace engine

@@ -13,7 +13,8 @@ namespace tilegame::worldscene
         registry.sort<engine::RenderComponent>([](const auto &lhs, const auto &rhs) {
             return lhs.z < rhs.z;
         });
-        auto drawables = this->registry.view<engine::RenderComponent, engine::PositionComponent>();
+
+        auto drawables = this->registry.view<engine::RenderComponent, engine::PositionComponent, engine::VisiblityComponent>();
         auto cameras = this->registry.view<engine::CameraComponent>();
         for (auto entity : cameras)
         {
@@ -22,18 +23,18 @@ namespace tilegame::worldscene
             if (camera.viewport)
             {
                 spriteBatch.begin(camera, true);
-                for (auto entity : drawables)
-                {
-                    // Todo: Do frustum culling here
-                    if (registry.has<engine::TilesetComponent, engine::TileLayerComponent>(entity))
-                    {
-                        this->drawTileLayer(entity);
-                    }
-                    if (registry.has<engine::SpriteComponent, engine::SpriteSheetComponent>(entity))
-                    {
-                        this->drawSprite(entity);
-                    }
-                }
+                drawables.each(
+                    [=](auto entity, auto const &render, const auto &pos, const auto &visibility) {
+                        // Todo: Do frustum culling here
+                        if (registry.has<engine::TilesetComponent, engine::TileLayerComponent>(entity))
+                        {
+                            this->drawTileLayer(entity);
+                        }
+                        if (registry.has<engine::SpriteComponent, engine::SpriteSheetComponent>(entity))
+                        {
+                            this->drawSprite(entity);
+                        }
+                    });
                 spriteBatch.end();
             }
         }

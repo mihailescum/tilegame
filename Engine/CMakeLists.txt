@@ -86,6 +86,7 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/inputcomponent.hpp
         ${HEADER_PATH}/scene/components/spritecomponent.hpp
         ${HEADER_PATH}/scene/components/spritesheetcomponent.hpp
+        ${HEADER_PATH}/scene/components/visiblitycomponent.hpp
 )
 
 set (HEADER_ENGINE_SPRITES

@@ -11,6 +11,7 @@
 #include "scene/entity.hpp"
 #include "world/tilelayer.hpp"
 #include "world/tileset.hpp"
+#include "world/mapobjects.hpp"
 
 namespace engine
 {
@@ -23,10 +24,13 @@ namespace engine
         int tileHeight;
         std::vector<std::unique_ptr<const TileLayer>> layers;
         std::vector<std::pair<const Tileset*, const int>> tilesets;
+        std::vector<MapObject> objects;
 
         const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
         std::pair<const Tileset*, const int> parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager);
         std::unique_ptr<const TileLayer> parseTileLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager);
+        void parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager);
+        NpcObject parseNpcDocument(const nlohmann::json &document, ResourceManager &resourceManager);
 
     public:
         Map() {}

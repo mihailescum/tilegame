@@ -37,6 +37,9 @@ namespace tilegame::worldscene
             entity.add<engine::TilesetComponent>(tilesetComponent);
             entity.add<engine::PositionComponent>(glm::vec2(0.0));
             entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight(), 1 - q);
+            if (layer->isVisible())
+                entity.add<engine::VisiblityComponent>();
+
             q *= 0.5;
         }
     }
@@ -110,6 +113,7 @@ namespace tilegame::worldscene
         engine::SpriteComponent &spriteComponent = entity.add<engine::SpriteComponent>(character.getSpriteSheet()->getTexture(), engine::Rectangle());
         engine::SpriteSheetComponent &spriteSheetComponent = entity.add<engine::SpriteSheetComponent>(character.getSpriteSheet(), 0, "LEFT", 0);
         engine::RenderComponent &renderComponent = entity.add<engine::RenderComponent>(character.getSpriteSheet()->getFrameWidth(), character.getSpriteSheet()->getFrameHeight(), 1.0);
+        entity.add<engine::VisiblityComponent>();
 
         const engine::SpriteInfo *spriteInfo = character.getSpriteInfo();
         spriteComponent.sourceRectangle = spriteInfo->spriteStates.at(spriteSheetComponent.currentState)[spriteSheetComponent.currentFrame];

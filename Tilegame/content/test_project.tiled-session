@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "sprites/sprite_sheet.json",
+    "activeFile": "world/map1.json",
     "expandedProjectPaths": [
         "world",
         "textures",
@@ -21,10 +21,10 @@
         },
         "world/map1.json": {
             "scale": 1.5,
-            "selectedLayer": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 353,
-                "y": 508
+                "x": 400.33333333333337,
+                "y": 399.3333333333333
             }
         },
         "world/map1.tmx": {
@@ -54,15 +54,14 @@
     "map.width": 50,
     "openFiles": [
         "world/map1.json",
-        "world/tileset1.json",
-        "sprites/sprite_sheet.json"
+        "world/tileset1.json"
     ],
     "project": "test_project.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "sprites/sprite_sheet.json",
-        "world/map1.json",
         "world/tileset1.json",
+        "world/map1.json",
+        "sprites/sprite_sheet.json",
         "world/map1.tmx",
         "sprites/sprite_sheet.tsx",
         "world/tileset1.tsx"

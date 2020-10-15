@@ -7,15 +7,18 @@ namespace engine
     struct MapObject
     {
     protected:
-        MapObject(const int x, const int y) : x(x), y(y) {}
+        MapObject() {}
 
     public:
-        const int x;
-        const int y;
+        int x;
+        int y;
+        int width;
+        int height;
     };
 
     struct NpcObject : public MapObject
     {
+        NpcObject() = default;
         std::string id;
     };
 } // namespace engine

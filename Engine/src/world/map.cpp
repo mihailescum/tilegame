@@ -67,7 +67,7 @@ namespace engine
         }
 
         const nlohmann::json &tilesetsDocument = jsonDocument->at("tilesets");
-        for (nlohmann::json tilesetDocument : tilesetsDocument)
+        for (const nlohmann::json &tilesetDocument : tilesetsDocument)
         {
             std::pair<const Tileset *, const int> tileset = this->parseTilesetDocument(tilesetDocument, resourceManager);
             if (tileset.first)
@@ -81,7 +81,7 @@ namespace engine
         }
 
         const nlohmann::json &layersDocument = jsonDocument->at("layers");
-        for (nlohmann::json layerDocument : layersDocument)
+        for (const nlohmann::json &layerDocument : layersDocument)
         {
             std::string layertype = layerDocument.at("type");
 
@@ -92,6 +92,10 @@ namespace engine
                     layers.push_back(std::move(layer));
                 else
                     return false;
+            }
+            else if (layertype == "objectgroup")
+            {
+                this->parseObjectLayerDocument(layerDocument, resourceManager);
             }
         }
         if (this->layers.empty())
@@ -129,6 +133,47 @@ namespace engine
             return layer;
         else
             return nullptr;
+    }
+
+    void Map::parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    {
+        const nlohmann::json &objectsDocument = document.at("objects");
+        for (const nlohmann::json &object : objectsDocument)
+        {
+            const std::string type = object.at("type");
+            if (type == "NPC")
+            {
+                NpcObject npc = this->parseNpcDocument(object, resourceManager);
+                this->objects.push_back(npc);
+            }
+        }
+    }
+
+    NpcObject Map::parseNpcDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    {
+        NpcObject result;
+        result.x = document.value("x", 0);
+        result.y = document.value("y", 0);
+        result.width = document.value("width", 0);
+        result.height = document.value("height", 0);
+
+        const nlohmann::json &propertiesDocument = document.at("properties");
+        std::string id;
+        for (const nlohmann::json &propertyDocument : propertiesDocument)
+        {
+            const std::string propertyName = propertyDocument.value("name", "");
+            const std::string propertyType = propertyDocument.value("type", "");
+            if (propertyName == "object_id")
+            {
+                if (propertyType == "string")
+                    id = propertyDocument.value("value", "");
+                else if (propertyType == "int")
+                    id = propertyDocument.value("value", -1);
+            }
+        }
+
+        result.id = id;
+        return result;
     }
 
     int Map::getWidth() const { return this->width; }
