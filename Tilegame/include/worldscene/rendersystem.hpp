@@ -6,6 +6,8 @@
 
 namespace tilegame::worldscene
 {
+    class WorldScene;
+
     class RenderSystem
     {
     private:
@@ -16,7 +18,7 @@ namespace tilegame::worldscene
         void drawSprite(const entt::entity &entity) const;
 
     public:
-        RenderSystem(engine::Scene &scene, engine::SpriteBatch &spriteBatch) : registry(scene.getRegistry()), spriteBatch(spriteBatch) {}
+        RenderSystem(WorldScene &scene, engine::SpriteBatch &spriteBatch);
 
         void draw() const;
         void initialize();

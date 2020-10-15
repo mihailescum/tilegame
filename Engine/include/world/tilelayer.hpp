@@ -14,6 +14,7 @@ namespace engine
         static const unsigned FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 
         std::vector<unsigned> data;
+        std::string objectId;
         bool visible;
 
         std::vector<unsigned> parseVector(const std::vector<unsigned> &data);
@@ -24,6 +25,7 @@ namespace engine
 
         bool loadFromJsonDocument(const nlohmann::json &document);
         const std::vector<unsigned> &getData() const;
+        const std::string &getObjectId() const;
         bool isVisible() const;
     };
 } // namespace engine

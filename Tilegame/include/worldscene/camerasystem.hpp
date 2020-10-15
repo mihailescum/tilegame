@@ -6,6 +6,8 @@
 
 namespace tilegame::worldscene
 {
+    class WorldScene;
+
     class CameraSystem
     {
     private:
@@ -13,7 +15,7 @@ namespace tilegame::worldscene
         entt::registry &registry;
 
     public:
-        CameraSystem(engine::Scene &scene) : registry(scene.getRegistry()) {}
+        CameraSystem(WorldScene &scene);
         void initialize();
         void update(const double deltaTime);
     };

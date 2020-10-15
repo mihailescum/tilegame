@@ -13,6 +13,22 @@ namespace engine
 
         this->data = this->parseVector(data);
 
+        const nlohmann::json &propertiesDocument = document.value("properties", nlohmann::json::array());
+        std::string objectId;
+        for (const nlohmann::json &propertyDocument : propertiesDocument)
+        {
+            const std::string propertyName = propertyDocument.value("name", "");
+            const std::string propertyType = propertyDocument.value("type", "");
+            if (propertyName == "object_id")
+            {
+                if (propertyType == "string")
+                    objectId = propertyDocument.value("value", "");
+                else if (propertyType == "int")
+                    objectId = propertyDocument.value("value", -1);
+            }
+        }
+        this->objectId = objectId;
+
         return true;
     }
 
@@ -36,5 +52,6 @@ namespace engine
     }
 
     const std::vector<unsigned> &TileLayer::getData() const { return this->data; }
+    const std::string &TileLayer::getObjectId() const { return this->objectId; }
     bool TileLayer::isVisible() const { return this->visible; }
 } // namespace engine

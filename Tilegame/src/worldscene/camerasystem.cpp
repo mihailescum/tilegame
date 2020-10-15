@@ -4,8 +4,12 @@
 
 #include "engine.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame::worldscene
 {
+    CameraSystem::CameraSystem(WorldScene &scene) : registry(scene.getRegistry()) {}
+
     void CameraSystem::initialize()
     {
         this->cameraObserver = std::make_unique<engine::Observer>(this->registry);

@@ -6,14 +6,18 @@
 
 namespace tilegame::worldscene
 {
+    class WorldScene;
+
     class MovementSystem
     {
     private:
         entt::registry &registry;
 
     public:
-        MovementSystem(engine::Scene &scene) : registry(scene.getRegistry()) {}
+        MovementSystem(WorldScene &scene);
         void initialize();
         void update(const double deltaTime);
+
+        void setPosition(const entt::entity &entity, const float x, const float y);
     };
 } // namespace tilegame::worldscene

@@ -2,8 +2,12 @@
 
 #include "engine.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame::worldscene
 {
+    RenderSystem::RenderSystem(WorldScene &scene, engine::SpriteBatch &spriteBatch) : registry(scene.getRegistry()), spriteBatch(spriteBatch) {}
+
     void RenderSystem::initialize()
     {
     }
@@ -23,14 +27,14 @@ namespace tilegame::worldscene
             if (camera.viewport)
             {
                 spriteBatch.begin(camera, true);
-                drawables.each(
+                drawables.each<engine::RenderComponent>(
                     [=](auto entity, auto const &render, const auto &pos, const auto &visibility) {
                         // Todo: Do frustum culling here
                         if (registry.has<engine::TilesetComponent, engine::TileLayerComponent>(entity))
                         {
                             this->drawTileLayer(entity);
                         }
-                        if (registry.has<engine::SpriteComponent, engine::SpriteSheetComponent>(entity))
+                        if (registry.has<engine::SpriteComponent, engine::SpriteInfoComponent>(entity))
                         {
                             this->drawSprite(entity);
                         }
@@ -76,8 +80,8 @@ namespace tilegame::worldscene
 
         const engine::Rectangle &sourceRect = sprite.sourceRectangle;
         engine::Rectangle destinationRect(
-            floor(position.x() - sourceRect.width / 2),
-            floor(position.y() - sourceRect.height / 2),
+            floor(position.x()),
+            floor(position.y()),
             sourceRect.width,
             sourceRect.height);
         spriteBatch.draw(*sprite.texture, destinationRect, &sourceRect, engine::Color::White);

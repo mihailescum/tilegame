@@ -10,15 +10,17 @@ namespace engine
         MapObject() {}
 
     public:
-        int x;
-        int y;
-        int width;
-        int height;
+        virtual ~MapObject() {}
+
+        float x;
+        float y;
+        float width;
+        float height;
     };
 
     struct NpcObject : public MapObject
     {
         NpcObject() = default;
-        std::string id;
+        std::string objectId;
     };
 } // namespace engine

@@ -3,6 +3,14 @@
         {
             "id" : 0,
             "file" : "player.json"
+        },
+        {
+            "id" : 1,
+            "file" : "npc1.json"
+        },
+        {
+            "id" : 2,
+            "file" : "npc2.json"
         }
     ]
 }

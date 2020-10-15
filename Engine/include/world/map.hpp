@@ -24,7 +24,7 @@ namespace engine
         int tileHeight;
         std::vector<std::unique_ptr<const TileLayer>> layers;
         std::vector<std::pair<const Tileset*, const int>> tilesets;
-        std::vector<MapObject> objects;
+        std::vector<std::unique_ptr<const MapObject>> objects;
 
         const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
         std::pair<const Tileset*, const int> parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager);
@@ -44,5 +44,6 @@ namespace engine
         int getTileHeight() const;
         const std::vector<std::pair<const Tileset*, const int>> &getTilesets() const;
         const std::vector<std::unique_ptr<const TileLayer>> &getLayers() const;
+        const std::vector<std::unique_ptr<const MapObject>> &getObjects() const;
     };
 } // namespace engine

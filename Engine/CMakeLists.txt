@@ -35,7 +35,7 @@ set (SOURCES_ENGINE_SCENE
         ${SOURCES_PATH}/scene/components/cameracomponent.cpp
         ${SOURCES_PATH}/scene/components/inputcomponent.cpp
         ${SOURCES_PATH}/scene/components/spritecomponent.cpp
-        ${SOURCES_PATH}/scene/components/spritesheetcomponent.cpp
+        ${SOURCES_PATH}/scene/components/spriteinfocomponent.cpp
 )
 
 set (SOURCES_ENGINE_SPRITES
@@ -85,7 +85,7 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/rendercomponent.hpp
         ${HEADER_PATH}/scene/components/inputcomponent.hpp
         ${HEADER_PATH}/scene/components/spritecomponent.hpp
-        ${HEADER_PATH}/scene/components/spritesheetcomponent.hpp
+        ${HEADER_PATH}/scene/components/spriteinfocomponent.hpp
         ${HEADER_PATH}/scene/components/visiblitycomponent.hpp
 )
 

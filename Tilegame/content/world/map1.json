@@ -15,6 +15,12 @@
          "id":2,
          "name":"grass",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"object_id",
+                 "type":"string",
+                 "value":"test"
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":50,
@@ -81,8 +87,8 @@
                  "type":"NPC",
                  "visible":true,
                  "width":16,
-                 "x":240,
-                 "y":96
+                 "x":160,
+                 "y":384
                 }, 
                 {
                  "gid":364,

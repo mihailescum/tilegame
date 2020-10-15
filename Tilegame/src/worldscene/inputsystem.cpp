@@ -1,7 +1,11 @@
 #include "worldscene/inputsystem.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame::worldscene
 {
+    InputSystem::InputSystem(WorldScene &scene, const engine::Window &window) : registry(scene.getRegistry()), window(window) {}
+
     void InputSystem::initialize() {}
 
     void InputSystem::processInput()

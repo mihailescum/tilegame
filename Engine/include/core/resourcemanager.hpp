@@ -35,7 +35,7 @@ namespace engine
 
             if (name.empty())
                 name = path.filename();
-                
+
             if (this->resources.count(name) == 0)
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
@@ -59,4 +59,3 @@ namespace engine
         }
     };
 } // namespace engine
-

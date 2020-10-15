@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
 #include "entt.hpp"
 
 #include "engine.hpp"
@@ -13,12 +15,11 @@
 
 namespace tilegame::worldscene
 {
-    //class Tilegame;
-
     class WorldScene : public engine::Scene
     {
     private:
         engine::SpriteBatch &spriteBatch;
+        std::unordered_map<std::string, engine::Entity> taggedEntities;
 
         std::unique_ptr<ContentSystem> contentSystem;
         std::unique_ptr<InputSystem> inputSystem;
@@ -27,6 +28,7 @@ namespace tilegame::worldscene
         std::unique_ptr<RenderSystem> renderSystem;
 
         void createSystems();
+        engine::Entity *findByObjectId(const std::string &object_id);
 
     public:
         WorldScene(Tilegame &game);
@@ -37,5 +39,8 @@ namespace tilegame::worldscene
         virtual void processInput() override;
         virtual void update(const double deltaTime) override;
         virtual void draw() override;
+
+        void E_show(const std::string &objectId, const bool show);
+        void E_setPosition(const std::string &objectId, const float x, const float y);
     };
 } // namespace tilegame

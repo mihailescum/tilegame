@@ -144,7 +144,7 @@ namespace engine
             if (type == "NPC")
             {
                 NpcObject npc = this->parseNpcDocument(object, resourceManager);
-                this->objects.push_back(npc);
+                this->objects.push_back(std::make_unique<NpcObject>(npc));
             }
         }
     }
@@ -158,7 +158,7 @@ namespace engine
         result.height = document.value("height", 0);
 
         const nlohmann::json &propertiesDocument = document.at("properties");
-        std::string id;
+        std::string objectId;
         for (const nlohmann::json &propertyDocument : propertiesDocument)
         {
             const std::string propertyName = propertyDocument.value("name", "");
@@ -166,13 +166,13 @@ namespace engine
             if (propertyName == "object_id")
             {
                 if (propertyType == "string")
-                    id = propertyDocument.value("value", "");
+                    objectId = propertyDocument.value("value", "");
                 else if (propertyType == "int")
-                    id = propertyDocument.value("value", -1);
+                    objectId = propertyDocument.value("value", -1);
             }
         }
 
-        result.id = id;
+        result.objectId = objectId;
         return result;
     }
 
@@ -182,4 +182,5 @@ namespace engine
     int Map::getTileHeight() const { return this->tileHeight; }
     const std::vector<std::pair<const Tileset *, const int>> &Map::getTilesets() const { return this->tilesets; }
     const std::vector<std::unique_ptr<const TileLayer>> &Map::getLayers() const { return this->layers; }
+    const std::vector<std::unique_ptr<const MapObject>> &Map::getObjects() const { return this->objects; }
 } // namespace engine

@@ -35,5 +35,5 @@
 #include "scene/components/rendercomponent.hpp"
 #include "scene/components/inputcomponent.hpp"
 #include "scene/components/spritecomponent.hpp"
-#include "scene/components/spritesheetcomponent.hpp"
+#include "scene/components/spriteinfocomponent.hpp"
 #include "scene/components/visiblitycomponent.hpp"

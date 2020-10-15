@@ -5,8 +5,8 @@
     },
     "activeFile": "world/map1.json",
     "expandedProjectPaths": [
-        "world",
         "textures",
+        "world",
         "sprites"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -21,7 +21,7 @@
         },
         "world/map1.json": {
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 3,
             "viewCenter": {
                 "x": 400.33333333333337,
                 "y": 399.3333333333333

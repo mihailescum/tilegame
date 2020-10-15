@@ -6,8 +6,12 @@
 
 #include "engine.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame::worldscene
 {
+    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), resourceManager(resourceManager) {}
+
     void ContentSystem::initialize() {}
 
     void ContentSystem::loadContent() const
@@ -25,12 +29,11 @@ namespace tilegame::worldscene
     void ContentSystem::createMapEntity(engine::Map &map) const
     {
         const std::vector<std::pair<const engine::Tileset *, const int>> &tilesets = map.getTilesets();
-        const std::vector<std::unique_ptr<const engine::TileLayer>> &layers = map.getLayers();
 
         engine::TilesetComponent tilesetComponent(tilesets.at(0).second, tilesets.at(0).first);
 
-        double q = 1;
-        for (auto &&layer : layers)
+        double q = 0.95;
+        for (const auto &layer : map.getLayers())
         {
             engine::Entity entity = scene.createEntity();
             entity.add<engine::TileLayerComponent>(layer->getData(), map.getWidth(), map.getHeight());
@@ -39,8 +42,19 @@ namespace tilegame::worldscene
             entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight(), 1 - q);
             if (layer->isVisible())
                 entity.add<engine::VisiblityComponent>();
+            if (!layer->getObjectId().empty())
+                entity.addTag(layer->getObjectId());
 
-            q *= 0.5;
+            q *= 0.95;
+        }
+
+        for (const auto &object : map.getObjects())
+        {
+            if (const engine::NpcObject *npc = dynamic_cast<const engine::NpcObject *>(object.get()))
+            {
+                scene.E_setPosition(npc->objectId, npc->x, npc->y);
+                scene.E_show(npc->objectId, true);
+            }
         }
     }
 
@@ -53,9 +67,7 @@ namespace tilegame::worldscene
             std::ifstream fileStream(charactersPath, std::ifstream::in);
             if (!fileStream.is_open())
             {
-                std::stringstream ss;
-                ss << "File could not be loaded (file: " << charactersPath << ")." << std::endl;
-                engine::Log::e(ss.str());
+                engine::Log::e("File could not be loaded (file: ", charactersPath, ").");
                 return;
             }
             else
@@ -79,9 +91,7 @@ namespace tilegame::worldscene
             }
             else
             {
-                std::stringstream ss;
-                ss << "Id of character '" << characterSource << "'must be string or unsigned int (file: " << charactersPath << ")." << std::endl;
-                engine::Log::e(ss.str());
+                engine::Log::e("Id of character '", characterSource, "'must be string or unsigned int (file: ", charactersPath, ").");
                 continue;
             }
 
@@ -94,12 +104,14 @@ namespace tilegame::worldscene
                 // TODO move this to startup script
 
                 // If the entity is the player, we assign the necessary components
-                if (character->getId() == "0")
+                if (character->getObjectId() == "0")
                 {
                     entity.add<engine::InputComponent>(std::vector<int>{GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN});
                     entity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128.0);
                     entity.add<engine::PositionComponent>();
                     engine::CameraComponent &cameraComponent = entity.add<engine::CameraComponent>();
+                    entity.add<engine::VisiblityComponent>();
+
                     cameraComponent.viewport = &scene.getGame().getGraphicsDevice()->getViewport();
                     this->scene.getRegistry().patch<engine::PositionComponent>(entity, [](auto &pos) { pos.position = glm::vec2(0.0); });
                 }
@@ -111,9 +123,12 @@ namespace tilegame::worldscene
     {
         engine::Entity entity = scene.createEntity();
         engine::SpriteComponent &spriteComponent = entity.add<engine::SpriteComponent>(character.getSpriteSheet()->getTexture(), engine::Rectangle());
-        engine::SpriteSheetComponent &spriteSheetComponent = entity.add<engine::SpriteSheetComponent>(character.getSpriteSheet(), 0, "LEFT", 0);
+        engine::SpriteInfoComponent &spriteSheetComponent = entity.add<engine::SpriteInfoComponent>(character.getSpriteInfo(), "FRONT", 0);
         engine::RenderComponent &renderComponent = entity.add<engine::RenderComponent>(character.getSpriteSheet()->getFrameWidth(), character.getSpriteSheet()->getFrameHeight(), 1.0);
-        entity.add<engine::VisiblityComponent>();
+        engine::PositionComponent &positionComponent = entity.add<engine::PositionComponent>();
+
+        if (!character.getObjectId().empty())
+            entity.addTag(character.getObjectId());
 
         const engine::SpriteInfo *spriteInfo = character.getSpriteInfo();
         spriteComponent.sourceRectangle = spriteInfo->spriteStates.at(spriteSheetComponent.currentState)[spriteSheetComponent.currentFrame];

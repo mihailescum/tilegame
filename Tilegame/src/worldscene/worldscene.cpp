@@ -69,4 +69,57 @@ namespace tilegame::worldscene
     {
         renderSystem->draw();
     }
+
+    engine::Entity *WorldScene::findByObjectId(const std::string &objectId)
+    {
+        engine::Entity *result = nullptr;
+        if (this->taggedEntities.count(objectId) == 0)
+        {
+            auto tagged = registry.view<engine::TagComponent>();
+            for (const auto &entity : tagged)
+            {
+                const auto tag = tagged.get(entity);
+                if (tag.tag == objectId)
+                {
+                    this->taggedEntities.emplace(objectId, engine::Entity(entity, this));
+                    result = &this->taggedEntities[objectId];
+                    break;
+                }
+            }
+        }
+        else
+        {
+            result = &this->taggedEntities[objectId];
+        }
+        return result;
+    }
+
+    void WorldScene::E_show(const std::string &objectId, const bool show)
+    {
+        engine::Entity *entity = findByObjectId(objectId);
+        if (!entity) {
+            engine::Log::w("No entity with object_id ", objectId, " exists");
+            return;
+        }
+
+        if (show)
+        {
+            entity->add<engine::VisiblityComponent>();
+        }
+        else
+        {
+            entity->remove<engine::VisiblityComponent>();
+        }
+    }
+
+    void WorldScene::E_setPosition(const std::string &objectId, const float x, const float y)
+    {
+        engine::Entity *entity = findByObjectId(objectId);
+        if (!entity) {
+            engine::Log::w("No entity with object_id ", objectId, " exists");
+            return;
+        }
+
+        movementSystem->setPosition(*entity, x, y);
+    }
 } // namespace tilegame::worldscene

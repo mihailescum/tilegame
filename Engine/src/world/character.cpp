@@ -34,7 +34,7 @@ namespace engine
         if (!jsonDocument)
             return false;
 
-        this->id = va_arg(args, const char *);
+        this->objectId = va_arg(args, const char *);
 
         int spriteId = jsonDocument->value("sprite_id", 0);
         std::string spriteSheetSource = jsonDocument->value("sprite_sheet", "");
@@ -52,7 +52,7 @@ namespace engine
         return true;
     }
 
-    const std::string &Character::getId() const { return this->id; }
+    const std::string &Character::getObjectId() const { return this->objectId; }
     const SpriteSheet *Character::getSpriteSheet() const { return this->spriteSheet; }
     const SpriteInfo *Character::getSpriteInfo() const { return this->spriteInfo; }
 
