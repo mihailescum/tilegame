@@ -1,9 +1,15 @@
 .vscode/
 .directory
-build/
 
 # Make and CMake
 *Makefile
 *.cmake
 CMakeCache.txt
 *CMakeFiles
+
+# Allow content in the build directory
+!build/
+build/*
+!build/bin
+build/bin/*
+!build/bin/content
