@@ -10,7 +10,7 @@
 
 namespace tilegame::worldscene
 {
-    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), resourceManager(resourceManager) {}
+    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), registry(scene.getRegistry()),  resourceManager(resourceManager) {}
 
     void ContentSystem::initialize() {}
 
@@ -41,7 +41,7 @@ namespace tilegame::worldscene
             entity.add<engine::PositionComponent>(glm::vec2(0.0));
             entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight(), 1 - q);
             if (layer->isVisible())
-                entity.add<engine::VisiblityComponent>();
+                entity.add<engine::VisibilityComponent>();
             if (!layer->getObjectId().empty())
                 entity.addTag(layer->getObjectId());
 
@@ -110,7 +110,7 @@ namespace tilegame::worldscene
                     entity.add<engine::MoveComponent>(engine::MoveComponent::MoveDirection::None, 128.0);
                     entity.add<engine::PositionComponent>();
                     engine::CameraComponent &cameraComponent = entity.add<engine::CameraComponent>();
-                    entity.add<engine::VisiblityComponent>();
+                    entity.add<engine::VisibilityComponent>();
 
                     cameraComponent.viewport = &scene.getGame().getGraphicsDevice()->getViewport();
                     this->scene.getRegistry().patch<engine::PositionComponent>(entity, [](auto &pos) { pos.position = glm::vec2(0.0); });
@@ -123,15 +123,22 @@ namespace tilegame::worldscene
     {
         engine::Entity entity = scene.createEntity();
         engine::SpriteComponent &spriteComponent = entity.add<engine::SpriteComponent>(character.getSpriteSheet()->getTexture(), engine::Rectangle());
-        engine::SpriteInfoComponent &spriteSheetComponent = entity.add<engine::SpriteInfoComponent>(character.getSpriteInfo(), "FRONT", 0);
+        engine::SpriteInfoComponent &spriteSheetComponent = entity.add<engine::SpriteInfoComponent>();
         engine::RenderComponent &renderComponent = entity.add<engine::RenderComponent>(character.getSpriteSheet()->getFrameWidth(), character.getSpriteSheet()->getFrameHeight(), 1.0);
         engine::PositionComponent &positionComponent = entity.add<engine::PositionComponent>();
+        engine::AnimationComponent &animationComponent = entity.add<engine::AnimationComponent>(0.5);
 
         if (!character.getObjectId().empty())
             entity.addTag(character.getObjectId());
 
-        const engine::SpriteInfo *spriteInfo = character.getSpriteInfo();
-        spriteComponent.sourceRectangle = spriteInfo->spriteStates.at(spriteSheetComponent.currentState)[spriteSheetComponent.currentFrame];
+        registry.patch<engine::SpriteInfoComponent>(
+            entity,
+            [=](auto &spriteInfo) {
+                spriteInfo.spriteInfo = character.getSpriteInfo();
+                spriteInfo.currentState = "FRONT_MOVING";
+                spriteInfo.currentFrame = 0;
+            });
+
         return entity;
     }
 } // namespace tilegame::worldscene

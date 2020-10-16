@@ -38,10 +38,6 @@ set (SOURCES_ENGINE_SCENE
         ${SOURCES_PATH}/scene/components/spriteinfocomponent.cpp
 )
 
-set (SOURCES_ENGINE_SPRITES
-        ${SOURCES_PATH}/sprites/sprite.cpp
-)
-
 # Header Files
 set (HEADER_PATH include)
 
@@ -86,11 +82,8 @@ set (HEADER_ENGINE_SCENE
         ${HEADER_PATH}/scene/components/inputcomponent.hpp
         ${HEADER_PATH}/scene/components/spritecomponent.hpp
         ${HEADER_PATH}/scene/components/spriteinfocomponent.hpp
-        ${HEADER_PATH}/scene/components/visiblitycomponent.hpp
-)
-
-set (HEADER_ENGINE_SPRITES
-        ${HEADER_PATH}/sprites/sprite.hpp
+        ${HEADER_PATH}/scene/components/visibilitycomponent.hpp
+        ${HEADER_PATH}/scene/components/animationcomponent.hpp
 )
 
 # Create Library

@@ -10,6 +10,8 @@ namespace tilegame::worldscene
     {
     private:
         WorldScene &scene;
+        entt::registry &registry;
+
         engine::ResourceManager &resourceManager;
 
         void loadCharacters() const;

@@ -18,7 +18,7 @@ namespace tilegame::worldscene
             return lhs.z < rhs.z;
         });
 
-        auto drawables = this->registry.view<engine::RenderComponent, engine::PositionComponent, engine::VisiblityComponent>();
+        auto drawables = this->registry.view<engine::RenderComponent, engine::PositionComponent, engine::VisibilityComponent>();
         auto cameras = this->registry.view<engine::CameraComponent>();
         for (auto entity : cameras)
         {

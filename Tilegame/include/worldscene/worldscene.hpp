@@ -12,6 +12,8 @@
 #include "worldscene/camerasystem.hpp"
 #include "worldscene/movementsystem.hpp"
 #include "worldscene/rendersystem.hpp"
+#include "worldscene/animationsystem.hpp"
+#include "worldscene/spritesystem.hpp"
 
 namespace tilegame::worldscene
 {
@@ -26,6 +28,8 @@ namespace tilegame::worldscene
         std::unique_ptr<CameraSystem> cameraSystem;
         std::unique_ptr<MovementSystem> movementSystem;
         std::unique_ptr<RenderSystem> renderSystem;
+        std::unique_ptr<AnimationSystem> animationSystem;
+        std::unique_ptr<SpriteSystem> spriteSystem;
 
         void createSystems();
         engine::Entity *findByObjectId(const std::string &object_id);

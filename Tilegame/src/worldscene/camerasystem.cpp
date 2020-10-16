@@ -32,5 +32,6 @@ namespace tilegame::worldscene
                 0.0);
             camera.transform = glm::translate(camera.transform, translate);
         }
+        this->cameraObserver->clear();
     }
 } // namespace tilegame::worldscene

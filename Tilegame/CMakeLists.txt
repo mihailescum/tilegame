@@ -13,6 +13,8 @@ set (SOURCES_WORLDSCENE
         ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/camerasystem.cpp
         ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/movementsystem.cpp
         ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/rendersystem.cpp
+        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/animationsystem.cpp
+        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/spritesystem.cpp
 )
         
 # Header Files
@@ -29,6 +31,8 @@ set (HEADER_WORLDSCENE
         ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/camerasystem.hpp
         ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/movementsystem.hpp
         ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/rendersystem.hpp
+        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/animationsystem.hpp
+        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/spritesystem.hpp
 )
  
 # Create Executable

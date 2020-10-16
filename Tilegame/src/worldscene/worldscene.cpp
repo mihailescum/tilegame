@@ -42,6 +42,12 @@ namespace tilegame::worldscene
 
         this->renderSystem = std::make_unique<RenderSystem>(*this, this->spriteBatch);
         this->renderSystem->initialize();
+
+        this->animationSystem = std::make_unique<AnimationSystem>(*this);
+        this->animationSystem->initialize();
+
+        this->spriteSystem = std::make_unique<SpriteSystem>(*this);
+        this->spriteSystem->initialize();
     }
 
     void WorldScene::loadContent()
@@ -63,6 +69,8 @@ namespace tilegame::worldscene
     {
         movementSystem->update(deltaTime);
         cameraSystem->update(deltaTime);
+        animationSystem->update(deltaTime);
+        spriteSystem->update();
     }
 
     void WorldScene::draw()
@@ -104,11 +112,11 @@ namespace tilegame::worldscene
 
         if (show)
         {
-            entity->add<engine::VisiblityComponent>();
+            entity->add<engine::VisibilityComponent>();
         }
         else
         {
-            entity->remove<engine::VisiblityComponent>();
+            entity->remove<engine::VisibilityComponent>();
         }
     }
 
