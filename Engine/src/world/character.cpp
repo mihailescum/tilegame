@@ -40,15 +40,19 @@ namespace engine
         std::string spriteSheetSource = jsonDocument->value("sprite_sheet", "");
         if (spriteSheetSource.empty())
         {
-            std::stringstream ss;
-            ss << "'sprite_sheet' field does not exist or is empty (file: " << this->resourcePath << ")." << std::endl;
-            Log::e(ss.str());
+            Log::e("'sprite_sheet' field does not exist or is empty (file: ", this->resourcePath, ").");
             return false;
         }
 
         std::filesystem::path spriteSheetPath = std::filesystem::canonical(this->resourcePath.parent_path() / spriteSheetSource);
         this->spriteSheet = resourceManager.loadResource<SpriteSheet>("", spriteSheetPath);
-        this->spriteInfo = &this->spriteSheet->getSpriteInfo(spriteId);
+        this->spriteInfo = this->spriteSheet->getSpriteInfo(spriteId);
+        if (!this->spriteInfo)
+        {
+            Log::e("Given sprite_id (", spriteId, ") does not exist in the sprite sheet (", spriteSheetPath,") (file: ", this->resourcePath, ").");
+            return false;
+        }
+
         return true;
     }
 

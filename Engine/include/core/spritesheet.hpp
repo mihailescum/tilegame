@@ -26,8 +26,8 @@ namespace engine
         std::unordered_map<int, std::unique_ptr<SpriteInfo>> sprites;
 
         const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
-        void createSprites(const nlohmann::json &spritesDocument);
-        void createSpriteInformation(const nlohmann::json &spriteInformationsElement);
+        const std::vector<int> createSprites(const nlohmann::json &spritesDocument);
+        void createSpriteInformation(const nlohmann::json &spriteInformationsDocument, const std::vector<int> &spriteIds);
 
     public:
         SpriteSheet() {}
@@ -41,6 +41,6 @@ namespace engine
         const int getFrameWidth() const;
         const int getFrameHeight() const;
 
-        const SpriteInfo &getSpriteInfo(const int spriteId) const;
+        const SpriteInfo *getSpriteInfo(const int spriteId) const;
     };
 } // namespace engine

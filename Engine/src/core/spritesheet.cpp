@@ -73,21 +73,27 @@ namespace engine
         this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
 
         // Each sprite is represented by one terrain type
-        const nlohmann::json &spritesElement = jsonDocument->at("terrains");
-        this->createSprites(spritesElement);
-        const nlohmann::json &spriteInformationsElement = jsonDocument->at("tiles");
-        this->createSpriteInformation(spriteInformationsElement);
+        const nlohmann::json &spritesDocument = jsonDocument->at("terrains");
+        const std::vector<int> spriteInfos = this->createSprites(spritesDocument);
+        const nlohmann::json &spriteInformationsDocument = jsonDocument->at("tiles");
+        this->createSpriteInformation(spriteInformationsDocument, spriteInfos);
 
         return true;
     }
 
-    void SpriteSheet::createSprites(const nlohmann::json &spritesDocument)
+    const std::vector<int> SpriteSheet::createSprites(const nlohmann::json &spritesDocument)
     {
+        std::vector<int> result;
         for (const nlohmann::json &spriteDocument : spritesDocument)
         {
             const int defaultState = spriteDocument.at("tile");
 
-            const nlohmann::json &propertiesDocument = spriteDocument.at("properties");
+            const nlohmann::json &propertiesDocument = spriteDocument.value("properties", nlohmann::json::array());
+            if (propertiesDocument.empty())
+            {
+                Log::w("Sprite represented by tile ", defaultState, "has no id declared. It is skipped.");
+                continue;
+            }
             int id;
             for (const nlohmann::json &propertyDocument : propertiesDocument)
             {
@@ -101,30 +107,38 @@ namespace engine
                         id = std::stoi(propertyDocument.value("value", "-1"));
                 }
             }
-            std::unique_ptr<SpriteInfo> sprite = std::make_unique<SpriteInfo>(id);
-            this->sprites.emplace(id, std::move(sprite));
+            result.push_back(id);
         }
+        return result;
     }
 
-    void SpriteSheet::createSpriteInformation(const nlohmann::json &spriteInformationsElement)
+    void SpriteSheet::createSpriteInformation(const nlohmann::json &spriteInformationsDocument, const std::vector<int> &spriteIds)
     {
-        for (const nlohmann::json &spriteInformationDocument : spriteInformationsElement)
+        for (const nlohmann::json &spriteInformationDocument : spriteInformationsDocument)
         {
             const int frameId = spriteInformationDocument.at("id");
             const std::vector<int> terrain = spriteInformationDocument.value<std::vector<int>>("terrain", {});
-            int spriteId = -1;
+            int terrainId = -1;
             for (int id : terrain)
             {
                 if (id >= 0)
                 {
-                    spriteId = id;
+                    terrainId = id;
                     break;
                 }
             }
-            if (spriteId < 0)
+            if (terrainId < 0)
                 continue;
 
-            const nlohmann::json &propertiesDocument = spriteInformationDocument.at("properties");
+            int spriteId = spriteIds[terrainId];
+
+            const nlohmann::json &propertiesDocument = spriteInformationDocument.value("properties", nlohmann::json::array());
+            if (propertiesDocument.empty())
+            {
+                Log::w("Frame ", frameId, "is part of the sprite with id ", spriteId, ", but it has no stated attached. It is skipped.");
+                continue;
+            }
+
             std::string state;
             for (const nlohmann::json &propertyDocument : propertiesDocument)
             {
@@ -137,11 +151,17 @@ namespace engine
                 }
             }
 
+            if (this->sprites.count(spriteId) == 0)
+            {
+                this->sprites.emplace(spriteId, std::make_unique<SpriteInfo>(spriteId));
+            }
+
             Rectangle frameSourceRect(
                 (frameId % this->columns) * this->frameWidth,
                 (frameId / this->columns) * this->frameHeight,
                 this->frameWidth,
                 this->frameHeight);
+
             this->sprites[spriteId]->addSpriteState(state, frameSourceRect);
         }
     }
@@ -150,8 +170,15 @@ namespace engine
     const int SpriteSheet::getFrameWidth() const { return this->frameWidth; }
     const int SpriteSheet::getFrameHeight() const { return this->frameHeight; }
 
-    const SpriteInfo &SpriteSheet::getSpriteInfo(const int spriteId) const
+    const SpriteInfo *SpriteSheet::getSpriteInfo(const int spriteId) const
     {
-        return *this->sprites.at(spriteId).get();
+        if (this->sprites.count(spriteId))
+        {
+            return this->sprites.at(spriteId).get();
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 } // namespace engine

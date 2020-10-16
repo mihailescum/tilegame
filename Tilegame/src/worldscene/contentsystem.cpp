@@ -135,7 +135,7 @@ namespace tilegame::worldscene
             entity,
             [=](auto &spriteInfo) {
                 spriteInfo.spriteInfo = character.getSpriteInfo();
-                spriteInfo.currentState = "FRONT_MOVING";
+                spriteInfo.currentState = "FRONT";
                 spriteInfo.currentFrame = 0;
             });
 
