@@ -24,7 +24,7 @@ namespace tilegame::worldscene
             engine::CameraComponent &camera = cameras.get<engine::CameraComponent>(entity);
             const engine::PositionComponent position = cameras.get<engine::PositionComponent>(entity);
 
-            float scale = 1.0f;
+            double scale = 1.0f;
             camera.transform = glm::scale(glm::mat4(1.0), glm::vec3(scale));
             glm::vec3 translate(
                 floor(-(position.x() - camera.viewport->width / 2) * scale) / scale,

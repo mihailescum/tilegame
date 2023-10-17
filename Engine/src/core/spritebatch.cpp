@@ -47,10 +47,10 @@ namespace engine
 
         const Viewport &viewport = this->graphicsDevice.getViewport();
         glm::mat4 projection = glm::ortho(
-            (float)viewport.x,
-            (float)viewport.width,
-            (float)viewport.height,
-            (float)viewport.y,
+            static_cast<float>(viewport.x),
+            static_cast<float>(viewport.width),
+            static_cast<float>(viewport.height),
+            static_cast<float>(viewport.y),
             -1.0f,
             1.0f);
 

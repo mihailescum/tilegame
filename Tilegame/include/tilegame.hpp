@@ -3,13 +3,15 @@
 
 #include "engine.hpp"
 
+#include "worldscene/worldscene.hpp"
+
 namespace tilegame
 {
     class Tilegame : public engine::Game
     {
     public:
         Tilegame() : Game() {}
-        Tilegame(const Tilegame& game) = delete;
+        Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 
         engine::SpriteBatch *getSpriteBatch() const;
@@ -28,6 +30,8 @@ namespace tilegame
         double timer = 0;
 
         std::unique_ptr<engine::SpriteBatch> spriteBatch;
+
+        std::unique_ptr<worldscene::WorldScene> scene;
     };
 } // namespace tilegame
 

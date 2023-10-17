@@ -12,8 +12,6 @@
 
 namespace tilegame
 {
-    std::unique_ptr<worldscene::WorldScene> scene;
-
     void Tilegame::initialize()
     {
         Game::initialize();

@@ -76,8 +76,8 @@
                  "type":"NPC",
                  "visible":true,
                  "width":32,
-                 "x":480,
-                 "y":192
+                 "x":96,
+                 "y":224
                 }, 
                 {
                  "height":32,
@@ -93,8 +93,8 @@
                  "type":"NPC",
                  "visible":true,
                  "width":32,
-                 "x":128,
-                 "y":192
+                 "x":192,
+                 "y":320
                 }],
          "opacity":1,
          "type":"objectgroup",

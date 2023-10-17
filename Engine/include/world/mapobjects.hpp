@@ -12,10 +12,10 @@ namespace engine
     public:
         virtual ~MapObject() {}
 
-        float x;
-        float y;
-        float width;
-        float height;
+        double x;
+        double y;
+        double width;
+        double height;
     };
 
     struct NpcObject : public MapObject

@@ -6,7 +6,6 @@
 
 #include "engine.hpp"
 
-#include "tilegame.hpp"
 #include "worldscene/contentsystem.hpp"
 #include "worldscene/inputsystem.hpp"
 #include "worldscene/camerasystem.hpp"
@@ -14,6 +13,11 @@
 #include "worldscene/rendersystem.hpp"
 #include "worldscene/animationsystem.hpp"
 #include "worldscene/spritesystem.hpp"
+
+namespace tilegame
+{
+    class Tilegame;
+}
 
 namespace tilegame::worldscene
 {
@@ -36,6 +40,7 @@ namespace tilegame::worldscene
 
     public:
         WorldScene(Tilegame &game);
+        ~WorldScene() = default;
 
         virtual void initialize() override;
         virtual void loadContent() override;
@@ -45,6 +50,6 @@ namespace tilegame::worldscene
         virtual void draw() override;
 
         void E_show(const std::string &objectId, const bool show);
-        void E_setPosition(const std::string &objectId, const float x, const float y);
+        void E_setPosition(const std::string &objectId, const double x, const double y);
     };
-} // namespace tilegame
+} // namespace tilegame::worldscene

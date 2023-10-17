@@ -38,11 +38,11 @@ namespace engine
         }
 
         MoveDirection direction;
-        double speed;
+        double velocity;
 
         MoveComponent() = default;
         MoveComponent(const MoveComponent &) = default;
-        MoveComponent(const MoveDirection &direction, const double speed)
-            : direction(direction), speed(speed) {}
+        MoveComponent(const MoveDirection &direction, const double velocity)
+            : direction(direction), velocity(velocity) {}
     };
 } // namespace engine

@@ -3,10 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "sprites/sprite_sheet.json",
+    "activeFile": "world/map1.json",
     "expandedProjectPaths": [
-        "world",
-        "sprites"
+        "sprites",
+        "world"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -22,8 +22,8 @@
             "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 372.5,
-                "y": 331.5
+                "x": 510.5,
+                "y": 660.5
             }
         },
         "world/sprite_sheet.json": {
@@ -43,8 +43,8 @@
     "property.type": "string",
     "recentFiles": [
         "world/lpc_texture_atlas.json",
-        "world/map1.json",
         "sprites/sprite_sheet.json",
+        "world/map1.json",
         "world/sprite_sheet.json"
     ],
     "tileset.lastUsedFormat": "json"

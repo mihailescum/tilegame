@@ -6,16 +6,7 @@ set (SOURCES_GAME
 )
 
 set (SOURCES_WORLDSCENE_PATH worldscene)
-set (SOURCES_WORLDSCENE
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/worldscene.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/contentsystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/inputsystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/camerasystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/movementsystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/rendersystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/animationsystem.cpp
-        ${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/spritesystem.cpp
-)
+file (GLOB SOURCES_WORLDSCENE "${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/*.cpp")
         
 # Header Files
 set (HEADER_PATH include)
@@ -24,16 +15,7 @@ set (HEADER_GAME
 )
 
 set (HEADER_WORLDSCENE_PATH worldscene)
-set (HEADER_WORLDSCENE
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/worldscene.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/contentsystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/inputsystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/camerasystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/movementsystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/rendersystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/animationsystem.hpp
-        ${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/spritesystem.hpp
-)
+file (GLOB HEADER_WORLDSCENE "${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/*.hpp")
  
 # Create Executable
 set(EXECUTABLE_NAME tilegame)

@@ -6,11 +6,11 @@ namespace engine
     {
     public:
         Rectangle() {}
-        Rectangle(const int x, const int y, const int width, const int height) : x(x), y(y), width(width), height(height) {}
+        Rectangle(const double x, const double y, const double width, const double height) : x(x), y(y), width(width), height(height) {}
         
-        int x;
-        int y;
-        int height;
-        int width;
+        double x;
+        double y;
+        double height;
+        double width;
     };
 } // namespace engine

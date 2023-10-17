@@ -27,6 +27,7 @@
 #include "scene/scene.hpp"
 #include "scene/entity.hpp"
 #include "scene/observer.hpp"
+
 #include "scene/components/childcomponent.hpp"
 #include "scene/components/movecomponent.hpp"
 #include "scene/components/positioncomponent.hpp"
@@ -38,3 +39,5 @@
 #include "scene/components/spriteinfocomponent.hpp"
 #include "scene/components/visibilitycomponent.hpp"
 #include "scene/components/animationcomponent.hpp"
+#include "scene/components/collisioncomponent.hpp"
+#include "scene/components/boundingboxcomponent.hpp"

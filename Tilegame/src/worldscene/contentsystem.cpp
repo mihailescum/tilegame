@@ -10,7 +10,7 @@
 
 namespace tilegame::worldscene
 {
-    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), registry(scene.getRegistry()),  resourceManager(resourceManager) {}
+    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), registry(scene.getRegistry()), resourceManager(resourceManager) {}
 
     void ContentSystem::initialize() {}
 
@@ -38,7 +38,7 @@ namespace tilegame::worldscene
             engine::Entity entity = scene.createEntity();
             entity.add<engine::TileLayerComponent>(layer->getData(), map.getWidth(), map.getHeight());
             entity.add<engine::TilesetComponent>(tilesetComponent);
-            entity.add<engine::PositionComponent>(glm::vec2(0.0));
+            entity.add<engine::PositionComponent>(glm::dvec2(0.0));
             entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight(), 1 - q);
             if (layer->isVisible())
                 entity.add<engine::VisibilityComponent>();
@@ -113,7 +113,10 @@ namespace tilegame::worldscene
                     entity.add<engine::VisibilityComponent>();
 
                     cameraComponent.viewport = &scene.getGame().getGraphicsDevice()->getViewport();
-                    this->scene.getRegistry().patch<engine::PositionComponent>(entity, [](auto &pos) { pos.position = glm::vec2(0.0); });
+                    scene.E_setPosition(character->getObjectId(), 128, 128);
+                }
+                else if (character->getObjectId() == "1") {
+                    entity.add<engine::MoveComponent>();
                 }
             }
         }
@@ -122,22 +125,53 @@ namespace tilegame::worldscene
     engine::Entity ContentSystem::createCharacterEntity(engine::Character &character) const
     {
         engine::Entity entity = scene.createEntity();
-        engine::SpriteComponent &spriteComponent = entity.add<engine::SpriteComponent>(character.getSpriteSheet()->getTexture(), engine::Rectangle());
-        engine::SpriteInfoComponent &spriteSheetComponent = entity.add<engine::SpriteInfoComponent>();
-        engine::RenderComponent &renderComponent = entity.add<engine::RenderComponent>(character.getSpriteSheet()->getFrameWidth(), character.getSpriteSheet()->getFrameHeight(), 1.0);
-        engine::PositionComponent &positionComponent = entity.add<engine::PositionComponent>();
-        engine::AnimationComponent &animationComponent = entity.add<engine::AnimationComponent>(0.5);
+        entity.add<engine::PositionComponent>();
 
-        if (!character.getObjectId().empty())
-            entity.addTag(character.getObjectId());
+        entity.add<engine::SpriteComponent>();
+        registry.patch<engine::SpriteComponent>(
+            entity,
+            [=](auto &spriteComponent) {
+                spriteComponent.texture = character.getSpriteSheet()->getTexture();
+            });
 
+        entity.add<engine::SpriteInfoComponent>();
         registry.patch<engine::SpriteInfoComponent>(
             entity,
-            [=](auto &spriteInfo) {
-                spriteInfo.spriteInfo = character.getSpriteInfo();
-                spriteInfo.currentState = "FRONT";
-                spriteInfo.currentFrame = 0;
+            [=](auto &spriteInfoComponent) {
+                spriteInfoComponent.spriteInfo = character.getSpriteInfo();
+                spriteInfoComponent.currentState = "FRONT";
+                spriteInfoComponent.currentFrame = 0;
             });
+
+        entity.add<engine::RenderComponent>();
+        registry.patch<engine::RenderComponent>(
+            entity,
+            [=](auto &renderComponent) {
+                renderComponent.z = 1.0;
+                renderComponent.width = character.getSpriteSheet()->getFrameWidth();
+                renderComponent.height = character.getSpriteSheet()->getFrameHeight();
+            });
+
+        entity.add<engine::AnimationComponent>();
+        registry.patch<engine::AnimationComponent>(
+            entity,
+            [=](auto &animationComponent) {
+                animationComponent.tickDuration = 0.5;
+            });
+
+        entity.add<engine::CollisionComponent>();
+
+        entity.add<engine::BoundingBoxComponent>();
+        registry.patch<engine::BoundingBoxComponent>(
+            entity,
+            [=](auto &boundingBoxComponent) {
+                boundingBoxComponent.boundingBox = engine::Rectangle(0, 0, 32, 32);//engine::Rectangle(1, 16, 30, 16);
+            });
+
+        if (!character.getObjectId().empty())
+        {
+            entity.addTag(character.getObjectId());
+        }
 
         return entity;
     }

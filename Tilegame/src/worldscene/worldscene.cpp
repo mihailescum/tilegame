@@ -67,10 +67,11 @@ namespace tilegame::worldscene
 
     void WorldScene::update(const double deltaTime)
     {
-        movementSystem->update(deltaTime);
-        cameraSystem->update(deltaTime);
         animationSystem->update(deltaTime);
         spriteSystem->update();
+
+        movementSystem->update(deltaTime);
+        cameraSystem->update(deltaTime);
     }
 
     void WorldScene::draw()
@@ -120,7 +121,7 @@ namespace tilegame::worldscene
         }
     }
 
-    void WorldScene::E_setPosition(const std::string &objectId, const float x, const float y)
+    void WorldScene::E_setPosition(const std::string &objectId, const double x, const double y)
     {
         engine::Entity *entity = findByObjectId(objectId);
         if (!entity) {
