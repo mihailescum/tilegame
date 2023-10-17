@@ -11,9 +11,9 @@ namespace engine
     struct SpriteInfo
     {
     public:
-        SpriteInfo(const int id) : id(id) {}
+        SpriteInfo(std::size_t id) : id(id) {}
 
-        const int id;
+        std::size_t id;
         std::unordered_map<std::string, std::vector<Rectangle>> spriteStates;
 
         void addSpriteState(const std::string &name, const Rectangle frameSourceRect);

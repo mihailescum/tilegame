@@ -18,7 +18,7 @@ namespace engine
         bool checkCompileErrors(GLuint shader, std::string type) const;
         GLuint compileShader(const std::string &source, const std::string &name, const GLenum shaderType) const;
         // Returns true if compilation was successful
-        bool compileProgram(const GLuint vertex, const GLuint geometry, const GLuint fragment);
+        bool compileProgram(GLuint vertex, GLuint geometry, GLuint fragment);
 
         std::string loadShaderSource(const std::string &path) const;
 
@@ -40,6 +40,6 @@ namespace engine
         /*
             @return a GLuint object that represents the shader program
         */
-        GLuint getglShaderProgram() const;
+        GLuint getglShaderProgram() const { return glShaderProgram; }
     };
 } // namespace engine

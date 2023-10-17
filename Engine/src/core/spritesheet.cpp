@@ -69,8 +69,12 @@ namespace engine
             Log::e("Image (", imageSource, ") has to be a valid path (file: ", this->resourcePath, ").");
             return false;
         }
-        std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
-        this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
+        auto imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
+        auto texture_ptr = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
+        if (texture_ptr)
+            this->texture = *texture_ptr;
+        else
+            throw "Texture not found";
 
         // Each sprite is represented by one terrain type
         const nlohmann::json &spritesDocument = jsonDocument->at("terrains");
@@ -114,7 +118,7 @@ namespace engine
 
     void SpriteSheet::createSpriteInformation(const nlohmann::json &spriteInformationsDocument, const std::vector<int> &spriteIds)
     {
-        for (const nlohmann::json &spriteInformationDocument : spriteInformationsDocument)
+        /*for (const nlohmann::json &spriteInformationDocument : spriteInformationsDocument)
         {
             const int frameId = spriteInformationDocument.at("id");
             const std::vector<int> terrain = spriteInformationDocument.value<std::vector<int>>("terrain", {});
@@ -153,7 +157,7 @@ namespace engine
 
             if (this->sprites.count(spriteId) == 0)
             {
-                this->sprites.emplace(spriteId, std::make_unique<SpriteInfo>(spriteId));
+                this->sprites.emplace(spriteId, SpriteInfo(spriteId));
             }
 
             Rectangle frameSourceRect(
@@ -162,19 +166,15 @@ namespace engine
                 this->frameWidth,
                 this->frameHeight);
 
-            this->sprites[spriteId]->addSpriteState(state, frameSourceRect);
-        }
+            this->sprites[spriteId].addSpriteState(state, frameSourceRect);
+        }*/
     }
-
-    const Texture2D *SpriteSheet::getTexture() const { return this->texture; }
-    const int SpriteSheet::getFrameWidth() const { return this->frameWidth; }
-    const int SpriteSheet::getFrameHeight() const { return this->frameHeight; }
 
     const SpriteInfo *SpriteSheet::getSpriteInfo(const int spriteId) const
     {
         if (this->sprites.count(spriteId))
         {
-            return this->sprites.at(spriteId).get();
+            return &this->sprites.at(spriteId);
         }
         else
         {

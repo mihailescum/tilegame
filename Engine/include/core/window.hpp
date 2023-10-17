@@ -12,12 +12,12 @@ namespace engine
         GLFWwindow *glfwWindow;
 
         std::string title;
-        int windowWidth;
-        int windowHeight;
-        int resizable = GLFW_FALSE;
+        unsigned int width;
+        unsigned int height;
+        bool resizable = GLFW_FALSE;
 
     public:
-        Window(const int width, const int height);
+        Window(unsigned int width, unsigned int height);
         virtual ~Window();
 
         /*
@@ -25,10 +25,10 @@ namespace engine
         */
         int initialize();
         /*
-            Indicates that the window should close at the next possible point in time 
+            Indicates that the window should close at the next possible point in time
         */
         bool shouldClose() const;
-        void setPosition(const int x, const int y);
+        void setPosition(int x, int y);
         bool isKeyPressed(int keyCode) const;
 
         GLFWwindow *getGLFWwindow() const;
@@ -36,12 +36,12 @@ namespace engine
         void setResizable(const bool resizable);
         std::string getTitle() const;
         void setTitle(const std::string &title);
-        int getWindowWidth() const;
-        int getWindowHeight() const;
+        unsigned int getWidth() const { return width; }
+        unsigned int getHeight() const { return height; }
         /*
             Set the dimensions of the window. Passing negative values will leave the properties unchanged
         */
-        void setWindowDimensions(const int width, const int height);
+        void setWindowDimensions(unsigned int width, unsigned int height);
 
         //__event void windowSizeChanged(int width, int height);
     };

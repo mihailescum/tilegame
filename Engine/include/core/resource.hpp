@@ -10,7 +10,7 @@ namespace engine
     class Resource
     {
     protected:
-        unsigned resourceId;
+        std::size_t resourceId;
         std::filesystem::path resourcePath;
         std::string resourceName;
 
@@ -21,8 +21,8 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) = 0;
         virtual void unloadResource() = 0;
 
-        void setResourceId(unsigned id);
-        unsigned getResourceId() const;
+        void setResourceId(std::size_t id);
+        std::size_t getResourceId() const;
 
         void setResourcePath(const std::filesystem::path &path);
         std::filesystem::path getResourcePath() const;

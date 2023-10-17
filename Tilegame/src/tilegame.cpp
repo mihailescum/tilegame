@@ -16,37 +16,37 @@ namespace tilegame
     {
         Game::initialize();
 
-        this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
+        // this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
 
-        //glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        window->setPosition(700, 400);
+        // glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // window->setPosition(700, 400);
 
-        scene = std::make_unique<worldscene::WorldScene>(*this);
-        scene->initialize();
+        // scene = std::make_unique<worldscene::WorldScene>(*this);
+        // scene->initialize();
     }
 
     void Tilegame::loadContent()
     {
         Game::loadContent();
 
-        this->spriteBatch->create();
-        scene->loadContent();
+        // this->spriteBatch->create();
+        // scene->loadContent();
     }
 
     void Tilegame::unloadContent()
     {
-        scene->unloadContent();
-        this->spriteBatch.reset();
+        // scene->unloadContent();
+        // this->spriteBatch.reset();
     }
 
     void Tilegame::processInput()
     {
-        scene->processInput();
+        // scene->processInput();
     }
 
     void Tilegame::update(const double deltaTime)
     {
-        scene->update(deltaTime);
+        // scene->update(deltaTime);
 
         timer += deltaTime;
         updates++;
@@ -65,12 +65,13 @@ namespace tilegame
     {
         graphicsDevice->clear(engine::Color::CornflowerBlue);
 
-        scene->draw();
+        // scene->draw();
 
         frames++;
     }
 
-    engine::SpriteBatch *Tilegame::getSpriteBatch() const {
+    engine::SpriteBatch *Tilegame::getSpriteBatch() const
+    {
         return this->spriteBatch.get();
     }
 } // namespace tilegame

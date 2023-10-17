@@ -5,8 +5,8 @@ namespace engine
     struct Color
     {
     public:
-        Color(const double r, const double g, const double b, const double a) : r(r), g(g), b(b), a(a) {}
-        
+        constexpr Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {}
+
         double r;
         double g;
         double b;

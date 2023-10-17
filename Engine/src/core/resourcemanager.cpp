@@ -8,20 +8,20 @@ namespace engine
 {
     ResourceManager::~ResourceManager()
     {
-        this->unloadResources();
+        unloadResources();
     }
 
     // properly de-allocates all loaded resources
     void ResourceManager::unloadResources()
     {
-        for (auto &iter : this->resources)
+        for (auto &iter : resources)
             iter.second->unloadResource();
     }
 
     Resource *ResourceManager::getResource(const std::string &name) const
     {
-        if (this->resources.count(name) != 0)
-            return this->resources.at(name).get();
+        if (resources.count(name) != 0)
+            return resources.at(name).get();
         else
             return nullptr;
     }

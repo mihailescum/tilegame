@@ -17,32 +17,32 @@ namespace engine
 
     void Shader::unloadResource()
     {
-        if (this->glShaderProgram != 0)
+        if (glShaderProgram != 0)
         {
-            glDeleteProgram(this->glShaderProgram);
-            this->glShaderProgram = 0;
+            glDeleteProgram(glShaderProgram);
+            glShaderProgram = 0;
         }
     }
 
     bool Shader::loadResource(ResourceManager &resourceManager, va_list args)
     {
-        std::string vertexPath(va_arg(args, const char*));
-        std::string geometryPath(va_arg(args, const char*));
-        std::string fragmentPath(va_arg(args, const char*));
+        std::string vertexPath(va_arg(args, const char *));
+        std::string geometryPath(va_arg(args, const char *));
+        std::string fragmentPath(va_arg(args, const char *));
 
-        std::string vertexSource = this->loadShaderSource(vertexPath);
+        std::string vertexSource = loadShaderSource(vertexPath);
         if (vertexSource.empty())
             return -1;
 
         std::string geometrySource = "";
         if (!geometryPath.empty())
-            geometrySource = this->loadShaderSource(geometryPath);
+            geometrySource = loadShaderSource(geometryPath);
 
-        std::string fragmentSource = this->loadShaderSource(fragmentPath);
+        std::string fragmentSource = loadShaderSource(fragmentPath);
         if (fragmentSource.empty())
             return -1;
 
-        if (!this->compile(vertexSource, geometrySource, fragmentSource))
+        if (!compile(vertexSource, geometrySource, fragmentSource))
             return 0;
         return -1;
     }
@@ -78,17 +78,17 @@ namespace engine
         glShaderSource(result, 1, &shaderCode, NULL);
         glCompileShader(result);
 
-        bool errors = this->checkCompileErrors(result, name);
+        bool errors = checkCompileErrors(result, name);
         if (errors)
             return 0;
         else
             return result;
     }
 
-    bool Shader::compileProgram(const GLuint vertex, const GLuint geometry, const GLuint fragment)
+    bool Shader::compileProgram(GLuint vertex, GLuint geometry, GLuint fragment)
     {
         // shader Program
-        this->glShaderProgram = glCreateProgram();
+        glShaderProgram = glCreateProgram();
         glAttachShader(glShaderProgram, vertex);
         if (geometry != 0)
             glAttachShader(glShaderProgram, geometry);
@@ -104,7 +104,7 @@ namespace engine
         bool errors = checkCompileErrors(glShaderProgram, "PROGRAM");
         if (errors)
         {
-            this->unloadResource();
+            unloadResource();
             return false;
         }
 
@@ -119,30 +119,25 @@ namespace engine
 
         if (vertexSource.empty())
             return false;
-        vertex = this->compileShader(vertexSource, "VERTEX", GL_VERTEX_SHADER);
+        vertex = compileShader(vertexSource, "VERTEX", GL_VERTEX_SHADER);
         if (!vertex)
             return false;
 
         if (!geometrySource.empty())
         {
-            geometry = this->compileShader(geometrySource, "GEOMETRY", GL_GEOMETRY_SHADER);
+            geometry = compileShader(geometrySource, "GEOMETRY", GL_GEOMETRY_SHADER);
             if (!geometry)
                 return false;
         }
 
         if (fragmentSource.empty())
             return false;
-        fragment = this->compileShader(fragmentSource, "FRAGMENT", GL_FRAGMENT_SHADER);
+        fragment = compileShader(fragmentSource, "FRAGMENT", GL_FRAGMENT_SHADER);
         if (!fragment)
             return false;
 
-        bool compileSuccess = this->compileProgram(vertex, geometry, fragment);
+        bool compileSuccess = compileProgram(vertex, geometry, fragment);
         return compileSuccess;
-    }
-
-    GLuint Shader::getglShaderProgram() const
-    {
-        return this->glShaderProgram;
     }
 
     void Shader::use() const

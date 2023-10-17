@@ -1,16 +1,18 @@
 #pragma once
 
+#include "glad/glad.h"
+
 namespace engine
 {
     struct Rectangle
     {
     public:
         Rectangle() {}
-        Rectangle(const double x, const double y, const double width, const double height) : x(x), y(y), width(width), height(height) {}
-        
-        double x;
-        double y;
-        double height;
-        double width;
+        Rectangle(GLfloat x, GLfloat y, GLuint width, GLuint height) : x(x), y(y), width(width), height(height) {}
+
+        GLfloat x;
+        GLfloat y;
+        GLuint height;
+        GLuint width;
     };
 } // namespace engine

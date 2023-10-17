@@ -6,12 +6,13 @@
 
 namespace engine
 {
-    SpriteBatch::SpriteBatch(const GraphicsDevice &graphicsDevice)
+    SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
         : graphicsDevice(graphicsDevice),
           num_active_textures(0),
           num_active_sprites(0),
           begun(false)
     {
+        create();
     }
 
     SpriteBatch::~SpriteBatch()
@@ -27,8 +28,7 @@ namespace engine
         glGenBuffers(1, &this->VBO);
         glGenVertexArrays(1, &this->VAO);
 
-        this->shader = std::make_unique<Shader>();
-        this->shader->compile(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
+        shader.compile(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
     }
 
     void SpriteBatch::begin(const bool alphaBlendingEnabled)
@@ -143,32 +143,32 @@ namespace engine
         int offset = this->num_active_sprites * 24;
         if (offset >= this->spriteData.size())
         {
-            //Bottom Left
+            // Bottom Left
             this->spriteData.push_back(posBottomLeft.x); // Position
             this->spriteData.push_back(posBottomLeft.y);
             this->spriteData.push_back(uvBottomLeft.x); // Texture coordinate
             this->spriteData.push_back(uvBottomLeft.y);
-            //Top Right
+            // Top Right
             this->spriteData.push_back(posTopRight.x);
             this->spriteData.push_back(posTopRight.y);
             this->spriteData.push_back(uvTopRight.x);
             this->spriteData.push_back(uvTopRight.y);
-            //Top Left
+            // Top Left
             this->spriteData.push_back(posTopLeft.x);
             this->spriteData.push_back(posTopLeft.y);
             this->spriteData.push_back(uvTopLeft.x);
             this->spriteData.push_back(uvTopLeft.y);
-            //Bottom Left
+            // Bottom Left
             this->spriteData.push_back(posBottomLeft.x);
             this->spriteData.push_back(posBottomLeft.y);
             this->spriteData.push_back(uvBottomLeft.x);
             this->spriteData.push_back(uvBottomLeft.y);
-            //Bottom Right
+            // Bottom Right
             this->spriteData.push_back(posBottomRight.x);
             this->spriteData.push_back(posBottomRight.y);
             this->spriteData.push_back(uvBottomRight.x);
             this->spriteData.push_back(uvBottomRight.y);
-            //Top Right
+            // Top Right
             this->spriteData.push_back(posTopRight.x);
             this->spriteData.push_back(posTopRight.y);
             this->spriteData.push_back(uvTopRight.x);
@@ -176,32 +176,32 @@ namespace engine
         }
         else
         {
-            //Bottom Left
+            // Bottom Left
             this->spriteData[offset] = posBottomLeft.x;
             this->spriteData[offset + 1] = posBottomLeft.y;
             this->spriteData[offset + 2] = uvBottomLeft.x;
             this->spriteData[offset + 3] = uvBottomLeft.y;
-            //Top Right
+            // Top Right
             this->spriteData[offset + 4] = posTopRight.x;
             this->spriteData[offset + 5] = posTopRight.y;
             this->spriteData[offset + 6] = uvTopRight.x;
             this->spriteData[offset + 7] = uvTopRight.y;
-            //Top Left
+            // Top Left
             this->spriteData[offset + 8] = posTopLeft.x;
             this->spriteData[offset + 9] = posTopLeft.y;
             this->spriteData[offset + 10] = uvTopLeft.x;
             this->spriteData[offset + 11] = uvTopLeft.y;
-            //Bottom Left
+            // Bottom Left
             this->spriteData[offset + 12] = posBottomLeft.x;
             this->spriteData[offset + 13] = posBottomLeft.y;
             this->spriteData[offset + 14] = uvBottomLeft.x;
             this->spriteData[offset + 15] = uvBottomLeft.y;
-            //Bottom Right
+            // Bottom Right
             this->spriteData[offset + 16] = posBottomRight.x;
             this->spriteData[offset + 17] = posBottomRight.y;
             this->spriteData[offset + 18] = uvBottomRight.x;
             this->spriteData[offset + 19] = uvBottomRight.y;
-            //Top Right
+            // Top Right
             this->spriteData[offset + 20] = posTopRight.x;
             this->spriteData[offset + 21] = posTopRight.y;
             this->spriteData[offset + 22] = uvTopRight.x;
@@ -219,13 +219,12 @@ namespace engine
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
-        shader->use();
+        shader.use();
         for (int i = 0; i < this->num_active_textures; i++)
             activeTextures[i].use(i);
 
-        shader->setInt("Texture", 0);
-
-        shader->setMatrix4fv("WVP", this->wvp);
+        shader.setInt("Texture", 0);
+        shader.setMatrix4fv("WVP", this->wvp);
 
         glBindVertexArray(this->VAO);
         glDrawArrays(GL_TRIANGLES, 0, num_active_sprites * 6);
@@ -234,27 +233,30 @@ namespace engine
         num_active_textures = 0;
     }
 
-    const std::string SpriteBatch::vertexShaderSource = "#version 330 core\n"
-                                                        "layout (location = 0) in vec4 vertex;\n"
-                                                        "\n"
-                                                        "out vec2 TexCoord;\n"
-                                                        "\n"
-                                                        "uniform mat4 WVP;\n"
-                                                        "\n"
-                                                        "void main()\n"
-                                                        "{\n"
-                                                        "   gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);\n"
-                                                        "   TexCoord = vertex.zw;\n"
-                                                        "}\0";
-    const std::string SpriteBatch::fragmentShaderSource = "#version 330 core\n"
-                                                          "out vec4 FragColor;\n"
-                                                          "\n"
-                                                          "in vec2 TexCoord;\n"
-                                                          "\n"
-                                                          "uniform sampler2D Texture;\n"
-                                                          "\n"
-                                                          "void main()\n"
-                                                          "{\n"
-                                                          "   FragColor = texture(Texture, TexCoord);\n"
-                                                          "}\n\0";
+    const std::string SpriteBatch::vertexShaderSource = R"(
+    #version 330 core\n
+    layout (location = 0) in vec4 vertex;\n
+    \n
+    out vec2 TexCoord;\n
+    \n
+    uniform mat4 WVP;\n
+    \n
+    void main()\n
+    {\n
+        gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);\n
+        TexCoord = vertex.zw;\n
+    }\0)";
+
+    const std::string SpriteBatch::fragmentShaderSource = R"(
+    #version 330 core\n
+    out vec4 FragColor;\n
+    \n
+    in vec2 TexCoord;\n
+    \n
+    uniform sampler2D Texture;\n
+    \n
+    void main()\n
+    {\n
+        FragColor = texture(Texture, TexCoord);\n
+    }\n\0)";
 } // namespace engine

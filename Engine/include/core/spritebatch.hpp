@@ -7,7 +7,6 @@
 #include "core/texture2D.hpp"
 #include "core/shader.hpp"
 
-
 namespace engine
 {
     class SpriteBatch
@@ -19,11 +18,11 @@ namespace engine
         static const std::string vertexShaderSource;
         static const std::string fragmentShaderSource;
 
-        const GraphicsDevice &graphicsDevice;
+        GraphicsDevice &graphicsDevice;
         GLuint VBO = 0;
         GLuint VAO = 0;
 
-        std::unique_ptr<Shader> shader;
+        Shader shader;
 
         glm::mat4 wvp;
         Texture2D activeTextures[NUM_SIMULT_TEXTURES];
@@ -33,13 +32,13 @@ namespace engine
         bool begun;
 
         void flush();
-        void addSpriteData(const Texture2D &texture, const Rectangle& destinationRectangle, const Rectangle *sourceRectangle);
+        void addSpriteData(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle);
 
     public:
-        SpriteBatch(const GraphicsDevice &graphicsDevice);
+        SpriteBatch(GraphicsDevice &graphicsDevice);
         SpriteBatch(const SpriteBatch &spriteBatch) = delete;
         virtual ~SpriteBatch();
-        
+
         void create();
         void begin(const bool alphaBlendingEnabled);
         void begin(const glm::mat4 &transform, const bool alphaBlendingEnabled);

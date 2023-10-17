@@ -18,8 +18,8 @@ namespace engine
         GLuint wrapT;
         GLuint filterMin;
         GLuint filterMax;
-        int width;
-        int height;
+        GLuint width;
+        GLuint height;
 
     public:
         Texture2D();
@@ -27,18 +27,18 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
-        void createTextureFromRawData(const int width, const int height, unsigned char *data);
+        void createTextureFromRawData(const GLuint width, const GLuint height, unsigned char *data);
         /*
             Activate the texture in openGL at the specified unit
         */
-        void use(const unsigned char unit) const;
+        void use(const GLubyte unit) const;
 
         /*
             @return a GLuint object that represents the texture
         */
-        GLuint getglTexture() const;
-        int getWidth() const;
-        int getHeight() const;
+        GLuint getglTexture() const { return glTexture; }
+        GLuint getWidth() const { return width; }
+        GLuint getHeight() const { return height; }
         void setInternalFormat(const GLuint internalFormat);
         void setImageFormat(const GLuint imageFormat);
 

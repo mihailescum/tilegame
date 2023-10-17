@@ -5,7 +5,7 @@
 
 namespace engine
 {
-    Window::Window(const int width, const int height) : windowWidth(width), windowHeight(height)
+    Window::Window(unsigned int width, unsigned int height) : width(width), height(height)
     {
     }
 
@@ -33,26 +33,16 @@ namespace engine
         }
     }
 
-    int Window::getWindowWidth() const
-    {
-        return this->windowWidth;
-    }
-
-    int Window::getWindowHeight() const
-    {
-        return this->windowHeight;
-    }
-
-    void Window::setWindowDimensions(const int width, const int height)
+    void Window::setWindowDimensions(unsigned int width, unsigned int height)
     {
         if (this->glfwWindow)
         {
             if (width >= 0)
-                this->windowWidth = width;
+                this->width = width;
             if (height >= 0)
-                this->windowHeight = height;
+                this->height = height;
 
-            glfwSetWindowSize(this->glfwWindow, this->windowWidth, this->windowHeight);
+            glfwSetWindowSize(this->glfwWindow, this->width, this->height);
         }
     }
 
@@ -86,7 +76,7 @@ namespace engine
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, this->resizable);
 
-        this->glfwWindow = glfwCreateWindow(windowWidth, windowHeight, "InitGL", nullptr, nullptr);
+        this->glfwWindow = glfwCreateWindow(width, height, "InitGL", nullptr, nullptr);
         if (!this->glfwWindow)
         {
             Log::e("Unable to create GLFW window");

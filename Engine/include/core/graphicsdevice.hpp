@@ -20,7 +20,7 @@ namespace engine
         int create();
         void clear(const Color &color) const;
 
-        const Viewport &getViewport() const;
+        const Viewport &getViewport() const { return viewport; }
         void setViewport(const Viewport &viewport);
     };
 } // namespace engine
