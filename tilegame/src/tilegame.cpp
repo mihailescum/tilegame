@@ -8,7 +8,7 @@
 
 #include "engine.hpp"
 
-#include "worldscene/worldscene.hpp"
+// #include "worldscene/worldscene.hpp"
 
 namespace tilegame
 {
@@ -56,22 +56,17 @@ namespace tilegame
             timer--;
             std::stringstream ss;
             ss << "FPS: " << frames << " - UPS: " << updates;
-            window->setTitle(ss.str());
+            window.setTitle(ss.str());
             updates = 0, frames = 0;
         }
     }
 
     void Tilegame::draw()
     {
-        graphicsDevice->clear(engine::Color::CornflowerBlue);
+        graphicsDevice.clear(engine::Color::CornflowerBlue);
 
         // scene->draw();
 
         frames++;
-    }
-
-    engine::SpriteBatch *Tilegame::getSpriteBatch() const
-    {
-        return this->spriteBatch.get();
     }
 } // namespace tilegame

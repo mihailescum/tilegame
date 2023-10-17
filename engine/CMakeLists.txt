@@ -38,16 +38,16 @@ set_target_properties(
 target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 
 # Include glad Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/glad/include)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glad/include)
 
 #EnTT Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/entt/include)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/entt/include)
 
 # stb_image Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/stb_image/include)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/stb_image/include)
 
 # nlohmann/json Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/ExternalLibraries/json/include)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/json/include)
 
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

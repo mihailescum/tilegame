@@ -11,6 +11,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #Subdirectories
-add_subdirectory(ExternalLibraries/glad)
-add_subdirectory(Engine)
-add_subdirectory(Tilegame)
+add_subdirectory(vendor/glad)
+add_subdirectory(engine)
+add_subdirectory(tilegame)

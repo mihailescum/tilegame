@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<objecttypes>
- <objecttype name="NPC" color="#0002a4">
-  <property name="object_id" type="string"/>
- </objecttype>
-</objecttypes>
