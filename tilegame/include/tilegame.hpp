@@ -1,6 +1,4 @@
-#ifndef __TILEGAME_TILEGAME_H__
-#define __TILEGAME_TILEGAME_H__
-
+#pragma once
 #include "engine.hpp"
 
 // #include "worldscene/worldscene.hpp"
@@ -32,5 +30,3 @@ namespace tilegame
         engine::SpriteBatch &getSpriteBatch() { return spriteBatch; }
     };
 } // namespace tilegame
-
-#endif

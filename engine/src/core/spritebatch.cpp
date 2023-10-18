@@ -12,7 +12,6 @@ namespace engine
           num_active_sprites(0),
           begun(false)
     {
-        create();
     }
 
     SpriteBatch::~SpriteBatch()
@@ -234,29 +233,29 @@ namespace engine
     }
 
     const std::string SpriteBatch::vertexShaderSource = R"(
-    #version 330 core\n
-    layout (location = 0) in vec4 vertex;\n
-    \n
-    out vec2 TexCoord;\n
-    \n
-    uniform mat4 WVP;\n
-    \n
-    void main()\n
-    {\n
-        gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);\n
-        TexCoord = vertex.zw;\n
-    }\0)";
+    #version 330 core
+    layout (location = 0) in vec4 vertex;
+    
+    out vec2 TexCoord;
+    
+    uniform mat4 WVP;
+    
+    void main()
+    {
+        gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);
+        TexCoord = vertex.zw;
+    })";
 
     const std::string SpriteBatch::fragmentShaderSource = R"(
-    #version 330 core\n
-    out vec4 FragColor;\n
-    \n
-    in vec2 TexCoord;\n
-    \n
-    uniform sampler2D Texture;\n
-    \n
-    void main()\n
-    {\n
-        FragColor = texture(Texture, TexCoord);\n
-    }\n\0)";
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 TexCoord;
+    
+    uniform sampler2D Texture;
+    
+    void main()
+    {
+        FragColor = texture(Texture, TexCoord);
+    })";
 } // namespace engine

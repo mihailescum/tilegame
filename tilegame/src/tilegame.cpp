@@ -16,7 +16,7 @@ namespace tilegame
     {
         Game::initialize();
 
-        // this->spriteBatch = std::make_unique<engine::SpriteBatch>(*this->graphicsDevice);
+        spriteBatch.create();
 
         // glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // window->setPosition(700, 400);

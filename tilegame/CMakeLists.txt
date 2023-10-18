@@ -21,12 +21,16 @@ set (HEADER_GAME
 set(EXECUTABLE_NAME tilegame)
 add_executable(${EXECUTABLE_NAME} 
         ${SOURCES_GAME} 
-        ${SOURCES_WORLDSCENE}
+        #${SOURCES_WORLDSCENE}
         
         ${HEADER_GAME}
-        ${HEADER_WORLDSCENE}
+        #${HEADER_WORLDSCENE}
 )
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+
+set_target_properties(
+        ${EXECUTABLE_NAME} 
+        PROPERTIES 
+        LINKER_LANGUAGE CXX)
 
 # Include Project Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${HEADER_PATH})
