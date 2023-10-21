@@ -2,9 +2,9 @@
 
 #include "glm/glm.hpp"
 
-namespace tilegame
+namespace tilegame::components
 {
-    struct WorldTransformComponent
+    struct WorldTransform
     {
         glm::vec2 position;
     };

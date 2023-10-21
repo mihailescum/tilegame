@@ -3,10 +3,6 @@ set (SOURCES_PATH src)
 file (GLOB HEADERS_GAME "${SOURCES_PATH}/*.hpp")
 file (GLOB SOURCES_GAME "${SOURCES_PATH}/*.cpp")
 
-set (SOURCES_WORLDSCENE_PATH worldscene)
-file (GLOB HEADERS_WORLDSCENE "${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/*.hpp")
-file (GLOB SOURCES_WORLDSCENE "${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/*.cpp")
-
 set (SOURCES_COMPONENTS_PATH components)
 file (GLOB HEADERS_COMPONENTS "${SOURCES_PATH}/${SOURCES_COMPONENTS_PATH}/*.hpp")
 file (GLOB SOURCES_COMPONENTS "${SOURCES_PATH}/${SOURCES_COMPONENTS_PATH}/*.cpp")
@@ -15,27 +11,28 @@ set (SOURCES_SYSTEMS_PATH systems)
 file (GLOB HEADERS_SYSTEMS "${SOURCES_PATH}/${SOURCES_SYSTEMS_PATH}/*.hpp")
 file (GLOB SOURCES_SYSTEMS "${SOURCES_PATH}/${SOURCES_SYSTEMS_PATH}/*.cpp")
 
+set (SOURCES_WORLDSCENE_PATH worldscene)
+file (GLOB HEADERS_WORLDSCENE "${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/*.hpp")
+file (GLOB SOURCES_WORLDSCENE "${SOURCES_PATH}/${SOURCES_WORLDSCENE_PATH}/*.cpp")
 
-# Header Files
-#set (HEADER_PATH include)
-#set (HEADER_GAME ${HEADER_PATH}/tilegame.hpp)
-
-# set (HEADER_WORLDSCENE_PATH worldscene)
-# file (GLOB HEADER_WORLDSCENE "${HEADER_PATH}/${HEADER_WORLDSCENE_PATH}/*.hpp")
+set (
+    HEADERS 
+    ${HEADERS_GAME} 
+    ${HEADERS_COMPONENTS} 
+    ${HEADERS_SYSTEMS} 
+    ${HEADERS_WORLDSCENE}
+)
+set (
+    SOURCES 
+    ${SOURCES_GAME} 
+    ${SOURCES_COMPONENTS} 
+    ${SOURCES_SYSTEMS} 
+    ${SOURCES_WORLDSCENE}
+)
  
 # Create Executable
 set(EXECUTABLE_NAME tilegame)
-add_executable(${EXECUTABLE_NAME} 
-        ${SOURCES_GAME} 
-        ${SOURCES_WORLDSCENE}
-        ${HEADERS_COMPONENTS}
-        ${HEADERS_SYSTEMS}
-        
-        ${HEADERS_GAME}
-        ${HEADERS_WORLDSCENE}
-        ${SOURCES_COMPONENTS}
-        ${SOURCES_SYSTEMS}
-)
+add_executable(${EXECUTABLE_NAME} ${SOURCES} ${HEADERS})
 
 # Copy content files Files
 add_custom_target(copy_assets
@@ -51,6 +48,7 @@ add_dependencies(link_assets_debug copy_assets)
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 # Include Project Header Files
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${SOURCES_PATH})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/engine/include)
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/entt/include)
 

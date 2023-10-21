@@ -4,9 +4,9 @@
 
 #include "entt.hpp"
 
-namespace tilegame
+namespace tilegame::components
 {
-    struct ChildrenComponent
+    struct Children
     {
         std::vector<entt::entity> children;
     };

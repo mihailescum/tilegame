@@ -1,8 +1,8 @@
 #pragma once
 
-namespace tilegame
+namespace tilegame::components
 {
-    struct CameraComponent
+    struct Camera
     {
     };
 } // namespace tilegame

@@ -2,9 +2,9 @@
 
 #include "entt.hpp"
 
-namespace tilegame
+namespace tilegame::components
 {
-    struct ParentComponent
+    struct Parent
     {
         entt::entity parent;
     };
