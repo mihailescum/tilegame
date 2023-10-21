@@ -16,7 +16,7 @@ namespace tilegame
     {
         Game::initialize();
 
-        spriteBatch.create();
+        _spritebatch.create();
 
         // glfwSetInputMode(window.get_native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // window->set_position(700, 400);
@@ -29,29 +29,29 @@ namespace tilegame
     {
         Game::load_content();
 
-        worldScene.load_content();
+        _worldscene.load_content();
     }
 
     void Tilegame::unload_content()
     {
-        worldScene.unload_content();
+        _worldscene.unload_content();
         // this->spriteBatch.reset();
     }
 
     void Tilegame::update(const double deltaTime)
     {
-        worldScene.update(deltaTime);
+        _worldscene.update(deltaTime);
 
-        timer += deltaTime;
-        updates++;
+        _timer += deltaTime;
+        _updates++;
         // - Reset after one second
-        if (timer > 1)
+        if (_timer > 1)
         {
-            timer--;
+            _timer--;
             std::stringstream ss;
-            ss << "FPS: " << frames << " - UPS: " << updates;
+            ss << "FPS: " << _frames << " - UPS: " << _updates;
             window.set_title(ss.str());
-            updates = 0, frames = 0;
+            _updates = 0, _frames = 0;
         }
     }
 
@@ -59,8 +59,8 @@ namespace tilegame
     {
         _graphics_device.clear(engine::Color::CORNFLOWER_BLUE);
 
-        worldScene.draw();
+        _worldscene.draw();
 
-        frames++;
+        _frames++;
     }
 } // namespace tilegame

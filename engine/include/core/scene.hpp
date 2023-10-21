@@ -20,7 +20,7 @@ namespace engine
         virtual void initialize(){};
         virtual void load_content(){};
         virtual void unload_content(){};
-        virtual void update(const double deltaTime){};
+        virtual void update(double gametime){};
         virtual void draw(){};
     };
 }

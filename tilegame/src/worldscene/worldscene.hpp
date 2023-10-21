@@ -27,10 +27,10 @@ namespace tilegame::worldscene
         std::unique_ptr<SpriteSystem> spriteSystem;
 
         engine::Entity *findByObjectId(const std::string &object_id);*/
-        engine::Texture2D *testTex;
+        engine::Texture2D *_test_tex;
 
         void createSystems();
-        engine::SpriteBatch &getSpriteBatch();
+        engine::SpriteBatch &get_spritebatch();
 
     public:
         WorldScene(Tilegame &game);
@@ -39,7 +39,7 @@ namespace tilegame::worldscene
         virtual void initialize() override;
         virtual void load_content() override;
         virtual void unload_content() override;
-        virtual void update(const double deltaTime) override;
+        virtual void update(double gametime) override;
         virtual void draw() override;
     };
 } // namespace tilegame::worldscene

@@ -23,7 +23,7 @@ namespace engine
         virtual void initialize();
         virtual void load_content();
         virtual void unload_content();
-        virtual void update(double deltaTime) = 0;
+        virtual void update(double gametime) = 0;
         virtual void begin_update();
         virtual void end_update(){};
         virtual void draw() = 0;
