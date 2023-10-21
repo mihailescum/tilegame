@@ -29,13 +29,12 @@ namespace tilegame
     {
         Game::loadContent();
 
-        // this->spriteBatch->create();
-        // scene->loadContent();
+        worldScene.loadContent();
     }
 
     void Tilegame::unloadContent()
     {
-        // scene->unloadContent();
+        worldScene.unloadContent();
         // this->spriteBatch.reset();
     }
 
@@ -46,7 +45,7 @@ namespace tilegame
 
     void Tilegame::update(const double deltaTime)
     {
-        // scene->update(deltaTime);
+        worldScene.update(deltaTime);
 
         timer += deltaTime;
         updates++;
@@ -65,7 +64,7 @@ namespace tilegame
     {
         graphicsDevice.clear(engine::Color::CornflowerBlue);
 
-        // scene->draw();
+        worldScene.draw();
 
         frames++;
     }

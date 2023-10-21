@@ -6,10 +6,10 @@
 #include <unordered_map>
 #include "nlohmann/json.hpp"
 
-#include "core/resource.hpp"
-#include "core/resourcemanager.hpp"
-#include "core/texture2D.hpp"
-#include "core/spriteinfo.hpp"
+#include "resource.hpp"
+#include "resourcemanager.hpp"
+#include "texture2D.hpp"
+#include "spriteinfo.hpp"
 
 namespace engine
 {

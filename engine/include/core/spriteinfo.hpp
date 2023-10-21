@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "core/rectangle.hpp"
+#include "rectangle.hpp"
 
 namespace engine
 {

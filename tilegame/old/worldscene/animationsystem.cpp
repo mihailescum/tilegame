@@ -42,7 +42,8 @@ namespace tilegame::worldscene
             {
                 registry.patch<engine::SpriteInfoComponent>(
                     entity,
-                    [=](auto &spriteInfo) {
+                    [=](auto &spriteInfo)
+                    {
                         spriteInfo.currentFrame++;
                         const std::string &currentState = spriteInfo.currentState;
                         if (spriteInfo.currentFrame >= spriteInfo.spriteInfo->spriteStates.at(currentState).size())

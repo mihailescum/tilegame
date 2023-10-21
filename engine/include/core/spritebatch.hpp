@@ -3,9 +3,9 @@
 #include <vector>
 #include <memory>
 
-#include "core/graphicsdevice.hpp"
-#include "core/texture2D.hpp"
-#include "core/shader.hpp"
+#include "graphicsdevice.hpp"
+#include "texture2D.hpp"
+#include "shader.hpp"
 
 namespace engine
 {

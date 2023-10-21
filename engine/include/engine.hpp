@@ -13,8 +13,9 @@
 #include "core/window.hpp"
 #include "core/spritesheet.hpp"
 #include "core/spriteinfo.hpp"
+#include "core/scene.hpp"
 
-#include "world/map.hpp"
+/*#include "world/map.hpp"
 #include "world/tilelayer.hpp"
 #include "world/tileset.hpp"
 #include "world/tile.hpp"
@@ -40,4 +41,4 @@
 #include "scene/components/visibilitycomponent.hpp"
 #include "scene/components/animationcomponent.hpp"
 #include "scene/components/collisioncomponent.hpp"
-#include "scene/components/boundingboxcomponent.hpp"
+#include "scene/components/boundingboxcomponent.hpp"*/

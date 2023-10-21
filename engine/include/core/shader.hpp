@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include <glm/glm.hpp>
 
-#include "core/resource.hpp"
+#include "resource.hpp"
 
 namespace engine
 {

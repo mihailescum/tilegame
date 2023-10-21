@@ -8,7 +8,7 @@
 
 #include <glad/glad.h>
 
-#include "core/resource.hpp"
+#include "resource.hpp"
 
 namespace engine
 {

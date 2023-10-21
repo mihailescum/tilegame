@@ -6,6 +6,8 @@
 #include "stb_image.hpp"
 #include "core/log.hpp"
 
+#include <iostream>
+
 namespace engine
 {
     Texture2D::Texture2D() : internalFormat(GL_RGB),
@@ -40,6 +42,7 @@ namespace engine
         // now generate texture
         if (data)
         {
+
             this->createTextureFromRawData(width, height, data);
             // and finally free image data
             stbi_image_free(data);

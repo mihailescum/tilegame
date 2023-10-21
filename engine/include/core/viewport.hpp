@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 
-#include "core/rectangle.hpp"
+#include "rectangle.hpp"
 
 namespace engine
 {

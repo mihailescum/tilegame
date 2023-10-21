@@ -2,17 +2,8 @@
 
 #include <string>
 #include <unordered_map>
-#include "entt.hpp"
 
 #include "engine.hpp"
-
-#include "worldscene/contentsystem.hpp"
-#include "worldscene/inputsystem.hpp"
-#include "worldscene/camerasystem.hpp"
-#include "worldscene/movementsystem.hpp"
-#include "worldscene/rendersystem.hpp"
-#include "worldscene/animationsystem.hpp"
-#include "worldscene/spritesystem.hpp"
 
 namespace tilegame
 {
@@ -24,7 +15,7 @@ namespace tilegame::worldscene
     class WorldScene : public engine::Scene
     {
     private:
-        engine::SpriteBatch &spriteBatch;
+        /*engine::SpriteBatch &spriteBatch;
         std::unordered_map<std::string, engine::Entity> taggedEntities;
 
         std::unique_ptr<ContentSystem> contentSystem;
@@ -35,8 +26,11 @@ namespace tilegame::worldscene
         std::unique_ptr<AnimationSystem> animationSystem;
         std::unique_ptr<SpriteSystem> spriteSystem;
 
+        engine::Entity *findByObjectId(const std::string &object_id);*/
+        engine::Texture2D *testTex;
+
         void createSystems();
-        engine::Entity *findByObjectId(const std::string &object_id);
+        engine::SpriteBatch &getSpriteBatch();
 
     public:
         WorldScene(Tilegame &game);
@@ -48,8 +42,5 @@ namespace tilegame::worldscene
         virtual void processInput() override;
         virtual void update(const double deltaTime) override;
         virtual void draw() override;
-
-        void E_show(const std::string &objectId, const bool show);
-        void E_setPosition(const std::string &objectId, const double x, const double y);
     };
 } // namespace tilegame::worldscene

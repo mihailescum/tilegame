@@ -1,4 +1,4 @@
-#include "worldscene/worldscene.hpp"
+#include "worldscene.hpp"
 
 #include <memory>
 #include <glm/glm.hpp>
@@ -6,18 +6,11 @@
 
 #include "engine.hpp"
 
-#include "tilegame.hpp"
-#include "worldscene/contentsystem.hpp"
-#include "worldscene/inputsystem.hpp"
-#include "worldscene/camerasystem.hpp"
-#include "worldscene/movementsystem.hpp"
-#include "worldscene/rendersystem.hpp"
+#include "../tilegame.hpp"
 
 namespace tilegame::worldscene
 {
-    engine::Entity playerEntity;
-
-    WorldScene::WorldScene(Tilegame &game) : spriteBatch(*game.getSpriteBatch()), engine::Scene(game)
+    WorldScene::WorldScene(Tilegame &game) : engine::Scene(game)
     {
     }
 
@@ -28,107 +21,36 @@ namespace tilegame::worldscene
 
     void WorldScene::createSystems()
     {
-        this->contentSystem = std::make_unique<ContentSystem>(*this, *game.getResourceManager());
-        this->contentSystem->initialize();
-
-        this->inputSystem = std::make_unique<InputSystem>(*this, *game.getWindow());
-        this->inputSystem->initialize();
-
-        this->cameraSystem = std::make_unique<CameraSystem>(*this);
-        this->cameraSystem->initialize();
-
-        this->movementSystem = std::make_unique<MovementSystem>(*this);
-        this->movementSystem->initialize();
-
-        this->renderSystem = std::make_unique<RenderSystem>(*this, this->spriteBatch);
-        this->renderSystem->initialize();
-
-        this->animationSystem = std::make_unique<AnimationSystem>(*this);
-        this->animationSystem->initialize();
-
-        this->spriteSystem = std::make_unique<SpriteSystem>(*this);
-        this->spriteSystem->initialize();
     }
 
     void WorldScene::loadContent()
     {
-        contentSystem->loadContent();
+        testTex = game.getResourceManager().loadResource<engine::Texture2D>("test", "content/textures/tileset1.png");
     }
 
     void WorldScene::unloadContent()
     {
-        contentSystem->unloadContent();
     }
 
     void WorldScene::processInput()
     {
-        inputSystem->processInput();
     }
 
     void WorldScene::update(const double deltaTime)
     {
-        animationSystem->update(deltaTime);
-        spriteSystem->update();
-
-        movementSystem->update(deltaTime);
-        cameraSystem->update(deltaTime);
     }
 
     void WorldScene::draw()
     {
-        renderSystem->draw();
+        auto &spriteBatch = getSpriteBatch();
+
+        spriteBatch.begin(false);
+        spriteBatch.draw(*testTex, engine::Rectangle(0, 0, 800, 600), engine::Color::White);
+        spriteBatch.end();
     }
 
-    engine::Entity *WorldScene::findByObjectId(const std::string &objectId)
+    engine::SpriteBatch &WorldScene::getSpriteBatch()
     {
-        engine::Entity *result = nullptr;
-        if (this->taggedEntities.count(objectId) == 0)
-        {
-            auto tagged = registry.view<engine::TagComponent>();
-            for (const auto &entity : tagged)
-            {
-                const auto tag = tagged.get(entity);
-                if (tag.tag == objectId)
-                {
-                    this->taggedEntities.emplace(objectId, engine::Entity(entity, this));
-                    result = &this->taggedEntities[objectId];
-                    break;
-                }
-            }
-        }
-        else
-        {
-            result = &this->taggedEntities[objectId];
-        }
-        return result;
-    }
-
-    void WorldScene::E_show(const std::string &objectId, const bool show)
-    {
-        engine::Entity *entity = findByObjectId(objectId);
-        if (!entity) {
-            engine::Log::w("No entity with object_id ", objectId, " exists");
-            return;
-        }
-
-        if (show)
-        {
-            entity->add<engine::VisibilityComponent>();
-        }
-        else
-        {
-            entity->remove<engine::VisibilityComponent>();
-        }
-    }
-
-    void WorldScene::E_setPosition(const std::string &objectId, const double x, const double y)
-    {
-        engine::Entity *entity = findByObjectId(objectId);
-        if (!entity) {
-            engine::Log::w("No entity with object_id ", objectId, " exists");
-            return;
-        }
-
-        movementSystem->setPosition(*entity, x, y);
+        return ((Tilegame &)game).getSpriteBatch();
     }
 } // namespace tilegame::worldscene

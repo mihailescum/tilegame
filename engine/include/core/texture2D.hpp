@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "core/resource.hpp"
+#include "resource.hpp"
 
 namespace engine
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "engine.hpp"
 
-// #include "worldscene/worldscene.hpp"
+#include "worldscene/worldscene.hpp"
 
 namespace tilegame
 {
@@ -13,6 +13,7 @@ namespace tilegame
         double timer = 0;
 
         engine::SpriteBatch spriteBatch;
+        worldscene::WorldScene worldScene;
 
     protected:
         virtual void initialize() override;
@@ -23,7 +24,7 @@ namespace tilegame
         virtual void draw() override;
 
     public:
-        Tilegame() : Game(), spriteBatch(graphicsDevice) {}
+        Tilegame() : Game(), spriteBatch(graphicsDevice), worldScene(*this) {}
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 

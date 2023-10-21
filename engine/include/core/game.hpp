@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/graphicsdevice.hpp"
-#include "core/window.hpp"
+#include "graphicsdevice.hpp"
+#include "window.hpp"
 #include "resourcemanager.hpp"
 
 namespace engine

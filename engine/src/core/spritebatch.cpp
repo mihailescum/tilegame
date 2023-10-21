@@ -139,73 +139,41 @@ namespace engine
             uvBottomRight.y = (GLfloat)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
         }
 
-        int offset = this->num_active_sprites * 24;
+        const int sizeOfSprite = 24;
+        int offset = this->num_active_sprites * sizeOfSprite;
         if (offset >= this->spriteData.size())
-        {
-            // Bottom Left
-            this->spriteData.push_back(posBottomLeft.x); // Position
-            this->spriteData.push_back(posBottomLeft.y);
-            this->spriteData.push_back(uvBottomLeft.x); // Texture coordinate
-            this->spriteData.push_back(uvBottomLeft.y);
-            // Top Right
-            this->spriteData.push_back(posTopRight.x);
-            this->spriteData.push_back(posTopRight.y);
-            this->spriteData.push_back(uvTopRight.x);
-            this->spriteData.push_back(uvTopRight.y);
-            // Top Left
-            this->spriteData.push_back(posTopLeft.x);
-            this->spriteData.push_back(posTopLeft.y);
-            this->spriteData.push_back(uvTopLeft.x);
-            this->spriteData.push_back(uvTopLeft.y);
-            // Bottom Left
-            this->spriteData.push_back(posBottomLeft.x);
-            this->spriteData.push_back(posBottomLeft.y);
-            this->spriteData.push_back(uvBottomLeft.x);
-            this->spriteData.push_back(uvBottomLeft.y);
-            // Bottom Right
-            this->spriteData.push_back(posBottomRight.x);
-            this->spriteData.push_back(posBottomRight.y);
-            this->spriteData.push_back(uvBottomRight.x);
-            this->spriteData.push_back(uvBottomRight.y);
-            // Top Right
-            this->spriteData.push_back(posTopRight.x);
-            this->spriteData.push_back(posTopRight.y);
-            this->spriteData.push_back(uvTopRight.x);
-            this->spriteData.push_back(uvTopRight.y);
-        }
-        else
-        {
-            // Bottom Left
-            this->spriteData[offset] = posBottomLeft.x;
-            this->spriteData[offset + 1] = posBottomLeft.y;
-            this->spriteData[offset + 2] = uvBottomLeft.x;
-            this->spriteData[offset + 3] = uvBottomLeft.y;
-            // Top Right
-            this->spriteData[offset + 4] = posTopRight.x;
-            this->spriteData[offset + 5] = posTopRight.y;
-            this->spriteData[offset + 6] = uvTopRight.x;
-            this->spriteData[offset + 7] = uvTopRight.y;
-            // Top Left
-            this->spriteData[offset + 8] = posTopLeft.x;
-            this->spriteData[offset + 9] = posTopLeft.y;
-            this->spriteData[offset + 10] = uvTopLeft.x;
-            this->spriteData[offset + 11] = uvTopLeft.y;
-            // Bottom Left
-            this->spriteData[offset + 12] = posBottomLeft.x;
-            this->spriteData[offset + 13] = posBottomLeft.y;
-            this->spriteData[offset + 14] = uvBottomLeft.x;
-            this->spriteData[offset + 15] = uvBottomLeft.y;
-            // Bottom Right
-            this->spriteData[offset + 16] = posBottomRight.x;
-            this->spriteData[offset + 17] = posBottomRight.y;
-            this->spriteData[offset + 18] = uvBottomRight.x;
-            this->spriteData[offset + 19] = uvBottomRight.y;
-            // Top Right
-            this->spriteData[offset + 20] = posTopRight.x;
-            this->spriteData[offset + 21] = posTopRight.y;
-            this->spriteData[offset + 22] = uvTopRight.x;
-            this->spriteData[offset + 23] = uvTopRight.y;
-        }
+            spriteData.resize((this->num_active_sprites + 1) * sizeOfSprite);
+
+        // Bottom Left
+        this->spriteData[offset] = posBottomLeft.x;
+        this->spriteData[offset + 1] = posBottomLeft.y;
+        this->spriteData[offset + 2] = uvBottomLeft.x;
+        this->spriteData[offset + 3] = uvBottomLeft.y;
+        // Top Right
+        this->spriteData[offset + 4] = posTopRight.x;
+        this->spriteData[offset + 5] = posTopRight.y;
+        this->spriteData[offset + 6] = uvTopRight.x;
+        this->spriteData[offset + 7] = uvTopRight.y;
+        // Top Left
+        this->spriteData[offset + 8] = posTopLeft.x;
+        this->spriteData[offset + 9] = posTopLeft.y;
+        this->spriteData[offset + 10] = uvTopLeft.x;
+        this->spriteData[offset + 11] = uvTopLeft.y;
+        // Bottom Left
+        this->spriteData[offset + 12] = posBottomLeft.x;
+        this->spriteData[offset + 13] = posBottomLeft.y;
+        this->spriteData[offset + 14] = uvBottomLeft.x;
+        this->spriteData[offset + 15] = uvBottomLeft.y;
+        // Bottom Right
+        this->spriteData[offset + 16] = posBottomRight.x;
+        this->spriteData[offset + 17] = posBottomRight.y;
+        this->spriteData[offset + 18] = uvBottomRight.x;
+        this->spriteData[offset + 19] = uvBottomRight.y;
+        // Top Right
+        this->spriteData[offset + 20] = posTopRight.x;
+        this->spriteData[offset + 21] = posTopRight.y;
+        this->spriteData[offset + 22] = uvTopRight.x;
+        this->spriteData[offset + 23] = uvTopRight.y;
     }
 
     void SpriteBatch::flush()
@@ -225,7 +193,6 @@ namespace engine
         shader.setInt("Texture", 0);
         shader.setMatrix4fv("WVP", this->wvp);
 
-        glBindVertexArray(this->VAO);
         glDrawArrays(GL_TRIANGLES, 0, num_active_sprites * 6);
 
         num_active_sprites = 0;
@@ -256,6 +223,7 @@ namespace engine
     
     void main()
     {
-        FragColor = texture(Texture, TexCoord);
+        vec4 color = texture(Texture, TexCoord);
+        FragColor = color;
     })";
 } // namespace engine
