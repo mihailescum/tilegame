@@ -17,11 +17,11 @@ namespace engine
     {
     private:
         Texture2D &texture;
-        unsigned int frameCount;
-        unsigned int frameWidth;
-        unsigned int frameHeight;
-        unsigned int rows;
-        unsigned int columns;
+        int frameCount;
+        int frameWidth;
+        int frameHeight;
+        int rows;
+        int columns;
 
         std::unordered_map<int, SpriteInfo> sprites;
 
@@ -38,8 +38,8 @@ namespace engine
         virtual void unloadResource() override {}
 
         const Texture2D &getTexture() const { return texture; }
-        const unsigned int getFrameWidth() const { return frameWidth; }
-        const unsigned int getFrameHeight() const { return frameHeight; }
+        const int getFrameWidth() const { return frameWidth; }
+        const int getFrameHeight() const { return frameHeight; }
 
         const SpriteInfo *getSpriteInfo(const int spriteId) const;
     };

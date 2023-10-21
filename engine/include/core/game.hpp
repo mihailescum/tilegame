@@ -9,7 +9,7 @@ namespace engine
     class Game
     {
     private:
-        static const unsigned int DEFAULT_WINDOW_WIDTH = 800;
+        static const int DEFAULT_WINDOW_WIDTH = 800;
         static const int DEFAULT_WINDOW_HEIGHT = 600;
 
         bool shouldRun;
@@ -26,10 +26,10 @@ namespace engine
         virtual void processInput() = 0;
         virtual void update(double deltaTime) = 0;
         virtual void draw() = 0;
-        virtual void resize(unsigned int width, unsigned int height);
+        virtual void resize(int width, int height);
 
     public:
-        Game(unsigned int window_width = DEFAULT_WINDOW_WIDTH, unsigned int window_height = DEFAULT_WINDOW_HEIGHT) : window(window_width, window_height), graphicsDevice(window) {}
+        Game(int window_width = DEFAULT_WINDOW_WIDTH, int window_height = DEFAULT_WINDOW_HEIGHT) : window(window_width, window_height), graphicsDevice(window) {}
         Game(const Game &game) = delete;
         virtual ~Game();
 

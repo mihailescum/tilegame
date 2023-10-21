@@ -81,7 +81,7 @@ namespace engine
         resourceManager.unloadResources();
     }
 
-    void Game::resize(unsigned int width, unsigned int height)
+    void Game::resize(int width, int height)
     {
         Viewport currentViewport = graphicsDevice.getViewport();
         currentViewport.width = width;

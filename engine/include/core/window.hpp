@@ -12,12 +12,12 @@ namespace engine
         GLFWwindow *glfwWindow;
 
         std::string title;
-        unsigned int width;
-        unsigned int height;
+        int width;
+        int height;
         bool resizable = GLFW_FALSE;
 
     public:
-        Window(unsigned int width, unsigned int height);
+        Window(int width, int height);
         virtual ~Window();
 
         /*
@@ -36,12 +36,12 @@ namespace engine
         void setResizable(const bool resizable);
         std::string getTitle() const;
         void setTitle(const std::string &title);
-        unsigned int getWidth() const { return width; }
-        unsigned int getHeight() const { return height; }
+        int getWidth() const { return width; }
+        int getHeight() const { return height; }
         /*
             Set the dimensions of the window. Passing negative values will leave the properties unchanged
         */
-        void setWindowDimensions(unsigned int width, unsigned int height);
+        void setWindowDimensions(int width, int height);
 
         //__event void windowSizeChanged(int width, int height);
     };

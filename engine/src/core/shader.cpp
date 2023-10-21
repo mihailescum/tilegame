@@ -170,7 +170,7 @@ namespace engine
         glUniformMatrix4fv(glGetUniformLocation(glShaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    bool Shader::checkCompileErrors(unsigned int shader, std::string type) const
+    bool Shader::checkCompileErrors(GLuint shader, std::string type) const
     {
         int success;
         char infoLog[1024];

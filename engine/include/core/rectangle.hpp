@@ -8,11 +8,11 @@ namespace engine
     {
     public:
         Rectangle() {}
-        Rectangle(GLfloat x, GLfloat y, GLuint width, GLuint height) : x(x), y(y), width(width), height(height) {}
+        Rectangle(GLfloat x, GLfloat y, GLint width, GLint height) : x(x), y(y), width(width), height(height) {}
 
         GLfloat x;
         GLfloat y;
-        GLuint height;
-        GLuint width;
+        GLint height;
+        GLint width;
     };
 } // namespace engine

@@ -56,7 +56,7 @@ namespace engine
         return true;
     }
 
-    void Texture2D::createTextureFromRawData(GLuint width, GLuint height, unsigned char *data)
+    void Texture2D::createTextureFromRawData(int width, int height, unsigned char *data)
     {
         this->width = width;
         this->height = height;
@@ -73,12 +73,12 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void Texture2D::use(const unsigned char unit) const
+    void Texture2D::use(GLenum unit) const
     {
         glActiveTexture(GL_TEXTURE0 + unit);
         glBindTexture(GL_TEXTURE_2D, glTexture);
     }
 
-    void Texture2D::setInternalFormat(const GLuint internalFormat) { this->internalFormat = internalFormat; }
-    void Texture2D::setImageFormat(const GLuint imageFormat) { this->imageFormat = imageFormat; }
+    void Texture2D::setInternalFormat(GLint internalFormat) { this->internalFormat = internalFormat; }
+    void Texture2D::setImageFormat(GLint imageFormat) { this->imageFormat = imageFormat; }
 } // namespace engine

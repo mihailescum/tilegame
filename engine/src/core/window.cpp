@@ -5,7 +5,7 @@
 
 namespace engine
 {
-    Window::Window(unsigned int width, unsigned int height) : width(width), height(height)
+    Window::Window(int width, int height) : width(width), height(height)
     {
     }
 
@@ -33,7 +33,7 @@ namespace engine
         }
     }
 
-    void Window::setWindowDimensions(unsigned int width, unsigned int height)
+    void Window::setWindowDimensions(int width, int height)
     {
         if (this->glfwWindow)
         {

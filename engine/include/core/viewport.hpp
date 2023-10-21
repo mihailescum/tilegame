@@ -11,11 +11,11 @@ namespace engine
     public:
         Viewport() = default;
         Viewport(const Rectangle &rect) : Viewport(rect.x, rect.y, rect.width, rect.height) {}
-        Viewport(int x, int y, unsigned int width, unsigned int height) : x(x), y(y), width(width), height(height) {}
+        Viewport(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
 
         int x;
         int y;
-        unsigned int width;
-        unsigned int height;
+        int width;
+        int height;
     };
 } // namespace engine

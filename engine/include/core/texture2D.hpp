@@ -12,14 +12,14 @@ namespace engine
     {
     private:
         GLuint glTexture = 0;
-        GLuint internalFormat;
-        GLuint imageFormat;
-        GLuint wrapS;
-        GLuint wrapT;
-        GLuint filterMin;
-        GLuint filterMax;
-        GLuint width;
-        GLuint height;
+        GLint internalFormat;
+        GLint imageFormat;
+        GLint wrapS;
+        GLint wrapT;
+        GLint filterMin;
+        GLint filterMax;
+        int width;
+        int height;
 
     public:
         Texture2D();
@@ -27,20 +27,20 @@ namespace engine
         virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
         virtual void unloadResource() override;
 
-        void createTextureFromRawData(const GLuint width, const GLuint height, unsigned char *data);
+        void createTextureFromRawData(int width, int height, unsigned char *data);
         /*
             Activate the texture in openGL at the specified unit
         */
-        void use(const GLubyte unit) const;
+        void use(GLenum unit) const;
 
         /*
             @return a GLuint object that represents the texture
         */
         GLuint getglTexture() const { return glTexture; }
-        GLuint getWidth() const { return width; }
-        GLuint getHeight() const { return height; }
-        void setInternalFormat(const GLuint internalFormat);
-        void setImageFormat(const GLuint imageFormat);
+        int getWidth() const { return width; }
+        int getHeight() const { return height; }
+        void setInternalFormat(GLint internalFormat);
+        void setImageFormat(GLint imageFormat);
 
         friend bool operator==(const Texture2D &lhs, const Texture2D &rhs) { return lhs.glTexture == rhs.glTexture; }
         friend bool operator!=(const Texture2D &lhs, const Texture2D &rhs) { return !(lhs == rhs); }

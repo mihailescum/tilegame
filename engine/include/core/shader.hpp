@@ -16,7 +16,7 @@ namespace engine
 
         // Returns true if there were errors
         bool checkCompileErrors(GLuint shader, std::string type) const;
-        GLuint compileShader(const std::string &source, const std::string &name, const GLenum shaderType) const;
+        GLuint compileShader(const std::string &source, const std::string &name, GLenum shaderType) const;
         // Returns true if compilation was successful
         bool compileProgram(GLuint vertex, GLuint geometry, GLuint fragment);
 
