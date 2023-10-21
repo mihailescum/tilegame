@@ -6,8 +6,6 @@
 #include <string>
 #include <glm/gtx/transform.hpp>
 
-#include "engine.hpp"
-
 // #include "worldscene/worldscene.hpp"
 
 namespace tilegame
@@ -35,14 +33,13 @@ namespace tilegame
     void Tilegame::unload_content()
     {
         _worldscene.unload_content();
-        // this->spriteBatch.reset();
     }
 
-    void Tilegame::update(const double deltaTime)
+    void Tilegame::update(const engine::GameTime &update_time)
     {
-        _worldscene.update(deltaTime);
+        _worldscene.update(update_time);
 
-        _timer += deltaTime;
+        _timer += update_time.elapsed_time;
         _updates++;
         // - Reset after one second
         if (_timer > 1)
@@ -55,11 +52,11 @@ namespace tilegame
         }
     }
 
-    void Tilegame::draw()
+    void Tilegame::draw(const engine::GameTime &draw_time)
     {
         _graphics_device.clear(engine::Color::CORNFLOWER_BLUE);
 
-        _worldscene.draw();
+        _worldscene.draw(draw_time);
 
         _frames++;
     }

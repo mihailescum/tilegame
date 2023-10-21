@@ -20,7 +20,7 @@ namespace engine
         virtual void initialize(){};
         virtual void load_content(){};
         virtual void unload_content(){};
-        virtual void update(double gametime){};
-        virtual void draw(){};
+        virtual void update(const engine::GameTime &update_time){};
+        virtual void draw(const engine::GameTime &draw_time){};
     };
 }

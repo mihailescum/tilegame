@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "graphicsdevice.hpp"
-#include "texture2D.hpp"
+#include "texture2d.hpp"
 #include "shader.hpp"
 
 namespace engine
@@ -25,6 +25,7 @@ namespace engine
         Shader _shader;
 
         glm::mat4 _wvp;
+        glm::mat4 _projection;
         Texture2D _activeTextures[NUM_SIMULT_TEXTURES];
         std::vector<float> _sprite_data;
         int _num_active_textures;

@@ -19,8 +19,8 @@ namespace tilegame
         virtual void initialize() override;
         virtual void load_content() override;
         virtual void unload_content() override;
-        virtual void update(double gametime) override;
-        virtual void draw() override;
+        virtual void update(const engine::GameTime &update_time) override;
+        virtual void draw(const engine::GameTime &draw_time) override;
 
     public:
         Tilegame() : Game(), _spritebatch(_graphics_device), _worldscene(*this) {}

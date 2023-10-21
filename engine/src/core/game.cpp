@@ -39,13 +39,13 @@ namespace engine
             while (accumulatedTime >= _time_step)
             {
                 begin_update();
-                update(_time_step);
+                update(_update_time);
                 end_update();
                 accumulatedTime -= _time_step;
             }
             // - Render at maximum possible frames
             begin_draw();
-            draw(); // - Render function
+            draw(_draw_time); // - Render function
             end_draw();
             glfwSwapBuffers(window.get_native_window());
 

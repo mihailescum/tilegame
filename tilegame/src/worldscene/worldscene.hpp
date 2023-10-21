@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "entt.hpp"
+
 #include "engine.hpp"
 #include "systems/rendersystem.hpp"
 
@@ -26,7 +28,7 @@ namespace tilegame::worldscene
         virtual void initialize() override;
         virtual void load_content() override;
         virtual void unload_content() override;
-        virtual void update(double gametime) override;
-        virtual void draw() override;
+        virtual void update(const engine::GameTime &update_time) override;
+        virtual void draw(const engine::GameTime &draw_time) override;
     };
 } // namespace tilegame::worldscene

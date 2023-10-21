@@ -3,6 +3,7 @@
 #include "graphicsdevice.hpp"
 #include "window.hpp"
 #include "resourcemanager.hpp"
+#include "gametime.hpp"
 
 namespace engine
 {
@@ -13,6 +14,8 @@ namespace engine
         static const int DEFAULT_WINDOW_HEIGHT = 600;
 
         bool _shouldRun;
+        GameTime _update_time;
+        GameTime _draw_time;
 
     protected:
         Window window;
@@ -23,10 +26,10 @@ namespace engine
         virtual void initialize();
         virtual void load_content();
         virtual void unload_content();
-        virtual void update(double gametime) = 0;
+        virtual void update(const engine::GameTime &update_time) = 0;
         virtual void begin_update();
         virtual void end_update(){};
-        virtual void draw() = 0;
+        virtual void draw(const engine::GameTime &draw_time) = 0;
         virtual void begin_draw(){};
         virtual void end_draw(){};
         virtual void resize(int width, int height);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "entt.hpp"
+
 #include "engine.hpp"
 
 namespace tilegame::systems

@@ -17,8 +17,9 @@ namespace tilegame::systems
         for (const auto entity : view)
         {
             auto &&[world, render] = view.get<const tilegame::components::WorldTransform, const tilegame::components::Renderable2D>(entity);
-            engine::Rectangle dest_rect(world.position.x, world.position.y, render.texture->get_width(), render.texture->get_height());
-            _spritebatch.draw(*render.texture, dest_rect, engine::Color::WHITE);
+            const auto &tex = render.texture.get();
+            engine::Rectangle dest_rect(world.position.x, world.position.y, tex.get_width(), tex.get_height());
+            _spritebatch.draw(tex, dest_rect, engine::Color::WHITE);
         }
         _spritebatch.end();
     }

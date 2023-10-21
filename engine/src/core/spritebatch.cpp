@@ -28,6 +28,15 @@ namespace engine
         glGenVertexArrays(1, &this->_vao);
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
+
+        const Viewport &viewport = this->_graphics_device.get_viewport();
+        _projection = glm::ortho(
+            static_cast<float>(viewport.x),
+            static_cast<float>(viewport.width),
+            static_cast<float>(viewport.height),
+            static_cast<float>(viewport.y),
+            -1.0f,
+            1.0f);
     }
 
     void SpriteBatch::begin(const bool alphaBlendingEnabled)
@@ -44,16 +53,7 @@ namespace engine
         }
         this->_has_begun = true;
 
-        const Viewport &viewport = this->_graphics_device.get_viewport();
-        glm::mat4 projection = glm::ortho(
-            static_cast<float>(viewport.x),
-            static_cast<float>(viewport.width),
-            static_cast<float>(viewport.height),
-            static_cast<float>(viewport.y),
-            -1.0f,
-            1.0f);
-
-        this->_wvp = projection * transform;
+        this->_wvp = _projection * transform;
 
         if (alphaBlendingEnabled)
         {

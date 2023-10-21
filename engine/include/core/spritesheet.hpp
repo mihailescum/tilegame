@@ -8,7 +8,7 @@
 
 #include "resource.hpp"
 #include "resourcemanager.hpp"
-#include "texture2D.hpp"
+#include "texture2d.hpp"
 #include "spriteinfo.hpp"
 
 namespace engine

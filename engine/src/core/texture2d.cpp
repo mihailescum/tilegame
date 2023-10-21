@@ -1,4 +1,4 @@
-#include "core/texture2D.hpp"
+#include "core/texture2d.hpp"
 
 #include <sstream>
 

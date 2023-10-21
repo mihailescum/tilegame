@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "engine.hpp"
 
 namespace tilegame::components
@@ -7,6 +9,6 @@ namespace tilegame::components
     struct Renderable2D
     {
     public:
-        engine::Texture2D *texture;
+        std::reference_wrapper<engine::Texture2D> texture;
     };
 } // namespace tilegame
