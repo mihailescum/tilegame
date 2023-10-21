@@ -18,29 +18,24 @@ namespace tilegame
 
         spriteBatch.create();
 
-        // glfwSetInputMode(window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        // window->setPosition(700, 400);
+        // glfwSetInputMode(window.get_native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // window->set_position(700, 400);
 
         // scene = std::make_unique<worldscene::WorldScene>(*this);
         // scene->initialize();
     }
 
-    void Tilegame::loadContent()
+    void Tilegame::load_content()
     {
-        Game::loadContent();
+        Game::load_content();
 
-        worldScene.loadContent();
+        worldScene.load_content();
     }
 
-    void Tilegame::unloadContent()
+    void Tilegame::unload_content()
     {
-        worldScene.unloadContent();
+        worldScene.unload_content();
         // this->spriteBatch.reset();
-    }
-
-    void Tilegame::processInput()
-    {
-        // scene->processInput();
     }
 
     void Tilegame::update(const double deltaTime)
@@ -55,14 +50,14 @@ namespace tilegame
             timer--;
             std::stringstream ss;
             ss << "FPS: " << frames << " - UPS: " << updates;
-            window.setTitle(ss.str());
+            window.set_title(ss.str());
             updates = 0, frames = 0;
         }
     }
 
     void Tilegame::draw()
     {
-        graphicsDevice.clear(engine::Color::CORNFLOWER_BLUE);
+        _graphics_device.clear(engine::Color::CORNFLOWER_BLUE);
 
         worldScene.draw();
 

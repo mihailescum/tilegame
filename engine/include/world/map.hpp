@@ -27,19 +27,19 @@ namespace engine
         std::vector<std::unique_ptr<const MapObject>> objects;
 
         const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
-        std::pair<const Tileset*, const int> parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager);
-        std::unique_ptr<const TileLayer> parseTileLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager);
-        void parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager);
-        NpcObject parseNpcDocument(const nlohmann::json &document, ResourceManager &resourceManager);
+        std::pair<const Tileset*, const int> parseTilesetDocument(const nlohmann::json &document, ResourceManager &_resource_manager);
+        std::unique_ptr<const TileLayer> parseTileLayerDocument(const nlohmann::json &document, ResourceManager &_resource_manager);
+        void parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &_resource_manager);
+        NpcObject parseNpcDocument(const nlohmann::json &document, ResourceManager &_resource_manager);
 
     public:
         Map() {}
         
-        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
+        virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
         virtual void unloadResource() override;
 
-        int getWidth() const;
-        int getHeight() const;
+        int get_width() const;
+        int get_height() const;
         int getTileWidth() const;
         int getTileHeight() const;
         const std::vector<std::pair<const Tileset*, const int>> &getTilesets() const;

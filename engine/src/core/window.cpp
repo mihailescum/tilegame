@@ -5,50 +5,50 @@
 
 namespace engine
 {
-    Window::Window(int width, int height) : width(width), height(height)
+    Window::Window(int width, int height) : _width(width), _height(height)
     {
     }
 
-    bool Window::isResizable()
+    bool Window::is_resizable()
     {
-        return (this->resizable == GLFW_TRUE) ? true : false;
+        return (this->_resizable == GLFW_TRUE) ? true : false;
     }
 
-    void Window::setResizable(const bool resizable)
+    void Window::set_resizable(const bool resizable)
     {
-        this->resizable = (resizable) ? GLFW_TRUE : GLFW_FALSE;
+        this->_resizable = (resizable) ? GLFW_TRUE : GLFW_FALSE;
     }
 
-    std::string Window::getTitle() const
+    std::string Window::get_title() const
     {
-        return this->title;
+        return this->_title;
     }
 
-    void Window::setTitle(const std::string &title)
+    void Window::set_title(const std::string &title)
     {
-        if (this->glfwWindow)
+        if (this->_native_window)
         {
-            this->title = title;
-            glfwSetWindowTitle(this->glfwWindow, this->title.c_str());
+            this->_title = title;
+            glfwSetWindowTitle(this->_native_window, this->_title.c_str());
         }
     }
 
-    void Window::setWindowDimensions(int width, int height)
+    void Window::set_window_dimensions(int width, int height)
     {
-        if (this->glfwWindow)
+        if (this->_native_window)
         {
             if (width >= 0)
-                this->width = width;
+                this->_width = width;
             if (height >= 0)
-                this->height = height;
+                this->_height = height;
 
-            glfwSetWindowSize(this->glfwWindow, this->width, this->height);
+            glfwSetWindowSize(this->_native_window, this->_width, this->_height);
         }
     }
 
-    void Window::setPosition(const int x, const int y)
+    void Window::set_position(const int x, const int y)
     {
-        glfwSetWindowPos(this->glfwWindow, 700, 400);
+        glfwSetWindowPos(this->_native_window, 700, 400);
     }
 
     void errorCallback(int error, const char *description)
@@ -74,48 +74,48 @@ namespace engine
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, this->resizable);
+        glfwWindowHint(GLFW_RESIZABLE, this->_resizable);
 
-        this->glfwWindow = glfwCreateWindow(width, height, "InitGL", nullptr, nullptr);
-        if (!this->glfwWindow)
+        this->_native_window = glfwCreateWindow(_width, _height, "InitGL", nullptr, nullptr);
+        if (!this->_native_window)
         {
             Log::e("Unable to create GLFW window");
 
             glfwTerminate();
-            this->glfwWindow = nullptr;
+            this->_native_window = nullptr;
             return 0;
         }
 
-        glfwMakeContextCurrent(this->glfwWindow);
+        glfwMakeContextCurrent(this->_native_window);
 
-        glfwSetFramebufferSizeCallback(this->glfwWindow, framebuffer_size_callback);
+        glfwSetFramebufferSizeCallback(this->_native_window, framebuffer_size_callback);
 
         return 1;
     }
 
     Window::~Window()
     {
-        if (this->glfwWindow)
-            glfwDestroyWindow(this->glfwWindow);
+        if (this->_native_window)
+            glfwDestroyWindow(this->_native_window);
         glfwTerminate();
-        this->glfwWindow = nullptr;
+        this->_native_window = nullptr;
     }
 
-    bool Window::shouldClose() const
+    bool Window::should_close() const
     {
-        if (!glfwWindow)
+        if (!_native_window)
             return true;
         else
-            return glfwWindowShouldClose(this->glfwWindow);
+            return glfwWindowShouldClose(this->_native_window);
     }
 
-    bool Window::isKeyPressed(int keyCode) const
+    bool Window::is_key_pressed(int keyCode) const
     {
-        return glfwGetKey(this->glfwWindow, keyCode);
+        return glfwGetKey(this->_native_window, keyCode);
     }
 
-    GLFWwindow *Window::getGLFWwindow() const
+    GLFWwindow *Window::get_native_window() const
     {
-        return this->glfwWindow;
+        return this->_native_window;
     }
 } // namespace engine

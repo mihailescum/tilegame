@@ -34,8 +34,8 @@ namespace engine
         SpriteSheet(const SpriteSheet &spriteSheet) = delete;
         ~SpriteSheet() {}
 
-        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
-        virtual void unloadResource() override {}
+        virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
+        virtual void unload_resource() override {}
 
         const Texture2D &getTexture() const { return texture; }
         const int getFrameWidth() const { return frameWidth; }

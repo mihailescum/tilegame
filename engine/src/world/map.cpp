@@ -29,7 +29,7 @@ namespace engine
         return result;
     }
 
-    bool Map::loadResource(ResourceManager &resourceManager, va_list args)
+    bool Map::load_resource(ResourceManager &_resource_manager, va_list args)
     {
         std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
         if (!jsonDocument)
@@ -69,7 +69,7 @@ namespace engine
         const nlohmann::json &tilesetsDocument = jsonDocument->at("tilesets");
         for (const nlohmann::json &tilesetDocument : tilesetsDocument)
         {
-            std::pair<const Tileset *, const int> tileset = this->parseTilesetDocument(tilesetDocument, resourceManager);
+            std::pair<const Tileset *, const int> tileset = this->parseTilesetDocument(tilesetDocument, _resource_manager);
             if (tileset.first)
                 tilesets.push_back(tileset);
             else
@@ -87,7 +87,7 @@ namespace engine
 
             if (layertype == "tilelayer")
             {
-                std::unique_ptr<const TileLayer> layer = this->parseTileLayerDocument(layerDocument, resourceManager);
+                std::unique_ptr<const TileLayer> layer = this->parseTileLayerDocument(layerDocument, _resource_manager);
                 if (layer)
                     layers.push_back(std::move(layer));
                 else
@@ -95,7 +95,7 @@ namespace engine
             }
             else if (layertype == "objectgroup")
             {
-                this->parseObjectLayerDocument(layerDocument, resourceManager);
+                this->parseObjectLayerDocument(layerDocument, _resource_manager);
             }
         }
         if (this->layers.empty())
@@ -106,9 +106,9 @@ namespace engine
         return true;
     }
 
-    void Map::unloadResource() {}
+    void Map::unload_resource() {}
 
-    std::pair<const Tileset *, const int> Map::parseTilesetDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    std::pair<const Tileset *, const int> Map::parseTilesetDocument(const nlohmann::json &document, ResourceManager &_resource_manager)
     {
         int firstGid = document.value("firstgid", 0);
         if (firstGid <= 0)
@@ -119,12 +119,12 @@ namespace engine
             return {nullptr, 0};
 
         std::filesystem::path tilesetPath = std::filesystem::canonical(this->resourcePath.parent_path() / tilesetSource);
-        const Tileset *tileset = resourceManager.loadResource<Tileset>(this->resourceName + "tileset", tilesetPath);
+        const Tileset *tileset = _resource_manager.load_resource<Tileset>(this->_resource_name + "tileset", tilesetPath);
 
         return {tileset, firstGid};
     }
 
-    std::unique_ptr<const TileLayer> Map::parseTileLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    std::unique_ptr<const TileLayer> Map::parseTileLayerDocument(const nlohmann::json &document, ResourceManager &_resource_manager)
     {
         std::unique_ptr<TileLayer> layer = std::make_unique<TileLayer>();
         bool result = layer->loadFromJsonDocument(document);
@@ -135,7 +135,7 @@ namespace engine
             return nullptr;
     }
 
-    void Map::parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    void Map::parseObjectLayerDocument(const nlohmann::json &document, ResourceManager &_resource_manager)
     {
         const nlohmann::json &objectsDocument = document.at("objects");
         for (const nlohmann::json &object : objectsDocument)
@@ -143,13 +143,13 @@ namespace engine
             const std::string type = object.at("type");
             if (type == "NPC")
             {
-                NpcObject npc = this->parseNpcDocument(object, resourceManager);
+                NpcObject npc = this->parseNpcDocument(object, _resource_manager);
                 this->objects.push_back(std::make_unique<NpcObject>(npc));
             }
         }
     }
 
-    NpcObject Map::parseNpcDocument(const nlohmann::json &document, ResourceManager &resourceManager)
+    NpcObject Map::parseNpcDocument(const nlohmann::json &document, ResourceManager &_resource_manager)
     {
         NpcObject result;
         result.x = document.value("x", 0);
@@ -177,7 +177,7 @@ namespace engine
     }
 
     int Map::getWidth() const { return this->width; }
-    int Map::getHeight() const { return this->height; }
+    int Map::get_height() const { return this->height; }
     int Map::getTileWidth() const { return this->tileWidth; }
     int Map::getTileHeight() const { return this->tileHeight; }
     const std::vector<std::pair<const Tileset *, const int>> &Map::getTilesets() const { return this->tilesets; }

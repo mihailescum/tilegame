@@ -17,14 +17,13 @@ namespace tilegame
 
     protected:
         virtual void initialize() override;
-        virtual void loadContent() override;
-        virtual void unloadContent() override;
-        virtual void processInput() override;
-        virtual void update(const double timeStep) override;
+        virtual void load_content() override;
+        virtual void unload_content() override;
+        virtual void update(const double _time_step) override;
         virtual void draw() override;
 
     public:
-        Tilegame() : Game(), spriteBatch(graphicsDevice), worldScene(*this) {}
+        Tilegame() : Game(), spriteBatch(_graphics_device), worldScene(*this) {}
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 

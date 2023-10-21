@@ -25,6 +25,6 @@ namespace tilegame::worldscene
         void initialize();
         void update(const double deltaTime);
 
-        void setPosition(const entt::entity &entity, const double x, const double y);
+        void set_position(const entt::entity &entity, const double x, const double y);
     };
 } // namespace tilegame::worldscene

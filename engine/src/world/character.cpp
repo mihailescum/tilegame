@@ -28,7 +28,7 @@ namespace engine
         return result;
     }
 
-    bool Character::loadResource(ResourceManager &resourceManager, va_list args)
+    bool Character::load_resource(ResourceManager &_resource_manager, va_list args)
     {
         std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
         if (!jsonDocument)
@@ -45,7 +45,7 @@ namespace engine
         }
 
         std::filesystem::path spriteSheetPath = std::filesystem::canonical(this->resourcePath.parent_path() / spriteSheetSource);
-        this->spriteSheet = resourceManager.loadResource<SpriteSheet>("", spriteSheetPath);
+        this->spriteSheet = _resource_manager.load_resource<SpriteSheet>("", spriteSheetPath);
         this->spriteInfo = this->spriteSheet->getSpriteInfo(spriteId);
         if (!this->spriteInfo)
         {

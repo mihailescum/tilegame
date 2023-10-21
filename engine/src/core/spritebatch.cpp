@@ -7,27 +7,27 @@
 namespace engine
 {
     SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
-        : graphicsDevice(graphicsDevice),
-          num_active_textures(0),
-          num_active_sprites(0),
-          begun(false)
+        : _graphics_device(graphicsDevice),
+          _num_active_textures(0),
+          _num_active_sprites(0),
+          _has_begun(false)
     {
     }
 
     SpriteBatch::~SpriteBatch()
     {
-        if (this->VBO != 0)
-            glDeleteBuffers(1, &VBO);
-        if (this->VAO != 0)
-            glDeleteVertexArrays(1, &VAO);
+        if (this->_vbo != 0)
+            glDeleteBuffers(1, &_vbo);
+        if (this->_vao != 0)
+            glDeleteVertexArrays(1, &_vao);
     }
 
     void SpriteBatch::create()
     {
-        glGenBuffers(1, &this->VBO);
-        glGenVertexArrays(1, &this->VAO);
+        glGenBuffers(1, &this->_vbo);
+        glGenVertexArrays(1, &this->_vao);
 
-        shader.compile(SpriteBatch::vertexShaderSource, "", SpriteBatch::fragmentShaderSource);
+        _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
     }
 
     void SpriteBatch::begin(const bool alphaBlendingEnabled)
@@ -38,13 +38,13 @@ namespace engine
 
     void SpriteBatch::begin(const glm::mat4 &transform, const bool alphaBlendingEnabled)
     {
-        if (this->begun)
+        if (this->_has_begun)
         {
             throw "'begin()' was already called. Call 'end()' first.";
         }
-        this->begun = true;
+        this->_has_begun = true;
 
-        const Viewport &viewport = this->graphicsDevice.getViewport();
+        const Viewport &viewport = this->_graphics_device.get_viewport();
         glm::mat4 projection = glm::ortho(
             static_cast<float>(viewport.x),
             static_cast<float>(viewport.width),
@@ -53,7 +53,7 @@ namespace engine
             -1.0f,
             1.0f);
 
-        this->wvp = projection * transform;
+        this->_wvp = projection * transform;
 
         if (alphaBlendingEnabled)
         {
@@ -64,7 +64,7 @@ namespace engine
 
     void SpriteBatch::end()
     {
-        if (!this->begun)
+        if (!this->_has_begun)
         {
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
@@ -72,7 +72,7 @@ namespace engine
 
         glDisable(GL_BLEND);
 
-        this->begun = false;
+        this->_has_begun = false;
     }
 
     void SpriteBatch::draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Color &color)
@@ -82,35 +82,35 @@ namespace engine
 
     void SpriteBatch::draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle, const Color &color)
     {
-        if (!this->begun)
+        if (!this->_has_begun)
         {
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
 
         int textureIndex = -1;
-        for (int i = 0; i < this->num_active_textures; i++)
+        for (int i = 0; i < this->_num_active_textures; i++)
         {
-            if (texture == this->activeTextures[i])
+            if (texture == this->_activeTextures[i])
                 textureIndex = i;
         }
         if (textureIndex < 0)
         {
-            if (this->num_active_textures == NUM_SIMULT_TEXTURES)
+            if (this->_num_active_textures == NUM_SIMULT_TEXTURES)
                 // In this case we need to flush, as this texture does not fit anymore!
                 flush();
 
-            textureIndex = num_active_textures;
-            this->num_active_textures++;
-            this->activeTextures[textureIndex] = texture;
+            textureIndex = _num_active_textures;
+            this->_num_active_textures++;
+            this->_activeTextures[textureIndex] = texture;
         }
-        this->addSpriteData(texture, destinationRectangle, sourceRectangle);
+        this->add_sprite_data(texture, destinationRectangle, sourceRectangle);
 
-        this->num_active_sprites++;
-        if (this->num_active_sprites > MAX_BATCH_SIZE)
+        this->_num_active_sprites++;
+        if (this->_num_active_sprites > MAX_BATCH_SIZE)
             this->flush();
     }
 
-    void SpriteBatch::addSpriteData(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle)
+    void SpriteBatch::add_sprite_data(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle)
     {
         glm::vec2 posTopLeft(destinationRectangle.x, destinationRectangle.y);
         glm::vec2 posTopRight(destinationRectangle.x + destinationRectangle.width, destinationRectangle.y);
@@ -123,8 +123,8 @@ namespace engine
         glm::vec2 uvBottomRight(1.0f, 1.0f);
         if (sourceRectangle != nullptr)
         {
-            double textureWidth = texture.getWidth();
-            double textureHeight = texture.getHeight();
+            double textureWidth = texture.get_width();
+            double textureHeight = texture.get_height();
 
             uvTopLeft.x = (GLfloat)sourceRectangle->x / textureWidth;
             uvTopLeft.y = (GLfloat)sourceRectangle->y / textureHeight;
@@ -140,66 +140,66 @@ namespace engine
         }
 
         const int sizeOfSprite = 24;
-        int offset = this->num_active_sprites * sizeOfSprite;
-        if (offset >= this->spriteData.size())
-            spriteData.resize((this->num_active_sprites + 1) * sizeOfSprite);
+        int offset = this->_num_active_sprites * sizeOfSprite;
+        if (offset >= this->_sprite_data.size())
+            _sprite_data.resize((this->_num_active_sprites + 1) * sizeOfSprite);
 
         // Bottom Left
-        this->spriteData[offset] = posBottomLeft.x;
-        this->spriteData[offset + 1] = posBottomLeft.y;
-        this->spriteData[offset + 2] = uvBottomLeft.x;
-        this->spriteData[offset + 3] = uvBottomLeft.y;
+        this->_sprite_data[offset] = posBottomLeft.x;
+        this->_sprite_data[offset + 1] = posBottomLeft.y;
+        this->_sprite_data[offset + 2] = uvBottomLeft.x;
+        this->_sprite_data[offset + 3] = uvBottomLeft.y;
         // Top Right
-        this->spriteData[offset + 4] = posTopRight.x;
-        this->spriteData[offset + 5] = posTopRight.y;
-        this->spriteData[offset + 6] = uvTopRight.x;
-        this->spriteData[offset + 7] = uvTopRight.y;
+        this->_sprite_data[offset + 4] = posTopRight.x;
+        this->_sprite_data[offset + 5] = posTopRight.y;
+        this->_sprite_data[offset + 6] = uvTopRight.x;
+        this->_sprite_data[offset + 7] = uvTopRight.y;
         // Top Left
-        this->spriteData[offset + 8] = posTopLeft.x;
-        this->spriteData[offset + 9] = posTopLeft.y;
-        this->spriteData[offset + 10] = uvTopLeft.x;
-        this->spriteData[offset + 11] = uvTopLeft.y;
+        this->_sprite_data[offset + 8] = posTopLeft.x;
+        this->_sprite_data[offset + 9] = posTopLeft.y;
+        this->_sprite_data[offset + 10] = uvTopLeft.x;
+        this->_sprite_data[offset + 11] = uvTopLeft.y;
         // Bottom Left
-        this->spriteData[offset + 12] = posBottomLeft.x;
-        this->spriteData[offset + 13] = posBottomLeft.y;
-        this->spriteData[offset + 14] = uvBottomLeft.x;
-        this->spriteData[offset + 15] = uvBottomLeft.y;
+        this->_sprite_data[offset + 12] = posBottomLeft.x;
+        this->_sprite_data[offset + 13] = posBottomLeft.y;
+        this->_sprite_data[offset + 14] = uvBottomLeft.x;
+        this->_sprite_data[offset + 15] = uvBottomLeft.y;
         // Bottom Right
-        this->spriteData[offset + 16] = posBottomRight.x;
-        this->spriteData[offset + 17] = posBottomRight.y;
-        this->spriteData[offset + 18] = uvBottomRight.x;
-        this->spriteData[offset + 19] = uvBottomRight.y;
+        this->_sprite_data[offset + 16] = posBottomRight.x;
+        this->_sprite_data[offset + 17] = posBottomRight.y;
+        this->_sprite_data[offset + 18] = uvBottomRight.x;
+        this->_sprite_data[offset + 19] = uvBottomRight.y;
         // Top Right
-        this->spriteData[offset + 20] = posTopRight.x;
-        this->spriteData[offset + 21] = posTopRight.y;
-        this->spriteData[offset + 22] = uvTopRight.x;
-        this->spriteData[offset + 23] = uvTopRight.y;
+        this->_sprite_data[offset + 20] = posTopRight.x;
+        this->_sprite_data[offset + 21] = posTopRight.y;
+        this->_sprite_data[offset + 22] = uvTopRight.x;
+        this->_sprite_data[offset + 23] = uvTopRight.y;
     }
 
     void SpriteBatch::flush()
     {
-        glBindVertexArray(this->VAO);
+        glBindVertexArray(this->_vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-        glBufferData(GL_ARRAY_BUFFER, num_active_sprites * 24 * sizeof(float), &spriteData[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
+        glBufferData(GL_ARRAY_BUFFER, _num_active_sprites * 24 * sizeof(float), &_sprite_data[0], GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
-        shader.use();
-        for (int i = 0; i < this->num_active_textures; i++)
-            activeTextures[i].use(i);
+        _shader.use();
+        for (int i = 0; i < this->_num_active_textures; i++)
+            _activeTextures[i].use(i);
 
-        shader.setInt("Texture", 0);
-        shader.setMatrix4fv("WVP", this->wvp);
+        _shader.set_int("Texture", 0);
+        _shader.set_mat4("WVP", this->_wvp);
 
-        glDrawArrays(GL_TRIANGLES, 0, num_active_sprites * 6);
+        glDrawArrays(GL_TRIANGLES, 0, _num_active_sprites * 6);
 
-        num_active_sprites = 0;
-        num_active_textures = 0;
+        _num_active_sprites = 0;
+        _num_active_textures = 0;
     }
 
-    const std::string SpriteBatch::vertexShaderSource = R"(
+    const std::string SpriteBatch::VERTEX_SHADER_SOURCE = R"(
     #version 330 core
     layout (location = 0) in vec4 vertex;
     
@@ -213,7 +213,7 @@ namespace engine
         TexCoord = vertex.zw;
     })";
 
-    const std::string SpriteBatch::fragmentShaderSource = R"(
+    const std::string SpriteBatch::FRAGMENT_SHADER_SOURCE = R"(
     #version 330 core
     out vec4 FragColor;
     

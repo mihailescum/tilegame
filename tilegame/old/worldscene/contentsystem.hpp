@@ -12,7 +12,7 @@ namespace tilegame::worldscene
         WorldScene &scene;
         entt::registry &registry;
 
-        engine::ResourceManager &resourceManager;
+        engine::ResourceManager &_resource_manager;
 
         void loadCharacters() const;
 
@@ -20,9 +20,9 @@ namespace tilegame::worldscene
         engine::Entity createCharacterEntity(engine::Character &character) const;
 
     public:
-        ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager);
+        ContentSystem(WorldScene &scene, engine::ResourceManager &_resource_manager);
         void initialize();
-        void loadContent() const;
-        void unloadContent() const;
+        void load_content() const;
+        void unload_content() const;
     };
 } // namespace tilegame::worldscene

@@ -10,7 +10,7 @@
 
 namespace engine
 {
-    void Tileset::unloadResource() {}
+    void Tileset::unload_resource() {}
 
     const std::unique_ptr<nlohmann::json> Tileset::loadJsonDocument() const
     {
@@ -28,7 +28,7 @@ namespace engine
         return result;
     }
 
-    bool Tileset::loadResource(ResourceManager &resourceManager, va_list args)
+    bool Tileset::load_resource(ResourceManager &_resource_manager, va_list args)
     {
         std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
         if (!jsonDocument)
@@ -76,7 +76,7 @@ namespace engine
         }
 
         std::filesystem::path imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
-        this->texture = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath, true);
+        this->texture = _resource_manager.load_resource<Texture2D>(this->_resource_name + "texture", imagePath, true);
 
         for (int y = 0; y < this->rows; y++)
         {

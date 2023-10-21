@@ -12,34 +12,34 @@ namespace engine
     class Shader : public Resource
     {
     private:
-        GLuint glShaderProgram = 0;
+        GLuint _gl_program = 0;
 
         // Returns true if there were errors
-        bool checkCompileErrors(GLuint shader, std::string type) const;
-        GLuint compileShader(const std::string &source, const std::string &name, GLenum shaderType) const;
+        bool check_compile_errors(GLuint shader, std::string type) const;
+        GLuint compile_shader(const std::string &source, const std::string &name, GLenum shader_type) const;
         // Returns true if compilation was successful
-        bool compileProgram(GLuint vertex, GLuint geometry, GLuint fragment);
+        bool compile_program(GLuint vertex, GLuint geometry, GLuint fragment);
 
-        std::string loadShaderSource(const std::string &path) const;
+        std::string load_shader_source(const std::string &path) const;
 
     public:
         Shader();
 
-        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
-        virtual void unloadResource() override;
+        virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
+        virtual void unload_resource() override;
 
-        void setBool(const std::string &name, GLboolean value) const;
-        void setInt(const std::string &name, GLint value) const;
-        void setFloat(const std::string &name, GLfloat value) const;
-        void setVec4f(const std::string &name, glm::vec4 value) const;
-        void setMatrix4fv(const std::string &name, glm::mat4 value) const;
+        void set_bool(const std::string &name, GLboolean value) const;
+        void set_int(const std::string &name, GLint value) const;
+        void set_float(const std::string &name, GLfloat value) const;
+        void set_vec4(const std::string &name, glm::vec4 value) const;
+        void set_mat4(const std::string &name, glm::mat4 value) const;
 
-        bool compile(const std::string &vertexSource, const std::string &geometrySource, const std::string &fragmentSource);
+        bool compile(const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source);
         void use() const;
 
         /*
             @return a GLuint object that represents the shader program
         */
-        GLuint getglShaderProgram() const { return glShaderProgram; }
+        GLuint get_gl_program() const { return _gl_program; }
     };
 } // namespace engine

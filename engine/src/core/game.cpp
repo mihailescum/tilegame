@@ -8,24 +8,24 @@ namespace engine
 {
     Game::~Game()
     {
-        // Calls unloadContent() of Game class
-        unloadContent();
+        // Calls unload_content() of Game class
+        unload_content();
     }
 
     void Game::run()
     {
-        shouldRun = true;
+        _shouldRun = true;
         initialize();
-        if (shouldRun)
-            loadContent();
+        if (_shouldRun)
+            load_content();
 
         double lastTime = glfwGetTime();
         double nowTime = lastTime;
-        double accumulatedTime = timeStep;
+        double accumulatedTime = _time_step;
         double deltaTime = 0;
 
         // - While window is alive
-        while (shouldRun)
+        while (_shouldRun)
         {
             // - Measure time
             lastTime = nowTime;
@@ -34,58 +34,65 @@ namespace engine
             accumulatedTime += deltaTime;
 
             glfwPollEvents();
-            processInput();
 
             // - Update at X FPS
-            while (accumulatedTime >= timeStep)
+            while (accumulatedTime >= _time_step)
             {
-                update(timeStep); // - Update function
-                accumulatedTime -= timeStep;
+                begin_update();
+                update(_time_step);
+                end_update();
+                accumulatedTime -= _time_step;
             }
             // - Render at maximum possible frames
+            begin_draw();
             draw(); // - Render function
-            glfwSwapBuffers(window.getGLFWwindow());
+            end_draw();
+            glfwSwapBuffers(window.get_native_window());
 
-            shouldRun = !window.shouldClose();
+            _shouldRun = !window.should_close();
         }
 
-        // Calls unloadContent() of derived class
-        unloadContent();
+        // Calls unload_content() of derived class
+        unload_content();
+    }
+
+    void Game::begin_update()
+    {
     }
 
     void Game::initialize()
     {
-        timeStep = 1.0 / 60;
+        _time_step = 1.0 / 60;
 
         int windowResult = window.initialize();
         if (!windowResult)
         {
-            shouldRun = false;
+            _shouldRun = false;
             return;
         }
 
-        int graphicsDeviceResult = graphicsDevice.create();
+        int graphicsDeviceResult = _graphics_device.create();
         if (!graphicsDeviceResult)
         {
-            shouldRun = false;
+            _shouldRun = false;
             return;
         }
     }
 
-    void Game::loadContent()
+    void Game::load_content()
     {
     }
 
-    void Game::unloadContent()
+    void Game::unload_content()
     {
-        resourceManager.unloadResources();
+        _resource_manager.unload_resources();
     }
 
     void Game::resize(int width, int height)
     {
-        Viewport currentViewport = graphicsDevice.getViewport();
+        Viewport currentViewport = _graphics_device.get_viewport();
         currentViewport.width = width;
         currentViewport.height = height;
-        graphicsDevice.setViewport(currentViewport);
+        _graphics_device.set_viewport(currentViewport);
     }
 } // namespace engine

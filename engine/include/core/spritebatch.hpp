@@ -15,35 +15,35 @@ namespace engine
         static const int NUM_SIMULT_TEXTURES = 1;
         static const int MAX_BATCH_SIZE = 4096;
 
-        static const std::string vertexShaderSource;
-        static const std::string fragmentShaderSource;
+        static const std::string VERTEX_SHADER_SOURCE;
+        static const std::string FRAGMENT_SHADER_SOURCE;
 
-        GraphicsDevice &graphicsDevice;
-        GLuint VBO = 0;
-        GLuint VAO = 0;
+        GraphicsDevice &_graphics_device;
+        GLuint _vbo;
+        GLuint _vao;
 
-        Shader shader;
+        Shader _shader;
 
-        glm::mat4 wvp;
-        Texture2D activeTextures[NUM_SIMULT_TEXTURES];
-        std::vector<float> spriteData;
-        int num_active_textures;
-        int num_active_sprites;
-        bool begun;
+        glm::mat4 _wvp;
+        Texture2D _activeTextures[NUM_SIMULT_TEXTURES];
+        std::vector<float> _sprite_data;
+        int _num_active_textures;
+        int _num_active_sprites;
+        bool _has_begun;
 
         void flush();
-        void addSpriteData(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle);
+        void add_sprite_data(const Texture2D &texture, const Rectangle &destination_rectangle, const Rectangle *source_rectangle);
 
     public:
-        SpriteBatch(GraphicsDevice &graphicsDevice);
-        SpriteBatch(const SpriteBatch &spriteBatch) = delete;
+        SpriteBatch(GraphicsDevice &graphics_device);
+        SpriteBatch(const SpriteBatch &sprite_batch) = delete;
         virtual ~SpriteBatch();
 
         void create();
-        void begin(const bool alphaBlendingEnabled);
-        void begin(const glm::mat4 &transform, const bool alphaBlendingEnabled);
-        void draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Color &color);
-        void draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle, const Color &color);
+        void begin(const bool alpha_blending_enabled);
+        void begin(const glm::mat4 &transform, const bool alpha_blending_enabled);
+        void draw(const Texture2D &texture, const Rectangle &destination_rectangle, const Color &color);
+        void draw(const Texture2D &texture, const Rectangle &destination_rectangle, const Rectangle *source_rectangle, const Color &color);
         void end();
     };
 } // namespace engine

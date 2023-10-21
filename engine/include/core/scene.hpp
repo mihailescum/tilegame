@@ -9,20 +9,17 @@ namespace engine
     class Scene
     {
     protected:
-        Game &game;
+        Game &_game;
 
     public:
         Scene(Game &game);
         Scene(const Scene &scene) = delete;
 
-        // entt::registry &Scene::getRegistry() { return this->registry; }
-
-        const Game &getGame() const;
+        const Game &get_game() const;
 
         virtual void initialize(){};
-        virtual void loadContent(){};
-        virtual void unloadContent(){};
-        virtual void processInput(){};
+        virtual void load_content(){};
+        virtual void unload_content(){};
         virtual void update(const double deltaTime){};
         virtual void draw(){};
     };

@@ -16,7 +16,7 @@ namespace engine
     {
     private:
         // resource storage
-        std::unordered_map<std::string, std::unique_ptr<Resource>> resources;
+        std::unordered_map<std::string, std::unique_ptr<Resource>> _resources;
 
     public:
         ResourceManager() {}
@@ -24,36 +24,36 @@ namespace engine
         virtual ~ResourceManager();
 
         // properly de-allocates all loaded resources
-        void unloadResources();
+        void unload_resources();
 
-        Resource *getResource(const std::string &name) const;
+        Resource *get_resource(const std::string &name) const;
 
         template <class T>
-        T *loadResource(std::string name, const std::filesystem::path &path, ...)
+        T *load_resource(std::string name, const std::filesystem::path &path, ...)
         {
             (void)static_cast<Resource *>((T *)0);
 
             if (name.empty())
                 name = path.filename();
 
-            if (this->resources.count(name) == 0)
+            if (this->_resources.count(name) == 0)
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
-                res->setResourceId(this->resources.size());
-                res->setResourcePath(std::filesystem::absolute(path));
-                res->setResourceName(name);
+                res->set_resource_id(this->_resources.size());
+                res->set_resource_path(std::filesystem::absolute(path));
+                res->set_resource_name(name);
 
                 va_list args;
                 va_start(args, path);
-                bool loadingSucceded = res->loadResource(*this, args);
+                bool loading_succeded = res->load_resource(*this, args);
                 va_end(args);
 
-                if (loadingSucceded)
-                    this->resources.emplace(name, std::move(res));
+                if (loading_succeded)
+                    this->_resources.emplace(name, std::move(res));
             }
 
-            if (this->resources.count(name) != 0)
-                return (T *)this->resources[name].get();
+            if (this->_resources.count(name) != 0)
+                return (T *)this->_resources[name].get();
             else
                 return nullptr;
         }

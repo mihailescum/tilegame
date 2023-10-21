@@ -32,7 +32,7 @@ namespace engine
         Tileset() {}
         Tileset(const Tileset &tileset) = delete;
 
-        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
+        virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
         virtual void unloadResource() override;
         const Tile &getTile(const unsigned index) const;
 

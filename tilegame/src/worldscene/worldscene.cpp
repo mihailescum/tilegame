@@ -23,16 +23,12 @@ namespace tilegame::worldscene
     {
     }
 
-    void WorldScene::loadContent()
+    void WorldScene::load_content()
     {
-        testTex = game.getResourceManager().loadResource<engine::Texture2D>("test", "content/textures/tileset1.png");
+        testTex = _game.get_resource_manager().load_resource<engine::Texture2D>("test", "content/textures/tileset1.png");
     }
 
-    void WorldScene::unloadContent()
-    {
-    }
-
-    void WorldScene::processInput()
+    void WorldScene::unload_content()
     {
     }
 
@@ -51,6 +47,6 @@ namespace tilegame::worldscene
 
     engine::SpriteBatch &WorldScene::getSpriteBatch()
     {
-        return ((Tilegame &)game).getSpriteBatch();
+        return ((Tilegame &)_game).getSpriteBatch();
     }
 } // namespace tilegame::worldscene

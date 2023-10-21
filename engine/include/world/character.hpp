@@ -21,7 +21,7 @@ namespace engine
         const std::unique_ptr<nlohmann::json> loadJsonDocument() const;
 
     public:
-        virtual bool loadResource(ResourceManager &resourceManager, va_list args) override;
+        virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
         virtual void unloadResource() override {}
 
         const std::string &getObjectId() const;

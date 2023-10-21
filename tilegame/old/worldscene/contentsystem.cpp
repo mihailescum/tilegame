@@ -10,19 +10,19 @@
 
 namespace tilegame::worldscene
 {
-    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &resourceManager) : scene(scene), registry(scene.getRegistry()), resourceManager(resourceManager) {}
+    ContentSystem::ContentSystem(WorldScene &scene, engine::ResourceManager &_resource_manager) : scene(scene), registry(scene.getRegistry()), _resource_manager(_resource_manager) {}
 
     void ContentSystem::initialize() {}
 
-    void ContentSystem::loadContent() const
+    void ContentSystem::load_content() const
     {
         this->loadCharacters();
 
-        engine::Map *map1 = resourceManager.loadResource<engine::Map>("map1", "content/world/map1.json", this);
+        engine::Map *map1 = _resource_manager.load_resource<engine::Map>("map1", "content/world/map1.json", this);
         this->createMapEntity(*map1);
     }
 
-    void ContentSystem::unloadContent() const
+    void ContentSystem::unload_content() const
     {
     }
 
@@ -36,10 +36,10 @@ namespace tilegame::worldscene
         for (const auto &layer : map.getLayers())
         {
             engine::Entity entity = scene.createEntity();
-            entity.add<engine::TileLayerComponent>(layer->getData(), map.getWidth(), map.getHeight());
+            entity.add<engine::TileLayerComponent>(layer->getData(), map.getWidth(), map.get_height());
             entity.add<engine::TilesetComponent>(tilesetComponent);
             entity.add<engine::PositionComponent>(glm::dvec2(0.0));
-            entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight(), 1 - q);
+            entity.add<engine::RenderComponent>(map.getWidth() * map.getTileWidth(), map.get_height() * map.getTileHeight(), 1 - q);
             if (layer->isVisible())
                 entity.add<engine::VisibilityComponent>();
             if (!layer->getObjectId().empty())
@@ -96,7 +96,7 @@ namespace tilegame::worldscene
             }
 
             std::filesystem::path characterPath = std::filesystem::canonical(charactersPath.parent_path() / characterSource);
-            engine::Character *character = resourceManager.loadResource<engine::Character>("", characterPath, characterId.c_str());
+            engine::Character *character = _resource_manager.load_resource<engine::Character>("", characterPath, characterId.c_str());
             if (character)
             {
                 engine::Entity entity = this->createCharacterEntity(*character);
@@ -112,7 +112,7 @@ namespace tilegame::worldscene
                     engine::CameraComponent &cameraComponent = entity.add<engine::CameraComponent>();
                     entity.add<engine::VisibilityComponent>();
 
-                    cameraComponent.viewport = &scene.getGame().getGraphicsDevice()->getViewport();
+                    cameraComponent.viewport = &scene.get_game().get_graphics_device()->getViewport();
                     scene.E_setPosition(character->getObjectId(), 128, 128);
                 }
                 else if (character->getObjectId() == "1") {

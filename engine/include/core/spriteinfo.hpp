@@ -14,8 +14,8 @@ namespace engine
         SpriteInfo(std::size_t id) : id(id) {}
 
         std::size_t id;
-        std::unordered_map<std::string, std::vector<Rectangle>> spriteStates;
+        std::unordered_map<std::string, std::vector<Rectangle>> sprite_states;
 
-        void addSpriteState(const std::string &name, const Rectangle frameSourceRect);
+        void addSpriteState(const std::string &name, const Rectangle frame_source_rect);
     };
 } // namespace engine

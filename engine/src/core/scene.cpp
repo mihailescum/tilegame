@@ -2,9 +2,9 @@
 
 namespace engine
 {
-    Scene::Scene(Game &game) : game(game)
+    Scene::Scene(Game &game) : _game(game)
     {
     }
 
-    const Game &Scene::getGame() const { return this->game; }
+    const Game &Scene::get_game() const { return this->_game; }
 } // namespace engine

@@ -5,7 +5,7 @@
 
 namespace engine
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : viewport(0, 0, window.getWidth(), window.getHeight())
+    GraphicsDevice::GraphicsDevice(const Window &window) : viewport(0, 0, window.get_width(), window.get_height())
     {
     }
 
@@ -20,7 +20,7 @@ namespace engine
             return 0;
         }
 
-        setViewport(viewport);
+        set_viewport(viewport);
         // glEnable(GL_DEPTH_TEST);
         // glEnable(GL_CULL_FACE);
         // glCullFace(GL_BACK);
@@ -28,7 +28,7 @@ namespace engine
         return 1;
     }
 
-    void GraphicsDevice::setViewport(const Viewport &viewport)
+    void GraphicsDevice::set_viewport(const Viewport &viewport)
     {
         this->viewport = viewport;
         glViewport(viewport.x, viewport.y, viewport.width, viewport.height);

@@ -29,14 +29,14 @@ namespace tilegame::worldscene
 
         void initialize();
         void update(const double deltaTime);
-        void setPosition(const entt::entity &entity, const double x, const double y);
+        void set_position(const entt::entity &entity, const double x, const double y);
     };
 
     MovementSystem::MovementSystem(WorldScene &scene) : impl(std::make_unique<MovementSystem::Impl>(scene.getRegistry())) {}
     MovementSystem::~MovementSystem() = default;
     void MovementSystem::initialize() { impl->initialize(); }
     void MovementSystem::update(const double deltaTime) { impl->update(deltaTime); }
-    void MovementSystem::setPosition(const entt::entity &entity, const double x, const double y) { impl->setPosition(entity, x, y); }
+    void MovementSystem::set_position(const entt::entity &entity, const double x, const double y) { impl->set_position(entity, x, y); }
 
     MovementSystem::Impl::Impl(entt::registry &registry) : registry(registry) {}
 
@@ -178,7 +178,7 @@ namespace tilegame::worldscene
 
             glm::dvec2 newPosition = positionComponent.position + collisionComponent.movementVector * deltaTime;
             engine::Log::d("pos ", positionComponent.x() + 32, "  ", positionComponent.y() + 32);
-            setPosition(entity, newPosition.x, newPosition.y);
+            set_position(entity, newPosition.x, newPosition.y);
             collisionComponent.movementVector = {0.0, 0.0};
         }
         collisionObserver->clear();
@@ -265,7 +265,7 @@ namespace tilegame::worldscene
         return rayCollision && (contactTime >= 0.0f && contactTime < 1.0f);
     }
 
-    void MovementSystem::Impl::setPosition(const entt::entity &entity, const double x, const double y)
+    void MovementSystem::Impl::set_position(const entt::entity &entity, const double x, const double y)
     {
         registry.patch<engine::PositionComponent>(entity,
                                                   [=](auto &pos) {

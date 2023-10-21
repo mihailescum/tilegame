@@ -12,7 +12,7 @@ namespace engine
     {
         std::unique_ptr<nlohmann::json> result = std::make_unique<nlohmann::json>();
 
-        std::ifstream fileStream(this->resourcePath, std::ifstream::in);
+        std::ifstream fileStream(this->_resource_path, std::ifstream::in);
         if (!fileStream.is_open())
         {
             return nullptr;
@@ -24,40 +24,40 @@ namespace engine
         return result;
     }
 
-    bool SpriteSheet::loadResource(ResourceManager &resourceManager, va_list args)
+    bool SpriteSheet::load_resource(ResourceManager &_resource_manager, va_list args)
     {
         std::unique_ptr<nlohmann::json> jsonDocument = this->loadJsonDocument();
         if (!jsonDocument)
         {
-            Log::e("File could not be loaded (file: ", this->resourcePath, ").");
+            Log::e("File could not be loaded (file: ", this->_resource_path, ").");
             return false;
         }
 
         this->frameWidth = jsonDocument->value("tilewidth", 0);
         if (this->frameWidth <= 0)
         {
-            Log::e("Tile width (", this->frameWidth, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            Log::e("Tile width (", this->frameWidth, ") has to be greater than zero (file: ", this->_resource_path, ").");
             return false;
         }
 
         this->frameHeight = jsonDocument->value("tileheight", 0);
         if (this->frameHeight <= 0)
         {
-            Log::e("Tile height (", this->frameHeight, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            Log::e("Tile height (", this->frameHeight, ") has to be greater than zero (file: ", this->_resource_path, ").");
             return false;
         }
 
         this->frameCount = jsonDocument->value("tilecount", 0);
         if (this->frameCount <= 0)
         {
-            Log::e("Tile count (", this->frameCount, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            Log::e("Tile count (", this->frameCount, ") has to be greater than zero (file: ", this->_resource_path, ").");
             return false;
         }
 
         this->columns = jsonDocument->value("columns", 0);
         if (this->columns <= 0)
         {
-            Log::e("Number of columns (", this->columns, ") has to be greater than zero (file: ", this->resourcePath, ").");
+            Log::e("Number of columns (", this->columns, ") has to be greater than zero (file: ", this->_resource_path, ").");
             return false;
         }
 
@@ -66,11 +66,11 @@ namespace engine
         std::string imageSource = jsonDocument->value("image", "");
         if (imageSource.empty())
         {
-            Log::e("Image (", imageSource, ") has to be a valid path (file: ", this->resourcePath, ").");
+            Log::e("Image (", imageSource, ") has to be a valid path (file: ", this->_resource_path, ").");
             return false;
         }
-        auto imagePath = std::filesystem::canonical(this->resourcePath.parent_path() / imageSource);
-        auto texture_ptr = resourceManager.loadResource<Texture2D>(this->resourceName + "texture", imagePath);
+        auto imagePath = std::filesystem::canonical(this->_resource_path.parent_path() / imageSource);
+        auto texture_ptr = _resource_manager.load_resource<Texture2D>(this->_resource_name + "texture", imagePath);
         if (texture_ptr)
             this->texture = *texture_ptr;
         else

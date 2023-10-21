@@ -46,7 +46,7 @@ namespace tilegame::worldscene
                     {
                         spriteInfo.currentFrame++;
                         const std::string &currentState = spriteInfo.currentState;
-                        if (spriteInfo.currentFrame >= spriteInfo.spriteInfo->spriteStates.at(currentState).size())
+                        if (spriteInfo.currentFrame >= spriteInfo.spriteInfo->sprite_states.at(currentState).size())
                             spriteInfo.currentFrame = 0;
                     });
                 animation.doAnimation = false;

@@ -17,7 +17,7 @@ namespace tilegame::worldscene
             for (auto kvp : input.keys)
             {
                 kvp.second.second = kvp.second.first;
-                kvp.second.first = this->window.isKeyPressed(kvp.first);
+                kvp.second.first = this->window.is_key_pressed(kvp.first);
 
                 // If the entity has a camera attached to it, it is the player
                 if (this->registry.has<engine::CameraComponent, engine::MoveComponent>(entity))

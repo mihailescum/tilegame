@@ -9,12 +9,12 @@ namespace engine
     class Window
     {
     private:
-        GLFWwindow *glfwWindow;
+        GLFWwindow *_native_window;
 
-        std::string title;
-        int width;
-        int height;
-        bool resizable = GLFW_FALSE;
+        std::string _title;
+        int _width;
+        int _height;
+        bool _resizable = GLFW_FALSE;
 
     public:
         Window(int width, int height);
@@ -27,21 +27,21 @@ namespace engine
         /*
             Indicates that the window should close at the next possible point in time
         */
-        bool shouldClose() const;
-        void setPosition(int x, int y);
-        bool isKeyPressed(int keyCode) const;
+        bool should_close() const;
+        void set_position(int x, int y);
+        bool is_key_pressed(int key_code) const;
 
-        GLFWwindow *getGLFWwindow() const;
-        bool isResizable();
-        void setResizable(const bool resizable);
-        std::string getTitle() const;
-        void setTitle(const std::string &title);
-        int getWidth() const { return width; }
-        int getHeight() const { return height; }
+        GLFWwindow *get_native_window() const;
+        bool is_resizable();
+        void set_resizable(const bool resizable);
+        std::string get_title() const;
+        void set_title(const std::string &title);
+        int get_width() const { return _width; }
+        int get_height() const { return _height; }
         /*
             Set the dimensions of the window. Passing negative values will leave the properties unchanged
         */
-        void setWindowDimensions(int width, int height);
+        void set_window_dimensions(int width, int height);
 
         //__event void windowSizeChanged(int width, int height);
     };
