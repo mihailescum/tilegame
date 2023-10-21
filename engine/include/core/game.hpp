@@ -29,7 +29,7 @@ namespace engine
         virtual void resize(int width, int height);
 
     public:
-        Game(int window_width = DEFAULT_WINDOW_WIDTH, int window_height = DEFAULT_WINDOW_HEIGHT) : window(window_width, window_height), graphicsDevice(window) {}
+        Game(int windowWidth = DEFAULT_WINDOW_WIDTH, int windowHeight = DEFAULT_WINDOW_HEIGHT) : window(windowWidth, windowHeight), graphicsDevice(window) {}
         Game(const Game &game) = delete;
         virtual ~Game();
 

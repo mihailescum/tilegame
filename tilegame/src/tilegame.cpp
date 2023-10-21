@@ -62,7 +62,7 @@ namespace tilegame
 
     void Tilegame::draw()
     {
-        graphicsDevice.clear(engine::Color::CornflowerBlue);
+        graphicsDevice.clear(engine::Color::CORNFLOWER_BLUE);
 
         worldScene.draw();
 

@@ -45,7 +45,7 @@ namespace tilegame::worldscene
         auto &spriteBatch = getSpriteBatch();
 
         spriteBatch.begin(false);
-        spriteBatch.draw(*testTex, engine::Rectangle(0, 0, 800, 600), engine::Color::White);
+        spriteBatch.draw(*testTex, engine::Rectangle(0, 0, 800, 600), engine::Color::WHITE);
         spriteBatch.end();
     }
 

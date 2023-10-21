@@ -12,8 +12,8 @@ namespace engine
         double b;
         double a;
 
-        static const Color White;
-        static const Color Black;
-        static const Color CornflowerBlue;
+        static const Color WHITE;
+        static const Color BLACK;
+        static const Color CORNFLOWER_BLUE;
     };
 } // namespace engine
