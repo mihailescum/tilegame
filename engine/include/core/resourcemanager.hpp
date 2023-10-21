@@ -53,9 +53,13 @@ namespace engine
             }
 
             if (this->_resources.count(name) != 0)
+            {
                 return (T *)this->_resources[name].get();
+            }
             else
+            {
                 return nullptr;
+            }
         }
     };
 } // namespace engine

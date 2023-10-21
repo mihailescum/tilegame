@@ -2,15 +2,13 @@
 set (HEADER_PATH include)
 
 file(GLOB HEADER_ENGINE_CORE "${HEADER_PATH}/core/*.hpp")
-#file(GLOB HEADER_ENGINE_MAP "${HEADER_PATH}/world/*.hpp")
-#file(GLOB HEADER_ENGINE_SCENE "${HEADER_PATH}/scene/*.hpp" "${HEADER_PATH}/scene/components/*.hpp")
+file(GLOB HEADER_ENGINE_TILEMAP "${HEADER_PATH}/tilemap/*.hpp")
 
 # Source Files
 set (SOURCES_PATH src)
 
 file(GLOB SOURCES_ENGINE_CORE "${SOURCES_PATH}/core/*.cpp")
-#file(GLOB SOURCES_ENGINE_MAP "${SOURCES_PATH}/world/*.cpp")
-#file(GLOB SOURCES_ENGINE_SCENE "${SOURCES_PATH}/scene/*.cpp" "${SOURCES_PATH}/scene/components/*.cpp")
+file(GLOB SOURCES_ENGINE_TILEMAP "${SOURCES_PATH}/tilemap/*.cpp")
 
 # Create Library
 set (LIBRARY_NAME engine)
@@ -19,14 +17,10 @@ add_library(${LIBRARY_NAME}
                 "${HEADER_PATH}/engine.hpp"
 
                 ${SOURCES_ENGINE_CORE} 
-                #${SOURCES_ENGINE_MAP}
-                #${SOURCES_ENGINE_SCENE}
-                #${SOURCES_ENGINE_SPRITES}
+                ${SOURCES_ENGINE_TILEMAP} 
 
                 ${HEADER_ENGINE_CORE}
-                #${HEADER_ENGINE_MAP}
-                #${HEADER_ENGINE_SCENE}
-                #${HEADER_ENGINE_SPRITES}
+                ${HEADER_ENGINE_TILEMAP}
 )
 
 set_target_properties(
@@ -58,3 +52,6 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 #GLFW
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
+
+#tmxlite
+target_link_libraries(${LIBRARY_NAME} PUBLIC tmxlite)

@@ -16,3 +16,5 @@
 #include "core/texture2d.hpp"
 #include "core/viewport.hpp"
 #include "core/window.hpp"
+
+#include "tilemap/tilemap.hpp"

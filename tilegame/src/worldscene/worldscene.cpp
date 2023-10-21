@@ -20,11 +20,15 @@ namespace tilegame::worldscene
 
     void WorldScene::load_content()
     {
-        auto test_tex = _game.get_resource_manager().load_resource<engine::Texture2D>("test", "content/textures/tileset1.png");
+        auto &resource_manager = _game.get_resource_manager();
+
+        auto test_tex = resource_manager.load_resource<engine::Texture2D>("test_tex", "content/textures/tileset1.png");
 
         const auto test_entity = _registry.create();
         _registry.emplace<tilegame::components::WorldTransform>(test_entity, glm::vec2(-20.0, -50.0));
         _registry.emplace<tilegame::components::Renderable2D>(test_entity, *test_tex);
+
+        auto test_map = resource_manager.load_resource<engine::tilemap::TileMap>("test_map", "content/maps/map1.tmx");
     }
 
     void WorldScene::unload_content()

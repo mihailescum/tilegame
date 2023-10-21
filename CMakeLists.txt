@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 #Project Configuration
-project (BlockWorld) 
+project (Tilegame) 
 set (CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

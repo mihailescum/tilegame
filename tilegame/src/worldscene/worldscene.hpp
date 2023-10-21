@@ -7,6 +7,7 @@
 
 #include "engine.hpp"
 #include "systems/rendersystem.hpp"
+#include "systems/mapsystem.hpp"
 
 namespace tilegame
 {
@@ -20,6 +21,7 @@ namespace tilegame::worldscene
     private:
         entt::registry _registry;
         tilegame::systems::RenderSystem _rendersystem;
+        tilegame::systems::MapSystem _mapsystem;
 
     public:
         WorldScene(Tilegame &game);

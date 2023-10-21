@@ -9,3 +9,6 @@ CMakeCache.txt
 
 # Build folder
 build/
+
+# Tiled session
+*.tiled-session
