@@ -27,13 +27,14 @@ add_executable(${EXECUTABLE_NAME}
 
 # Copy content files Files
 add_custom_target(copy_assets
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/content ${CMAKE_BINARY_DIR}/content
-)
-add_custom_target(copy_assets_bin
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/content ${CMAKE_BINARY_DIR}/bin/content
 )
+add_custom_target(link_assets_debug
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/bin/content ${CMAKE_BINARY_DIR}/content
+)
 add_dependencies(${EXECUTABLE_NAME} copy_assets)
-add_dependencies(${EXECUTABLE_NAME} copy_assets_bin)
+add_dependencies(${EXECUTABLE_NAME} link_assets_debug)
+add_dependencies(link_assets_debug copy_assets)
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
