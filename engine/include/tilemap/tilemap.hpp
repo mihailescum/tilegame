@@ -19,5 +19,8 @@ namespace engine::tilemap
     public:
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
+
+        const std::vector<TileLayer> &get_layers() const { return _layers; }
+        const std::vector<Tileset> &get_tilesets() const { return _tilesets; }
     };
 }

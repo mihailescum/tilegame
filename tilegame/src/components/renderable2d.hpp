@@ -9,6 +9,6 @@ namespace tilegame::components
     struct Renderable2D
     {
     public:
-        std::reference_wrapper<engine::Texture2D> texture;
+        std::reference_wrapper<const engine::Texture2D> texture;
     };
 } // namespace tilegame

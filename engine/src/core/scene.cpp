@@ -6,5 +6,5 @@ namespace engine
     {
     }
 
-    const Game &Scene::get_game() const { return this->_game; }
+    Game &Scene::get_game() const { return this->_game; }
 } // namespace engine

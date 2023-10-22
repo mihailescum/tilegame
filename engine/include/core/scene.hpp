@@ -15,7 +15,7 @@ namespace engine
         Scene(Game &game);
         Scene(const Scene &scene) = delete;
 
-        const Game &get_game() const;
+        Game &get_game() const;
 
         virtual void initialize(){};
         virtual void load_content(){};

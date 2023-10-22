@@ -14,5 +14,7 @@ namespace engine::tilemap
 
     public:
         Tileset(engine::Texture2D &texture, int first_GID) : _texture(texture), _first_GID(first_GID) {}
+
+        const engine::Texture2D &get_texture() const { return _texture; };
     };
 }
