@@ -11,8 +11,8 @@ namespace tilegame::systems
 
     void RenderSystem::draw()
     {
-        _registry.sort<tilegame::components::WorldTransform>([](const auto &lhs, const auto &rhs)
-                                                             { return lhs.position.z < rhs.position.z; });
+        //_registry.sort<tilegame::components::WorldTransform>([](const auto &lhs, const auto &rhs)
+        //                                                     { return lhs.position.z < rhs.position.z; });
         auto view = _registry.view<const tilegame::components::WorldTransform, const tilegame::components::Renderable2D>();
 
         _spritebatch.begin(true);

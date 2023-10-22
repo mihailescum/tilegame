@@ -19,35 +19,51 @@ namespace engine
         if (_shouldRun)
             load_content();
 
-        double lastTime = glfwGetTime();
-        double nowTime = lastTime;
-        double accumulatedTime = _time_step;
-        double deltaTime = 0;
+        double last_update = glfwGetTime();
+        double last_draw = glfwGetTime();
+        double delta_update = 0;
+        double delta_draw = 0;
+        double now = last_update;
+
+        double accumulated_time = _time_step;
 
         // - While window is alive
         while (_shouldRun)
         {
-            // - Measure time
-            lastTime = nowTime;
-            nowTime = glfwGetTime();
-            deltaTime = (nowTime - lastTime);
-            accumulatedTime += deltaTime;
+
+            now = glfwGetTime();
+            delta_update = now - last_update;
+            accumulated_time += delta_update;
 
             glfwPollEvents();
 
-            // - Update at X FPS
-            while (accumulatedTime >= _time_step)
+            // - Update at 1.0/_time_step FPS
+            while (accumulated_time >= _time_step)
             {
+                // - Simulate a fixed timestep
+                _update_time.elapsed_time = _time_step;
+                _update_time.total_elapsed_time += _time_step;
+
                 begin_update();
                 update(_update_time);
                 end_update();
-                accumulatedTime -= _time_step;
+                last_update = now;
+
+                accumulated_time -= _time_step;
             }
+
+            now = glfwGetTime();
+            delta_draw = now - last_draw;
+            _draw_time.elapsed_time = delta_draw;
+            _draw_time.total_elapsed_time += delta_draw;
+
             // - Render at maximum possible frames
             begin_draw();
             draw(_draw_time); // - Render function
             end_draw();
             glfwSwapBuffers(window.get_native_window());
+
+            last_draw = now;
 
             _shouldRun = !window.should_close();
         }
