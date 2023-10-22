@@ -6,6 +6,6 @@ namespace tilegame::components
 {
     struct WorldTransform
     {
-        glm::vec2 position;
+        glm::vec3 position;
     };
 } // namespace tilegame

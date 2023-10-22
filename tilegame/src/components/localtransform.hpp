@@ -6,6 +6,6 @@ namespace tilegame::components
 {
     struct LocalTransform
     {
-        glm::vec2 position;
+        glm::vec3 position;
     };
 } // namespace tilegame

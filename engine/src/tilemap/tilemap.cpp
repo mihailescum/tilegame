@@ -19,6 +19,7 @@ namespace engine::tilemap
             const auto map_size = map.getTileCount();
 
             const auto &res_layers = map.getLayers();
+            int z_index = 0;
             for (const auto &res_layer : res_layers)
             {
                 if (res_layer->getType() == tmx::Layer::Type::Object)
@@ -35,10 +36,11 @@ namespace engine::tilemap
                     const auto &res_tile_layer = res_layer->getLayerAs<tmx::TileLayer>();
                     const auto &res_tiles = res_tile_layer.getTiles();
 
-                    TileLayer tile_layer(map_size.x, map_size.y);
+                    TileLayer tile_layer(map_size.x, map_size.y, z_index);
                     tile_layer.set_data(res_tiles);
 
                     _layers.push_back(tile_layer);
+                    z_index++;
                 }
             }
 
@@ -47,10 +49,13 @@ namespace engine::tilemap
             {
                 const auto tileset_name = tileset.getName();
                 const auto tileset_image_path = tileset.getImagePath();
-                const auto first_gid = tileset.getFirstGID();
+                auto first_gid = tileset.getFirstGID();
+                auto last_gid = tileset.getLastGID();
                 auto tileset_texture = resource_manager.load_resource<Texture2D>(tileset_name, tileset_image_path);
+                auto tile_width = tileset.getTileSize().x;
+                auto tile_height = tileset.getTileSize().y;
 
-                _tilesets.push_back(Tileset(*tileset_texture, first_gid));
+                _tilesets.push_back(Tileset(*tileset_texture, first_gid, last_gid, tile_width, tile_height));
             }
             return true;
         }
