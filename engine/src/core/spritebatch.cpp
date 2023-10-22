@@ -18,14 +18,17 @@ namespace engine
     {
         if (this->_vbo != 0)
             glDeleteBuffers(1, &_vbo);
+        if (this->_ebo != 0)
+            glDeleteBuffers(1, &_ebo);
         if (this->_vao != 0)
             glDeleteVertexArrays(1, &_vao);
     }
 
     void SpriteBatch::create()
     {
-        glGenBuffers(1, &this->_vbo);
-        glGenVertexArrays(1, &this->_vao);
+        glGenBuffers(1, &_vbo);
+        glGenBuffers(1, &_ebo);
+        glGenVertexArrays(1, &_vao);
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
@@ -75,12 +78,12 @@ namespace engine
         this->_has_begun = false;
     }
 
-    void SpriteBatch::draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Color &color)
-    {
-        this->draw(texture, destinationRectangle, nullptr, color);
-    }
-
-    void SpriteBatch::draw(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle, const Color &color)
+    void SpriteBatch::draw(
+        const Texture2D &texture,
+        const Rectangle &destination_rectangle,
+        const Rectangle *const source_rectangle,
+        const Color &color,
+        float z)
     {
         if (!this->_has_begun)
         {
@@ -103,85 +106,104 @@ namespace engine
             this->_num_active_textures++;
             this->_activeTextures[textureIndex] = texture;
         }
-        this->add_sprite_data(texture, destinationRectangle, sourceRectangle);
-
+        this->add_sprite_data(texture, destination_rectangle, source_rectangle, color, z);
         this->_num_active_sprites++;
+
         if (this->_num_active_sprites > MAX_BATCH_SIZE)
             this->flush();
     }
 
-    void SpriteBatch::add_sprite_data(const Texture2D &texture, const Rectangle &destinationRectangle, const Rectangle *sourceRectangle)
+    void SpriteBatch::add_sprite_data(
+        const Texture2D &texture,
+        const Rectangle &destination_rectangle,
+        const Rectangle *const source_rectangle,
+        const Color &color,
+        float z)
     {
-        glm::vec2 posTopLeft(destinationRectangle.x, destinationRectangle.y);
-        glm::vec2 posTopRight(destinationRectangle.x + destinationRectangle.width, destinationRectangle.y);
-        glm::vec2 posBottomLeft(destinationRectangle.x, destinationRectangle.y + destinationRectangle.height);
-        glm::vec2 posBottomRight(destinationRectangle.x + destinationRectangle.width, destinationRectangle.y + destinationRectangle.height);
+        glm::vec2 posTopLeft(destination_rectangle.x, destination_rectangle.y);
+        glm::vec2 posTopRight(destination_rectangle.x + destination_rectangle.width, destination_rectangle.y);
+        glm::vec2 posBottomLeft(destination_rectangle.x, destination_rectangle.y + destination_rectangle.height);
+        glm::vec2 posBottomRight(destination_rectangle.x + destination_rectangle.width, destination_rectangle.y + destination_rectangle.height);
 
         glm::vec2 uvTopLeft(0.0f, 0.0f);
         glm::vec2 uvTopRight(1.0f, 0.0f);
         glm::vec2 uvBottomLeft(0.0f, 1.0f);
         glm::vec2 uvBottomRight(1.0f, 1.0f);
-        if (sourceRectangle != nullptr)
+        if (source_rectangle)
         {
             double textureWidth = texture.get_width();
             double textureHeight = texture.get_height();
 
-            uvTopLeft.x = (GLfloat)sourceRectangle->x / textureWidth;
-            uvTopLeft.y = (GLfloat)sourceRectangle->y / textureHeight;
+            uvTopLeft.x = (GLfloat)source_rectangle->x / textureWidth;
+            uvTopLeft.y = (GLfloat)source_rectangle->y / textureHeight;
 
-            uvTopRight.x = (GLfloat)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
-            uvTopRight.y = (GLfloat)sourceRectangle->y / textureHeight;
+            uvTopRight.x = (GLfloat)(source_rectangle->x + source_rectangle->width) / textureWidth;
+            uvTopRight.y = (GLfloat)source_rectangle->y / textureHeight;
 
-            uvBottomLeft.x = (GLfloat)sourceRectangle->x / textureWidth;
-            uvBottomLeft.y = (GLfloat)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
+            uvBottomLeft.x = (GLfloat)source_rectangle->x / textureWidth;
+            uvBottomLeft.y = (GLfloat)(source_rectangle->y + source_rectangle->height) / textureHeight;
 
-            uvBottomRight.x = (GLfloat)(sourceRectangle->x + sourceRectangle->width) / textureWidth;
-            uvBottomRight.y = (GLfloat)(sourceRectangle->y + sourceRectangle->height) / textureHeight;
+            uvBottomRight.x = (GLfloat)(source_rectangle->x + source_rectangle->width) / textureWidth;
+            uvBottomRight.y = (GLfloat)(source_rectangle->y + source_rectangle->height) / textureHeight;
         }
 
-        const int sizeOfSprite = 24;
-        int offset = this->_num_active_sprites * sizeOfSprite;
-        if (offset >= this->_sprite_data.size())
-            _sprite_data.resize((this->_num_active_sprites + 1) * sizeOfSprite);
+        int offset_vbo = _num_active_sprites * SPRITE_SIZE_VBO;
+        if (offset_vbo >= _sprite_data_vbo.size())
+            _sprite_data_vbo.resize((_num_active_sprites + 1) * SPRITE_SIZE_VBO);
+
+        int offset_ebo = _num_active_sprites * SPRITE_SIZE_EBO;
+        if (offset_ebo >= _sprite_data_ebo.size())
+            _sprite_data_ebo.resize((_num_active_sprites + 1) * SPRITE_SIZE_EBO);
+
+        int offset_vertices = _num_active_sprites * 4;
+
+        // VBO
+        // Top Right
+        _sprite_data_vbo[offset_vbo + 0] = posTopRight.x;
+        _sprite_data_vbo[offset_vbo + 1] = posTopRight.y;
+        //_sprite_data_vbo[offset_vbo + 2] = z;
+        _sprite_data_vbo[offset_vbo + 2] = uvTopRight.x;
+        _sprite_data_vbo[offset_vbo + 3] = uvTopRight.y;
+
+        //  Bottom Right
+        _sprite_data_vbo[offset_vbo + 4] = posBottomRight.x;
+        _sprite_data_vbo[offset_vbo + 5] = posBottomRight.y;
+        //_sprite_data_vbo[offset_vbo + 7] = z;
+        _sprite_data_vbo[offset_vbo + 6] = uvBottomRight.x;
+        _sprite_data_vbo[offset_vbo + 7] = uvBottomRight.y;
 
         // Bottom Left
-        this->_sprite_data[offset] = posBottomLeft.x;
-        this->_sprite_data[offset + 1] = posBottomLeft.y;
-        this->_sprite_data[offset + 2] = uvBottomLeft.x;
-        this->_sprite_data[offset + 3] = uvBottomLeft.y;
-        // Top Right
-        this->_sprite_data[offset + 4] = posTopRight.x;
-        this->_sprite_data[offset + 5] = posTopRight.y;
-        this->_sprite_data[offset + 6] = uvTopRight.x;
-        this->_sprite_data[offset + 7] = uvTopRight.y;
+        _sprite_data_vbo[offset_vbo + 8] = posBottomLeft.x;
+        _sprite_data_vbo[offset_vbo + 9] = posBottomLeft.y;
+        //_sprite_data_vbo[offset_vbo + 12] = z;
+        _sprite_data_vbo[offset_vbo + 10] = uvBottomLeft.x;
+        _sprite_data_vbo[offset_vbo + 11] = uvBottomLeft.y;
+
         // Top Left
-        this->_sprite_data[offset + 8] = posTopLeft.x;
-        this->_sprite_data[offset + 9] = posTopLeft.y;
-        this->_sprite_data[offset + 10] = uvTopLeft.x;
-        this->_sprite_data[offset + 11] = uvTopLeft.y;
-        // Bottom Left
-        this->_sprite_data[offset + 12] = posBottomLeft.x;
-        this->_sprite_data[offset + 13] = posBottomLeft.y;
-        this->_sprite_data[offset + 14] = uvBottomLeft.x;
-        this->_sprite_data[offset + 15] = uvBottomLeft.y;
-        // Bottom Right
-        this->_sprite_data[offset + 16] = posBottomRight.x;
-        this->_sprite_data[offset + 17] = posBottomRight.y;
-        this->_sprite_data[offset + 18] = uvBottomRight.x;
-        this->_sprite_data[offset + 19] = uvBottomRight.y;
-        // Top Right
-        this->_sprite_data[offset + 20] = posTopRight.x;
-        this->_sprite_data[offset + 21] = posTopRight.y;
-        this->_sprite_data[offset + 22] = uvTopRight.x;
-        this->_sprite_data[offset + 23] = uvTopRight.y;
+        _sprite_data_vbo[offset_vbo + 12] = posTopLeft.x;
+        _sprite_data_vbo[offset_vbo + 13] = posTopLeft.y;
+        //_sprite_data_vbo[offset_vbo + 17] = z;
+        _sprite_data_vbo[offset_vbo + 14] = uvTopLeft.x;
+        _sprite_data_vbo[offset_vbo + 15] = uvTopLeft.y;
+
+        // EBO
+        _sprite_data_ebo[offset_ebo] = offset_vertices;
+        _sprite_data_ebo[offset_ebo + 1] = offset_vertices + 1;
+        _sprite_data_ebo[offset_ebo + 2] = offset_vertices + 3;
+        _sprite_data_ebo[offset_ebo + 3] = offset_vertices + 1;
+        _sprite_data_ebo[offset_ebo + 4] = offset_vertices + 2;
+        _sprite_data_ebo[offset_ebo + 5] = offset_vertices + 3;
     }
 
     void SpriteBatch::flush()
     {
-        glBindVertexArray(this->_vao);
+        glBindVertexArray(_vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
-        glBufferData(GL_ARRAY_BUFFER, _num_active_sprites * 24 * sizeof(float), &_sprite_data[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glBufferData(GL_ARRAY_BUFFER, _num_active_sprites * SPRITE_SIZE_VBO * sizeof(float), &_sprite_data_vbo[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, _num_active_sprites * SPRITE_SIZE_EBO * sizeof(unsigned int), &_sprite_data_ebo[0], GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
@@ -193,7 +215,9 @@ namespace engine
         _shader.set_int("Texture", 0);
         _shader.set_mat4("WVP", this->_wvp);
 
-        glDrawArrays(GL_TRIANGLES, 0, _num_active_sprites * 6);
+        // glDrawArrays(GL_TRIANGLES, 0, _num_active_sprites * 6);
+        glDrawElements(GL_TRIANGLES, _num_active_sprites * SPRITE_SIZE_EBO, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         _num_active_sprites = 0;
         _num_active_textures = 0;

@@ -15,7 +15,7 @@ namespace tilegame::systems
         //                                                     { return lhs.position.z < rhs.position.z; });
         auto view = _registry.view<const tilegame::components::WorldTransform, const tilegame::components::Renderable2D>();
 
-        _spritebatch.begin(true);
+        _spritebatch.begin(false);
         for (const auto entity : view)
         {
             auto &&[world, render] = view.get<const tilegame::components::WorldTransform, const tilegame::components::Renderable2D>(entity);
