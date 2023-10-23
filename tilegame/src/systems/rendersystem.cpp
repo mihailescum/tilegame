@@ -18,10 +18,8 @@ namespace tilegame::systems
         const auto view_renderable = _registry.view<tilegame::components::WorldTransform, tilegame::components::Renderable2D>();
 
         _spritebatch.begin(true);
-        for (const auto entity : view)
+        for (auto &&[entity, render_layer] : view.each())
         {
-            const auto &render_layer = view.get<tilegame::components::RenderLayer>(entity);
-
             for (const auto render_entity : render_layer.children)
             {
                 const auto &&[world, render] = view_renderable.get<tilegame::components::WorldTransform, tilegame::components::Renderable2D>(render_entity);

@@ -243,12 +243,12 @@ namespace engine
             batch_size = MAX_BATCH_SIZE;
         }
 
-        // std::size_t offset_vbo = 0;
+        auto _sprite_data_ptr = &(_sprite_data[_current_batch_start]);
         auto _sprite_data_vbo_ptr = &(_sprite_data_vbo[0]);
         auto _sprite_data_ebo_ptr = &(_sprite_data_ebo[0]);
         for (std::size_t i = 0; i < batch_size; ++i)
         {
-            auto &sprite_data = _sprite_data[_current_batch_start + i];
+            auto &sprite_data = *(_sprite_data_ptr++);
             if (active_texture == 0)
             {
                 active_texture = sprite_data.gl_texture;
@@ -270,13 +270,11 @@ namespace engine
             auto &dest_rect = sprite_data.destination_rectangle;
             auto &source_rect = sprite_data.source_rectangle;
 
-            /*  0 ---- 1
-                |     /|
-                |    / |
-                |   /  |
-                |  /   |
-                | /    |
-                2 ---- 3
+            /*  0 -- 1
+                |   /|
+                |  / |
+                | /  |
+                2 -- 3
             */
 
             // Top Left
