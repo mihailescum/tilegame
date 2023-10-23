@@ -1,6 +1,6 @@
 #include "worldscene/movementsystem.hpp"
 
-#include "entt.hpp"
+#include "entity/registry.hpp"
 
 #include "engine.hpp"
 
@@ -68,7 +68,8 @@ namespace tilegame::worldscene
                 direction = glm::normalize(direction);
                 registry.patch<engine::CollisionComponent>(
                     entity,
-                    [=](auto &collisionComponent) {
+                    [=](auto &collisionComponent)
+                    {
                         collisionComponent.movementVector = direction * moveComponent.velocity;
                     });
             }
@@ -146,11 +147,14 @@ namespace tilegame::worldscene
                 }
             }
 
-            std::sort(collisionsX.begin(), collisionsX.end(), [](const double &a, const double &b) { return a < b; });
-            std::sort(collisionsY.begin(), collisionsY.end(), [](const double &a, const double &b) { return a < b; });
+            std::sort(collisionsX.begin(), collisionsX.end(), [](const double &a, const double &b)
+                      { return a < b; });
+            std::sort(collisionsY.begin(), collisionsY.end(), [](const double &a, const double &b)
+                      { return a < b; });
 
             std::sort(collisions.begin(), collisions.end(),
-                      [](const auto &a, const auto &b) { return a.first < b.first; });
+                      [](const auto &a, const auto &b)
+                      { return a.first < b.first; });
 
             for (auto &pair : collisions)
             {
@@ -259,7 +263,7 @@ namespace tilegame::worldscene
 
         glm::dvec2 rayStart = {a.x + a.width / 2, a.y + a.height / 2};
         bool rayCollision = collidingRayAABB(rayStart, movementAFrameB, expandedAABB, contactPoint, contactNormal, contactTime);
-        //Tramslate contact time to global reference frame
+        // Tramslate contact time to global reference frame
         contactTime *= (movementA.x - movementB.x) / movementA.x;
 
         return rayCollision && (contactTime >= 0.0f && contactTime < 1.0f);
@@ -268,7 +272,8 @@ namespace tilegame::worldscene
     void MovementSystem::Impl::set_position(const entt::entity &entity, const double x, const double y)
     {
         registry.patch<engine::PositionComponent>(entity,
-                                                  [=](auto &pos) {
+                                                  [=](auto &pos)
+                                                  {
                                                       pos.position.x = x;
                                                       pos.position.y = y;
                                                   });
@@ -276,47 +281,47 @@ namespace tilegame::worldscene
 } // namespace tilegame::worldscene
 
 /*
-	One-Size-Fits-All Rectangle Vs Rectangle Collisions
-	"Stupid scanners... making me miss at archery..." - javidx9
-	License (OLC-3)
-	~~~~~~~~~~~~~~~
-	Copyright 2018-2020 OneLoneCoder.com
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions
-	are met:
-	1. Redistributions or derivations of source code must retain the above
-	copyright notice, this list of conditions and the following disclaimer.
-	2. Redistributions or derivative works in binary form must reproduce
-	the above copyright notice. This list of conditions and the following
-	disclaimer must be reproduced in the documentation and/or other
-	materials provided with the distribution.
-	3. Neither the name of the copyright holder nor the names of its
-	contributors may be used to endorse or promote products derived
-	from this software without specific prior written permission.
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-	A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-	HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-	SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-	LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-	THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-	Relevant Video: https://www.youtube.com/watch?v=8JJ-4JgR7Dg
-	Links
-	~~~~~
-	YouTube:	https://www.youtube.com/javidx9
-				https://www.youtube.com/javidx9extra
-	Discord:	https://discord.gg/WhwHUMV
-	Twitter:	https://www.twitter.com/javidx9
-	Twitch:		https://www.twitch.tv/javidx9
-	GitHub:		https://www.github.com/onelonecoder
-	Patreon:	https://www.patreon.com/javidx9
-	Homepage:	https://www.onelonecoder.com
-	Community Blog: https://community.onelonecoder.com
-	Author
-	~~~~~~
-	David Barr, aka javidx9, ©OneLoneCoder 2018, 2019, 2020
+    One-Size-Fits-All Rectangle Vs Rectangle Collisions
+    "Stupid scanners... making me miss at archery..." - javidx9
+    License (OLC-3)
+    ~~~~~~~~~~~~~~~
+    Copyright 2018-2020 OneLoneCoder.com
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions or derivations of source code must retain the above
+    copyright notice, this list of conditions and the following disclaimer.
+    2. Redistributions or derivative works in binary form must reproduce
+    the above copyright notice. This list of conditions and the following
+    disclaimer must be reproduced in the documentation and/or other
+    materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    Relevant Video: https://www.youtube.com/watch?v=8JJ-4JgR7Dg
+    Links
+    ~~~~~
+    YouTube:	https://www.youtube.com/javidx9
+                https://www.youtube.com/javidx9extra
+    Discord:	https://discord.gg/WhwHUMV
+    Twitter:	https://www.twitter.com/javidx9
+    Twitch:		https://www.twitch.tv/javidx9
+    GitHub:		https://www.github.com/onelonecoder
+    Patreon:	https://www.patreon.com/javidx9
+    Homepage:	https://www.onelonecoder.com
+    Community Blog: https://community.onelonecoder.com
+    Author
+    ~~~~~~
+    David Barr, aka javidx9, ©OneLoneCoder 2018, 2019, 2020
 */

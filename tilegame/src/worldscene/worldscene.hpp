@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "entt.hpp"
+#include <entt/entity/registry.hpp>
 
 #include "engine.hpp"
 #include "systems/rendersystem.hpp"

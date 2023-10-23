@@ -2,12 +2,13 @@
 
 #include <vector>
 
-#include <entt/entity/registry.hpp>
+#include "engine.hpp"
 
 namespace tilegame::components
 {
-    struct Children
+    struct RenderLayer
     {
+        float z_index;
         std::vector<entt::entity> children;
     };
 } // namespace tilegame

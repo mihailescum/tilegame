@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "entt.hpp"
+#include "entity/registry.hpp"
 
 #include "engine.hpp"
 
