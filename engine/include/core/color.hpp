@@ -6,6 +6,7 @@ namespace engine
     {
     public:
         constexpr Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {}
+        constexpr Color() : Color(0.0, 0.0, 0.0, 0.0) {}
 
         double r;
         double g;

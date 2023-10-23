@@ -35,7 +35,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glad/include)
 
 #EnTT Header Files
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/entt/include)
+#target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/entt/include)
 
 # stb_image Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/stb_image/include)

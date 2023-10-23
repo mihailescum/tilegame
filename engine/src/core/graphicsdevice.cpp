@@ -11,7 +11,7 @@ namespace engine
 
     int GraphicsDevice::create()
     {
-        clear_mask = GL_COLOR_BUFFER_BIT; // | GL_DEPTH_BUFFER_BIT;
+        clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 
         int gladInitRes = gladLoadGL();
         if (!gladInitRes)

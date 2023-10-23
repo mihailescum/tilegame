@@ -12,3 +12,6 @@ build/
 
 # Tiled session
 *.tiled-session
+
+# Profiler output
+analysis.txt

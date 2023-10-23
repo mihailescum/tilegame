@@ -8,9 +8,9 @@ namespace engine
 {
     SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
         : _graphics_device(graphicsDevice),
-          _num_active_textures(0),
           _num_active_sprites(0),
-          _has_begun(false)
+          _has_begun(false),
+          _sprite_data(MAX_BATCH_SIZE)
     {
     }
 
@@ -42,27 +42,28 @@ namespace engine
             1.0f);
     }
 
-    void SpriteBatch::begin(const bool alphaBlendingEnabled)
+    void SpriteBatch::begin(const bool alpha_blending_enabled)
     {
         glm::mat4 transform(1.0);
-        this->begin(transform, alphaBlendingEnabled);
+        this->begin(transform, alpha_blending_enabled);
     }
 
-    void SpriteBatch::begin(const glm::mat4 &transform, const bool alphaBlendingEnabled)
+    void SpriteBatch::begin(const glm::mat4 &transform, const bool alpha_blending_enabled)
     {
-        if (this->_has_begun)
+        if (_has_begun)
         {
             throw "'begin()' was already called. Call 'end()' first.";
         }
-        this->_has_begun = true;
+        _has_begun = true;
 
-        this->_wvp = _projection * transform;
+        _wvp = _projection * transform;
 
-        if (alphaBlendingEnabled)
+        if (alpha_blending_enabled)
         {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
+        _num_active_sprites = 0;
     }
 
     void SpriteBatch::end()
@@ -71,7 +72,11 @@ namespace engine
         {
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
-        flush();
+        _current_batch_start = 0;
+        while (_current_batch_start < _num_active_sprites)
+        {
+            flush();
+        }
 
         glDisable(GL_BLEND);
 
@@ -90,27 +95,8 @@ namespace engine
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
 
-        int textureIndex = -1;
-        for (int i = 0; i < this->_num_active_textures; i++)
-        {
-            if (texture == this->_activeTextures[i])
-                textureIndex = i;
-        }
-        if (textureIndex < 0)
-        {
-            if (this->_num_active_textures == NUM_SIMULT_TEXTURES)
-                // In this case we need to flush, as this texture does not fit anymore!
-                flush();
-
-            textureIndex = _num_active_textures;
-            this->_num_active_textures++;
-            this->_activeTextures[textureIndex] = texture;
-        }
         this->add_sprite_data(texture, destination_rectangle, source_rectangle, color, z);
         this->_num_active_sprites++;
-
-        if (this->_num_active_sprites > MAX_BATCH_SIZE)
-            this->flush();
     }
 
     void SpriteBatch::add_sprite_data(
@@ -120,6 +106,29 @@ namespace engine
         const Color &color,
         float z)
     {
+        if (_num_active_sprites >= _sprite_data.size())
+        {
+            _sprite_data.push_back(SpriteData());
+        }
+        auto &data = _sprite_data[_num_active_sprites];
+        data.color = color;
+        data.gl_texture = texture.get_gl_texture();
+        data.destination_rectangle = destination_rectangle;
+        if (source_rectangle)
+        {
+            data.source_rectangle = *source_rectangle;
+            data.source_rectangle.x /= texture.get_width();
+            data.source_rectangle.y /= texture.get_height();
+            data.source_rectangle.width /= texture.get_width();
+            data.source_rectangle.height /= texture.get_height();
+        }
+        else
+        {
+            data.source_rectangle = engine::Rectangle(0.0, 0.0, 1.0, 1.0);
+        }
+        data.z = z;
+    }
+    /*
         glm::vec2 posTopLeft(destination_rectangle.x, destination_rectangle.y);
         glm::vec2 posTopRight(destination_rectangle.x + destination_rectangle.width, destination_rectangle.y);
         glm::vec2 posBottomLeft(destination_rectangle.x, destination_rectangle.y + destination_rectangle.height);
@@ -161,28 +170,24 @@ namespace engine
         // Top Right
         _sprite_data_vbo[offset_vbo + 0] = posTopRight.x;
         _sprite_data_vbo[offset_vbo + 1] = posTopRight.y;
-        //_sprite_data_vbo[offset_vbo + 2] = z;
         _sprite_data_vbo[offset_vbo + 2] = uvTopRight.x;
         _sprite_data_vbo[offset_vbo + 3] = uvTopRight.y;
 
         //  Bottom Right
         _sprite_data_vbo[offset_vbo + 4] = posBottomRight.x;
         _sprite_data_vbo[offset_vbo + 5] = posBottomRight.y;
-        //_sprite_data_vbo[offset_vbo + 7] = z;
         _sprite_data_vbo[offset_vbo + 6] = uvBottomRight.x;
         _sprite_data_vbo[offset_vbo + 7] = uvBottomRight.y;
 
         // Bottom Left
         _sprite_data_vbo[offset_vbo + 8] = posBottomLeft.x;
         _sprite_data_vbo[offset_vbo + 9] = posBottomLeft.y;
-        //_sprite_data_vbo[offset_vbo + 12] = z;
         _sprite_data_vbo[offset_vbo + 10] = uvBottomLeft.x;
         _sprite_data_vbo[offset_vbo + 11] = uvBottomLeft.y;
 
         // Top Left
         _sprite_data_vbo[offset_vbo + 12] = posTopLeft.x;
         _sprite_data_vbo[offset_vbo + 13] = posTopLeft.y;
-        //_sprite_data_vbo[offset_vbo + 17] = z;
         _sprite_data_vbo[offset_vbo + 14] = uvTopLeft.x;
         _sprite_data_vbo[offset_vbo + 15] = uvTopLeft.y;
 
@@ -193,34 +198,126 @@ namespace engine
         _sprite_data_ebo[offset_ebo + 3] = offset_vertices + 1;
         _sprite_data_ebo[offset_ebo + 4] = offset_vertices + 2;
         _sprite_data_ebo[offset_ebo + 5] = offset_vertices + 3;
-    }
+
+        3 ---- 0
+        |      |
+        |      |
+        |      |
+        |      |
+        |      |
+        |      |
+        2 ---- 1
+}*/
 
     void SpriteBatch::flush()
     {
         glBindVertexArray(_vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, _num_active_sprites * SPRITE_SIZE_VBO * sizeof(float), &_sprite_data_vbo[0], GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, _num_active_sprites * SPRITE_SIZE_EBO * sizeof(unsigned int), &_sprite_data_ebo[0], GL_STATIC_DRAW);
+        std::size_t batch_size;
+        auto active_texture = set_buffer_data(batch_size);
 
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
         _shader.use();
-        for (int i = 0; i < this->_num_active_textures; i++)
-            _activeTextures[i].use(i);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, active_texture);
 
         _shader.set_int("Texture", 0);
-        _shader.set_mat4("WVP", this->_wvp);
+        _shader.set_mat4("WVP", _wvp);
 
-        // glDrawArrays(GL_TRIANGLES, 0, _num_active_sprites * 6);
-        glDrawElements(GL_TRIANGLES, _num_active_sprites * SPRITE_SIZE_EBO, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, batch_size * 6);
+        glDrawElements(GL_TRIANGLES, batch_size * 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
-        _num_active_sprites = 0;
-        _num_active_textures = 0;
+        _current_batch_start += batch_size;
+    }
+
+    GLuint SpriteBatch::set_buffer_data(std::size_t &batch_size)
+    {
+        GLuint active_texture = 0;
+        batch_size = _num_active_sprites - _current_batch_start;
+        if (batch_size > MAX_BATCH_SIZE)
+        {
+            batch_size = MAX_BATCH_SIZE;
+        }
+
+        // std::size_t offset_vbo = 0;
+        auto _sprite_data_vbo_ptr = &(_sprite_data_vbo[0]);
+        auto _sprite_data_ebo_ptr = &(_sprite_data_ebo[0]);
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            auto &sprite_data = _sprite_data[_current_batch_start + i];
+            if (active_texture == 0)
+            {
+                active_texture = sprite_data.gl_texture;
+            }
+            else if (active_texture != sprite_data.gl_texture) // Need to switch texture!
+            {
+                batch_size = i; // Batch size is number of elements until this one
+                break;
+            }
+
+            /*if (offset_vbo >= _sprite_data_vbo.size()) // Grow the VBO if necessary
+            {
+                for (int j = 0; j < SPRITE_SIZE_VBO; ++j)
+                {
+                    _sprite_data_vbo.push_back(0.0);
+                }
+            }*/
+
+            auto &dest_rect = sprite_data.destination_rectangle;
+            auto &source_rect = sprite_data.source_rectangle;
+
+            /*  0 ---- 1
+                |     /|
+                |    / |
+                |   /  |
+                |  /   |
+                | /    |
+                2 ---- 3
+            */
+
+            // Top Left
+            *(_sprite_data_vbo_ptr++) = dest_rect.x;
+            *(_sprite_data_vbo_ptr++) = dest_rect.y;
+            *(_sprite_data_vbo_ptr++) = source_rect.x;
+            *(_sprite_data_vbo_ptr++) = source_rect.y;
+
+            // Top Right
+            *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
+            *(_sprite_data_vbo_ptr++) = dest_rect.y;
+            *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
+            *(_sprite_data_vbo_ptr++) = source_rect.y;
+
+            // Bottom Left
+            *(_sprite_data_vbo_ptr++) = dest_rect.x;
+            *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
+            *(_sprite_data_vbo_ptr++) = source_rect.x;
+            *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
+
+            // Bottom Right
+            *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
+            *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
+            *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
+            *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
+
+            *(_sprite_data_ebo_ptr++) = i * 4;
+            *(_sprite_data_ebo_ptr++) = i * 4 + 1;
+            *(_sprite_data_ebo_ptr++) = i * 4 + 2;
+            *(_sprite_data_ebo_ptr++) = i * 4 + 2;
+            *(_sprite_data_ebo_ptr++) = i * 4 + 1;
+            *(_sprite_data_ebo_ptr++) = i * 4 + 3;
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glBufferData(GL_ARRAY_BUFFER, batch_size * SPRITE_SIZE_VBO * sizeof(GLfloat), &_sprite_data_vbo[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, batch_size * SPRITE_SIZE_EBO * sizeof(GLuint), &_sprite_data_ebo[0], GL_STATIC_DRAW);
+
+        return active_texture;
     }
 
     const std::string SpriteBatch::VERTEX_SHADER_SOURCE = R"(

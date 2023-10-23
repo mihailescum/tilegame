@@ -13,11 +13,21 @@ namespace engine
     class SpriteBatch
     {
     private:
-        static const int NUM_SIMULT_TEXTURES = 1;
-        static const int MAX_BATCH_SIZE = 4096;
+        struct SpriteData
+        {
+            engine::Rectangle destination_rectangle;
+            engine::Rectangle source_rectangle;
+            engine::Color color;
+            GLuint gl_texture;
+            float z;
 
-        const int SPRITE_SIZE_VBO = 16;
-        const int SPRITE_SIZE_EBO = 6;
+            SpriteData() {}
+        };
+
+        static const int MAX_BATCH_SIZE = 16384;
+
+        static const int SPRITE_SIZE_VBO = 16;
+        static const int SPRITE_SIZE_EBO = 6;
 
         static const std::string VERTEX_SHADER_SOURCE;
         static const std::string FRAGMENT_SHADER_SOURCE;
@@ -31,16 +41,17 @@ namespace engine
 
         glm::mat4 _wvp;
         glm::mat4 _projection;
-        Texture2D _activeTextures[NUM_SIMULT_TEXTURES];
-        std::vector<float> _sprite_data_vbo;
-        std::vector<unsigned int> _sprite_data_ebo;
+        std::vector<SpriteData> _sprite_data;
+        std::array<GLfloat, MAX_BATCH_SIZE * SPRITE_SIZE_VBO> _sprite_data_vbo;
+        std::array<GLuint, MAX_BATCH_SIZE * SPRITE_SIZE_EBO> _sprite_data_ebo;
 
-        int _num_active_textures;
-        int _num_active_sprites;
+        std::size_t _num_active_sprites;
+        std::size_t _current_batch_start;
         bool _has_begun;
 
         void flush();
         void add_sprite_data(const Texture2D &texture, const Rectangle &destination_rectangle, const Rectangle *const source_rectangle, const Color &color, float z);
+        GLuint set_buffer_data(std::size_t &batch_size);
 
     public:
         SpriteBatch(GraphicsDevice &graphics_device);

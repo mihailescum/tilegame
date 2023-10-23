@@ -50,7 +50,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 # Include Project Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${SOURCES_PATH})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/engine/include)
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/entt/include)
+# target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/entt/include)
 
 # Link with Engine
 target_link_libraries(${EXECUTABLE_NAME} engine)
