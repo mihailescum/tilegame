@@ -19,8 +19,7 @@ namespace tilegame
         // glfwSetInputMode(window.get_native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // window->set_position(700, 400);
 
-        // scene = std::make_unique<worldscene::WorldScene>(*this);
-        // scene->initialize();
+        _worldscene.initialize();
     }
 
     void Tilegame::load_content()
@@ -32,6 +31,8 @@ namespace tilegame
 
     void Tilegame::unload_content()
     {
+        Game::unload_content();
+
         _worldscene.unload_content();
     }
 

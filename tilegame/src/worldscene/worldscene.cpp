@@ -12,18 +12,20 @@ namespace tilegame::worldscene
 {
     WorldScene::WorldScene(Tilegame &game)
         : engine::Scene(game),
-          _rendersystem(*this, _registry, game.get_spritebatch()),
-          _mapsystem(*this, _registry)
+          _system_render(*this, _registry, game.get_spritebatch()),
+          _system_map(*this, _registry),
+          _system_camera(*this, _registry)
     {
     }
 
     void WorldScene::initialize()
     {
+        _system_camera.initialize();
     }
 
     void WorldScene::load_content()
     {
-        _mapsystem.create_map_entity_from_file("map1", "content/maps/map1.tmx");
+        _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
     }
 
     void WorldScene::unload_content()
@@ -32,10 +34,11 @@ namespace tilegame::worldscene
 
     void WorldScene::update(const engine::GameTime &update_time)
     {
+        _system_camera.update(update_time);
     }
 
     void WorldScene::draw(const engine::GameTime &draw_time)
     {
-        _rendersystem.draw();
+        _system_render.draw();
     }
 } // namespace tilegame::worldscene

@@ -8,6 +8,7 @@
 #include "engine.hpp"
 #include "systems/rendersystem.hpp"
 #include "systems/mapsystem.hpp"
+#include "systems/camerasystem.hpp"
 
 namespace tilegame
 {
@@ -20,8 +21,9 @@ namespace tilegame::worldscene
     {
     private:
         entt::registry _registry;
-        tilegame::systems::RenderSystem _rendersystem;
-        tilegame::systems::MapSystem _mapsystem;
+        tilegame::systems::RenderSystem _system_render;
+        tilegame::systems::MapSystem _system_map;
+        tilegame::systems::CameraSystem _system_camera;
 
     public:
         WorldScene(Tilegame &game);
