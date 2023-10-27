@@ -1,12 +1,6 @@
 #include "worldscene.hpp"
 
-#include <memory>
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-
 #include "tilegame.hpp"
-#include "components/worldtransform.hpp"
-#include "components/renderable2d.hpp"
 
 namespace tilegame::worldscene
 {
@@ -38,6 +32,7 @@ namespace tilegame::worldscene
     void WorldScene::update(const engine::GameTime &update_time)
     {
         _system_player.update(update_time);
+        _system_movement.update(update_time);
         _system_camera.update(update_time);
     }
 

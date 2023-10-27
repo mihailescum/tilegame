@@ -4,7 +4,7 @@
 
 #include "components/player.hpp"
 #include "components/movement.hpp"
-#include "components/worldtransform.hpp"
+#include "components/localtransform.hpp"
 
 namespace tilegame::systems
 {
@@ -16,7 +16,7 @@ namespace tilegame::systems
     {
         const auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
-        _registry.emplace<tilegame::components::WorldTransform>(player1_entity, glm::vec3(100, 100, 2));
+        _registry.emplace<tilegame::components::LocalTransform>(player1_entity, glm::vec3(100, 100, 2));
         _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
     }
 
