@@ -16,8 +16,8 @@ namespace tilegame::systems
         const auto camera_entity = _registry.create();
         _registry.emplace<tilegame::components::Camera>(
             camera_entity,
-            glm::vec2(0.0, 0.0),
-            0.5,
+            glm::vec2(100.0, 100.0),
+            1.0,
             glm::mat4(1.0),
             _scene.get_game().get_graphics_device().get_viewport());
     }
@@ -31,12 +31,12 @@ namespace tilegame::systems
             glm::vec2 position = camera.look_at;
             float scale = camera.scale;
 
-            camera.transform = glm::scale(glm::mat4(1.0), glm::vec3(scale));
             glm::vec3 translate(
                 floor(-(position.x - camera.viewport.width / 2) * scale) / scale,
                 floor(-(position.y - camera.viewport.height / 2) * scale) / scale,
                 0.0);
-            camera.transform = glm::translate(camera.transform, translate);
+            camera.transform = glm::translate(glm::mat4(1.0), translate);
+            camera.transform = glm::scale(camera.transform, glm::vec3(scale));
         }
     }
 } // namespace tilegame::systems
