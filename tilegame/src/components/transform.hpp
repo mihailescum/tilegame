@@ -4,8 +4,9 @@
 
 namespace tilegame::components
 {
-    struct WorldTransform
+    struct Transform
     {
-        glm::vec3 position;
+        glm::vec2 position_local;
+        glm::vec2 position_global;
     };
 } // namespace tilegame

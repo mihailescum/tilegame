@@ -4,7 +4,8 @@
 
 #include "components/player.hpp"
 #include "components/movement.hpp"
-#include "components/localtransform.hpp"
+#include "components/transform.hpp"
+#include "components/children.hpp"
 
 namespace tilegame::systems
 {
@@ -16,30 +17,41 @@ namespace tilegame::systems
     {
         const auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
-        _registry.emplace<tilegame::components::LocalTransform>(player1_entity, glm::vec3(100, 100, 2));
+        _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2());
         _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
+
+        const auto player2_entity = _registry.create();
+        _registry.emplace<tilegame::components::Player>(player2_entity, 2);
+        _registry.emplace<tilegame::components::Transform>(player2_entity, glm::vec2(300, 100), glm::vec2());
+
+        std::vector<entt::entity> children = {player1_entity};
+        _registry.emplace<tilegame::components::Children>(player2_entity, children);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)
     {
-        auto players = _registry.view<tilegame::components::Player, tilegame::components::Movement>();
+        auto players = _registry.view<tilegame::components::Player>();
 
-        for (auto &&[entity, player, movement] : players.each())
+        for (auto &&[entity, player] : players.each())
         {
             switch (player.id)
             {
             case 1:
-                handle_input_1(movement);
-                break;
+            {
+                auto result = handle_input_1();
+                _registry.patch<tilegame::components::Movement>(entity, [=](auto &movement)
+                                                                { movement.direction = result; });
+            }
+            break;
 
             default:
-                throw "Unknown player ID";
+                // throw "Unknown player ID";
                 break;
             }
         }
     }
 
-    void PlayerSystem::handle_input_1(tilegame::components::Movement &movement)
+    tilegame::components::Movement::MovementDirection PlayerSystem::handle_input_1()
     {
         const auto &window = _scene.get_game().get_window();
 
@@ -63,6 +75,6 @@ namespace tilegame::systems
         {
             result |= tilegame::components::Movement::Down;
         }
-        movement.direction = result;
+        return result;
     }
 } // namespace tilegame::systems

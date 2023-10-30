@@ -12,7 +12,7 @@ namespace tilegame::systems
     class PlayerSystem : public System
     {
     private:
-        void handle_input_1(tilegame::components::Movement &movement);
+        tilegame::components::Movement::MovementDirection handle_input_1();
 
     public:
         PlayerSystem(engine::Scene &scene, entt::registry &registry);

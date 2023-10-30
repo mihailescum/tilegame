@@ -4,6 +4,8 @@
 #include <glm/gtx/transform.hpp>
 
 #include "components/camera.hpp"
+#include "components/player.hpp"
+#include "components/parent.hpp"
 
 namespace tilegame::systems
 {
@@ -20,6 +22,18 @@ namespace tilegame::systems
             1.0,
             glm::mat4(1.0),
             _scene.get_game().get_graphics_device().get_viewport());
+
+        entt::entity player1_entity = entt::null;
+        auto players = _registry.view<tilegame::components::Player>();
+        for (auto &&[entity, player] : players.each())
+        {
+            if (player.id == 1)
+            {
+                player1_entity = entity;
+                break;
+            }
+        }
+        _registry.emplace<tilegame::components::Parent>(camera_entity, player1_entity);
     }
 
     void CameraSystem::update(const engine::GameTime &update_time)

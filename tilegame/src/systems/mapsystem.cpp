@@ -2,7 +2,7 @@
 
 #include "components/renderable2d.hpp"
 #include "components/renderlayer.hpp"
-#include "components/localtransform.hpp"
+#include "components/transform.hpp"
 #include "components/children.hpp"
 #include "components/parent.hpp"
 #include "components/tilemap.hpp"
@@ -63,7 +63,7 @@ namespace tilegame::systems
                                 layer_children.push_back(tile_entity);
 
                                 _registry.emplace<tilegame::components::Parent>(tile_entity, layer_entity);
-                                _registry.emplace<tilegame::components::LocalTransform>(tile_entity, glm::vec3(x * tile_width, y * tile_height, layer.get_z_index()));
+                                _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2());
                                 _registry.emplace<tilegame::components::Renderable2D>(tile_entity, tileset_texture, tile_source_rect);
 
                                 break;
@@ -74,13 +74,13 @@ namespace tilegame::systems
 
                 _registry.emplace<tilegame::components::Parent>(layer_entity, map_entity);
                 _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
-                _registry.emplace<tilegame::components::LocalTransform>(layer_entity, glm::vec3(0.0, 0.0, layer.get_z_index()));
+                _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2());
                 _registry.emplace<tilegame::components::RenderLayer>(layer_entity, layer.get_z_index(), layer_children);
                 _registry.emplace<tilegame::components::Children>(layer_entity, layer_children);
             }
 
             _registry.emplace<tilegame::components::TileMap>(map_entity, map);
-            _registry.emplace<tilegame::components::LocalTransform>(map_entity, glm::vec3());
+            _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
             _registry.emplace<tilegame::components::Children>(map_entity, map_children);
             return map_entity;
         }
