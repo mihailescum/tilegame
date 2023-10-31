@@ -5,11 +5,10 @@
 
 #include "components/camera.hpp"
 #include "components/player.hpp"
-#include "components/parent.hpp"
 
 namespace tilegame::systems
 {
-    CameraSystem::CameraSystem(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
+    CameraSystem::CameraSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
     {
     }
 
@@ -33,7 +32,7 @@ namespace tilegame::systems
                 break;
             }
         }
-        _registry.emplace<tilegame::components::Parent>(camera_entity, player1_entity);
+        //_registry.emplace<tilegame::components::Parent>(camera_entity, player1_entity);
     }
 
     void CameraSystem::update(const engine::GameTime &update_time)

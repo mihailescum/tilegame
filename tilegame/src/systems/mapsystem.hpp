@@ -12,7 +12,7 @@ namespace tilegame::systems
     {
     private:
     public:
-        MapSystem(engine::Scene &scene, entt::registry &registry);
+        MapSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root);
 
         const entt::entity create_map_entity_from_file(const std::string name, const std::string path);
     };

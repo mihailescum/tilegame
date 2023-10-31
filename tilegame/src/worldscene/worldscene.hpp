@@ -6,6 +6,8 @@
 #include <entt/entity/registry.hpp>
 
 #include "engine.hpp"
+
+#include "scenegraphdata.hpp"
 #include "systems/rendersystem.hpp"
 #include "systems/mapsystem.hpp"
 #include "systems/camerasystem.hpp"
@@ -23,6 +25,9 @@ namespace tilegame::worldscene
     {
     private:
         entt::registry _registry;
+
+        tilegame::SceneGraphNode _scene_graph_root;
+
         tilegame::systems::RenderSystem _system_render;
         tilegame::systems::MapSystem _system_map;
         tilegame::systems::CameraSystem _system_camera;
@@ -38,5 +43,7 @@ namespace tilegame::worldscene
         virtual void unload_content() override;
         virtual void update(const engine::GameTime &update_time) override;
         virtual void draw(const engine::GameTime &draw_time) override;
+
+        tilegame::SceneGraphNode &get_scene_graph_root() { return _scene_graph_root; }
     };
 } // namespace tilegame::worldscene

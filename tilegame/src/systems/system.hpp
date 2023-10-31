@@ -3,6 +3,7 @@
 #include <entt/entity/registry.hpp>
 
 #include "engine.hpp"
+#include "scenegraphdata.hpp"
 
 namespace tilegame::systems
 {
@@ -11,8 +12,9 @@ namespace tilegame::systems
     protected:
         engine::Scene &_scene;
         entt::registry &_registry;
+        tilegame::SceneGraphNode &_scene_graph_root;
 
     public:
-        System(engine::Scene &scene, entt::registry &registry);
+        System(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root);
     };
 } // namespace tilegame

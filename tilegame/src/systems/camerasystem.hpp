@@ -10,9 +10,8 @@ namespace tilegame::systems
 {
     class CameraSystem : public System
     {
-    private:
     public:
-        CameraSystem(engine::Scene &scene, entt::registry &registry);
+        CameraSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root);
 
         void initialize();
         void update(const engine::GameTime &update_time);

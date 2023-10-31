@@ -3,15 +3,13 @@
 #include "components/renderable2d.hpp"
 #include "components/renderlayer.hpp"
 #include "components/transform.hpp"
-#include "components/children.hpp"
-#include "components/parent.hpp"
 #include "components/tilemap.hpp"
 #include "components/tilelayer.hpp"
 #include "components/tileset.hpp"
 
 namespace tilegame::systems
 {
-    MapSystem::MapSystem(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
+    MapSystem::MapSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
     {
     }
 
@@ -62,7 +60,7 @@ namespace tilegame::systems
                                 const auto tile_entity = _registry.create();
                                 layer_children.push_back(tile_entity);
 
-                                _registry.emplace<tilegame::components::Parent>(tile_entity, layer_entity);
+                                //_registry.emplace<tilegame::components::Parent>(tile_entity, layer_entity);
                                 _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2());
                                 _registry.emplace<tilegame::components::Renderable2D>(tile_entity, tileset_texture, tile_source_rect);
 
@@ -72,16 +70,16 @@ namespace tilegame::systems
                     }
                 }
 
-                _registry.emplace<tilegame::components::Parent>(layer_entity, map_entity);
+                //_registry.emplace<tilegame::components::Parent>(layer_entity, map_entity);
                 _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
                 _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2());
                 _registry.emplace<tilegame::components::RenderLayer>(layer_entity, layer.get_z_index(), layer_children);
-                _registry.emplace<tilegame::components::Children>(layer_entity, layer_children);
+                //_registry.emplace<tilegame::components::Children>(layer_entity, layer_children);
             }
 
             _registry.emplace<tilegame::components::TileMap>(map_entity, map);
             _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
-            _registry.emplace<tilegame::components::Children>(map_entity, map_children);
+            //_registry.emplace<tilegame::components::Children>(map_entity, map_children);
             return map_entity;
         }
         else

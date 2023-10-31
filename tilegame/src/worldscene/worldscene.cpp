@@ -6,11 +6,11 @@ namespace tilegame::worldscene
 {
     WorldScene::WorldScene(Tilegame &game)
         : engine::Scene(game),
-          _system_render(*this, _registry, game.get_spritebatch()),
-          _system_map(*this, _registry),
-          _system_camera(*this, _registry),
-          _system_player(*this, _registry),
-          _system_movement(*this, _registry)
+          _system_render(*this, _registry, _scene_graph_root, game.get_spritebatch()),
+          _system_map(*this, _registry, _scene_graph_root),
+          _system_camera(*this, _registry, _scene_graph_root),
+          _system_player(*this, _registry, _scene_graph_root),
+          _system_movement(*this, _registry, _scene_graph_root)
     {
     }
 
@@ -22,7 +22,7 @@ namespace tilegame::worldscene
 
     void WorldScene::load_content()
     {
-        _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
+        //_system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
     }
 
     void WorldScene::unload_content()
@@ -33,6 +33,7 @@ namespace tilegame::worldscene
     {
         _system_player.update(update_time);
         _system_movement.update(update_time);
+
         _system_camera.update(update_time);
     }
 

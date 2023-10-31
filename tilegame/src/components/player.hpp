@@ -4,6 +4,6 @@ namespace tilegame::components
 {
     struct Player
     {
-        int id;
+        const int id;
     };
 } // namespace tilegame

@@ -8,6 +8,6 @@ namespace tilegame::components
 {
     struct Tileset
     {
-        std::reference_wrapper<const engine::tilemap::Tileset> tileset;
+        const std::reference_wrapper<const engine::tilemap::Tileset> tileset;
     };
 } // namespace tilegame

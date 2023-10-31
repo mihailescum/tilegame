@@ -5,11 +5,10 @@
 #include "components/player.hpp"
 #include "components/movement.hpp"
 #include "components/transform.hpp"
-#include "components/children.hpp"
 
 namespace tilegame::systems
 {
-    PlayerSystem::PlayerSystem(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
+    PlayerSystem::PlayerSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
     {
     }
 
@@ -25,7 +24,7 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Transform>(player2_entity, glm::vec2(300, 100), glm::vec2());
 
         std::vector<entt::entity> children = {player1_entity};
-        _registry.emplace<tilegame::components::Children>(player2_entity, children);
+        //_registry.emplace<tilegame::components::Children>(player2_entity, children);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)
