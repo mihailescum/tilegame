@@ -2,12 +2,12 @@
 
 #include <functional>
 
-#include "engine.hpp"
+#include "scenegraphdata.hpp"
 
 namespace tilegame::components
 {
     struct SceneNode
     {
-        std::reference_wrapper<engine::SceneGraphNode<int>> node;
+        std::reference_wrapper<tilegame::SceneGraphNode> node;
     };
 } // namespace tilegame::components

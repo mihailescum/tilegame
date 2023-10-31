@@ -5,6 +5,7 @@
 #include "components/player.hpp"
 #include "components/movement.hpp"
 #include "components/transform.hpp"
+#include "components/scenenode.hpp"
 
 namespace tilegame::systems
 {
@@ -14,17 +15,16 @@ namespace tilegame::systems
 
     void PlayerSystem::initialize()
     {
-        const auto player1_entity = _registry.create();
+        auto &player1_scenenode = _scene_graph_root.add_child();
+
+        auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
-        _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2());
+        auto &transform = _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2());
         _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
+        _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
 
-        const auto player2_entity = _registry.create();
-        _registry.emplace<tilegame::components::Player>(player2_entity, 2);
-        _registry.emplace<tilegame::components::Transform>(player2_entity, glm::vec2(300, 100), glm::vec2());
-
-        std::vector<entt::entity> children = {player1_entity};
-        //_registry.emplace<tilegame::components::Children>(player2_entity, children);
+        tilegame::SceneGraphData player1_scenedata(player1_entity, &transform);
+        player1_scenenode.set_data(player1_scenedata);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)
@@ -44,7 +44,7 @@ namespace tilegame::systems
             break;
 
             default:
-                // throw "Unknown player ID";
+                throw "Unknown player ID";
                 break;
             }
         }

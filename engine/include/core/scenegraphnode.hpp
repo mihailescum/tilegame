@@ -28,13 +28,19 @@ namespace engine
             return _data;
         }
 
-        SceneGraphNode &add_child(SceneGraphNode child)
+        SceneGraphNode *get_parent()
         {
+            return _parent;
+        }
+
+        SceneGraphNode &add_child()
+        {
+            SceneGraphNode child;
             child._parent = this;
             this->_children.push_back(child);
-            this->_is_dirty(true);
+            this->_is_dirty = true;
 
-            return this->_children.end();
+            return this->_children.back();
         }
     };
 } // namespace engine

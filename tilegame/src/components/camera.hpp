@@ -8,7 +8,6 @@ namespace tilegame::components
 {
     struct Camera
     {
-        glm::vec2 look_at;
         float scale;
         glm::mat4 transform;
         engine::Viewport viewport;
