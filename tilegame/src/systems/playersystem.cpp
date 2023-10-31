@@ -73,6 +73,19 @@ namespace tilegame::systems
         {
             result |= tilegame::components::Movement::Down;
         }
+
+        if ((result & tilegame::components::Movement::Left) && (result & tilegame::components::Movement::Right))
+        {
+            result &= ~tilegame::components::Movement::Left;
+            result &= ~tilegame::components::Movement::Right;
+        }
+
+        if ((result & tilegame::components::Movement::Up) && (result & tilegame::components::Movement::Down))
+        {
+            result &= ~tilegame::components::Movement::Up;
+            result &= ~tilegame::components::Movement::Down;
+        }
+
         return result;
     }
 } // namespace tilegame::systems

@@ -36,4 +36,9 @@ namespace tilegame::components
     {
         a = a & b;
     }
+
+    inline Movement::MovementDirection operator~(Movement::MovementDirection a)
+    {
+        return static_cast<Movement::MovementDirection>(~static_cast<int>(a));
+    }
 } // namespace tilegame
