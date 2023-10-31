@@ -15,16 +15,15 @@ namespace tilegame::systems
 
     void PlayerSystem::initialize()
     {
-        auto &player1_scenenode = _scene_graph_root.add_child();
 
         auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
         auto &transform = _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2());
         _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
-        _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
 
         tilegame::SceneGraphData player1_scenedata(player1_entity, &transform);
-        player1_scenenode.set_data(player1_scenedata);
+        auto &player1_scenenode = _scene_graph_root.add_child(player1_scenedata);
+        _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)

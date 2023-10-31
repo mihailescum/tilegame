@@ -37,11 +37,9 @@ namespace tilegame::systems
         if (player1_entity != entt::null)
         {
             tilegame::SceneGraphNode &player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node.get();
-            auto &camera_scenenode = player1_scenenode.add_child();
 
             tilegame::SceneGraphData camera_scenedata(camera_entity, &transform);
-            camera_scenenode.set_data(camera_scenedata);
-
+            auto &camera_scenenode = player1_scenenode.add_child(camera_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(camera_entity, camera_scenenode);
         }
     }

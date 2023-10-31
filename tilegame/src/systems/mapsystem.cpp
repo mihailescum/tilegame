@@ -6,6 +6,7 @@
 #include "components/tilemap.hpp"
 #include "components/tilelayer.hpp"
 #include "components/tileset.hpp"
+#include "components/scenenode.hpp"
 
 namespace tilegame::systems
 {
@@ -23,6 +24,13 @@ namespace tilegame::systems
 
             const auto map_entity = _registry.create();
 
+            _registry.emplace<tilegame::components::TileMap>(map_entity, map);
+            auto &map_transform = _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
+
+            tilegame::SceneGraphData map_scenedata(map_entity, &map_transform);
+            auto &map_scenenode = _scene_graph_root.add_child(map_scenedata);
+            _registry.emplace<tilegame::components::SceneNode>(map_entity, map_scenenode);
+
             std::vector<entt::entity> tileset_entities;
             for (const auto &tileset : map.get_tilesets())
             {
@@ -36,6 +44,13 @@ namespace tilegame::systems
             {
                 const auto layer_entity = _registry.create();
                 map_children.push_back(layer_entity);
+
+                _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
+                auto &layer_transform = _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2());
+
+                tilegame::SceneGraphData layer_scenedata(layer_entity, &layer_transform);
+                auto &layer_scenenode = map_scenenode.add_child(layer_scenedata);
+                _registry.emplace<tilegame::components::SceneNode>(layer_entity, layer_scenenode);
 
                 const auto tiles = layer.get_tiles();
                 auto width = layer.get_width();
@@ -61,25 +76,21 @@ namespace tilegame::systems
                                 layer_children.push_back(tile_entity);
 
                                 //_registry.emplace<tilegame::components::Parent>(tile_entity, layer_entity);
-                                _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2());
+                                auto &tile_transform = _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2());
                                 _registry.emplace<tilegame::components::Renderable2D>(tile_entity, tileset_texture, tile_source_rect);
+
+                                tilegame::SceneGraphData tile_scenedata(tile_entity, &tile_transform);
+                                auto &tile_scenenode = layer_scenenode.add_child(tile_scenedata);
+                                _registry.emplace<tilegame::components::SceneNode>(tile_entity, tile_scenenode);
 
                                 break;
                             }
                         }
                     }
                 }
-
-                //_registry.emplace<tilegame::components::Parent>(layer_entity, map_entity);
-                _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
-                _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2());
                 _registry.emplace<tilegame::components::RenderLayer>(layer_entity, layer.get_z_index(), layer_children);
-                //_registry.emplace<tilegame::components::Children>(layer_entity, layer_children);
             }
 
-            _registry.emplace<tilegame::components::TileMap>(map_entity, map);
-            _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
-            //_registry.emplace<tilegame::components::Children>(map_entity, map_children);
             return map_entity;
         }
         else

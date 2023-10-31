@@ -22,7 +22,7 @@ namespace tilegame::worldscene
 
     void WorldScene::load_content()
     {
-        //_system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
+        _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
     }
 
     void WorldScene::unload_content()

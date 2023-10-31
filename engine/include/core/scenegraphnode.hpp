@@ -17,7 +17,7 @@ namespace engine
         SceneGraphNode() : SceneGraphNode(nullptr, T()) {}
         SceneGraphNode(SceneGraphNode *parent, const T &data) : _parent(parent), _data(data), _is_dirty(true) {}
 
-        void set_data(T data)
+        void set_data(const T &data)
         {
             _data = data;
             _is_dirty = true;
@@ -31,6 +31,14 @@ namespace engine
         SceneGraphNode *get_parent()
         {
             return _parent;
+        }
+
+        SceneGraphNode &add_child(const T &data)
+        {
+            SceneGraphNode &child = add_child();
+            child.set_data(data);
+
+            return child;
         }
 
         SceneGraphNode &add_child()
