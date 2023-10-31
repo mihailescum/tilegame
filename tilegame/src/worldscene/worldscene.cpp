@@ -10,12 +10,15 @@ namespace tilegame::worldscene
           _system_map(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
-          _system_movement(*this, _registry)
+          _system_movement(*this, _registry),
+          _system_scenegraph(*this, _registry)
     {
     }
 
     void WorldScene::initialize()
     {
+        _system_scenegraph.initialize();
+
         _system_player.initialize();
         _system_camera.initialize();
     }
@@ -27,12 +30,15 @@ namespace tilegame::worldscene
 
     void WorldScene::unload_content()
     {
+        _system_scenegraph.unload_content();
     }
 
     void WorldScene::update(const engine::GameTime &update_time)
     {
         _system_player.update(update_time);
         _system_movement.update(update_time);
+
+        _system_scenegraph.update(update_time);
 
         _system_camera.update(update_time);
     }

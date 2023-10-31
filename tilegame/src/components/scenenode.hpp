@@ -8,6 +8,6 @@ namespace tilegame::components
 {
     struct SceneNode
     {
-        std::reference_wrapper<tilegame::SceneGraphNode> node;
+        SceneGraphNode *node;
     };
 } // namespace tilegame::components

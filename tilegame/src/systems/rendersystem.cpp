@@ -22,8 +22,8 @@ namespace tilegame::systems
 
         for (auto &&[entity, camera] : cameras.each())
         {
-            //_spritebatch.begin(camera.transform, true);
-            _spritebatch.begin(true);
+            _spritebatch.begin(camera.transform, true);
+            //_spritebatch.begin(true);
             for (auto &&[entity, render_layer] : view.each())
             {
                 for (const auto render_entity : render_layer.children)

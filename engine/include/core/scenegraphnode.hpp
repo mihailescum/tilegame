@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 namespace engine
 {
@@ -9,13 +10,13 @@ namespace engine
     {
     private:
         SceneGraphNode *_parent;
-        std::vector<SceneGraphNode> _children;
+        std::vector<std::unique_ptr<SceneGraphNode>> _children;
         T _data;
         bool _is_dirty;
 
     public:
-        SceneGraphNode() : SceneGraphNode(nullptr, T()) {}
-        SceneGraphNode(SceneGraphNode *parent, const T &data) : _parent(parent), _data(data), _is_dirty(true) {}
+        SceneGraphNode() : SceneGraphNode<T>(nullptr, T()) {}
+        SceneGraphNode(SceneGraphNode<T> *parent, const T &data) : _parent(parent), _data(data), _is_dirty(true), _children() {}
 
         void set_data(const T &data)
         {
@@ -33,22 +34,25 @@ namespace engine
             return _parent;
         }
 
-        SceneGraphNode &add_child(const T &data)
+        SceneGraphNode *add_child(const T &data)
         {
-            SceneGraphNode &child = add_child();
-            child.set_data(data);
+            SceneGraphNode *child = add_child();
+            child->set_data(data);
 
             return child;
         }
 
-        SceneGraphNode &add_child()
+        SceneGraphNode *add_child()
         {
-            SceneGraphNode child;
-            child._parent = this;
-            this->_children.push_back(child);
+            this->_children.push_back(std::make_unique<SceneGraphNode>(this, T()));
             this->_is_dirty = true;
 
-            return this->_children.back();
+            return this->_children.back().get();
+        }
+
+        std::vector<std::unique_ptr<SceneGraphNode>> &get_children()
+        {
+            return _children;
         }
     };
 } // namespace engine

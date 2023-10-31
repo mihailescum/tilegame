@@ -18,11 +18,11 @@ namespace tilegame::systems
 
         auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
-        auto &transform = _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2());
-        _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
+        _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
+        _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 100.0);
 
-        tilegame::SceneGraphData player1_scenedata(player1_entity, &transform);
-        auto &player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
+        tilegame::SceneGraphData player1_scenedata(player1_entity);
+        auto player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
         _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
     }
 

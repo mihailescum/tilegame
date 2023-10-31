@@ -13,6 +13,7 @@
 #include "systems/camerasystem.hpp"
 #include "systems/playersystem.hpp"
 #include "systems/movementsystem.hpp"
+#include "systems/scenegraphsystem.hpp"
 
 namespace tilegame
 {
@@ -31,6 +32,7 @@ namespace tilegame::worldscene
         tilegame::systems::CameraSystem _system_camera;
         tilegame::systems::PlayerSystem _system_player;
         tilegame::systems::MovementSystem _system_movement;
+        tilegame::systems::SceneGraphSystem _system_scenegraph;
 
     public:
         WorldScene(Tilegame &game);

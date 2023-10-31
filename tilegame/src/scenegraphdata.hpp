@@ -10,13 +10,9 @@ namespace tilegame
     struct SceneGraphData
     {
         entt::entity entity;
-        tilegame::components::Transform *transform_component;
 
-        SceneGraphData() : SceneGraphData(entt::null, nullptr) {}
-        SceneGraphData(entt::entity entity, tilegame::components::Transform *transform_component)
-            : entity(entity), transform_component(transform_component)
-        {
-        }
+        SceneGraphData() : SceneGraphData(static_cast<entt::entity>(entt::null)) {}
+        SceneGraphData(entt::entity entity) : entity(entity) {}
     };
 
     typedef engine::SceneGraphNode<SceneGraphData> SceneGraphNode;

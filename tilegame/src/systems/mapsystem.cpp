@@ -25,10 +25,10 @@ namespace tilegame::systems
             const auto map_entity = _registry.create();
 
             _registry.emplace<tilegame::components::TileMap>(map_entity, map);
-            auto &map_transform = _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
+            _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(0.0), glm::vec2(0.0));
 
-            tilegame::SceneGraphData map_scenedata(map_entity, &map_transform);
-            auto &map_scenenode = _scene.get_scene_graph_root().add_child(map_scenedata);
+            tilegame::SceneGraphData map_scenedata(map_entity);
+            auto map_scenenode = _scene.get_scene_graph_root().add_child(map_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(map_entity, map_scenenode);
 
             std::vector<entt::entity> tileset_entities;
@@ -46,10 +46,10 @@ namespace tilegame::systems
                 map_children.push_back(layer_entity);
 
                 _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
-                auto &layer_transform = _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2());
+                _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
-                tilegame::SceneGraphData layer_scenedata(layer_entity, &layer_transform);
-                auto &layer_scenenode = map_scenenode.add_child(layer_scenedata);
+                tilegame::SceneGraphData layer_scenedata(layer_entity);
+                auto layer_scenenode = map_scenenode->add_child(layer_scenedata);
                 _registry.emplace<tilegame::components::SceneNode>(layer_entity, layer_scenenode);
 
                 const auto tiles = layer.get_tiles();
@@ -75,12 +75,11 @@ namespace tilegame::systems
                                 const auto tile_entity = _registry.create();
                                 layer_children.push_back(tile_entity);
 
-                                //_registry.emplace<tilegame::components::Parent>(tile_entity, layer_entity);
-                                auto &tile_transform = _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2());
+                                _registry.emplace<tilegame::components::Transform>(tile_entity, glm::vec2(x * tile_width, y * tile_height), glm::vec2(0.0));
                                 _registry.emplace<tilegame::components::Renderable2D>(tile_entity, tileset_texture, tile_source_rect);
 
-                                tilegame::SceneGraphData tile_scenedata(tile_entity, &tile_transform);
-                                auto &tile_scenenode = layer_scenenode.add_child(tile_scenedata);
+                                tilegame::SceneGraphData tile_scenedata(tile_entity);
+                                auto tile_scenenode = layer_scenenode->add_child(tile_scenedata);
                                 _registry.emplace<tilegame::components::SceneNode>(tile_entity, tile_scenenode);
 
                                 break;

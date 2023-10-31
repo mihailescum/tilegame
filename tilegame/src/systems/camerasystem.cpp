@@ -21,7 +21,7 @@ namespace tilegame::systems
             1.0,
             glm::mat4(1.0),
             _scene.get_game().get_graphics_device().get_viewport());
-        auto &transform = _registry.emplace<tilegame::components::Transform>(camera_entity, glm::vec2(100.0, 100.0), glm::vec2());
+        _registry.emplace<tilegame::components::Transform>(camera_entity, glm::vec2(100.0, 100.0), glm::vec2(0.0));
 
         entt::entity player1_entity = entt::null;
         auto players = _registry.view<tilegame::components::Player>();
@@ -36,10 +36,10 @@ namespace tilegame::systems
 
         if (player1_entity != entt::null)
         {
-            tilegame::SceneGraphNode &player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node.get();
+            auto player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node;
 
-            tilegame::SceneGraphData camera_scenedata(camera_entity, &transform);
-            auto &camera_scenenode = player1_scenenode.add_child(camera_scenedata);
+            tilegame::SceneGraphData camera_scenedata(camera_entity);
+            auto camera_scenenode = player1_scenenode->add_child(camera_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(camera_entity, camera_scenenode);
         }
     }
