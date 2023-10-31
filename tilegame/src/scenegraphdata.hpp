@@ -20,4 +20,5 @@ namespace tilegame
     };
 
     typedef engine::SceneGraphNode<SceneGraphData> SceneGraphNode;
+    typedef engine::Scene<SceneGraphData> Scene;
 } // namespace tilegame

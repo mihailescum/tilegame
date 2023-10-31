@@ -10,7 +10,7 @@
 
 namespace tilegame::systems
 {
-    MapSystem::MapSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
+    MapSystem::MapSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -28,7 +28,7 @@ namespace tilegame::systems
             auto &map_transform = _registry.emplace<tilegame::components::Transform>(map_entity, glm::vec2(), glm::vec2());
 
             tilegame::SceneGraphData map_scenedata(map_entity, &map_transform);
-            auto &map_scenenode = _scene_graph_root.add_child(map_scenedata);
+            auto &map_scenenode = _scene.get_scene_graph_root().add_child(map_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(map_entity, map_scenenode);
 
             std::vector<entt::entity> tileset_entities;

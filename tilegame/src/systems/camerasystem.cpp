@@ -9,7 +9,7 @@
 
 namespace tilegame::systems
 {
-    CameraSystem::CameraSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
+    CameraSystem::CameraSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 

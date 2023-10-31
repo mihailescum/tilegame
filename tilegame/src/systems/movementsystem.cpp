@@ -7,7 +7,7 @@
 
 namespace tilegame::systems
 {
-    MovementSystem::MovementSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
+    MovementSystem::MovementSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 

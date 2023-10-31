@@ -12,7 +12,7 @@ namespace tilegame::systems
     {
     private:
     public:
-        MovementSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root);
+        MovementSystem(tilegame::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

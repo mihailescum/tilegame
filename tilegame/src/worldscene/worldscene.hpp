@@ -21,12 +21,10 @@ namespace tilegame
 
 namespace tilegame::worldscene
 {
-    class WorldScene : public engine::Scene
+    class WorldScene : public tilegame::Scene
     {
     private:
         entt::registry _registry;
-
-        tilegame::SceneGraphNode _scene_graph_root;
 
         tilegame::systems::RenderSystem _system_render;
         tilegame::systems::MapSystem _system_map;
@@ -43,7 +41,5 @@ namespace tilegame::worldscene
         virtual void unload_content() override;
         virtual void update(const engine::GameTime &update_time) override;
         virtual void draw(const engine::GameTime &draw_time) override;
-
-        tilegame::SceneGraphNode &get_scene_graph_root() { return _scene_graph_root; }
     };
 } // namespace tilegame::worldscene

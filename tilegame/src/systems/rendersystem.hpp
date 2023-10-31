@@ -12,7 +12,7 @@ namespace tilegame::systems
         engine::SpriteBatch &_spritebatch;
 
     public:
-        RenderSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root, engine::SpriteBatch &spritebatch);
+        RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::SpriteBatch &spritebatch);
 
         void draw();
     };

@@ -9,7 +9,7 @@
 
 namespace tilegame::systems
 {
-    PlayerSystem::PlayerSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root) : System(scene, registry, scene_graph_root)
+    PlayerSystem::PlayerSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -22,7 +22,7 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 10.0);
 
         tilegame::SceneGraphData player1_scenedata(player1_entity, &transform);
-        auto &player1_scenenode = _scene_graph_root.add_child(player1_scenedata);
+        auto &player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
         _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
     }
 

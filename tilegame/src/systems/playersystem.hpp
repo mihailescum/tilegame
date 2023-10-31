@@ -15,7 +15,7 @@ namespace tilegame::systems
         tilegame::components::Movement::MovementDirection handle_input_1();
 
     public:
-        PlayerSystem(engine::Scene &scene, entt::registry &registry, tilegame::SceneGraphNode &scene_graph_root);
+        PlayerSystem(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);
