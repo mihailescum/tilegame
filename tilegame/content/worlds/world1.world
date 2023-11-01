@@ -9,8 +9,8 @@
         },
         {
             "fileName": "../maps/map1.tmx",
-            "height": 1600,
-            "width": 1600,
+            "height": 3200,
+            "width": 3200,
             "x": 480,
             "y": 320
         }

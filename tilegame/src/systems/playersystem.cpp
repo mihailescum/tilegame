@@ -15,7 +15,6 @@ namespace tilegame::systems
 
     void PlayerSystem::initialize()
     {
-
         auto player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(player1_entity, 1);
         _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
