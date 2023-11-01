@@ -5,6 +5,7 @@
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"
 #include "core/texture2d.hpp"
+#include "core/rectangle.hpp"
 
 #include "sprite/sprite.hpp"
 
@@ -22,5 +23,7 @@ namespace engine::sprite
     public:
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
+
+        engine::Rectangle get_source_rect(unsigned int id) const;
     };
 } // namespace engine::sprite

@@ -4,7 +4,7 @@
 
 namespace engine::sprite
 {
-    void Sprite::parse(const pugi::xml_node &node)
+    void Sprite::parse(const pugi::xml_node &node, const pugi::xml_node &root_node)
     {
         auto state_nodes = node.children("wangcolor");
         std::vector<SpriteState> sprite_states;
@@ -14,6 +14,9 @@ namespace engine::sprite
             SpriteState state(name);
             sprite_states.push_back(state);
         }
+
+        auto tile_nodes = root_node.children("tile");
+        // TODO use tile_nodes information to parse animations
 
         auto frame_nodes = node.children("wangtile");
         for (auto frame_node : frame_nodes)

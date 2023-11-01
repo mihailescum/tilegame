@@ -33,6 +33,15 @@ namespace engine::sprite
     {
     }
 
+    engine::Rectangle SpriteSheet::get_source_rect(unsigned int id) const
+    {
+        int x = (id % (_texture->get_width() / _tile_width)) * _tile_width;
+        int y = (id / (_texture->get_width() / _tile_width)) * _tile_width;
+
+        engine::Rectangle result(x, y, _tile_width, _tile_height);
+        return result;
+    }
+
     void SpriteSheet::parse(const pugi::xml_node &node, ResourceManager &resource_manager)
     {
         _tile_width = node.attribute("tilewidth").as_int();
@@ -51,8 +60,8 @@ namespace engine::sprite
         for (auto sprite_node : sprites_nodes)
         {
             std::string name = sprite_node.attribute("name").as_string();
-            Sprite sprite(name);
-            sprite.parse(sprite_node);
+            Sprite sprite(name, this);
+            sprite.parse(sprite_node, node);
         }
     }
 } // namespace engine::sprite
