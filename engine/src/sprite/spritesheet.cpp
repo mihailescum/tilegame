@@ -1,23 +1,18 @@
 #include "sprite/spritesheet.hpp"
 
-#include <tmxlite/Map.hpp>
-#include <tmxlite/Tileset.hpp>
+#include <string>
+#include <vector>
 
-namespace pugi
-{
-    class xml_document;
-}
+#include "sprite/spritesheet.hpp"
+#include "sprite/spritestate.hpp"
+#include "sprite/spriteframe.hpp"
 
 namespace engine::sprite
 {
     bool SpriteSheet::load_resource(ResourceManager &resource_manager, va_list args)
     {
-        // A placeholder map
-        tmx::Map _;
-        tmx::Tileset tileset;
-
         pugi::xml_document doc;
-        auto result = doc.load_file(_resource_path);
+        auto result = doc.load_file(_resource_path.c_str());
         if (!result)
         {
             return false;
@@ -29,6 +24,35 @@ namespace engine::sprite
             return false;
         }
 
+        parse(tileset_node, resource_manager);
+
         return true;
+    }
+
+    void SpriteSheet::unload_resource()
+    {
+    }
+
+    void SpriteSheet::parse(const pugi::xml_node &node, ResourceManager &resource_manager)
+    {
+        _tile_width = node.attribute("tilewidth").as_int();
+        _tile_height = node.attribute("tileheigt").as_int();
+
+        int columns = node.attribute("columns").as_int();
+
+        auto image_node = node.child("image");
+        std::filesystem::path image_source = _resource_path.parent_path();
+        image_source /= image_node.attribute("source").as_string();
+        std::string image_name = image_source.filename();
+
+        _texture = resource_manager.load_resource<engine::Texture2D>(image_name, image_source);
+
+        auto sprites_nodes = node.child("wangsets").children();
+        for (auto sprite_node : sprites_nodes)
+        {
+            std::string name = sprite_node.attribute("name").as_string();
+            Sprite sprite(name);
+            sprite.parse(sprite_node);
+        }
     }
 } // namespace engine::sprite
