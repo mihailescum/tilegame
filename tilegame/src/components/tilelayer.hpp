@@ -8,6 +8,7 @@ namespace tilegame::components
 {
     struct TileLayer
     {
-        const std::reference_wrapper<const engine::tilemap::TileLayer> layer;
+        // TODO: References are not permanent!!! Since we reference elements of a vector
+        // const std::reference_wrapper<const engine::tilemap::TileLayer> layer;
     };
 } // namespace tilegame

@@ -45,7 +45,7 @@ namespace tilegame::systems
                 const auto layer_entity = _registry.create();
                 map_children.push_back(layer_entity);
 
-                _registry.emplace<tilegame::components::TileLayer>(layer_entity, layer);
+                _registry.emplace<tilegame::components::TileLayer>(layer_entity);
                 _registry.emplace<tilegame::components::Transform>(layer_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
                 tilegame::SceneGraphData layer_scenedata(layer_entity);
