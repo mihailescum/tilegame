@@ -2,10 +2,10 @@
     "maps": [
         {
             "fileName": "../maps/map2.tmx",
-            "height": 320,
-            "width": 480,
-            "x": 0,
-            "y": 0
+            "height": 640,
+            "width": 960,
+            "x": -480,
+            "y": 320
         },
         {
             "fileName": "../maps/map1.tmx",

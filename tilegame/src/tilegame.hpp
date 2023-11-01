@@ -23,7 +23,7 @@ namespace tilegame
         virtual void draw(const engine::GameTime &draw_time) override;
 
     public:
-        Tilegame() : Game(), _spritebatch(_graphics_device), _worldscene(*this) {}
+        Tilegame(int window_width, int window_height) : Game(window_width, window_height), _spritebatch(_graphics_device), _worldscene(*this) {}
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 

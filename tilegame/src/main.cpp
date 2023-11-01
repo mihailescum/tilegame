@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    tilegame::Tilegame game;
+    tilegame::Tilegame game(1200, 900);
     game.run();
 
     return 0;
