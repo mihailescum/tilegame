@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include <tmxlite/Map.hpp>
-
 #include "core/resource.hpp"
 #include "tilemap/tilelayer.hpp"
 #include "tilemap/tileset.hpp"

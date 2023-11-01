@@ -19,3 +19,7 @@
 #include "core/scenegraphnode.hpp"
 
 #include "tilemap/tilemap.hpp"
+#include "tilemap/tilelayer.hpp"
+#include "tilemap/tileset.hpp"
+
+#include "sprite/spritesheet.hpp"

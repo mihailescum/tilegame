@@ -3,12 +3,14 @@ set (HEADER_PATH include)
 
 file(GLOB HEADER_ENGINE_CORE "${HEADER_PATH}/core/*.hpp")
 file(GLOB HEADER_ENGINE_TILEMAP "${HEADER_PATH}/tilemap/*.hpp")
+file(GLOB HEADER_ENGINE_SPRITE "${HEADER_PATH}/sprite/*.hpp")
 
 # Source Files
 set (SOURCES_PATH src)
 
 file(GLOB SOURCES_ENGINE_CORE "${SOURCES_PATH}/core/*.cpp")
 file(GLOB SOURCES_ENGINE_TILEMAP "${SOURCES_PATH}/tilemap/*.cpp")
+file(GLOB SOURCES_ENGINE_SPRITE "${SOURCES_PATH}/sprite/*.cpp")
 
 # Create Library
 set (LIBRARY_NAME engine)
@@ -18,9 +20,11 @@ add_library(${LIBRARY_NAME}
 
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_TILEMAP} 
+                ${SOURCES_ENGINE_SPRITE} 
 
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_TILEMAP}
+                ${HEADER_ENGINE_SPRITE}
 )
 
 set_target_properties(
@@ -34,14 +38,14 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${HEADER_PATH})
 # Include glad Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glad/include)
 
-#EnTT Header Files
-#target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/entt/include)
-
 # stb_image Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/stb_image/include)
 
 # nlohmann/json Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/json/include)
+
+# Include pugixml Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/pugixml)
 
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
@@ -49,9 +53,12 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 # Link with std::filesystem library
 target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 
-#GLFW
+# GLFW
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
 
-#tmxlite
+# tmxlite
 target_link_libraries(${LIBRARY_NAME} PUBLIC tmxlite)
+
+# pugixml
+target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

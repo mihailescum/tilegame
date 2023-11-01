@@ -25,6 +25,8 @@ namespace tilegame::worldscene
 
     void WorldScene::load_content()
     {
+        auto characters = _game.get_resource_manager().load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tmx");
+
         _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
     }
 

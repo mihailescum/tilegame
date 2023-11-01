@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include <tmxlite/Map.hpp>
 #include <tmxlite/TileLayer.hpp>
 
 #include "core/log.hpp"
