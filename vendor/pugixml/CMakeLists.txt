@@ -1,7 +1,7 @@
 # Source Files
-set (SOURCES pugixml.cpp)
+set (SOURCES pugixml/pugixml.cpp)
 # Header Files
-set (HEADER pugixml.hpp pugiconfig.hpp)
+set (HEADER pugixml/pugixml.hpp pugixml/pugiconfig.hpp)
 
 #Create Library
 add_library(pugixml ${SOURCES} ${HEADER})
