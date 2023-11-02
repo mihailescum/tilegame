@@ -47,6 +47,6 @@ namespace tilegame::worldscene
 
     void WorldScene::draw(const engine::GameTime &draw_time)
     {
-        _system_render.draw();
+        _system_render.draw(draw_time);
     }
 } // namespace tilegame::worldscene

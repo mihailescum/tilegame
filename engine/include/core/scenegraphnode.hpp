@@ -28,6 +28,7 @@ namespace engine
         const T &get_data() const { return _data; }
 
         // TODO constness
+        const SceneGraphNode *get_parent() const { return _parent; }
         SceneGraphNode *get_parent() { return _parent; }
 
         SceneGraphNode &add_child(const T &data)

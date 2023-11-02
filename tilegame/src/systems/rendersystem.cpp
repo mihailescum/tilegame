@@ -11,19 +11,19 @@ namespace tilegame::systems
     {
     }
 
-    void RenderSystem::draw()
+    void RenderSystem::draw(const engine::GameTime &draw_time)
     {
         _registry.sort<tilegame::components::RenderLayer>([](const auto &lhs, const auto &rhs)
                                                           { return lhs.z_index < rhs.z_index; });
         const auto view = _registry.view<tilegame::components::RenderLayer>();
         const auto view_renderable = _registry.view<tilegame::components::Transform, tilegame::components::Renderable2D>();
 
-        auto cameras = _registry.view<tilegame::components::Camera>();
+        const auto cameras = _registry.view<tilegame::components::Camera>();
 
-        for (auto &&[entity, camera] : cameras.each())
+        for (const auto &&[entity, camera] : cameras.each())
         {
             _spritebatch.begin(camera.transform, true);
-            for (auto &&[entity, render_layer] : view.each())
+            for (const auto &&[entity, render_layer] : view.each())
             {
                 for (const auto render_entity : render_layer.children)
                 {
@@ -33,7 +33,7 @@ namespace tilegame::systems
                     const auto &source_rect = render.source_rect;
 
                     const auto &position_global = transform.position_global;
-                    engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
+                    const engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
                     _spritebatch.draw(tex, dest_rect, &source_rect, engine::Color::WHITE);
                 }
             }

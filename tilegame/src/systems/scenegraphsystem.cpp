@@ -32,50 +32,48 @@ namespace tilegame::systems
     {
         if (_is_first_update)
         {
-            auto &root_node = _scene.get_scene_graph_root();
-            update_node(root_node);
+            const auto &root_node = _scene.get_scene_graph_root();
+            update_node_transform(root_node);
             _is_first_update = false;
         }
 
         for (const auto entity : _transformation_observer)
         {
             auto &scene_node_component = _registry.get<tilegame::components::SceneNode>(entity);
-            update_node(*scene_node_component.node);
+            update_node_transform(*scene_node_component.node);
         }
 
         _transformation_observer.clear();
     }
 
-    void SceneGraphSystem::update_node(tilegame::SceneGraphNode &node)
+    void SceneGraphSystem::update_node_transform(const tilegame::SceneGraphNode &node)
     {
         const auto entity = node.get_data().entity;
         const auto parent = node.get_parent();
 
         auto &transform_component = _registry.get<tilegame::components::Transform>(entity);
+
+        entt::entity parent_entity = entt::null;
         if (parent)
         {
-            const auto parent_entity = parent->get_data().entity;
-            auto parent_transform = _registry.try_get<tilegame::components::Transform>(parent_entity);
+            parent_entity = parent->get_data().entity;
+        }
 
-            if (parent_transform)
-            {
-                transform_component.position_global = transform_component.position_local + parent_transform->position_global;
-            }
-            else
-            {
-                transform_component.position_global = transform_component.position_local;
-            }
+        const auto parent_transform = _registry.try_get<tilegame::components::Transform>(parent_entity);
+
+        if (parent_transform)
+        {
+            transform_component.position_global = transform_component.position_local + parent_transform->position_global;
         }
         else
         {
             transform_component.position_global = transform_component.position_local;
         }
 
-        auto &children = node.get_children();
-        for (int i = 0; i < children.size(); ++i)
+        const auto &children = node.get_children();
+        for (const auto &child : children)
         {
-            auto child = children[i].get();
-            update_node(*child);
+            update_node_transform(*child);
         }
     }
 } // namespace tilegame::systems

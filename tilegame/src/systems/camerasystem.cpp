@@ -38,15 +38,15 @@ namespace tilegame::systems
         {
             auto player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node;
 
-            tilegame::SceneGraphData camera_scenedata(camera_entity);
-            auto &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
+            const tilegame::SceneGraphData camera_scenedata(camera_entity);
+            tilegame::SceneGraphNode &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(camera_entity, &camera_scenenode);
         }
     }
 
     void CameraSystem::update(const engine::GameTime &update_time)
     {
-        auto cameras = _registry.view<tilegame::components::Camera, tilegame::components::Transform>();
+        const auto cameras = _registry.view<tilegame::components::Camera, tilegame::components::Transform>();
 
         for (auto &&[entity, camera, transform] : cameras.each())
         {
@@ -57,6 +57,8 @@ namespace tilegame::systems
                 floor(-(position.x - camera.viewport.width / 2) * scale) / scale,
                 floor(-(position.y - camera.viewport.height / 2) * scale) / scale,
                 0.0);
+
+            // TODO use patch
             camera.transform = glm::translate(glm::mat4(1.0), translate);
             camera.transform = glm::scale(camera.transform, glm::vec3(scale));
         }

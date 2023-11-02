@@ -14,6 +14,6 @@ namespace tilegame::systems
     public:
         RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::SpriteBatch &spritebatch);
 
-        void draw();
+        void draw(const engine::GameTime &draw_time);
     };
 } // namespace tilegame

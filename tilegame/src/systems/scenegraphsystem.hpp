@@ -16,7 +16,7 @@ namespace tilegame::systems
         entt::observer _transformation_observer;
         bool _is_first_update = true;
 
-        void update_node(tilegame::SceneGraphNode &node);
+        void update_node_transform(const tilegame::SceneGraphNode &node);
 
     public:
         SceneGraphSystem(tilegame::Scene &scene, entt::registry &registry);

@@ -24,6 +24,7 @@ namespace engine::sprite
 
         void parse(const pugi::xml_node &node, const pugi::xml_node &root_node);
 
-        SpriteState &operator[](std::string name) { return _states[name]; }
+        const SpriteState &operator[](std::string name) const { return _states.at(name); }
+        SpriteState &operator[](std::string name) { return _states.at(name); }
     };
 } // namespace engine::sprite
