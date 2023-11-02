@@ -39,8 +39,8 @@ namespace tilegame::systems
             auto player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node;
 
             tilegame::SceneGraphData camera_scenedata(camera_entity);
-            auto camera_scenenode = player1_scenenode->add_child(camera_scenedata);
-            _registry.emplace<tilegame::components::SceneNode>(camera_entity, camera_scenenode);
+            auto &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
+            _registry.emplace<tilegame::components::SceneNode>(camera_entity, &camera_scenenode);
         }
     }
 

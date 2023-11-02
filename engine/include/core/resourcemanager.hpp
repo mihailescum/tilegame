@@ -26,8 +26,6 @@ namespace engine
         // properly de-allocates all loaded resources
         void unload_resources();
 
-        Resource *get_resource(const std::string &name) const;
-
         template <class T>
         T *load_resource(std::string name, const std::filesystem::path &path, ...)
         {

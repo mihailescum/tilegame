@@ -9,7 +9,7 @@ namespace engine
     {
     }
 
-    bool Window::is_resizable()
+    bool Window::is_resizable() const
     {
         return (this->_resizable == GLFW_TRUE) ? true : false;
     }
@@ -112,10 +112,5 @@ namespace engine
     bool Window::is_key_pressed(int keyCode) const
     {
         return glfwGetKey(this->_native_window, keyCode);
-    }
-
-    GLFWwindow *Window::get_native_window() const
-    {
-        return this->_native_window;
     }
 } // namespace engine

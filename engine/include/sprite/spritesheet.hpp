@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include <string>
+
 #include "pugixml/pugixml.hpp"
 
 #include "core/resource.hpp"
@@ -18,6 +21,8 @@ namespace engine::sprite
         int _tile_height;
         Texture2D *_texture;
 
+        std::unordered_map<std::string, Sprite> _sprites;
+
         void parse(const pugi::xml_node &node, ResourceManager &resource_manager);
 
     public:
@@ -25,5 +30,10 @@ namespace engine::sprite
         virtual void unload_resource() override;
 
         engine::Rectangle get_source_rect(unsigned int id) const;
+
+        Sprite &operator[](std::string name) { return _sprites[name]; }
+
+        const Texture2D *get_texture() const { return _texture; }
+        Texture2D *get_texture() { return _texture; }
     };
 } // namespace engine::sprite

@@ -41,7 +41,9 @@ namespace engine
 
         const Window &get_window() const { return window; }
         const GraphicsDevice &get_graphics_device() const { return _graphics_device; }
+
         ResourceManager &get_resource_manager() { return _resource_manager; }
+        const ResourceManager &get_resource_manager() const { return _resource_manager; }
 
         void run();
     };

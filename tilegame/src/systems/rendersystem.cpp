@@ -29,7 +29,7 @@ namespace tilegame::systems
                 {
                     const auto &&[transform, render] = view_renderable.get<tilegame::components::Transform, tilegame::components::Renderable2D>(render_entity);
 
-                    const auto &tex = render.texture.get();
+                    const auto &tex = render.texture;
                     const auto &source_rect = render.source_rect;
 
                     const auto &position_global = transform.position_global;

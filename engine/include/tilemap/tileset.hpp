@@ -20,6 +20,7 @@ namespace engine::tilemap
     public:
         Tileset(engine::Texture2D &texture, unsigned int first_GID, unsigned int last_GID, int tile_width, int tile_height);
 
+        // engine::Texture2D &get_texture() { return _texture; };
         const engine::Texture2D &get_texture() const { return _texture; };
 
         int get_tile_width() const { return _tile_width; }

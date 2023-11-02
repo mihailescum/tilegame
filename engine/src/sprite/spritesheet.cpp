@@ -62,6 +62,7 @@ namespace engine::sprite
             std::string name = sprite_node.attribute("name").as_string();
             Sprite sprite(name, this);
             sprite.parse(sprite_node, node);
+            _sprites[name] = sprite;
         }
     }
 } // namespace engine::sprite

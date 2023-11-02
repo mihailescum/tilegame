@@ -61,7 +61,7 @@ namespace engine
             begin_draw();
             draw(_draw_time); // - Render function
             end_draw();
-            glfwSwapBuffers(window.get_native_window());
+            glfwSwapBuffers(&window.get_native_window());
 
             last_draw = now;
 

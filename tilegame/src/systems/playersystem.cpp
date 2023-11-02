@@ -6,6 +6,7 @@
 #include "components/movement.hpp"
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
+#include "components/renderable2d.hpp"
 
 namespace tilegame::systems
 {
@@ -15,14 +16,26 @@ namespace tilegame::systems
 
     void PlayerSystem::initialize()
     {
-        auto player1_entity = _registry.create();
-        _registry.emplace<tilegame::components::Player>(player1_entity, 1);
-        _registry.emplace<tilegame::components::Transform>(player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
-        _registry.emplace<tilegame::components::Movement>(player1_entity, tilegame::components::Movement::None, 200.0);
+        _player1_entity = _registry.create();
+        _registry.emplace<tilegame::components::Player>(_player1_entity, 1);
+        _registry.emplace<tilegame::components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
+        _registry.emplace<tilegame::components::Movement>(_player1_entity, tilegame::components::Movement::None, 200.0);
 
-        tilegame::SceneGraphData player1_scenedata(player1_entity);
-        auto player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
-        _registry.emplace<tilegame::components::SceneNode>(player1_entity, player1_scenenode);
+        tilegame::SceneGraphData player1_scenedata(_player1_entity);
+        auto &player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
+        _registry.emplace<tilegame::components::SceneNode>(_player1_entity, &player1_scenenode);
+    }
+
+    void PlayerSystem::load_content()
+    {
+        auto &resource_manager = _scene.get_game().get_resource_manager();
+        auto characters = *resource_manager.load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tsx");
+        engine::Texture2D &characters_texture = *characters.get_texture();
+
+        auto player1_sprite = characters["man"];
+        auto player1_source_rect = characters.get_source_rect(player1_sprite["down_walking"].frames[0].id);
+
+        _registry.emplace<tilegame::components::Renderable2D>(_player1_entity, characters_texture, player1_source_rect);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)

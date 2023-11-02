@@ -17,12 +17,4 @@ namespace engine
         for (auto &iter : _resources)
             iter.second->unload_resource();
     }
-
-    Resource *ResourceManager::get_resource(const std::string &name) const
-    {
-        if (_resources.count(name) != 0)
-            return _resources.at(name).get();
-        else
-            return nullptr;
-    }
 } // namespace engine

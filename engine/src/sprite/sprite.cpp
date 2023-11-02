@@ -24,9 +24,9 @@ namespace engine::sprite
             int id = frame_node.attribute("tileid").as_int();
             SpriteFrame frame(id);
 
-            int state_id = 0;
+            unsigned int state_id = 0;
             std::stringstream ss(frame_node.attribute("wangid").as_string());
-            for (int i; ss >> i;)
+            for (unsigned int i; ss >> i;)
             {
                 if (i > 0)
                 {
@@ -38,7 +38,11 @@ namespace engine::sprite
                     ss.ignore();
                 }
             }
-            sprite_states[state_id - 1].frames.push_back(frame);
+
+            if (state_id > 0)
+            {
+                sprite_states[state_id - 1].frames.push_back(frame);
+            }
         }
 
         for (auto state : sprite_states)

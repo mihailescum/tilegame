@@ -31,8 +31,9 @@ namespace engine
         void set_position(int x, int y);
         bool is_key_pressed(int key_code) const;
 
-        GLFWwindow *get_native_window() const;
-        bool is_resizable();
+        const GLFWwindow &get_native_window() const { return *_native_window; }
+        GLFWwindow &get_native_window() { return *_native_window; }
+        bool is_resizable() const;
         void set_resizable(const bool resizable);
         std::string get_title() const;
         void set_title(const std::string &title);

@@ -40,7 +40,7 @@ namespace engine::tilemap
                     TileLayer tile_layer(map_size.x, map_size.y, z_index);
                     tile_layer.set_data(res_tiles);
 
-                    _layers.push_back(tile_layer);
+                    _layers.push_back(std::make_unique<TileLayer>(tile_layer));
                     z_index++;
                 }
             }
@@ -56,7 +56,7 @@ namespace engine::tilemap
                 auto tile_width = tileset.getTileSize().x;
                 auto tile_height = tileset.getTileSize().y;
 
-                _tilesets.push_back(Tileset(*tileset_texture, first_gid, last_gid, tile_width, tile_height));
+                _tilesets.push_back(std::make_unique<Tileset>(*tileset_texture, first_gid, last_gid, tile_width, tile_height));
             }
             return true;
         }

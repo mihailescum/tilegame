@@ -11,8 +11,6 @@
 #include "core/scene.hpp"
 #include "core/shader.hpp"
 #include "core/spritebatch.hpp"
-#include "core/spriteinfo.hpp"
-#include "core/spritesheet.hpp"
 #include "core/texture2d.hpp"
 #include "core/viewport.hpp"
 #include "core/window.hpp"
@@ -23,3 +21,6 @@
 #include "tilemap/tileset.hpp"
 
 #include "sprite/spritesheet.hpp"
+#include "sprite/sprite.hpp"
+#include "sprite/spriteframe.hpp"
+#include "sprite/spritestate.hpp"

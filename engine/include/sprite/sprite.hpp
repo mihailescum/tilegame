@@ -19,8 +19,11 @@ namespace engine::sprite
         std::unordered_map<std::string, SpriteState> _states;
 
     public:
+        Sprite() : Sprite("", nullptr) {}
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
         void parse(const pugi::xml_node &node, const pugi::xml_node &root_node);
+
+        SpriteState &operator[](std::string name) { return _states[name]; }
     };
 } // namespace engine::sprite

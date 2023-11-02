@@ -4,8 +4,8 @@ namespace engine::sprite
 {
     struct SpriteFrame
     {
-        int id;
-        SpriteFrame(int id) : id(id) {}
+        unsigned int id;
+        SpriteFrame(unsigned int id) : id(id) {}
     };
 
 } // namespace engine::sprite
