@@ -1,53 +1,37 @@
 #include "sprite/sprite.hpp"
 
-#include <sstream>
+#include "sprite/spritesheet.hpp"
 
 namespace engine::sprite
 {
-    void Sprite::parse(const pugi::xml_node &node, const pugi::xml_node &root_node)
+    void Sprite::parse(const pugi::xml_node &node)
     {
-        auto state_nodes = node.children("wangcolor");
-        std::vector<SpriteState> sprite_states;
-        for (auto state_node : state_nodes)
+        _name = node.attribute("type").as_string();
+
+        const auto state_node = node.child("properties").find_child_by_attribute("property", "name", "state");
+        const std::string state_name = state_node.attribute("value").as_string();
+
+        if (_states.find(state_name) != _states.end())
         {
-            std::string name = state_node.attribute("name").as_string();
-            SpriteState state(name);
-            sprite_states.push_back(state);
+            throw "The state '" + state_name + "' already exists!";
         }
 
-        auto tile_nodes = root_node.children("tile");
-        // TODO use tile_nodes information to parse animations
+        auto &state = _states[state_name];
+        state.name = state_name;
 
-        auto frame_nodes = node.children("wangtile");
-        for (auto frame_node : frame_nodes)
+        const auto &frame_nodes = node.child("animation").children("frame");
+        for (const auto &frame_node : frame_nodes)
         {
-            int id = frame_node.attribute("tileid").as_int();
-            SpriteFrame frame(id);
-
-            unsigned int state_id = 0;
-            std::stringstream ss(frame_node.attribute("wangid").as_string());
-            for (unsigned int i; ss >> i;)
+            int frame_id = frame_node.attribute("tileid").as_int();
+            double frame_duration = frame_node.attribute("duration").as_double() / 1000.0;
+            engine::Rectangle source_rect = engine::Rectangle::EMPTY;
+            if (_sprite_sheet)
             {
-                if (i > 0)
-                {
-                    state_id = i;
-                    break;
-                }
-                if (ss.peek() == ',')
-                {
-                    ss.ignore();
-                }
+                source_rect = _sprite_sheet->get_source_rect(frame_id);
             }
 
-            if (state_id > 0)
-            {
-                sprite_states[state_id - 1].frames.push_back(frame);
-            }
-        }
-
-        for (auto state : sprite_states)
-        {
-            _states[state.name] = state;
+            SpriteFrame frame(frame_id, frame_duration, source_rect);
+            state.frames.push_back(frame);
         }
     }
 } // namespace engine::sprite

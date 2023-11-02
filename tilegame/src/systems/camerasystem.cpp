@@ -21,7 +21,7 @@ namespace tilegame::systems
             1.0,
             glm::mat4(1.0),
             _scene.get_game().get_graphics_device().get_viewport());
-        _registry.emplace<tilegame::components::Transform>(camera_entity, glm::vec2(100.0, 100.0), glm::vec2(0.0));
+        _registry.emplace<tilegame::components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
         entt::entity player1_entity = entt::null;
         auto players = _registry.view<tilegame::components::Player>();

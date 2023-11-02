@@ -14,6 +14,7 @@
 #include "systems/playersystem.hpp"
 #include "systems/movementsystem.hpp"
 #include "systems/scenegraphsystem.hpp"
+#include "systems/animationsystem.hpp"
 
 namespace tilegame
 {
@@ -33,6 +34,7 @@ namespace tilegame::worldscene
         tilegame::systems::PlayerSystem _system_player;
         tilegame::systems::MovementSystem _system_movement;
         tilegame::systems::SceneGraphSystem _system_scenegraph;
+        tilegame::systems::AnimationSystem _system_animation;
 
     public:
         WorldScene(Tilegame &game);

@@ -5,6 +5,7 @@
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/scenenode.hpp"
+#include "components/animation.hpp"
 
 namespace tilegame::worldscene
 {
@@ -15,7 +16,8 @@ namespace tilegame::worldscene
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
           _system_movement(*this, _registry),
-          _system_scenegraph(*this, _registry)
+          _system_scenegraph(*this, _registry),
+          _system_animation(*this, _registry)
     {
     }
 
@@ -23,6 +25,7 @@ namespace tilegame::worldscene
     {
         _system_scenegraph.initialize();
         _system_render.initialize();
+        _system_animation.initialize();
 
         _system_player.initialize();
         _system_camera.initialize();
@@ -48,10 +51,10 @@ namespace tilegame::worldscene
         const engine::Texture2D &characters_texture = characters->get_texture();
 
         const engine::sprite::Sprite &soldier_sprite = (*characters)["soldier"];
-        const auto soldier_source_rect = characters->get_source_rect(soldier_sprite["right_walking"].frames[0].id);
 
         _registry.emplace<tilegame::components::Renderable2D>(soldier_entity);
-        _registry.emplace<tilegame::components::Sprite>(soldier_entity, characters_texture, soldier_source_rect);
+        const auto &soldier_animation_component = _registry.emplace<tilegame::components::Animation>(soldier_entity, 0.0, 0, soldier_sprite["right_walking"].frames);
+        _registry.emplace<tilegame::components::Sprite>(soldier_entity, characters_texture, soldier_animation_component.frames[soldier_animation_component.current_frame_idx].source_rect);
     }
 
     void WorldScene::unload_content()
@@ -64,6 +67,7 @@ namespace tilegame::worldscene
         _system_player.update(update_time);
         _system_movement.update(update_time);
 
+        _system_animation.update(update_time);
         _system_scenegraph.update(update_time);
 
         _system_camera.update(update_time);

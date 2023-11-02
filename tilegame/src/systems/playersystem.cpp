@@ -9,6 +9,7 @@
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/sprite.hpp"
+#include "components/animation.hpp"
 
 namespace tilegame::systems
 {
@@ -36,10 +37,10 @@ namespace tilegame::systems
         const engine::Texture2D &characters_texture = characters->get_texture();
 
         const engine::sprite::Sprite &player1_sprite = (*characters)["man"];
-        const auto player1_source_rect = characters->get_source_rect(player1_sprite["down_walking"].frames[0].id);
 
+        const auto &player1_animation_component = _registry.emplace<tilegame::components::Animation>(_player1_entity, 0.0, 0, player1_sprite["down_walking"].frames);
         _registry.emplace<tilegame::components::Renderable2D>(_player1_entity);
-        _registry.emplace<tilegame::components::Sprite>(_player1_entity, characters_texture, player1_source_rect);
+        _registry.emplace<tilegame::components::Sprite>(_player1_entity, characters_texture, player1_animation_component.frames[player1_animation_component.current_frame_idx].source_rect);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)
@@ -89,6 +90,8 @@ namespace tilegame::systems
         {
             result |= tilegame::components::Movement::Down;
         }
+
+        // For some reason, when Up + Down are pressed, and later Left as well, GLFW does not recognize that Left is pressed.
 
         if ((result & tilegame::components::Movement::Left) && (result & tilegame::components::Movement::Right))
         {

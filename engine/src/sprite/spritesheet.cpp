@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "sprite/spritesheet.hpp"
 #include "sprite/spritestate.hpp"
 #include "sprite/spriteframe.hpp"
 
@@ -49,20 +48,26 @@ namespace engine::sprite
 
         int columns = node.attribute("columns").as_int();
 
-        auto image_node = node.child("image");
-        std::filesystem::path image_source = _resource_path.parent_path();
-        image_source /= image_node.attribute("source").as_string();
-        std::string image_name = image_source.filename();
+        const auto image_node = node.child("image");
+        const std::filesystem::path image_source = _resource_path.parent_path() / image_node.attribute("source").as_string();
+        const std::string image_name = image_source.filename();
 
         _texture = resource_manager.load_resource<engine::Texture2D>(image_name, image_source);
 
-        auto sprites_nodes = node.child("wangsets").children();
-        for (auto sprite_node : sprites_nodes)
+        const auto tile_nodes = node.children("tile");
+        for (const auto &tile_node : tile_nodes)
         {
-            std::string name = sprite_node.attribute("name").as_string();
-            Sprite sprite(name, this);
-            sprite.parse(sprite_node, node);
-            _sprites[name] = sprite;
+            // Skip if we don't have animation data
+            const auto &animation_node = tile_node.child("animation");
+            if (!animation_node)
+            {
+                continue;
+            }
+
+            const std::string name = tile_node.attribute("type").as_string();
+            Sprite &sprite = _sprites[name];
+            sprite.set_sprite_sheet(this);
+            sprite.parse(tile_node);
         }
     }
 } // namespace engine::sprite
