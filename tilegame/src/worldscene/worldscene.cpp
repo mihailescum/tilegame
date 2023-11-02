@@ -2,6 +2,10 @@
 
 #include "tilegame.hpp"
 
+#include "components/renderable2d.hpp"
+#include "components/ordering.hpp"
+#include "components/scenenode.hpp"
+
 namespace tilegame::worldscene
 {
     WorldScene::WorldScene(Tilegame &game)
@@ -28,6 +32,26 @@ namespace tilegame::worldscene
     {
         _system_player.load_content();
         _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
+
+        // TODO Remove this
+
+        const auto soldier_entity = _registry.create();
+        _registry.emplace<tilegame::components::Transform>(soldier_entity, glm::vec2(300, 300), glm::vec2(0.0));
+        _registry.emplace<tilegame::components::Ordering>(soldier_entity, 3.0);
+        _registry.emplace<tilegame::components::Movement>(soldier_entity, tilegame::components::Movement::None, 100.0);
+
+        const tilegame::SceneGraphData soldier_scenedata(soldier_entity);
+        tilegame::SceneGraphNode &soldier_scenenode = get_scene_graph_root().add_child(soldier_scenedata);
+        _registry.emplace<tilegame::components::SceneNode>(soldier_entity, &soldier_scenenode);
+
+        const engine::sprite::SpriteSheet *characters = _game.get_resource_manager().load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tsx");
+        const engine::Texture2D &characters_texture = characters->get_texture();
+
+        const engine::sprite::Sprite &soldier_sprite = (*characters)["soldier"];
+        const auto soldier_source_rect = characters->get_source_rect(soldier_sprite["right_walking"].frames[0].id);
+
+        _registry.emplace<tilegame::components::Renderable2D>(soldier_entity);
+        _registry.emplace<tilegame::components::Sprite>(soldier_entity, characters_texture, soldier_source_rect);
     }
 
     void WorldScene::unload_content()
