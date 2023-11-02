@@ -2,7 +2,8 @@
 
 namespace tilegame::components
 {
-    struct Renderable2D
+    struct Ordering
     {
+        float z;
     };
 } // namespace tilegame

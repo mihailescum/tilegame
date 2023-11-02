@@ -45,7 +45,7 @@ namespace engine::sprite
     void SpriteSheet::parse(const pugi::xml_node &node, ResourceManager &resource_manager)
     {
         _tile_width = node.attribute("tilewidth").as_int();
-        _tile_height = node.attribute("tileheigt").as_int();
+        _tile_height = node.attribute("tileheight").as_int();
 
         int columns = node.attribute("columns").as_int();
 

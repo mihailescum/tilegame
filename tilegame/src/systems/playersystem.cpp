@@ -7,6 +7,8 @@
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
 #include "components/renderable2d.hpp"
+#include "components/ordering.hpp"
+#include "components/sprite.hpp"
 
 namespace tilegame::systems
 {
@@ -19,6 +21,7 @@ namespace tilegame::systems
         _player1_entity = _registry.create();
         _registry.emplace<tilegame::components::Player>(_player1_entity, 1);
         _registry.emplace<tilegame::components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
+        _registry.emplace<tilegame::components::Ordering>(_player1_entity, 2.0);
         _registry.emplace<tilegame::components::Movement>(_player1_entity, tilegame::components::Movement::None, 200.0);
 
         const tilegame::SceneGraphData player1_scenedata(_player1_entity);
@@ -35,7 +38,8 @@ namespace tilegame::systems
         const engine::sprite::Sprite &player1_sprite = (*characters)["man"];
         const auto player1_source_rect = characters->get_source_rect(player1_sprite["down_walking"].frames[0].id);
 
-        _registry.emplace<tilegame::components::Renderable2D>(_player1_entity, characters_texture, player1_source_rect);
+        _registry.emplace<tilegame::components::Renderable2D>(_player1_entity);
+        _registry.emplace<tilegame::components::Sprite>(_player1_entity, characters_texture, player1_source_rect);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)

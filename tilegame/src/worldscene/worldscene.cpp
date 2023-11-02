@@ -18,6 +18,7 @@ namespace tilegame::worldscene
     void WorldScene::initialize()
     {
         _system_scenegraph.initialize();
+        _system_render.initialize();
 
         _system_player.initialize();
         _system_camera.initialize();
@@ -26,7 +27,6 @@ namespace tilegame::worldscene
     void WorldScene::load_content()
     {
         _system_player.load_content();
-
         _system_map.create_map_entity_from_file("map1", "content/maps/map1.tmx");
     }
 
