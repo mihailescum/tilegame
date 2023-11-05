@@ -60,7 +60,8 @@ namespace tilegame::systems
         // TODO can we make this more efficient somehow?
         _registry.sort<tilegame::components::Ordering>(
             [](const auto &lhs, const auto &rhs)
-            { return lhs.z < rhs.z; });
+            { return lhs.z < rhs.z; },
+            entt::insertion_sort());
         _registry.sort<tilegame::components::Renderable2D, tilegame::components::Ordering>();
     }
 
