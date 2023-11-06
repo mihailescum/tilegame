@@ -37,7 +37,7 @@ namespace engine
             if (this->_resources.count(name) == 0)
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
-                res->set_resource_id(this->_resources.size());
+                res->set_resource_id(_resources.size());
                 res->set_resource_path(std::filesystem::absolute(path));
                 res->set_resource_name(name);
 
@@ -47,17 +47,29 @@ namespace engine
                 va_end(args);
 
                 if (loading_succeded)
-                    this->_resources.emplace(name, std::move(res));
+                {
+                    _resources.emplace(name, std::move(res));
+                }
             }
 
-            if (this->_resources.count(name) != 0)
+            if (_resources.count(name) != 0)
             {
-                return (T *)this->_resources[name].get();
+                return static_cast<T *>(_resources[name].get());
             }
             else
             {
                 return nullptr;
             }
+        }
+
+        template <typename T>
+        T &emplace_resource(std::string name, const T &resource)
+        {
+            static_assert(std::is_base_of<Resource, T>::value);
+            static_assert(std::is_copy_constructible<T>::value);
+
+            _resources.emplace(name, std::unique_ptr<T>(new T(resource)));
+            return static_cast<T &>(*_resources[name]);
         }
     };
 } // namespace engine

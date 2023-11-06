@@ -11,6 +11,11 @@ namespace engine::tilemap
     {
     }
 
+    bool Tileset::load_resource(ResourceManager &resource_manager, va_list args)
+    {
+        return false;
+    }
+
     bool Tileset::has_tile(unsigned int id) const
     {
         return id >= _first_GID && id <= _last_GID;

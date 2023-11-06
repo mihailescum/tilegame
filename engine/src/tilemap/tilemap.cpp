@@ -9,6 +9,10 @@
 #include "core/resourcemanager.hpp"
 #include "core/texture2d.hpp"
 
+/*#include "tilemap/tileobject.hpp"
+
+#include "sprite/spritesheet.hpp"*/
+
 namespace engine::tilemap
 {
     bool TileMap::load_resource(ResourceManager &resource_manager, va_list args)
@@ -18,6 +22,23 @@ namespace engine::tilemap
         if (map.load(_resource_path))
         {
             const auto map_size = map.getTileCount();
+
+            const auto &tilesets = map.getTilesets();
+            for (const tmx::Tileset &tileset : tilesets)
+            {
+                const auto tileset_name = tileset.getName();
+                const auto tileset_image_path = tileset.getImagePath();
+                auto first_gid = tileset.getFirstGID();
+                auto last_gid = tileset.getLastGID();
+                auto tileset_texture = resource_manager.load_resource<Texture2D>(tileset_name, tileset_image_path);
+                auto tile_width = tileset.getTileSize().x;
+                auto tile_height = tileset.getTileSize().y;
+
+                Tileset tileset_object(*tileset_texture, first_gid, last_gid, tile_width, tile_height);
+                Tileset &tileset_resource = resource_manager.emplace_resource<Tileset>(tileset_name + "_tileset", tileset_object);
+
+                _tilesets.push_back(&tileset_resource);
+            }
 
             const auto &res_layers = map.getLayers();
             int z_index = 0;
@@ -29,7 +50,25 @@ namespace engine::tilemap
                     const auto &objects = objectLayer.getObjects();
                     for (const auto &object : objects)
                     {
-                        // do stuff with object properties
+                        int tile_id = object.getTileID();
+                        const Tileset *tileset = nullptr;
+                        for (const auto &t : _tilesets)
+                        {
+                            if (t->has_tile(tile_id))
+                            {
+                                tileset = t;
+                                break;
+                            }
+                        }
+
+                        if (tileset)
+                        {
+                            // We have to interpret the object as a sprite and the tileset as its sprite sheet
+                        }
+                        else
+                        {
+                            // TODO
+                        }
                     }
                 }
                 else if (res_layer->getType() == tmx::Layer::Type::Tile)
@@ -43,20 +82,6 @@ namespace engine::tilemap
                     _layers.push_back(std::make_unique<TileLayer>(tile_layer));
                     z_index++;
                 }
-            }
-
-            const auto &tilesets = map.getTilesets();
-            for (const auto &tileset : tilesets)
-            {
-                const auto tileset_name = tileset.getName();
-                const auto tileset_image_path = tileset.getImagePath();
-                auto first_gid = tileset.getFirstGID();
-                auto last_gid = tileset.getLastGID();
-                auto tileset_texture = resource_manager.load_resource<Texture2D>(tileset_name, tileset_image_path);
-                auto tile_width = tileset.getTileSize().x;
-                auto tile_height = tileset.getTileSize().y;
-
-                _tilesets.push_back(std::make_unique<Tileset>(*tileset_texture, first_gid, last_gid, tile_width, tile_height));
             }
             return true;
         }
