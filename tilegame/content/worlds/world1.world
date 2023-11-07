@@ -1,14 +1,14 @@
 {
     "maps": [
         {
-            "fileName": "../maps/map2.tmx",
+            "fileName": "../maps/map2.tmj",
             "height": 640,
             "width": 960,
             "x": -480,
             "y": 320
         },
         {
-            "fileName": "../maps/map1.tmx",
+            "fileName": "../maps/map1.tmj",
             "height": 3200,
             "width": 3200,
             "x": 480,

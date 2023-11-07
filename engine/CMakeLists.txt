@@ -47,6 +47,9 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/j
 # Include pugixml Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/pugixml)
 
+# Include Tileson Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tileson)
+
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 
