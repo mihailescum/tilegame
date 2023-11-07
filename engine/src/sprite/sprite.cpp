@@ -4,34 +4,33 @@
 
 namespace engine::sprite
 {
-    void Sprite::parse(const pugi::xml_node &node)
+    /*void Sprite::parse(const pugi::xml_node &node)
     {
         _name = node.attribute("type").as_string();
 
         const auto state_node = node.child("properties").find_child_by_attribute("property", "name", "state");
         const std::string state_name = state_node.attribute("value").as_string();
 
-        if (_states.find(state_name) != _states.end())
-        {
-            throw "The state '" + state_name + "' already exists!";
-        }
-
         auto &state = _states[state_name];
         state.name = state_name;
 
-        const auto &frame_nodes = node.child("animation").children("frame");
-        for (const auto &frame_node : frame_nodes)
+        const auto &animation_node = node.child("animation");
+        if (animation_node)
         {
-            int frame_id = frame_node.attribute("tileid").as_int();
-            double frame_duration = frame_node.attribute("duration").as_double() / 1000.0;
-            engine::Rectangle source_rect = engine::Rectangle::EMPTY;
-            if (_sprite_sheet)
+            const auto &frame_nodes = animation_node.children("frame");
+            for (const auto &frame_node : frame_nodes)
             {
-                source_rect = _sprite_sheet->get_source_rect(frame_id);
-            }
+                int frame_id = frame_node.attribute("tileid").as_int();
+                double frame_duration = frame_node.attribute("duration").as_double() / 1000.0;
+                engine::Rectangle source_rect = engine::Rectangle::EMPTY;
+                if (_sprite_sheet)
+                {
+                    source_rect = _sprite_sheet->get_source_rect(frame_id);
+                }
 
-            SpriteFrame frame(frame_id, frame_duration, source_rect);
-            state.frames.push_back(frame);
+                SpriteFrame frame(frame_id, frame_duration, source_rect);
+                state.frames.push_back(frame);
+            }
         }
-    }
+    }*/
 } // namespace engine::sprite

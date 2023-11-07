@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include <tmxlite/Map.hpp>
-#include <tmxlite/TileLayer.hpp>
+#include "nlohmann/json.hpp"
+#include "tileson/tileson.hpp"
 
 #include "core/log.hpp"
 #include "core/resourcemanager.hpp"
@@ -17,19 +17,22 @@ namespace engine::tilemap
 {
     bool TileMap::load_resource(ResourceManager &resource_manager, va_list args)
     {
-        // From the documentation: "tmx::map is not made to be kept around"!
-        tmx::Map map;
-        if (map.load(_resource_path))
-        {
-            const auto map_size = map.getTileCount();
+        tson::Tileson t(std::make_unique<tson::NlohmannJson>());
+        std::unique_ptr<tson::Map> map = t.parse(_resource_path);
 
-            const auto &tilesets = map.getTilesets();
-            for (const tmx::Tileset &tileset : tilesets)
+        std::filesystem::path working_dir = _resource_path.parent_path();
+
+        if (map->getStatus() == tson::ParseStatus::OK)
+        {
+            const auto map_size = map->getSize();
+
+            const auto &tilesets = map->getTilesets();
+            for (const auto &tileset : tilesets)
             {
                 const auto tileset_name = tileset.getName();
-                const auto tileset_image_path = tileset.getImagePath();
-                auto first_gid = tileset.getFirstGID();
-                auto last_gid = tileset.getLastGID();
+                const auto tileset_image_path = working_dir / tileset.getImagePath();
+                auto first_gid = tileset.getFirstgid();
+                auto last_gid = first_gid + tileset.getTileCount();
                 auto tileset_texture = resource_manager.load_resource<Texture2D>(tileset_name, tileset_image_path);
                 auto tile_width = tileset.getTileSize().x;
                 auto tile_height = tileset.getTileSize().y;
@@ -40,13 +43,13 @@ namespace engine::tilemap
                 _tilesets.push_back(&tileset_resource);
             }
 
-            const auto &res_layers = map.getLayers();
+            auto &res_layers = map->getLayers();
             int z_index = 0;
-            for (const auto &res_layer : res_layers)
+            for (auto &res_layer : res_layers)
             {
-                if (res_layer->getType() == tmx::Layer::Type::Object)
+                if (res_layer.getType() == tson::LayerType::ObjectGroup)
                 {
-                    const auto &objectLayer = res_layer->getLayerAs<tmx::ObjectGroup>();
+                    /*const auto &objectLayer = res_layer->getLayerAs<tmx::ObjectGroup>();
                     const auto &objects = objectLayer.getObjects();
                     for (const auto &object : objects)
                     {
@@ -69,15 +72,28 @@ namespace engine::tilemap
                         {
                             // TODO
                         }
-                    }
+                    }*/
                 }
-                else if (res_layer->getType() == tmx::Layer::Type::Tile)
+                else if (res_layer.getType() == tson::LayerType::TileLayer)
                 {
-                    const auto &res_tile_layer = res_layer->getLayerAs<tmx::TileLayer>();
-                    const auto &res_tiles = res_tile_layer.getTiles();
+                    std::vector<Tile> tile_data(map_size.x * map_size.y);
+                    for (int x = 0; x < map_size.x; ++x)
+                    {
+                        for (int y = 0; y < map_size.y; ++y)
+                        {
+                            const tson::Tile *res_tile_data = res_layer.getTileData(x, y);
+
+                            int id = 0;
+                            if (res_tile_data)
+                            {
+                                id = res_tile_data->getId();
+                            }
+                            tile_data[x + map_size.x * y].ID = id;
+                        }
+                    }
 
                     TileLayer tile_layer(map_size.x, map_size.y, z_index);
-                    tile_layer.set_data(res_tiles);
+                    tile_layer.set_data(tile_data);
 
                     _layers.push_back(std::make_unique<TileLayer>(tile_layer));
                     z_index++;

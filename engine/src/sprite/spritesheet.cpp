@@ -10,7 +10,7 @@ namespace engine::sprite
 {
     bool SpriteSheet::load_resource(ResourceManager &resource_manager, va_list args)
     {
-        pugi::xml_document doc;
+        /*pugi::xml_document doc;
         auto result = doc.load_file(_resource_path.c_str());
         if (!result)
         {
@@ -23,7 +23,7 @@ namespace engine::sprite
             return false;
         }
 
-        parse(tileset_node, resource_manager);
+        parse(tileset_node, resource_manager);*/
 
         return true;
     }
@@ -41,7 +41,7 @@ namespace engine::sprite
         return result;
     }
 
-    void SpriteSheet::parse(const pugi::xml_node &node, ResourceManager &resource_manager)
+    /*void SpriteSheet::parse(const pugi::xml_node &node, ResourceManager &resource_manager)
     {
         _tile_width = node.attribute("tilewidth").as_int();
         _tile_height = node.attribute("tileheight").as_int();
@@ -69,5 +69,5 @@ namespace engine::sprite
             sprite.set_sprite_sheet(this);
             sprite.parse(tile_node);
         }
-    }
+    }*/
 } // namespace engine::sprite

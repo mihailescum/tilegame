@@ -17,7 +17,7 @@ namespace tilegame::systems
     void MapSystem::load_content()
     {
         auto &resource_manager = _scene.get_game().get_resource_manager();
-        const engine::tilemap::TileMap &map = *resource_manager.load_resource<engine::tilemap::TileMap>("map1", "content/maps/map1.tmx");
+        const engine::tilemap::TileMap &map = *resource_manager.load_resource<engine::tilemap::TileMap>("map1", "content/maps/map1.tmj");
         create_map_entity(map);
     }
 
