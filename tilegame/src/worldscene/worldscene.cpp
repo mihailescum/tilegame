@@ -34,9 +34,9 @@ namespace tilegame::worldscene
     void WorldScene::load_content()
     {
         _system_map.load_content();
-        //_system_player.load_content();
+        _system_player.load_content();
 
-        /*// TODO Remove this
+        // TODO Remove this
 
         const auto soldier_entity = _registry.create();
         _registry.emplace<tilegame::components::Transform>(soldier_entity, glm::vec2(300, 300), glm::vec2(0.0));
@@ -55,7 +55,6 @@ namespace tilegame::worldscene
         _registry.emplace<tilegame::components::Renderable2D>(soldier_entity);
         const auto &soldier_animation_component = _registry.emplace<tilegame::components::Animation>(soldier_entity, 0.0, 0, soldier_sprite["right_walking"].frames);
         _registry.emplace<tilegame::components::Sprite>(soldier_entity, characters_texture, soldier_animation_component.frames[soldier_animation_component.current_frame_idx].source_rect);
-    */
     }
 
     void WorldScene::unload_content()

@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "tileson/tileson.hpp"
+
 #include "sprite/spritestate.hpp"
 
 namespace engine::sprite
@@ -20,7 +22,7 @@ namespace engine::sprite
         Sprite() : Sprite("", nullptr) {}
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
-        // void parse(const pugi::xml_node &node);
+        void parse(const tson::Tile &data);
         void set_sprite_sheet(SpriteSheet *const sprite_sheet) { _sprite_sheet = sprite_sheet; }
 
         const SpriteState &operator[](std::string name) const { return _states.at(name); }

@@ -4,33 +4,32 @@
 
 namespace engine::sprite
 {
-    /*void Sprite::parse(const pugi::xml_node &node)
+    void Sprite::parse(const tson::Tile &data)
     {
-        _name = node.attribute("type").as_string();
+        _name = data.getType();
 
-        const auto state_node = node.child("properties").find_child_by_attribute("property", "name", "state");
-        const std::string state_name = state_node.attribute("value").as_string();
-
-        auto &state = _states[state_name];
-        state.name = state_name;
-
-        const auto &animation_node = node.child("animation");
-        if (animation_node)
+        if (_sprite_sheet)
         {
-            const auto &frame_nodes = animation_node.children("frame");
-            for (const auto &frame_node : frame_nodes)
-            {
-                int frame_id = frame_node.attribute("tileid").as_int();
-                double frame_duration = frame_node.attribute("duration").as_double() / 1000.0;
-                engine::Rectangle source_rect = engine::Rectangle::EMPTY;
-                if (_sprite_sheet)
-                {
-                    source_rect = _sprite_sheet->get_source_rect(frame_id);
-                }
+            const std::string state_name = const_cast<tson::Tile &>(data).get<std::string>("state");
 
-                SpriteFrame frame(frame_id, frame_duration, source_rect);
-                state.frames.push_back(frame);
+            auto &state = _states[state_name];
+            state.name = state_name;
+
+            const auto &animation = const_cast<tson::Tile &>(data).getAnimation();
+            if (animation.size() > 0)
+            {
+                const auto &tson_frames = animation.getFrames();
+                for (const auto &tson_frame : tson_frames)
+                {
+                    int frame_id = tson_frame.getTileId() - 1; // Tileson starts the IDs at 1, but we start at 0.
+                    double frame_duration = tson_frame.getDuration() / 1000.0;
+
+                    const auto &source_rect = _sprite_sheet->get_source_rect(frame_id);
+
+                    SpriteFrame frame(frame_id, frame_duration, source_rect);
+                    state.frames.push_back(frame);
+                }
             }
         }
-    }*/
+    }
 } // namespace engine::sprite

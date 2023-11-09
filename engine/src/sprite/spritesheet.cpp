@@ -42,19 +42,18 @@ namespace engine::sprite
         const auto &tiles = const_cast<tson::Tileset &>(data).getTiles();
         for (const auto &tile : tiles)
         {
-            const auto anima = const_cast<tson::Tile &>(tile).getAnimation();
-            int x;
+            const auto &animation = const_cast<tson::Tile &>(tile).getAnimation();
+
             // Skip if we don't have animation data
-            /*const auto &animation_node = tile_node.child("animation");
-            if (!animation_node)
+            if (animation.size() == 0)
             {
                 continue;
             }
 
-            const std::string name = tile_node.attribute("type").as_string();
+            const std::string name = tile.getType();
             Sprite &sprite = _sprites[name];
             sprite.set_sprite_sheet(this);
-            sprite.parse(tile_node);*/
+            sprite.parse(tile);
         }
     }
 
