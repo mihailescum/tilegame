@@ -28,6 +28,7 @@ namespace engine
         virtual void unload_resource() override;
 
         void create_texture_from_raw_data(int width, int height, unsigned char *data);
+
         /*
             Activate the texture in openGL at the specified unit
         */

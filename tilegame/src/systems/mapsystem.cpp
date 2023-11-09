@@ -69,6 +69,7 @@ namespace tilegame::systems
             for (int y = 0; y < height; ++y)
             {
                 const auto &tile = tiles[x + width * y];
+
                 const engine::tilemap::Tileset *tileset = nullptr;
                 for (const auto tileset_entity : tileset_entities)
                 {

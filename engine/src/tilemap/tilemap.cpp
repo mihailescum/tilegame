@@ -18,36 +18,38 @@ namespace engine::tilemap
     bool TileMap::load_resource(ResourceManager &resource_manager, va_list args)
     {
         tson::Tileson t(std::make_unique<tson::NlohmannJson>());
-        std::unique_ptr<tson::Map> map = t.parse(_resource_path);
+        std::unique_ptr<tson::Map> tson_map = t.parse(_resource_path);
 
-        std::filesystem::path working_dir = _resource_path.parent_path();
-
-        if (map->getStatus() == tson::ParseStatus::OK)
+        if (tson_map->getStatus() == tson::ParseStatus::OK)
         {
-            const auto map_size = map->getSize();
+            const auto map_size = tson_map->getSize();
 
-            const auto &tilesets = map->getTilesets();
-            for (const auto &tileset : tilesets)
+            const auto &tson_tilesets = tson_map->getTilesets();
+            for (const auto &tson_tileset : tson_tilesets)
             {
-                const auto tileset_name = tileset.getName();
-                const auto tileset_image_path = working_dir / tileset.getImagePath();
-                auto first_gid = tileset.getFirstgid();
-                auto last_gid = first_gid + tileset.getTileCount();
-                auto tileset_texture = resource_manager.load_resource<Texture2D>(tileset_name, tileset_image_path);
-                auto tile_width = tileset.getTileSize().x;
-                auto tile_height = tileset.getTileSize().y;
+                const std::string tileset_name = tson_tileset.getName();
 
-                Tileset tileset_object(*tileset_texture, first_gid, last_gid, tile_width, tile_height);
-                Tileset &tileset_resource = resource_manager.emplace_resource<Tileset>(tileset_name + "_tileset", tileset_object);
+                // TODO Tileson does not provide access to the path, maybe backward engineer it
+                const std::string tileset_path = "";
 
-                _tilesets.push_back(&tileset_resource);
+                engine::sprite::SpriteSheet sprite_sheet;
+                sprite_sheet.set_resource_path(tileset_path);
+                sprite_sheet.parse(tson_tileset, resource_manager);
+
+                engine::sprite::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::sprite::SpriteSheet>(tileset_name, sprite_sheet);
+
+                auto first_gid = tson_tileset.getFirstgid();
+                auto last_gid = first_gid + tson_tileset.getTileCount();
+
+                std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, first_gid, last_gid);
+                _tilesets.push_back(std::move(tileset));
             }
 
-            auto &res_layers = map->getLayers();
+            auto &tson_layers = tson_map->getLayers();
             int z_index = 0;
-            for (auto &res_layer : res_layers)
+            for (auto &tson_layer : tson_layers)
             {
-                if (res_layer.getType() == tson::LayerType::ObjectGroup)
+                if (tson_layer.getType() == tson::LayerType::ObjectGroup)
                 {
                     /*const auto &objectLayer = res_layer->getLayerAs<tmx::ObjectGroup>();
                     const auto &objects = objectLayer.getObjects();
@@ -74,28 +76,28 @@ namespace engine::tilemap
                         }
                     }*/
                 }
-                else if (res_layer.getType() == tson::LayerType::TileLayer)
+                else if (tson_layer.getType() == tson::LayerType::TileLayer)
                 {
                     std::vector<Tile> tile_data(map_size.x * map_size.y);
                     for (int x = 0; x < map_size.x; ++x)
                     {
                         for (int y = 0; y < map_size.y; ++y)
                         {
-                            const tson::Tile *res_tile_data = res_layer.getTileData(x, y);
+                            const tson::Tile *tson_tile = tson_layer.getTileData(x, y);
 
                             int id = 0;
-                            if (res_tile_data)
+                            if (tson_tile)
                             {
-                                id = res_tile_data->getId();
+                                id = tson_tile->getId();
                             }
                             tile_data[x + map_size.x * y].ID = id;
                         }
                     }
 
-                    TileLayer tile_layer(map_size.x, map_size.y, z_index);
-                    tile_layer.set_data(tile_data);
+                    std::unique_ptr<TileLayer> tile_layer = std::make_unique<TileLayer>(map_size.x, map_size.y, z_index);
+                    tile_layer->set_data(tile_data);
 
-                    _layers.push_back(std::make_unique<TileLayer>(tile_layer));
+                    _layers.push_back(std::move(tile_layer));
                     z_index++;
                 }
             }

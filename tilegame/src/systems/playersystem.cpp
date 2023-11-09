@@ -33,7 +33,7 @@ namespace tilegame::systems
     void PlayerSystem::load_content()
     {
         auto &resource_manager = _scene.get_game().get_resource_manager();
-        const engine::sprite::SpriteSheet *characters = resource_manager.load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tsx");
+        const engine::sprite::SpriteSheet *characters = resource_manager.load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tsj");
         const engine::Texture2D &characters_texture = characters->get_texture();
 
         const engine::sprite::Sprite &player1_sprite = (*characters)["man"];

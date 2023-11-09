@@ -34,9 +34,9 @@ namespace tilegame::worldscene
     void WorldScene::load_content()
     {
         _system_map.load_content();
-        /*_system_player.load_content();
+        //_system_player.load_content();
 
-        // TODO Remove this
+        /*// TODO Remove this
 
         const auto soldier_entity = _registry.create();
         _registry.emplace<tilegame::components::Transform>(soldier_entity, glm::vec2(300, 300), glm::vec2(0.0));
