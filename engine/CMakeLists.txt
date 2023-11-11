@@ -57,8 +57,5 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 find_package(glfw3 3.3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
 
-# tmxlite
-target_link_libraries(${LIBRARY_NAME} PUBLIC tmxlite)
-
 # pugixml
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)

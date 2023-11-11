@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <string>
 
-#include "nlohmann/json.hpp"
 #include "tileson/tileson.hpp"
 
 #include "core/resource.hpp"

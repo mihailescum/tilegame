@@ -90,12 +90,6 @@
         }, 
         {
          "id":9,
-         "properties":[
-                {
-                 "name":"state",
-                 "type":"string",
-                 "value":"up_walking"
-                }],
          "type":"man"
         }, 
         {
@@ -119,12 +113,6 @@
         }, 
         {
          "id":17,
-         "properties":[
-                {
-                 "name":"state",
-                 "type":"string",
-                 "value":"right_walking"
-                }],
          "type":"man"
         }, 
         {
@@ -148,12 +136,6 @@
         }, 
         {
          "id":25,
-         "properties":[
-                {
-                 "name":"state",
-                 "type":"string",
-                 "value":"down_walking"
-                }],
          "type":"man"
         }, 
         {
@@ -177,12 +159,6 @@
         }, 
         {
          "id":33,
-         "properties":[
-                {
-                 "name":"state",
-                 "type":"string",
-                 "value":"left_walking"
-                }],
          "type":"man"
         }, 
         {

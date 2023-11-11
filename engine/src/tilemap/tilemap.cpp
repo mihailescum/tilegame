@@ -2,22 +2,19 @@
 
 #include <vector>
 
-#include "nlohmann/json.hpp"
 #include "tileson/tileson.hpp"
 
 #include "core/log.hpp"
 #include "core/resourcemanager.hpp"
 #include "core/texture2d.hpp"
 
-/*#include "tilemap/tileobject.hpp"
-
-#include "sprite/spritesheet.hpp"*/
+#include "tilemap/tileobject.hpp"
 
 namespace engine::tilemap
 {
     bool TileMap::load_resource(ResourceManager &resource_manager, va_list args)
     {
-        tson::Tileson t(std::make_unique<tson::NlohmannJson>());
+        tson::Tileson t(std::make_unique<tson::Json11>());
         std::unique_ptr<tson::Map> tson_map = t.parse(_resource_path);
 
         if (tson_map->getStatus() == tson::ParseStatus::OK)
@@ -39,7 +36,7 @@ namespace engine::tilemap
                 engine::sprite::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::sprite::SpriteSheet>(tileset_name, sprite_sheet);
 
                 auto first_gid = tson_tileset.getFirstgid();
-                auto last_gid = first_gid + tson_tileset.getTileCount();
+                auto last_gid = first_gid + tson_tileset.getTileCount() - 1;
 
                 std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, first_gid, last_gid);
                 _tilesets.push_back(std::move(tileset));
@@ -51,30 +48,42 @@ namespace engine::tilemap
             {
                 if (tson_layer.getType() == tson::LayerType::ObjectGroup)
                 {
-                    /*const auto &objectLayer = res_layer->getLayerAs<tmx::ObjectGroup>();
-                    const auto &objects = objectLayer.getObjects();
-                    for (const auto &object : objects)
+                    const auto &tson_objects = tson_layer.getObjects();
+                    for (const auto &tson_object : tson_objects)
                     {
-                        int tile_id = object.getTileID();
-                        const Tileset *tileset = nullptr;
-                        for (const auto &t : _tilesets)
+                        int tile_gid = tson_object.getGid();
+                        const tson::Tileset *tson_tileset = nullptr;
+                        for (const auto &tileset_local : tson_tilesets)
                         {
-                            if (t->has_tile(tile_id))
+                            auto first_gid = tileset_local.getFirstgid();
+                            auto last_gid = first_gid + tileset_local.getTileCount() - 1;
+
+                            if (tile_gid >= first_gid && tile_gid <= last_gid)
                             {
-                                tileset = t;
+                                tson_tileset = &tileset_local;
                                 break;
                             }
                         }
 
-                        if (tileset)
+                        if (tson_tileset)
                         {
                             // We have to interpret the object as a sprite and the tileset as its sprite sheet
+                            // Need to inherit class from tileset
+
+                            const std::string tileset_name = tson_tileset->getName();
+
+                            // We now that the sprite sheet is a resource, as it was loaded before
+                            const engine::sprite::SpriteSheet &sprite_sheet = resource_manager.get<engine::sprite::SpriteSheet>(tileset_name);
+
+                            // Some ID magic
+                            const int tile_id = tile_gid - tson_tileset->getFirstgid() + 1;
+                            const tson::Tile *tson_tile = const_cast<tson::Tileset *>(tson_tileset)->getTile(tile_id);
                         }
                         else
                         {
                             // TODO
                         }
-                    }*/
+                    }
                 }
                 else if (tson_layer.getType() == tson::LayerType::TileLayer)
                 {
@@ -88,7 +97,7 @@ namespace engine::tilemap
                             int id = 0;
                             if (tson_tile)
                             {
-                                id = tson_tile->getId();
+                                id = tson_tile->getGid();
                             }
                             tile_data[x + map_size.x * y].ID = id;
                         }

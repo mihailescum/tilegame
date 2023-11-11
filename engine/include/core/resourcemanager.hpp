@@ -63,6 +63,19 @@ namespace engine
         }
 
         template <typename T>
+        T &get(const std::string name)
+        {
+            if (_resources.count(name) != 0)
+            {
+                return static_cast<T &>(*_resources[name].get());
+            }
+            else
+            {
+                throw "Resource not found";
+            }
+        }
+
+        template <typename T>
         T &emplace_resource(const std::string name, const T &resource)
         {
             static_assert(std::is_base_of<Resource, T>::value);

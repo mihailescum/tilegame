@@ -10,7 +10,7 @@ namespace engine::sprite
 {
     bool SpriteSheet::load_resource(ResourceManager &resource_manager, va_list args)
     {
-        tson::NlohmannJson parser;
+        tson::Json11 parser;
 
         std::filesystem::path working_dir = _resource_path.parent_path();
 
