@@ -18,7 +18,7 @@ namespace engine
         GameTime _draw_time;
 
     protected:
-        Window window;
+        Window _window;
         GraphicsDevice _graphics_device;
         ResourceManager _resource_manager;
         double _time_step;
@@ -35,11 +35,11 @@ namespace engine
         virtual void resize(int width, int height);
 
     public:
-        Game(int window_width = DEFAULT_WINDOW_WIDTH, int window_height = DEFAULT_WINDOW_HEIGHT) : window(window_width, window_height), _graphics_device(window) {}
+        Game(int window_width = DEFAULT_WINDOW_WIDTH, int window_height = DEFAULT_WINDOW_HEIGHT) : _window(window_width, window_height), _graphics_device(_window) {}
         Game(const Game &game) = delete;
         virtual ~Game();
 
-        const Window &get_window() const { return window; }
+        const Window &get_window() const { return _window; }
         const GraphicsDevice &get_graphics_device() const { return _graphics_device; }
 
         ResourceManager &get_resource_manager() { return _resource_manager; }

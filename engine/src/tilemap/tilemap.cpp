@@ -51,38 +51,8 @@ namespace engine::tilemap
                     const auto &tson_objects = tson_layer.getObjects();
                     for (const auto &tson_object : tson_objects)
                     {
-                        int tile_gid = tson_object.getGid();
-                        const tson::Tileset *tson_tileset = nullptr;
-                        for (const auto &tileset_local : tson_tilesets)
-                        {
-                            auto first_gid = tileset_local.getFirstgid();
-                            auto last_gid = first_gid + tileset_local.getTileCount() - 1;
-
-                            if (tile_gid >= first_gid && tile_gid <= last_gid)
-                            {
-                                tson_tileset = &tileset_local;
-                                break;
-                            }
-                        }
-
-                        if (tson_tileset)
-                        {
-                            // We have to interpret the object as a sprite and the tileset as its sprite sheet
-                            // Need to inherit class from tileset
-
-                            const std::string tileset_name = tson_tileset->getName();
-
-                            // We now that the sprite sheet is a resource, as it was loaded before
-                            const engine::sprite::SpriteSheet &sprite_sheet = resource_manager.get<engine::sprite::SpriteSheet>(tileset_name);
-
-                            // Some ID magic
-                            const int tile_id = tile_gid - tson_tileset->getFirstgid() + 1;
-                            const tson::Tile *tson_tile = const_cast<tson::Tileset *>(tson_tileset)->getTile(tile_id);
-                        }
-                        else
-                        {
-                            // TODO
-                        }
+                        std::unique_ptr<TileObject> object = std::make_unique<TileObject>(tson_object);
+                        _objects.push_back(std::move(object));
                     }
                 }
                 else if (tson_layer.getType() == tson::LayerType::TileLayer)

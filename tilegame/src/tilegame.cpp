@@ -48,7 +48,7 @@ namespace tilegame
             _timer--;
             std::stringstream ss;
             ss << "FPS: " << _frames << " - UPS: " << _updates;
-            window.set_title(ss.str());
+            _window.set_title(ss.str());
             _updates = 0, _frames = 0;
         }
     }

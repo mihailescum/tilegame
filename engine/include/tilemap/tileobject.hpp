@@ -1,16 +1,15 @@
 #pragma once
 
-#include <any>
+#include "tileson/tileson.hpp"
 
 namespace engine::tilemap
 {
     struct TileObject
     {
     public:
-        int x;
-        int y;
-        int width;
-        int height;
-        std::any data;
+        tson::Object data;
+
+        TileObject() {}
+        TileObject(const tson::Object &data) : data(data) {}
     };
 } // namespace engine::tilemap

@@ -27,5 +27,10 @@ namespace engine::tilemap
 
         int get_tile_width() const { return _sprite_sheet.get_tile_width(); }
         int get_tile_height() const { return _sprite_sheet.get_tile_height(); }
+
+        int get_first_GID() const { return _first_GID; }
+        int get_last_GID() const { return _last_GID; }
+
+        std::string get_name() const { return _sprite_sheet.get_resource_name(); }
     };
 }

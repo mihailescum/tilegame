@@ -61,11 +61,11 @@ namespace engine
             begin_draw();
             draw(_draw_time); // - Render function
             end_draw();
-            glfwSwapBuffers(&window.get_native_window());
+            glfwSwapBuffers(&_window.get_native_window());
 
             last_draw = now;
 
-            _shouldRun = !window.should_close();
+            _shouldRun = !_window.should_close();
         }
 
         // Calls unload_content() of derived class
@@ -80,7 +80,7 @@ namespace engine
     {
         _time_step = 1.0 / 60;
 
-        int windowResult = window.initialize();
+        int windowResult = _window.initialize();
         if (!windowResult)
         {
             _shouldRun = false;
