@@ -132,7 +132,7 @@ namespace tilegame::systems
         const glm::vec2 sprite_position(data.getPosition().x, data.getPosition().y);
 
         int tile_gid = data.getGid();
-        const engine::tilemap::Tileset *tileset_of_sprite = nullptr;
+        engine::tilemap::Tileset *tileset_of_sprite = nullptr;
         for (const auto &tileset : tilesets)
         {
             auto first_gid = tileset->first_GID();
@@ -141,7 +141,6 @@ namespace tilegame::systems
             if (tile_gid >= first_gid && tile_gid <= last_gid)
             {
                 tileset_of_sprite = tileset.get();
-                tile_gid -= first_gid;
                 break;
             }
         }
@@ -161,15 +160,13 @@ namespace tilegame::systems
         const engine::sprite::SpriteSheet &sprite_sheet = resource_manager.get<engine::sprite::SpriteSheet>(tileset_name);
         const engine::Texture2D &texture = sprite_sheet.texture();
 
-        /* Some ID magic
-        const int tile_id = tile_gid - tson_tileset->getFirstgid() + 1;
-        const tson::Tile *tson_tile = const_cast<tson::Tileset *>(tson_tileset)->getTile(tile_id);
-
-        const auto &sprite_class_name = tson_tile->getClassType();
-        const auto &sprite_state_name = const_cast<tson::Tile *>(tson_tile)->get<std::string>("state");*/
+        auto *tile = tileset_of_sprite->tile(tile_gid);
+        const auto &sprite_class_name = tile->getClassType();
+        // TODO don't hardcode the string
+        const auto &sprite_state_name = tile->get<std::string>("state");
 
         // TODO get the actual data
-        const auto &sprite_state = sprite_sheet["soldier"]["up_walking"];
+        const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();
         _registry.emplace<tilegame::components::Transform>(entitiy, sprite_position, glm::vec2(0.0));

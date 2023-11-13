@@ -72,6 +72,66 @@
         {
          "animation":[
                 {
+                 "duration":200,
+                 "tileid":4
+                }],
+         "id":4,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"up_standing"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":5
+                }],
+         "id":5,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"right_standing"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":6
+                }],
+         "id":6,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"down_standing"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":7
+                }],
+         "id":7,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"left_standing"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
                  "duration":300,
                  "tileid":8
                 }, 
@@ -91,6 +151,29 @@
         {
          "id":9,
          "type":"man"
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":12
+                }, 
+                {
+                 "duration":200,
+                 "tileid":13
+                }],
+         "id":12,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"up_walking"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "id":13,
+         "type":"old_man"
         }, 
         {
          "animation":[
@@ -118,6 +201,29 @@
         {
          "animation":[
                 {
+                 "duration":200,
+                 "tileid":20
+                }, 
+                {
+                 "duration":200,
+                 "tileid":21
+                }],
+         "id":20,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"right_walking"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "id":21,
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
                  "duration":300,
                  "tileid":24
                 }, 
@@ -141,6 +247,29 @@
         {
          "animation":[
                 {
+                 "duration":200,
+                 "tileid":28
+                }, 
+                {
+                 "duration":200,
+                 "tileid":29
+                }],
+         "id":28,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"down_walking"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "id":29,
+         "type":"old_man"
+        }, 
+        {
+         "animation":[
+                {
                  "duration":300,
                  "tileid":32
                 }, 
@@ -160,6 +289,29 @@
         {
          "id":33,
          "type":"man"
+        }, 
+        {
+         "animation":[
+                {
+                 "duration":200,
+                 "tileid":36
+                }, 
+                {
+                 "duration":200,
+                 "tileid":37
+                }],
+         "id":36,
+         "properties":[
+                {
+                 "name":"state",
+                 "type":"string",
+                 "value":"left_walking"
+                }],
+         "type":"old_man"
+        }, 
+        {
+         "id":37,
+         "type":"old_man"
         }, 
         {
          "animation":[

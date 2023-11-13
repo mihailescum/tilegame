@@ -21,4 +21,18 @@ namespace engine::tilemap
         return result;
     }
 
-} // namespace engine::tilemap
+    tson::Tile *Tileset::tile(int gid)
+    {
+        if (has_tile(gid))
+        {
+            // Some ID magic
+            const int tile_id = gid - first_GID() + 1;
+            tson::Tile *tson_tile = _native_tileset.getTile(tile_id);
+            return tson_tile;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+} //

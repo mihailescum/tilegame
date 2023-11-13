@@ -4,18 +4,18 @@
 
 namespace engine::sprite
 {
-    void Sprite::parse(const tson::Tile &data)
+    void Sprite::parse(tson::Tile &data)
     {
         _name = data.getType();
 
         if (_sprite_sheet)
         {
-            const std::string state_name = const_cast<tson::Tile &>(data).get<std::string>("state");
+            const std::string state_name = data.get<std::string>("state");
 
             auto &state = _states[state_name];
             state.name = state_name;
 
-            const auto &animation = const_cast<tson::Tile &>(data).getAnimation();
+            const auto &animation = data.getAnimation();
             if (animation.size() > 0)
             {
                 const auto &tson_frames = animation.getFrames();

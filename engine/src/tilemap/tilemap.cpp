@@ -31,7 +31,9 @@ namespace engine::tilemap
 
                 engine::sprite::SpriteSheet sprite_sheet;
                 sprite_sheet.resource_path(tileset_path);
-                sprite_sheet.parse(tson_tileset, resource_manager);
+
+                // const_cast is okay, because the original tileset vector was not const
+                sprite_sheet.parse(const_cast<tson::Tileset &>(tson_tileset), resource_manager);
 
                 engine::sprite::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::sprite::SpriteSheet>(tileset_name, sprite_sheet);
 

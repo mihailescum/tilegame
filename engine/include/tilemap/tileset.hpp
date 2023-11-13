@@ -35,5 +35,7 @@ namespace engine::tilemap
         int last_GID() const { return _native_tileset.getFirstgid() + _native_tileset.getTileCount() - 1; }
 
         std::string name() const { return _sprite_sheet.resource_name(); }
+
+        tson::Tile *tile(int gid);
     };
 }
