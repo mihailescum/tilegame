@@ -18,10 +18,10 @@ namespace engine
         Scene(Game &game) : _game(game) {}
         Scene(const Scene &scene) = delete;
 
-        const Game &get_game() const { return _game; }
-        Game &get_game() { return _game; }
-        const SceneGraphNode<T> &get_scene_graph_root() const { return _scene_graph_root; }
-        SceneGraphNode<T> &get_scene_graph_root() { return _scene_graph_root; }
+        const Game &game() const { return _game; }
+        Game &game() { return _game; }
+        const SceneGraphNode<T> &scene_graph_root() const { return _scene_graph_root; }
+        SceneGraphNode<T> &scene_graph_root() { return _scene_graph_root; }
 
         virtual void initialize(){};
         virtual void load_content(){};

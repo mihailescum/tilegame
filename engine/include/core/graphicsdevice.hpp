@@ -11,8 +11,8 @@ namespace engine
     class GraphicsDevice
     {
     private:
-        GLbitfield clear_mask;
-        Viewport viewport;
+        GLbitfield _clear_mask;
+        Viewport _viewport;
 
     public:
         GraphicsDevice(const Window &window);
@@ -20,7 +20,8 @@ namespace engine
         int create();
         void clear(const Color &color) const;
 
-        const Viewport &get_viewport() const { return viewport; }
-        void set_viewport(const Viewport &viewport);
+        // TODO review if getter/setter are necessary
+        const Viewport &viewport() const { return _viewport; }
+        void viewport(const Viewport &viewport);
     };
 } // namespace engine

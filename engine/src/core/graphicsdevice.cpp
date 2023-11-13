@@ -5,13 +5,13 @@
 
 namespace engine
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : viewport(0, 0, window.get_width(), window.get_height())
+    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(0, 0, window.width(), window.height())
     {
     }
 
     int GraphicsDevice::create()
     {
-        clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+        _clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 
         int gladInitRes = gladLoadGL();
         if (!gladInitRes)
@@ -20,7 +20,7 @@ namespace engine
             return 0;
         }
 
-        set_viewport(viewport);
+        viewport(_viewport);
         // glEnable(GL_DEPTH_TEST);
         // glEnable(GL_CULL_FACE);
         // glCullFace(GL_BACK);
@@ -28,15 +28,15 @@ namespace engine
         return 1;
     }
 
-    void GraphicsDevice::set_viewport(const Viewport &viewport)
+    void GraphicsDevice::viewport(const Viewport &viewport)
     {
-        this->viewport = viewport;
+        _viewport = viewport;
         glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     }
 
     void GraphicsDevice::clear(const Color &color) const
     {
         glClearColor(color.r, color.g, color.b, color.a);
-        glClear(clear_mask);
+        glClear(_clear_mask);
     }
 } // namespace engine

@@ -37,11 +37,12 @@ namespace engine
         /*
             @return a GLuint object that represents the texture
         */
-        GLuint get_gl_texture() const { return _gl_texture; }
-        int get_width() const { return _width; }
-        int get_height() const { return _height; }
-        void set_internal_format(GLint interal_format);
-        void set_image_format(GLint image_format);
+        // TODO check if this is necessary
+        GLuint gl_texture() const { return _gl_texture; }
+        int width() const { return _width; }
+        int height() const { return _height; }
+        void internal_format(GLint interal_format);
+        void image_format(GLint image_format);
 
         friend bool operator==(const Texture2D &lhs, const Texture2D &rhs) { return lhs._gl_texture == rhs._gl_texture; }
         friend bool operator!=(const Texture2D &lhs, const Texture2D &rhs) { return !(lhs == rhs); }

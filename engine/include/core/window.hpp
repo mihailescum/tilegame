@@ -28,21 +28,21 @@ namespace engine
             Indicates that the window should close at the next possible point in time
         */
         bool should_close() const;
-        void set_position(int x, int y);
+        void position(int x, int y);
         bool is_key_pressed(int key_code) const;
 
-        const GLFWwindow &get_native_window() const { return *_native_window; }
-        GLFWwindow &get_native_window() { return *_native_window; }
-        bool is_resizable() const;
-        void set_resizable(const bool resizable);
-        std::string get_title() const;
-        void set_title(const std::string &title);
-        int get_width() const { return _width; }
-        int get_height() const { return _height; }
+        const GLFWwindow &native_window() const { return *_native_window; }
+        GLFWwindow &native_window() { return *_native_window; }
+        bool resizable() const;
+        void resizable(bool resizable);
+        std::string title() const;
+        void title(const std::string &title);
+        int width() const { return _width; }
+        int height() const { return _height; }
         /*
             Set the dimensions of the window. Passing negative values will leave the properties unchanged
         */
-        void set_window_dimensions(int width, int height);
+        void window_dimensions(int width, int height);
 
         //__event void windowSizeChanged(int width, int height);
     };

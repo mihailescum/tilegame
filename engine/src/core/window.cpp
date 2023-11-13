@@ -9,22 +9,22 @@ namespace engine
     {
     }
 
-    bool Window::is_resizable() const
+    bool Window::resizable() const
     {
         return (this->_resizable == GLFW_TRUE) ? true : false;
     }
 
-    void Window::set_resizable(const bool resizable)
+    void Window::resizable(const bool resizable)
     {
         this->_resizable = (resizable) ? GLFW_TRUE : GLFW_FALSE;
     }
 
-    std::string Window::get_title() const
+    std::string Window::title() const
     {
         return this->_title;
     }
 
-    void Window::set_title(const std::string &title)
+    void Window::title(const std::string &title)
     {
         if (this->_native_window)
         {
@@ -33,7 +33,7 @@ namespace engine
         }
     }
 
-    void Window::set_window_dimensions(int width, int height)
+    void Window::window_dimensions(int width, int height)
     {
         if (this->_native_window)
         {
@@ -46,7 +46,7 @@ namespace engine
         }
     }
 
-    void Window::set_position(const int x, const int y)
+    void Window::position(const int x, const int y)
     {
         glfwSetWindowPos(this->_native_window, 700, 400);
     }

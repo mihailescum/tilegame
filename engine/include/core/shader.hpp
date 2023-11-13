@@ -40,6 +40,6 @@ namespace engine
         /*
             @return a GLuint object that represents the shader program
         */
-        GLuint get_gl_program() const { return _gl_program; }
+        GLuint gl_program() const { return _gl_program; }
     };
 } // namespace engine

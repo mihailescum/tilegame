@@ -15,8 +15,8 @@ namespace engine
         GLfloat x;
         GLfloat y;
         GLfloat width;
-
         GLfloat height;
+
         static const Rectangle EMPTY;
 
         inline Rectangle operator+(const glm::vec2 &other) const

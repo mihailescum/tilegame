@@ -39,11 +39,11 @@ namespace engine
         Game(const Game &game) = delete;
         virtual ~Game();
 
-        const Window &get_window() const { return _window; }
-        const GraphicsDevice &get_graphics_device() const { return _graphics_device; }
+        const Window &window() const { return _window; }
+        const GraphicsDevice &graphics_device() const { return _graphics_device; }
 
-        ResourceManager &get_resource_manager() { return _resource_manager; }
-        const ResourceManager &get_resource_manager() const { return _resource_manager; }
+        ResourceManager &resource_manager() { return _resource_manager; }
+        const ResourceManager &resource_manager() const { return _resource_manager; }
 
         void run();
     };

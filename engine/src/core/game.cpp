@@ -61,7 +61,7 @@ namespace engine
             begin_draw();
             draw(_draw_time); // - Render function
             end_draw();
-            glfwSwapBuffers(&_window.get_native_window());
+            glfwSwapBuffers(&_window.native_window());
 
             last_draw = now;
 
@@ -106,9 +106,9 @@ namespace engine
 
     void Game::resize(int width, int height)
     {
-        Viewport currentViewport = _graphics_device.get_viewport();
+        Viewport currentViewport = _graphics_device.viewport();
         currentViewport.width = width;
         currentViewport.height = height;
-        _graphics_device.set_viewport(currentViewport);
+        _graphics_device.viewport(currentViewport);
     }
 } // namespace engine

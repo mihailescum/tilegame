@@ -37,9 +37,9 @@ namespace engine
             if (this->_resources.count(name) == 0)
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
-                res->set_resource_id(_resources.size());
-                res->set_resource_path(std::filesystem::absolute(path));
-                res->set_resource_name(name);
+                res->resource_id(_resources.size());
+                res->resource_path(std::filesystem::absolute(path));
+                res->resource_name(name);
 
                 va_list args;
                 va_start(args, path);
@@ -82,8 +82,8 @@ namespace engine
             static_assert(std::is_copy_constructible<T>::value);
 
             std::unique_ptr<T> res = std::unique_ptr<T>(new T(resource));
-            res->set_resource_id(_resources.size());
-            res->set_resource_name(name);
+            res->resource_id(_resources.size());
+            res->resource_name(name);
 
             _resources.emplace(name, std::move(res));
             return static_cast<T &>(*_resources[name]);

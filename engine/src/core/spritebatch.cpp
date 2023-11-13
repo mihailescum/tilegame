@@ -32,7 +32,7 @@ namespace engine
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
-        const Viewport &viewport = this->_graphics_device.get_viewport();
+        const Viewport &viewport = this->_graphics_device.viewport();
         _projection = glm::ortho(
             static_cast<float>(viewport.x),
             static_cast<float>(viewport.width),
@@ -112,15 +112,15 @@ namespace engine
         }
         auto &data = _sprite_data[_num_active_sprites];
         data.color = color;
-        data.gl_texture = texture.get_gl_texture();
+        data.gl_texture = texture.gl_texture();
         data.destination_rectangle = destination_rectangle;
         if (source_rectangle)
         {
             data.source_rectangle = *source_rectangle;
-            data.source_rectangle.x /= texture.get_width();
-            data.source_rectangle.y /= texture.get_height();
-            data.source_rectangle.width /= texture.get_width();
-            data.source_rectangle.height /= texture.get_height();
+            data.source_rectangle.x /= texture.width();
+            data.source_rectangle.y /= texture.height();
+            data.source_rectangle.width /= texture.width();
+            data.source_rectangle.height /= texture.height();
         }
         else
         {
@@ -140,8 +140,8 @@ namespace engine
         glm::vec2 uvBottomRight(1.0f, 1.0f);
         if (source_rectangle)
         {
-            double textureWidth = texture.get_width();
-            double textureHeight = texture.get_height();
+            double textureWidth = texture.width();
+            double textureHeight = texture.height();
 
             uvTopLeft.x = (GLfloat)source_rectangle->x / textureWidth;
             uvTopLeft.y = (GLfloat)source_rectangle->y / textureHeight;

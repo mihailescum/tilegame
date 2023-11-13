@@ -18,23 +18,23 @@ namespace engine
         SceneGraphNode() : SceneGraphNode<T>(nullptr, T()) {}
         SceneGraphNode(SceneGraphNode<T> *parent, const T &data) : _parent(parent), _data(data), _is_dirty(true), _children() {}
 
-        void set_data(const T &data)
+        void data(const T &data)
         {
             _data = data;
             _is_dirty = true;
         }
 
-        T &get_data() { return _data; }
-        const T &get_data() const { return _data; }
+        T &data() { return _data; }
+        const T &data() const { return _data; }
 
         // TODO constness
-        const SceneGraphNode *get_parent() const { return _parent; }
-        SceneGraphNode *get_parent() { return _parent; }
+        const SceneGraphNode *parent() const { return _parent; }
+        SceneGraphNode *parent() { return _parent; }
 
         SceneGraphNode &add_child(const T &data)
         {
             SceneGraphNode &child = add_child();
-            child.set_data(data);
+            child.data(data);
 
             return child;
         }
@@ -47,7 +47,7 @@ namespace engine
             return *this->_children.back().get();
         }
 
-        std::vector<std::unique_ptr<SceneGraphNode>> &get_children() { return _children; }
-        const std::vector<std::unique_ptr<SceneGraphNode>> &get_children() const { return _children; }
+        std::vector<std::unique_ptr<SceneGraphNode>> &children() { return _children; }
+        const std::vector<std::unique_ptr<SceneGraphNode>> &children() const { return _children; }
     };
 } // namespace engine

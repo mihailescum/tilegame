@@ -59,8 +59,8 @@ namespace engine::sprite
 
     engine::Rectangle SpriteSheet::get_source_rect(unsigned int id) const
     {
-        int x = (id % (_texture->get_width() / _tile_width)) * _tile_width;
-        int y = (id / (_texture->get_width() / _tile_width)) * _tile_width;
+        int x = (id % (_texture->width() / _tile_width)) * _tile_width;
+        int y = (id / (_texture->width() / _tile_width)) * _tile_width;
 
         engine::Rectangle result(x, y, _tile_width, _tile_height);
         return result;

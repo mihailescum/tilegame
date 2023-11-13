@@ -33,8 +33,8 @@ namespace engine
         bool hasAlphaChannel = va_arg(args, int);
         if (hasAlphaChannel)
         {
-            this->set_internal_format(GL_RGBA);
-            this->set_image_format(GL_RGBA);
+            this->internal_format(GL_RGBA);
+            this->image_format(GL_RGBA);
         }
         // load image
         int width, height, nrChannels;
@@ -79,6 +79,6 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
     }
 
-    void Texture2D::set_internal_format(GLint internalFormat) { this->_internalFormat = internalFormat; }
-    void Texture2D::set_image_format(GLint imageFormat) { this->_imageFormat = imageFormat; }
+    void Texture2D::internal_format(GLint internalFormat) { this->_internalFormat = internalFormat; }
+    void Texture2D::image_format(GLint imageFormat) { this->_imageFormat = imageFormat; }
 } // namespace engine
