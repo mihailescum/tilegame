@@ -51,5 +51,11 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${SOURCES_PATH})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/engine/include)
 
+# sol3 Header Files
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/sol)
+
 # Link with Engine
 target_link_libraries(${EXECUTABLE_NAME} engine)
+
+# Link with Lua
+target_link_libraries(${EXECUTABLE_NAME} lua)
