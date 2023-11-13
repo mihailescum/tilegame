@@ -15,8 +15,8 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Transform>(root_entity, glm::vec2(0.0), glm::vec2(0.0));
 
         tilegame::SceneGraphData root_scenedata(root_entity);
-        _scene.get_scene_graph_root().set_data(root_scenedata);
-        _registry.emplace<tilegame::components::SceneNode>(root_entity, &_scene.get_scene_graph_root());
+        _scene.scene_graph_root().data(root_scenedata);
+        _registry.emplace<tilegame::components::SceneNode>(root_entity, &_scene.scene_graph_root());
 
         _transformation_observer.connect(
             _registry,
@@ -32,7 +32,7 @@ namespace tilegame::systems
     {
         if (_is_first_update)
         {
-            const auto &root_node = _scene.get_scene_graph_root();
+            const auto &root_node = _scene.scene_graph_root();
             update_node_transform(root_node);
             _is_first_update = false;
         }
@@ -48,15 +48,15 @@ namespace tilegame::systems
 
     void SceneGraphSystem::update_node_transform(const tilegame::SceneGraphNode &node)
     {
-        const auto entity = node.get_data().entity;
-        const auto parent = node.get_parent();
+        const auto entity = node.data().entity;
+        const auto parent = node.parent();
 
         auto &transform_component = _registry.get<tilegame::components::Transform>(entity);
 
         entt::entity parent_entity = entt::null;
         if (parent)
         {
-            parent_entity = parent->get_data().entity;
+            parent_entity = parent->data().entity;
         }
 
         const auto parent_transform = _registry.try_get<tilegame::components::Transform>(parent_entity);
@@ -70,7 +70,7 @@ namespace tilegame::systems
             transform_component.position_global = transform_component.position_local;
         }
 
-        const auto &children = node.get_children();
+        const auto &children = node.children();
         for (const auto &child : children)
         {
             update_node_transform(*child);

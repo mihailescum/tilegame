@@ -16,8 +16,8 @@ namespace tilegame
 
         _spritebatch.create();
 
-        // glfwSetInputMode(window.get_native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        // window->set_position(700, 400);
+        // glfwSetInputMode(window.native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // window->position(700, 400);
 
         _worldscene.initialize();
     }
@@ -48,7 +48,7 @@ namespace tilegame
             _timer--;
             std::stringstream ss;
             ss << "FPS: " << _frames << " - UPS: " << _updates;
-            _window.set_title(ss.str());
+            _window.title(ss.str());
             _updates = 0, _frames = 0;
         }
     }

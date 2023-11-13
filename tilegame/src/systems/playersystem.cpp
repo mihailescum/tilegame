@@ -26,15 +26,15 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Movement>(_player1_entity, tilegame::components::Movement::None, 200.0);
 
         const tilegame::SceneGraphData player1_scenedata(_player1_entity);
-        tilegame::SceneGraphNode &player1_scenenode = _scene.get_scene_graph_root().add_child(player1_scenedata);
+        tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
         _registry.emplace<tilegame::components::SceneNode>(_player1_entity, &player1_scenenode);
     }
 
     void PlayerSystem::load_content()
     {
-        auto &resource_manager = _scene.get_game().get_resource_manager();
+        auto &resource_manager = _scene.game().resource_manager();
         const engine::sprite::SpriteSheet *characters = resource_manager.load_resource<engine::sprite::SpriteSheet>("characters", "content/characters/characters.tsj");
-        const engine::Texture2D &characters_texture = characters->get_texture();
+        const engine::Texture2D &characters_texture = characters->texture();
 
         const engine::sprite::Sprite &player1_sprite = (*characters)["man"];
 
@@ -68,7 +68,7 @@ namespace tilegame::systems
 
     tilegame::components::Movement::MovementDirection PlayerSystem::handle_input_1()
     {
-        const auto &window = _scene.get_game().get_window();
+        const auto &window = _scene.game().window();
 
         auto result = static_cast<tilegame::components::Movement::MovementDirection>(0);
         if (window.is_key_pressed(GLFW_KEY_LEFT))

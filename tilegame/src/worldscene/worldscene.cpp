@@ -11,7 +11,7 @@ namespace tilegame::worldscene
 {
     WorldScene::WorldScene(Tilegame &game)
         : tilegame::Scene(game),
-          _system_render(*this, _registry, game.get_spritebatch()),
+          _system_render(*this, _registry, game.spritebatch()),
           _system_map(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),

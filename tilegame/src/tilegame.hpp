@@ -27,6 +27,6 @@ namespace tilegame
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 
-        engine::SpriteBatch &get_spritebatch() { return _spritebatch; }
+        engine::SpriteBatch &spritebatch() { return _spritebatch; }
     };
 } // namespace tilegame

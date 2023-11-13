@@ -18,7 +18,7 @@ namespace tilegame::systems
 
     void MapSystem::load_content()
     {
-        auto &resource_manager = _scene.get_game().get_resource_manager();
+        auto &resource_manager = _scene.game().resource_manager();
         const engine::tilemap::TileMap &map = *resource_manager.load_resource<engine::tilemap::TileMap>("map1", "content/maps/map1.tmj");
         create_map_entity(map);
     }
@@ -30,31 +30,31 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Transform>(entity, glm::vec2(0.0), glm::vec2(0.0));
 
         const tilegame::SceneGraphData map_scenedata(entity);
-        tilegame::SceneGraphNode &map_scenenode = _scene.get_scene_graph_root().add_child(map_scenedata);
+        tilegame::SceneGraphNode &map_scenenode = _scene.scene_graph_root().add_child(map_scenedata);
         _registry.emplace<tilegame::components::SceneNode>(entity, &map_scenenode);
 
         std::vector<entt::entity> tileset_entities;
-        for (const auto &tileset : map.get_tilesets())
+        for (const auto &tileset : map.tilesets())
         {
             const auto tileset_entity = create_tileset_entity(*tileset);
             tileset_entities.push_back(tileset_entity);
         }
 
-        for (const auto &layer : map.get_layers())
+        for (const auto &layer : map.layers())
         {
-            const auto layer_entity = create_layer_entity(*layer, map.get_tilesets());
+            const auto layer_entity = create_layer_entity(*layer, map.tilesets());
 
             const tilegame::SceneGraphData layer_scenedata(layer_entity);
             tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
             _registry.emplace<tilegame::components::SceneNode>(layer_entity, &layer_scenenode);
         }
 
-        for (const auto &object : map.get_objects())
+        for (const auto &object : map.objects())
         {
             const auto &data = object->data;
             if (data.getGid() > 0) // parse a sprite
             {
-                const auto sprite_entity = create_sprite_entity(*object, map.get_tilesets());
+                const auto sprite_entity = create_sprite_entity(*object, map.tilesets());
                 const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
                 tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
                 _registry.emplace<tilegame::components::SceneNode>(sprite_entity, &sprite_scenenode);
@@ -73,12 +73,12 @@ namespace tilegame::systems
         const auto entity = _registry.create();
 
         _registry.emplace<tilegame::components::Transform>(entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
-        _registry.emplace<tilegame::components::Ordering>(entity, layer.get_z_index());
+        _registry.emplace<tilegame::components::Ordering>(entity, layer.z_index());
         _registry.emplace<tilegame::components::Renderable2D>(entity);
 
-        const auto tiles = layer.get_tiles();
-        const auto width = layer.get_width();
-        const auto height = layer.get_height();
+        const auto tiles = layer.tiles();
+        const auto width = layer.width();
+        const auto height = layer.height();
 
         std::vector<tilegame::components::TileLayer::TileData> tile_data;
         tile_data.reserve(width * height);
@@ -100,12 +100,12 @@ namespace tilegame::systems
 
                 if (tileset_containing_tile)
                 {
-                    const engine::Texture2D &tileset_texture = tileset_containing_tile->get_texture();
-                    const auto tile_width = tileset_containing_tile->get_tile_width();
-                    const auto tile_height = tileset_containing_tile->get_tile_height();
+                    const engine::Texture2D &tileset_texture = tileset_containing_tile->texture();
+                    const auto tile_width = tileset_containing_tile->tile_width();
+                    const auto tile_height = tileset_containing_tile->tile_height();
 
                     const engine::Rectangle tile_dest_rect(x * tile_width, y * tile_height, tile_width, tile_height);
-                    const auto tile_source_rect = tileset_containing_tile->get_source_rect(tile.ID);
+                    const auto tile_source_rect = tileset_containing_tile->source_rect(tile.ID);
 
                     tilegame::components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
                     tile_data.push_back(data);
@@ -135,8 +135,8 @@ namespace tilegame::systems
         const engine::tilemap::Tileset *tileset_of_sprite = nullptr;
         for (const auto &tileset : tilesets)
         {
-            auto first_gid = tileset->get_first_GID();
-            auto last_gid = tileset->get_last_GID();
+            auto first_gid = tileset->first_GID();
+            auto last_gid = tileset->last_GID();
 
             if (tile_gid >= first_gid && tile_gid <= last_gid)
             {
@@ -154,12 +154,12 @@ namespace tilegame::systems
         // We have to interpret the object as a sprite and the tileset as its sprite sheet
         // Need to inherit class from tileset
 
-        const std::string tileset_name = tileset_of_sprite->get_name();
+        const std::string tileset_name = tileset_of_sprite->name();
 
-        // We now that the sprite sheet is a resource, as it was loaded before
-        auto &resource_manager = _scene.get_game().get_resource_manager();
+        // We know that the sprite sheet is a resource, as it was loaded before
+        auto &resource_manager = _scene.game().resource_manager();
         const engine::sprite::SpriteSheet &sprite_sheet = resource_manager.get<engine::sprite::SpriteSheet>(tileset_name);
-        const engine::Texture2D &texture = sprite_sheet.get_texture();
+        const engine::Texture2D &texture = sprite_sheet.texture();
 
         /* Some ID magic
         const int tile_id = tile_gid - tson_tileset->getFirstgid() + 1;
