@@ -30,15 +30,12 @@ namespace engine::tilemap
                 const std::string tileset_path = "";
 
                 engine::sprite::SpriteSheet sprite_sheet;
-                sprite_sheet.set_resource_path(tileset_path);
+                sprite_sheet.resource_path(tileset_path);
                 sprite_sheet.parse(tson_tileset, resource_manager);
 
                 engine::sprite::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::sprite::SpriteSheet>(tileset_name, sprite_sheet);
 
-                auto first_gid = tson_tileset.getFirstgid();
-                auto last_gid = first_gid + tson_tileset.getTileCount() - 1;
-
-                std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, first_gid, last_gid);
+                std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, tson_tileset);
                 _tilesets.push_back(std::move(tileset));
             }
 
@@ -74,7 +71,7 @@ namespace engine::tilemap
                     }
 
                     std::unique_ptr<TileLayer> tile_layer = std::make_unique<TileLayer>(map_size.x, map_size.y, z_index);
-                    tile_layer->set_data(tile_data);
+                    tile_layer->data(tile_data);
 
                     _layers.push_back(std::move(tile_layer));
                     z_index++;

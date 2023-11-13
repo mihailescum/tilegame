@@ -23,7 +23,9 @@ namespace engine::sprite
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
         void parse(const tson::Tile &data);
-        void set_sprite_sheet(SpriteSheet *const sprite_sheet) { _sprite_sheet = sprite_sheet; }
+
+        // TODO review if this is necessarys
+        void sprite_sheet(SpriteSheet *const sprite_sheet) { _sprite_sheet = sprite_sheet; }
 
         const SpriteState &operator[](std::string name) const { return _states.at(name); }
         SpriteState &operator[](std::string name) { return _states.at(name); }

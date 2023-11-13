@@ -24,7 +24,7 @@ namespace engine::sprite
                     int frame_id = tson_frame.getTileId() - 1; // Tileson starts the IDs at 1, but we start at 0.
                     double frame_duration = tson_frame.getDuration() / 1000.0;
 
-                    const auto &source_rect = _sprite_sheet->get_source_rect(frame_id);
+                    const auto &source_rect = _sprite_sheet->source_rect(frame_id);
 
                     SpriteFrame frame(frame_id, frame_duration, source_rect);
                     state.frames.push_back(frame);

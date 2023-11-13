@@ -52,12 +52,12 @@ namespace engine::sprite
 
             const std::string name = tile.getType();
             Sprite &sprite = _sprites[name];
-            sprite.set_sprite_sheet(this);
+            sprite.sprite_sheet(this);
             sprite.parse(tile);
         }
     }
 
-    engine::Rectangle SpriteSheet::get_source_rect(unsigned int id) const
+    engine::Rectangle SpriteSheet::source_rect(unsigned int id) const
     {
         int x = (id % (_texture->width() / _tile_width)) * _tile_width;
         int y = (id / (_texture->width() / _tile_width)) * _tile_width;
@@ -66,7 +66,7 @@ namespace engine::sprite
         return result;
     }
 
-    const Texture2D &SpriteSheet::get_texture() const
+    const Texture2D &SpriteSheet::texture() const
     {
         if (_texture)
         {
@@ -78,8 +78,8 @@ namespace engine::sprite
         }
     }
 
-    Texture2D &SpriteSheet::get_texture()
+    Texture2D &SpriteSheet::texture()
     {
-        return const_cast<Texture2D &>(const_cast<const SpriteSheet *>(this)->get_texture());
+        return const_cast<Texture2D &>(const_cast<const SpriteSheet *>(this)->texture());
     }
 } // namespace engine::sprite

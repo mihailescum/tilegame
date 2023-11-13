@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "tileson/tileson.hpp"
+
 #include "core/texture2d.hpp"
 #include "core/rectangle.hpp"
 #include "sprite/spritesheet.hpp"
@@ -11,26 +13,27 @@ namespace engine::tilemap
     class Tileset
     {
     protected:
-        unsigned int _first_GID;
-        unsigned int _last_GID;
         engine::sprite::SpriteSheet &_sprite_sheet;
+        tson::Tileset _native_tileset;
 
     public:
-        Tileset(engine::sprite::SpriteSheet &sprite_sheet, unsigned int first_GID, unsigned int last_GID)
-            : _sprite_sheet(sprite_sheet), _first_GID(first_GID), _last_GID(last_GID) {}
+        Tileset(engine::sprite::SpriteSheet &sprite_sheet, const tson::Tileset &native_tileset)
+            : _sprite_sheet(sprite_sheet), _native_tileset(native_tileset)
+        {
+        }
 
         bool has_tile(unsigned int id) const;
-        engine::Rectangle get_source_rect(unsigned int id) const;
+        engine::Rectangle source_rect(unsigned int id) const;
 
-        Texture2D &get_texture() { return _sprite_sheet.get_texture(); }
-        const Texture2D &get_texture() const { return _sprite_sheet.get_texture(); }
+        Texture2D &texture() { return _sprite_sheet.texture(); }
+        const Texture2D &texture() const { return _sprite_sheet.texture(); }
 
-        int get_tile_width() const { return _sprite_sheet.get_tile_width(); }
-        int get_tile_height() const { return _sprite_sheet.get_tile_height(); }
+        int tile_width() const { return _sprite_sheet.tile_width(); }
+        int tile_height() const { return _sprite_sheet.tile_height(); }
 
-        int get_first_GID() const { return _first_GID; }
-        int get_last_GID() const { return _last_GID; }
+        int first_GID() const { return _native_tileset.getFirstgid(); }
+        int last_GID() const { return _native_tileset.getFirstgid() + _native_tileset.getTileCount() - 1; }
 
-        std::string get_name() const { return _sprite_sheet.get_resource_name(); }
+        std::string name() const { return _sprite_sheet.resource_name(); }
     };
 }

@@ -32,15 +32,15 @@ namespace engine::sprite
 
         void parse(const tson::Tileset &data, ResourceManager &resource_manager);
 
-        engine::Rectangle get_source_rect(unsigned int id) const;
+        engine::Rectangle source_rect(unsigned int id) const;
 
         const Sprite &operator[](std::string name) const { return _sprites.at(name); }
         Sprite &operator[](std::string name) { return _sprites.at(name); }
 
-        const Texture2D &get_texture() const;
-        Texture2D &get_texture();
+        const Texture2D &texture() const;
+        Texture2D &texture();
 
-        int get_tile_width() const { return _tile_width; }
-        int get_tile_height() const { return _tile_height; }
+        int tile_width() const { return _tile_width; }
+        int tile_height() const { return _tile_height; }
     };
 } // namespace engine::sprite

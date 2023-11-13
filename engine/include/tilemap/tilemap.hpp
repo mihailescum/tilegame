@@ -21,8 +21,9 @@ namespace engine::tilemap
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
-        const std::vector<std::unique_ptr<TileLayer>> &get_layers() const { return _layers; }
-        const std::vector<std::unique_ptr<Tileset>> &get_tilesets() const { return _tilesets; }
-        const std::vector<std::unique_ptr<TileObject>> &get_objects() const { return _objects; }
+        // TODO return iterators instead
+        const std::vector<std::unique_ptr<TileLayer>> &layers() const { return _layers; }
+        const std::vector<std::unique_ptr<Tileset>> &tilesets() const { return _tilesets; }
+        const std::vector<std::unique_ptr<TileObject>> &objects() const { return _objects; }
     };
 }
