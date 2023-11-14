@@ -17,7 +17,8 @@ namespace tilegame::worldscene
           _system_player(*this, _registry),
           _system_movement(*this, _registry),
           _system_scenegraph(*this, _registry),
-          _system_animation(*this, _registry)
+          _system_animation(*this, _registry),
+          _system_script(*this, _registry)
     {
     }
 
@@ -26,6 +27,7 @@ namespace tilegame::worldscene
         _system_scenegraph.initialize();
         _system_render.initialize();
         _system_animation.initialize();
+        _system_script.initialize();
 
         _system_player.initialize();
         _system_camera.initialize();
