@@ -9,9 +9,13 @@
 #include "components/scenenode.hpp"
 #include "components/animation.hpp"
 #include "components/sprite.hpp"
+#include "components/script.hpp"
 
 namespace tilegame::systems
 {
+    const std::string MapSystem::FIELD_STATE = "state";
+    const std::string MapSystem::FIELD_SCRIPT = "script";
+
     MapSystem::MapSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
@@ -162,10 +166,7 @@ namespace tilegame::systems
 
         auto *tile = tileset_of_sprite->tile(tile_gid);
         const auto &sprite_class_name = tile->getClassType();
-        // TODO don't hardcode the string
-        const auto &sprite_state_name = tile->get<std::string>("state");
-
-        // TODO get the actual data
+        const auto &sprite_state_name = tile->get<std::string>(MapSystem::FIELD_STATE);
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();
@@ -175,6 +176,15 @@ namespace tilegame::systems
         _registry.emplace<tilegame::components::Renderable2D>(entitiy);
         const auto &animation_component = _registry.emplace<tilegame::components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
         _registry.emplace<tilegame::components::Sprite>(entitiy, texture, animation_component.get_current_frame().source_rect);
+
+        auto &properties = const_cast<tson::Object &>(data).getProperties();
+        const auto *script_path_property = properties.getProperty(MapSystem::FIELD_SCRIPT);
+        if (script_path_property)
+        {
+            const auto script_path = script_path_property->getValue<std::string>();
+            _registry.emplace<tilegame::components::Script>(entitiy, script_path);
+        }
+
         return entitiy;
     }
 }

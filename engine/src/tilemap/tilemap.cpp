@@ -76,8 +76,8 @@ namespace engine::tilemap
                     tile_layer->data(tile_data);
 
                     _layers.push_back(std::move(tile_layer));
-                    z_index++;
                 }
+                z_index++;
             }
             return true;
         }

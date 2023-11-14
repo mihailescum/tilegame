@@ -234,6 +234,12 @@
                  "height":32,
                  "id":2,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"script",
+                         "type":"string",
+                         "value":"scripts\/soldier1.lua"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
