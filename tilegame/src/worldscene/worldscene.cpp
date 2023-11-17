@@ -47,6 +47,8 @@ namespace tilegame::worldscene
     void WorldScene::update(const engine::GameTime &update_time)
     {
         _system_player.update(update_time);
+        _system_script.update(update_time);
+
         _system_movement.update(update_time);
 
         _system_animation.update(update_time);

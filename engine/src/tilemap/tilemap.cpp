@@ -91,4 +91,24 @@ namespace engine::tilemap
     void TileMap::unload_resource()
     {
     }
+
+    const Tileset *TileMap::find_tileset_by_gid(int gid) const
+    {
+        for (const auto &tileset : _tilesets)
+        {
+            auto first_gid = tileset->first_GID();
+            auto last_gid = tileset->last_GID();
+
+            if (gid >= first_gid && gid <= last_gid)
+            {
+                return tileset.get();
+            }
+        }
+        return nullptr;
+    }
+
+    Tileset *TileMap::find_tileset_by_gid(int gid)
+    {
+        return const_cast<Tileset *>(const_cast<const TileMap *>(this)->find_tileset_by_gid(gid));
+    }
 } // namespace engine::tilemap

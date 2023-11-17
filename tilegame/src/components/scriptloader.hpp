@@ -4,7 +4,7 @@
 
 namespace tilegame::components
 {
-    struct Script
+    struct ScriptLoader
     {
         std::string path;
     };

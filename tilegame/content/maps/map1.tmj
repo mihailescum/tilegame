@@ -238,7 +238,7 @@
                         {
                          "name":"script",
                          "type":"string",
-                         "value":"scripts\/soldier1.lua"
+                         "value":"..\/scripts\/soldier1.lua"
                         }],
                  "rotation":0,
                  "type":"",

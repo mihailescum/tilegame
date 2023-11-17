@@ -9,7 +9,7 @@
 #include "components/scenenode.hpp"
 #include "components/animation.hpp"
 #include "components/sprite.hpp"
-#include "components/script.hpp"
+#include "components/scriptloader.hpp"
 
 namespace tilegame::systems
 {
@@ -46,7 +46,7 @@ namespace tilegame::systems
 
         for (const auto &layer : map.layers())
         {
-            const auto layer_entity = create_layer_entity(*layer, map.tilesets());
+            const auto layer_entity = create_layer_entity(*layer, map);
 
             const tilegame::SceneGraphData layer_scenedata(layer_entity);
             tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
@@ -58,7 +58,7 @@ namespace tilegame::systems
             const auto &data = object->data;
             if (data.getGid() > 0) // parse a sprite
             {
-                const auto sprite_entity = create_sprite_entity(*object, map.tilesets());
+                const auto sprite_entity = create_sprite_entity(*object, map);
                 const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
                 tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
                 _registry.emplace<tilegame::components::SceneNode>(sprite_entity, &sprite_scenenode);
@@ -72,7 +72,7 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity MapSystem::create_layer_entity(const engine::tilemap::TileLayer &layer, const std::vector<std::unique_ptr<engine::tilemap::Tileset>> &tilesets)
+    const entt::entity MapSystem::create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map)
     {
         const auto entity = _registry.create();
 
@@ -93,7 +93,7 @@ namespace tilegame::systems
                 const auto &tile = tiles[x + width * y];
 
                 const engine::tilemap::Tileset *tileset_containing_tile = nullptr;
-                for (const auto &tileset : tilesets)
+                for (const auto &tileset : map.tilesets())
                 {
                     if (tileset->has_tile(tile.ID))
                     {
@@ -129,25 +129,14 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity MapSystem::create_sprite_entity(const engine::tilemap::TileObject &object, const std::vector<std::unique_ptr<engine::tilemap::Tileset>> &tilesets)
+    const entt::entity MapSystem::create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map)
     {
         const auto &data = object.data;
 
         const glm::vec2 sprite_position(data.getPosition().x, data.getPosition().y);
 
         int tile_gid = data.getGid();
-        engine::tilemap::Tileset *tileset_of_sprite = nullptr;
-        for (const auto &tileset : tilesets)
-        {
-            auto first_gid = tileset->first_GID();
-            auto last_gid = tileset->last_GID();
-
-            if (tile_gid >= first_gid && tile_gid <= last_gid)
-            {
-                tileset_of_sprite = tileset.get();
-                break;
-            }
-        }
+        engine::tilemap::Tileset *tileset_of_sprite = const_cast<engine::tilemap::TileMap &>(map).find_tileset_by_gid(tile_gid);
 
         if (!tileset_of_sprite)
         {
@@ -181,8 +170,8 @@ namespace tilegame::systems
         const auto *script_path_property = properties.getProperty(MapSystem::FIELD_SCRIPT);
         if (script_path_property)
         {
-            const auto script_path = script_path_property->getValue<std::string>();
-            _registry.emplace<tilegame::components::Script>(entitiy, script_path);
+            std::filesystem::path script_path = map.resource_path().parent_path() / script_path_property->getValue<std::string>();
+            _registry.emplace<tilegame::components::ScriptLoader>(entitiy, script_path);
         }
 
         return entitiy;
