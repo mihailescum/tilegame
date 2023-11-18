@@ -18,7 +18,8 @@ namespace tilegame::worldscene
           _system_movement(*this, _registry),
           _system_scenegraph(*this, _registry),
           _system_animation(*this, _registry),
-          _system_script(*this, _registry)
+          _system_script(*this, _registry),
+          _system_timer(*this, _registry)
     {
     }
 
@@ -46,6 +47,8 @@ namespace tilegame::worldscene
 
     void WorldScene::update(const engine::GameTime &update_time)
     {
+        _system_timer.update(update_time);
+
         _system_player.update(update_time);
         _system_script.update(update_time);
 

@@ -1,8 +1,17 @@
-print("Hello World")
+local soldier1 = {}
 
-entity1 = _create_entity()
-entity2 = _create_entity()
-print(entity1, entity2)
+local function main()
+    print("Script started")
 
-c = _ScriptLoaderComponent.new("test")
-_add_component(entity1, c)
+    entity = _create_entity()
+    c = _TimerComponent.new(3)
+    _add_component(entity, c)
+    -- coroutine.yield()
+    -- soldier1:main()
+
+    print("Timer finished")
+end
+
+soldier1.main = coroutine.wrap(main)
+
+return soldier1

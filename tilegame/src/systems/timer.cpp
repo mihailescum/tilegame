@@ -1,45 +1,34 @@
-#include "animation.hpp"
+#include "timer.hpp"
 
-#include "components/animation.hpp"
-#include "components/sprite.hpp"
+#include "components/timer.hpp"
 
 namespace tilegame::systems
 {
-    AnimationSystem::AnimationSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    TimerSystem::TimerSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void AnimationSystem::initialize()
+    void TimerSystem::update(const engine::GameTime &update_time)
     {
-    }
+        const auto timer_view = _registry.view<tilegame::components::Timer>();
 
-    void AnimationSystem::update(const engine::GameTime &update_time)
-    {
-        const auto animation_view = _registry.view<tilegame::components::Animation>();
-        const auto sprite_view = _registry.view<tilegame::components::Animation, tilegame::components::Sprite>();
-
-        for (auto &&[entity, animation] : animation_view.each())
+        for (auto &&[entity, timer] : timer_view.each())
         {
-            animation.clock += update_time.elapsed_time;
-            auto &current_frame = animation.frames[animation.current_frame_idx];
-            if (animation.clock >= current_frame.duration)
+            timer.time_left -= update_time.elapsed_time;
+            if (timer.time_left <= 0)
             {
-                if (animation.current_frame_idx == animation.frames.size() - 1)
-                {
-                    animation.current_frame_idx = 0;
-                }
-                else
-                {
-                    animation.current_frame_idx++;
-                }
-                animation.clock -= current_frame.duration;
-
-                if (sprite_view.contains(entity))
-                {
-                    _registry.patch<tilegame::components::Sprite>(entity, [=](auto &sprite)
-                                                                  { sprite.source_rect = animation.frames[animation.current_frame_idx].source_rect; });
-                }
+                // TODO trigger event
+                _entities_to_clear.push_back(entity);
             }
+
+            // Trigger on_update()
+            _registry.patch<tilegame::components::Timer>(entity);
+        }
+
+        if (!_entities_to_clear.empty())
+        {
+            _registry.remove<tilegame::components::Timer>(_entities_to_clear.begin(), _entities_to_clear.end());
+            _entities_to_clear.clear();
         }
     }
 } // namespace tilegame::systems

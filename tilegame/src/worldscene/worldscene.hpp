@@ -16,6 +16,7 @@
 #include "systems/scenegraph.hpp"
 #include "systems/animation.hpp"
 #include "systems/script.hpp"
+#include "systems/timer.hpp"
 
 namespace tilegame
 {
@@ -37,6 +38,7 @@ namespace tilegame::worldscene
         tilegame::systems::SceneGraphSystem _system_scenegraph;
         tilegame::systems::AnimationSystem _system_animation;
         tilegame::systems::ScriptSystem _system_script;
+        tilegame::systems::TimerSystem _system_timer;
 
     public:
         WorldScene(Tilegame &game);

@@ -22,10 +22,27 @@ namespace tilegame::systems
         void register_api();
         entt::entity create_entity();
 
-        template <class T>
-        T &emplace_or_replace_component(entt::entity entity, const T &component)
+        struct EmplaceOrReplaceWrapper
         {
-            return _registry.emplace_or_replace<T>(entity, component);
+            EmplaceOrReplaceWrapper(ScriptSystem &parent) : _parent(parent) {}
+
+            template <typename T>
+            T &operator()(entt::entity entity, const T &component) const
+            {
+                return _parent._registry.emplace_or_replace<T>(entity, component);
+            }
+
+        private:
+            ScriptSystem &_parent;
+        };
+
+        template <typename F, typename... Ts>
+        void add_component_function(const std::string name)
+        {
+            auto overload = sol::overload(
+                [this](entt::entity entity, Ts component)
+                { return F(*this)(entity, component); }...);
+            _lua.set_function(name, overload);
         }
 
     public:

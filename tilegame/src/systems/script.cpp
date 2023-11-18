@@ -10,6 +10,7 @@
 #include "components/scriptloader.hpp"
 #include "components/sprite.hpp"
 #include "components/transform.hpp"
+#include "components/timer.hpp"
 
 namespace tilegame::systems
 {
@@ -19,7 +20,7 @@ namespace tilegame::systems
 
     void ScriptSystem::initialize()
     {
-        _lua.open_libraries(sol::lib::base);
+        _lua.open_libraries(sol::lib::base, sol::lib::coroutine);
         register_api();
     }
 
@@ -30,16 +31,13 @@ namespace tilegame::systems
         // _lua.set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
         _lua.new_usertype<entt::entity>("_entity", sol::constructors<entt::entity>());
-        _lua.new_usertype<tilegame::components::Animation>("_AnimationComponent", sol::constructors<tilegame::components::Animation()>());
         _lua.new_usertype<tilegame::components::ScriptLoader>("_ScriptLoaderComponent", sol::constructors<tilegame::components::ScriptLoader(), tilegame::components::ScriptLoader(const std::string)>());
+        _lua.new_usertype<tilegame::components::Timer>("_TimerComponent", sol::constructors<tilegame::components::Timer(), tilegame::components::Timer(double)>());
 
-        const auto emplace_or_replace_overload = sol::overload(
-            [this](entt::entity entity, tilegame::components::Animation component)
-            { return this->emplace_or_replace_component(entity, component); },
-            [this](entt::entity entity, tilegame::components::ScriptLoader component)
-            { return this->emplace_or_replace_component(entity, component); });
-
-        _lua.set_function("_add_component", emplace_or_replace_overload);
+        add_component_function<
+            EmplaceOrReplaceWrapper,
+            tilegame::components::Timer,
+            tilegame::components::ScriptLoader>("_add_component");
     }
 
     entt::entity ScriptSystem::create_entity()
@@ -53,7 +51,9 @@ namespace tilegame::systems
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;
-            _lua.script_file(script_path);
+            sol::table result = _lua.script_file(script_path);
+            result["main"]();
+
             _entities_to_clear.push_back(entity);
         }
 
