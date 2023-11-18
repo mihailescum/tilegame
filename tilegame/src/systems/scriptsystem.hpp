@@ -16,6 +16,12 @@ namespace tilegame::systems
         void register_api();
         entt::entity create_entity();
 
+        template <class T>
+        T &emplace_or_replace_component(entt::entity entity, const T &component)
+        {
+            return _registry.emplace_or_replace<T>(entity, component);
+        }
+
     public:
         ScriptSystem(tilegame::Scene &scene, entt::registry &registry);
 

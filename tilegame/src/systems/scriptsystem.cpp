@@ -1,6 +1,15 @@
 #include "scriptsystem.hpp"
 
+#include "components/animation.hpp"
+#include "components/camera.hpp"
+#include "components/movement.hpp"
+#include "components/ordering.hpp"
+#include "components/player.hpp"
+#include "components/renderable2d.hpp"
+#include "components/scenenode.hpp"
 #include "components/scriptloader.hpp"
+#include "components/sprite.hpp"
+#include "components/transform.hpp"
 
 namespace tilegame::systems
 {
@@ -18,6 +27,18 @@ namespace tilegame::systems
     {
         _lua.set_function("_create_entity", &ScriptSystem::create_entity, this);
         // _lua.set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
+
+        _lua.new_usertype<entt::entity>("_entity", sol::constructors<entt::entity>());
+        _lua.new_usertype<tilegame::components::Animation>("_AnimationComponent", sol::constructors<tilegame::components::Animation()>());
+        _lua.new_usertype<tilegame::components::ScriptLoader>("_ScriptLoaderComponent", sol::constructors<tilegame::components::ScriptLoader(), tilegame::components::ScriptLoader(const std::string)>());
+
+        const auto emplace_or_replace_overload = sol::overload(
+            [this](entt::entity entity, tilegame::components::Animation component)
+            { return this->emplace_or_replace_component(entity, component); },
+            [this](entt::entity entity, tilegame::components::ScriptLoader component)
+            { return this->emplace_or_replace_component(entity, component); });
+
+        _lua.set_function("_add_component", emplace_or_replace_overload);
     }
 
     entt::entity ScriptSystem::create_entity()
@@ -33,6 +54,6 @@ namespace tilegame::systems
             const auto &script_path = script.path;
             _lua.script_file(script_path);
         }
-        _registry.clear<tilegame::components::ScriptLoader>();
+        //_registry.clear<tilegame::components::ScriptLoader>();
     }
 } // namespace tilegame::systems
