@@ -1,4 +1,4 @@
-#include "animationsystem.hpp"
+#include "animation.hpp"
 
 #include "components/animation.hpp"
 #include "components/sprite.hpp"

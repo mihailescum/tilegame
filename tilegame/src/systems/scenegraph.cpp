@@ -1,4 +1,4 @@
-#include "scenegraphsystem.hpp"
+#include "scenegraph.hpp"
 
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"

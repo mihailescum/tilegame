@@ -1,4 +1,4 @@
-#include "scriptsystem.hpp"
+#include "script.hpp"
 
 #include "components/animation.hpp"
 #include "components/camera.hpp"
@@ -26,6 +26,7 @@ namespace tilegame::systems
     void ScriptSystem::register_api()
     {
         _lua.set_function("_create_entity", &ScriptSystem::create_entity, this);
+        // Possible syntax to directly bind the _registry.create() function:
         // _lua.set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
         _lua.new_usertype<entt::entity>("_entity", sol::constructors<entt::entity>());

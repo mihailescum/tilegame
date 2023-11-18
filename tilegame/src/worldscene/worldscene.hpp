@@ -8,14 +8,14 @@
 #include "engine.hpp"
 
 #include "scenegraphdata.hpp"
-#include "systems/rendersystem.hpp"
-#include "systems/mapsystem.hpp"
-#include "systems/camerasystem.hpp"
-#include "systems/playersystem.hpp"
-#include "systems/movementsystem.hpp"
-#include "systems/scenegraphsystem.hpp"
-#include "systems/animationsystem.hpp"
-#include "systems/scriptsystem.hpp"
+#include "systems/render.hpp"
+#include "systems/map.hpp"
+#include "systems/camera.hpp"
+#include "systems/player.hpp"
+#include "systems/movement.hpp"
+#include "systems/scenegraph.hpp"
+#include "systems/animation.hpp"
+#include "systems/script.hpp"
 
 namespace tilegame
 {
