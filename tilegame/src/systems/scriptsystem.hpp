@@ -1,6 +1,10 @@
 #pragma once
 
 #define SOL_ALL_SAFETIES_ON 1
+#pragma once
+
+#include <vector>
+
 #include "sol/sol.hpp"
 
 #include "engine.hpp"
@@ -13,6 +17,8 @@ namespace tilegame::systems
     {
     private:
         sol::state _lua;
+        std::vector<entt::entity> _entities_to_clear;
+
         void register_api();
         entt::entity create_entity();
 

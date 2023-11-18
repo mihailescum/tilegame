@@ -53,7 +53,13 @@ namespace tilegame::systems
         {
             const auto &script_path = script.path;
             _lua.script_file(script_path);
+            _entities_to_clear.push_back(entity);
         }
-        //_registry.clear<tilegame::components::ScriptLoader>();
+
+        if (!_entities_to_clear.empty())
+        {
+            _registry.remove<tilegame::components::ScriptLoader>(_entities_to_clear.begin(), _entities_to_clear.end());
+            _entities_to_clear.clear();
+        }
     }
 } // namespace tilegame::systems
