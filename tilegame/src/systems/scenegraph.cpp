@@ -12,15 +12,15 @@ namespace tilegame::systems
     void SceneGraphSystem::initialize()
     {
         const auto root_entity = _registry.create();
-        _registry.emplace<tilegame::components::Transform>(root_entity, glm::vec2(0.0), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(root_entity, glm::vec2(0.0), glm::vec2(0.0));
 
         tilegame::SceneGraphData root_scenedata(root_entity);
         _scene.scene_graph_root().data(root_scenedata);
-        _registry.emplace<tilegame::components::SceneNode>(root_entity, &_scene.scene_graph_root());
+        _registry.emplace<components::SceneNode>(root_entity, &_scene.scene_graph_root());
 
         _transformation_observer.connect(
             _registry,
-            entt::collector.update<tilegame::components::Transform>().where<tilegame::components::SceneNode>());
+            entt::collector.update<components::Transform>().where<components::SceneNode>());
     }
 
     void SceneGraphSystem::unload_content()
@@ -39,7 +39,7 @@ namespace tilegame::systems
 
         for (const auto entity : _transformation_observer)
         {
-            auto &scene_node_component = _registry.get<tilegame::components::SceneNode>(entity);
+            auto &scene_node_component = _registry.get<components::SceneNode>(entity);
             update_node_transform(*scene_node_component.node);
         }
 
@@ -51,7 +51,7 @@ namespace tilegame::systems
         const auto entity = node.data().entity;
         const auto parent = node.parent();
 
-        auto &transform_component = _registry.get<tilegame::components::Transform>(entity);
+        auto &transform_component = _registry.get<components::Transform>(entity);
 
         entt::entity parent_entity = entt::null;
         if (parent)
@@ -59,7 +59,7 @@ namespace tilegame::systems
             parent_entity = parent->data().entity;
         }
 
-        const auto parent_transform = _registry.try_get<tilegame::components::Transform>(parent_entity);
+        const auto parent_transform = _registry.try_get<components::Transform>(parent_entity);
 
         if (parent_transform)
         {

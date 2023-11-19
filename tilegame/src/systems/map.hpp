@@ -12,8 +12,8 @@ namespace tilegame::systems
     class MapSystem : public System
     {
     private:
-        static const std::string FIELD_STATE;
-        static const std::string FIELD_SCRIPT;
+        inline static const std::string FIELD_STATE = "state";
+        inline static const std::string FIELD_SCRIPT = "script";
 
         const entt::entity create_map_entity(const engine::tilemap::TileMap &map);
         const entt::entity create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map);

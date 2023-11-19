@@ -10,6 +10,7 @@
 #include "engine.hpp"
 
 #include "system.hpp"
+#include "components/event.hpp"
 
 namespace tilegame::systems
 {
@@ -45,8 +46,16 @@ namespace tilegame::systems
             _lua.set_function(name, overload);
         }
 
+        template <class T>
+        void add_event_listener(std::function<void(const std::string, const T &)> callback, entt::entity source)
+        {
+            const auto listener_entity = _registry.create();
+            _registry.emplace<components::EventListener<T>>(listener_entity, components::EventListener(callback, source));
+        }
+
     public:
         ScriptSystem(tilegame::Scene &scene, entt::registry &registry);
+        ~ScriptSystem();
 
         void initialize();
         void update(const engine::GameTime &update_time);

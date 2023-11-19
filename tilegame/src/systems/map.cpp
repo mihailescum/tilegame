@@ -13,9 +13,6 @@
 
 namespace tilegame::systems
 {
-    const std::string MapSystem::FIELD_STATE = "state";
-    const std::string MapSystem::FIELD_SCRIPT = "script";
-
     MapSystem::MapSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
@@ -30,12 +27,12 @@ namespace tilegame::systems
     const entt::entity MapSystem::create_map_entity(const engine::tilemap::TileMap &map)
     {
         const auto entity = _registry.create();
-        _registry.emplace<tilegame::components::TileMap>(entity, map);
-        _registry.emplace<tilegame::components::Transform>(entity, glm::vec2(0.0), glm::vec2(0.0));
+        _registry.emplace<components::TileMap>(entity, map);
+        _registry.emplace<components::Transform>(entity, glm::vec2(0.0), glm::vec2(0.0));
 
         const tilegame::SceneGraphData map_scenedata(entity);
         tilegame::SceneGraphNode &map_scenenode = _scene.scene_graph_root().add_child(map_scenedata);
-        _registry.emplace<tilegame::components::SceneNode>(entity, &map_scenenode);
+        _registry.emplace<components::SceneNode>(entity, &map_scenenode);
 
         std::vector<entt::entity> tileset_entities;
         for (const auto &tileset : map.tilesets())
@@ -50,7 +47,7 @@ namespace tilegame::systems
 
             const tilegame::SceneGraphData layer_scenedata(layer_entity);
             tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
-            _registry.emplace<tilegame::components::SceneNode>(layer_entity, &layer_scenenode);
+            _registry.emplace<components::SceneNode>(layer_entity, &layer_scenenode);
         }
 
         for (const auto &object : map.objects())
@@ -61,7 +58,7 @@ namespace tilegame::systems
                 const auto sprite_entity = create_sprite_entity(*object, map);
                 const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
                 tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
-                _registry.emplace<tilegame::components::SceneNode>(sprite_entity, &sprite_scenenode);
+                _registry.emplace<components::SceneNode>(sprite_entity, &sprite_scenenode);
             }
             else
             {
@@ -76,15 +73,15 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
 
-        _registry.emplace<tilegame::components::Transform>(entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
-        _registry.emplace<tilegame::components::Ordering>(entity, layer.z_index());
-        _registry.emplace<tilegame::components::Renderable2D>(entity);
+        _registry.emplace<components::Transform>(entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
+        _registry.emplace<components::Ordering>(entity, layer.z_index());
+        _registry.emplace<components::Renderable2D>(entity);
 
         const auto tiles = layer.tiles();
         const auto width = layer.width();
         const auto height = layer.height();
 
-        std::vector<tilegame::components::TileLayer::TileData> tile_data;
+        std::vector<components::TileLayer::TileData> tile_data;
         tile_data.reserve(width * height);
         for (int x = 0; x < width; ++x)
         {
@@ -111,12 +108,12 @@ namespace tilegame::systems
                     const engine::Rectangle tile_dest_rect(x * tile_width, y * tile_height, tile_width, tile_height);
                     const auto tile_source_rect = tileset_containing_tile->source_rect(tile.ID);
 
-                    tilegame::components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
+                    components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
                     tile_data.push_back(data);
                 }
             }
         }
-        _registry.emplace<tilegame::components::TileLayer>(entity, layer, tile_data);
+        _registry.emplace<components::TileLayer>(entity, layer, tile_data);
 
         return entity;
     }
@@ -124,7 +121,7 @@ namespace tilegame::systems
     const entt::entity MapSystem::create_tileset_entity(const engine::tilemap::Tileset &tileset)
     {
         const auto entity = _registry.create();
-        _registry.emplace<tilegame::components::Tileset>(entity, tileset);
+        _registry.emplace<components::Tileset>(entity, tileset);
 
         return entity;
     }
@@ -159,19 +156,19 @@ namespace tilegame::systems
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();
-        _registry.emplace<tilegame::components::Transform>(entitiy, sprite_position, glm::vec2(0.0));
-        _registry.emplace<tilegame::components::Ordering>(entitiy, 3.0);
-        //_registry.emplace<tilegame::components::Movement>(entitiy, tilegame::components::Movement::None, 100.0);
-        _registry.emplace<tilegame::components::Renderable2D>(entitiy);
-        const auto &animation_component = _registry.emplace<tilegame::components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
-        _registry.emplace<tilegame::components::Sprite>(entitiy, texture, animation_component.get_current_frame().source_rect);
+        _registry.emplace<components::Transform>(entitiy, sprite_position, glm::vec2(0.0));
+        _registry.emplace<components::Ordering>(entitiy, 3.0);
+        //_registry.emplace<components::Movement>(entitiy, components::Movement::None, 100.0);
+        _registry.emplace<components::Renderable2D>(entitiy);
+        const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
+        _registry.emplace<components::Sprite>(entitiy, texture, animation_component.get_current_frame().source_rect);
 
         auto &properties = const_cast<tson::Object &>(data).getProperties();
         const auto *script_path_property = properties.getProperty(MapSystem::FIELD_SCRIPT);
         if (script_path_property)
         {
             std::filesystem::path script_path = map.resource_path().parent_path() / script_path_property->getValue<std::string>();
-            _registry.emplace<tilegame::components::ScriptLoader>(entitiy, script_path);
+            _registry.emplace<components::ScriptLoader>(entitiy, script_path);
         }
 
         return entitiy;

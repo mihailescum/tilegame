@@ -19,7 +19,8 @@ namespace tilegame::worldscene
           _system_scenegraph(*this, _registry),
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
-          _system_timer(*this, _registry)
+          _system_timer(*this, _registry),
+          _system_event(*this, _registry)
     {
     }
 

@@ -15,8 +15,8 @@ namespace tilegame::systems
 
     void AnimationSystem::update(const engine::GameTime &update_time)
     {
-        const auto animation_view = _registry.view<tilegame::components::Animation>();
-        const auto sprite_view = _registry.view<tilegame::components::Animation, tilegame::components::Sprite>();
+        const auto animation_view = _registry.view<components::Animation>();
+        const auto sprite_view = _registry.view<components::Animation, components::Sprite>();
 
         for (auto &&[entity, animation] : animation_view.each())
         {
@@ -36,7 +36,7 @@ namespace tilegame::systems
 
                 if (sprite_view.contains(entity))
                 {
-                    _registry.patch<tilegame::components::Sprite>(entity, [=](auto &sprite)
+                    _registry.patch<components::Sprite>(entity, [=](auto &sprite)
                                                                   { sprite.source_rect = animation.frames[animation.current_frame_idx].source_rect; });
                 }
             }

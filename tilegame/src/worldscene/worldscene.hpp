@@ -17,6 +17,7 @@
 #include "systems/animation.hpp"
 #include "systems/script.hpp"
 #include "systems/timer.hpp"
+#include "systems/event.hpp"
 
 namespace tilegame
 {
@@ -30,15 +31,16 @@ namespace tilegame::worldscene
     private:
         entt::registry _registry;
 
-        tilegame::systems::RenderSystem _system_render;
-        tilegame::systems::MapSystem _system_map;
-        tilegame::systems::CameraSystem _system_camera;
-        tilegame::systems::PlayerSystem _system_player;
-        tilegame::systems::MovementSystem _system_movement;
-        tilegame::systems::SceneGraphSystem _system_scenegraph;
-        tilegame::systems::AnimationSystem _system_animation;
-        tilegame::systems::ScriptSystem _system_script;
-        tilegame::systems::TimerSystem _system_timer;
+        systems::RenderSystem _system_render;
+        systems::MapSystem _system_map;
+        systems::CameraSystem _system_camera;
+        systems::PlayerSystem _system_player;
+        systems::MovementSystem _system_movement;
+        systems::SceneGraphSystem _system_scenegraph;
+        systems::AnimationSystem _system_animation;
+        systems::ScriptSystem _system_script;
+        systems::TimerSystem _system_timer;
+        systems::EventSystem _system_event;
 
     public:
         WorldScene(Tilegame &game);

@@ -1,17 +1,33 @@
-local soldier1 = {}
+local soldier1
 
-local function main()
-    print("Script started")
+local function handle_event(event_type, event)
+    print("Handle event")
 
-    entity = _create_entity()
-    c = _TimerComponent.new(3)
-    _add_component(entity, c)
-    -- coroutine.yield()
-    -- soldier1:main()
+    soldier1[event_type](event)
 
-    print("Timer finished")
+    print("Handle event finished")
 end
 
-soldier1.main = coroutine.wrap(main)
+local function handle_timer_event(self, event) 
+    print("Timer 1 finished!")
+    coroutine.yield()
+    print("Timer 2 finished!")
+end
 
+timer1 = _create_entity()
+c1 = _TimerComponent.new(1)
+_add_component(timer1, c1)
+
+timer2 = _create_entity()
+c2 = _TimerComponent.new(3)
+_add_component(timer2, c2)
+
+_add_timer_event_listener(handle_event, timer1)
+_add_timer_event_listener(handle_event, timer2)
+
+
+soldier1 = {
+    handle_event = handle_event,
+    timer = coroutine.wrap(handle_timer_event),
+}
 return soldier1

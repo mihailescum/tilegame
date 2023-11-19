@@ -15,8 +15,8 @@ namespace tilegame::systems
         bool _needs_sorting;
         engine::SpriteBatch &_spritebatch;
 
-        void draw_sprite(const tilegame::components::Transform &transform, const tilegame::components::Sprite &sprite) const;
-        void draw_tilelayer(const tilegame::components::Transform &transform, const tilegame::components::TileLayer &tile_layer) const;
+        void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
+        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const;
         void sort_renderables() const;
         void needs_sorting() { _needs_sorting = true; }
 

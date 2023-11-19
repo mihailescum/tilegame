@@ -1,21 +1,19 @@
 #include "script.hpp"
 
-#include "components/animation.hpp"
-#include "components/camera.hpp"
-#include "components/movement.hpp"
-#include "components/ordering.hpp"
-#include "components/player.hpp"
-#include "components/renderable2d.hpp"
-#include "components/scenenode.hpp"
 #include "components/scriptloader.hpp"
-#include "components/sprite.hpp"
-#include "components/transform.hpp"
 #include "components/timer.hpp"
+#include "components/luatable.hpp"
 
 namespace tilegame::systems
 {
     ScriptSystem::ScriptSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
+    }
+
+    ScriptSystem::~ScriptSystem()
+    {
+        // Clear all components before the lua state is destroyed to avoid invalid references which would lead to a SegFault
+        _registry.clear();
     }
 
     void ScriptSystem::initialize()
@@ -31,13 +29,18 @@ namespace tilegame::systems
         // _lua.set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
         _lua.new_usertype<entt::entity>("_entity", sol::constructors<entt::entity>());
-        _lua.new_usertype<tilegame::components::ScriptLoader>("_ScriptLoaderComponent", sol::constructors<tilegame::components::ScriptLoader(), tilegame::components::ScriptLoader(const std::string)>());
-        _lua.new_usertype<tilegame::components::Timer>("_TimerComponent", sol::constructors<tilegame::components::Timer(), tilegame::components::Timer(double)>());
+        _lua.new_usertype<components::ScriptLoader>("_ScriptLoaderComponent", sol::constructors<components::ScriptLoader(), components::ScriptLoader(const std::string)>());
+        _lua.new_usertype<components::Timer>("_TimerComponent", sol::constructors<components::Timer(), components::Timer(double)>());
+        _lua.new_usertype<components::TimerEventArgs>("_TimerEventArgsComponent", sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(double)>());
+        _lua.new_usertype<components::LuaTable>("_TableComponent", sol::constructors<components::LuaTable(), components::LuaTable(const sol::table &)>());
 
         add_component_function<
             EmplaceOrReplaceWrapper,
-            tilegame::components::Timer,
-            tilegame::components::ScriptLoader>("_add_component");
+            components::Timer,
+            components::ScriptLoader,
+            components::LuaTable>("_add_component");
+
+        _lua.set_function("_add_timer_event_listener", &ScriptSystem::add_event_listener<components::TimerEventArgs>, this);
     }
 
     entt::entity ScriptSystem::create_entity()
@@ -47,19 +50,19 @@ namespace tilegame::systems
 
     void ScriptSystem::update(const engine::GameTime &update_time)
     {
-        const auto script_view = _registry.view<tilegame::components::ScriptLoader>();
+        const auto script_view = _registry.view<components::ScriptLoader>();
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;
             sol::table result = _lua.script_file(script_path);
-            result["main"]();
+            _registry.emplace<components::LuaTable>(entity, result);
 
             _entities_to_clear.push_back(entity);
         }
 
         if (!_entities_to_clear.empty())
         {
-            _registry.remove<tilegame::components::ScriptLoader>(_entities_to_clear.begin(), _entities_to_clear.end());
+            _registry.remove<components::ScriptLoader>(_entities_to_clear.begin(), _entities_to_clear.end());
             _entities_to_clear.clear();
         }
     }

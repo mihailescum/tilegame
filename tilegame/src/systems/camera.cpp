@@ -16,15 +16,15 @@ namespace tilegame::systems
     void CameraSystem::initialize()
     {
         const auto camera_entity = _registry.create();
-        _registry.emplace<tilegame::components::Camera>(
+        _registry.emplace<components::Camera>(
             camera_entity,
             1.0,
             glm::mat4(1.0),
             _scene.game().graphics_device().viewport());
-        _registry.emplace<tilegame::components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
         entt::entity player1_entity = entt::null;
-        auto players = _registry.view<tilegame::components::Player>();
+        auto players = _registry.view<components::Player>();
         for (auto &&[entity, player] : players.each())
         {
             if (player.id == 1)
@@ -36,17 +36,17 @@ namespace tilegame::systems
 
         if (player1_entity != entt::null)
         {
-            auto player1_scenenode = _registry.get<tilegame::components::SceneNode>(player1_entity).node;
+            auto player1_scenenode = _registry.get<components::SceneNode>(player1_entity).node;
 
             const tilegame::SceneGraphData camera_scenedata(camera_entity);
             tilegame::SceneGraphNode &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
-            _registry.emplace<tilegame::components::SceneNode>(camera_entity, &camera_scenenode);
+            _registry.emplace<components::SceneNode>(camera_entity, &camera_scenenode);
         }
     }
 
     void CameraSystem::update(const engine::GameTime &update_time)
     {
-        const auto cameras = _registry.view<tilegame::components::Camera, tilegame::components::Transform>();
+        const auto cameras = _registry.view<components::Camera, components::Transform>();
 
         for (auto &&[entity, camera, transform] : cameras.each())
         {
