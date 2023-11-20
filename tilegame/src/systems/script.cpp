@@ -28,15 +28,33 @@ namespace tilegame::systems
         // Possible syntax to directly bind the _registry.create() function:
         // _lua.set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
-        _lua.new_usertype<entt::entity>("_entity", sol::constructors<entt::entity>());
-        _lua.new_usertype<components::ScriptLoader>("_ScriptLoaderComponent", sol::constructors<components::ScriptLoader(), components::ScriptLoader(const std::string)>());
-        _lua.new_usertype<components::Timer>("_TimerComponent", sol::constructors<components::Timer(), components::Timer(double)>());
-        _lua.new_usertype<components::TimerEventArgs>("_TimerEventArgsComponent", sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(double)>());
-        _lua.new_usertype<components::LuaTable>("_TableComponent", sol::constructors<components::LuaTable(), components::LuaTable(const sol::table &)>());
+        // Define the user types
+        _lua.new_usertype<entt::entity>(
+            "_entity", sol::constructors<entt::entity>());
+        _lua.new_usertype<components::ScriptLoader>(
+            "_ScriptLoaderComponent",
+            sol::constructors<components::ScriptLoader(), components::ScriptLoader(const std::string)>(),
+            "path", &components::ScriptLoader::path);
+        _lua.new_usertype<components::Timer>(
+            "_TimerComponent",
+            sol::constructors<components::Timer(), components::Timer(double, bool)>(),
+            "repeat", &components::Timer::repeat,
+            "time_left", &components::Timer::time_left,
+            "time_total", &components::Timer::time_total);
+        _lua.new_usertype<components::TimerEventArgs>(
+            "_TimerEventArgsComponent",
+            sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(double, bool)>(),
+            "duration", &components::TimerEventArgs::duration,
+            "repeated", &components::TimerEventArgs::repeated);
+        _lua.new_usertype<components::LuaTable>(
+            "_TableComponent",
+            sol::constructors<components::LuaTable(), components::LuaTable(const sol::table &)>(),
+            "table", &components::LuaTable::table);
 
         add_component_function<
             EmplaceOrReplaceWrapper,
             components::Timer,
+            components::TimerEventArgs,
             components::ScriptLoader,
             components::LuaTable>("_add_component");
 

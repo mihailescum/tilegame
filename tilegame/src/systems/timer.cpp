@@ -19,9 +19,16 @@ namespace tilegame::systems
             if (timer.time_left <= 0)
             {
                 // Add an event
-                _registry.emplace<components::TimerEventArgs>(entity, timer.time_total);
+                _registry.emplace<components::TimerEventArgs>(entity, timer.time_total, timer.repeat);
 
-                _entities_to_clear.push_back(entity);
+                if (timer.repeat)
+                {
+                    timer.time_left += timer.time_total;
+                }
+                else
+                {
+                    _entities_to_clear.push_back(entity);
+                }
             }
 
             // Trigger on_update()
@@ -43,7 +50,7 @@ namespace tilegame::systems
             {
                 if (!_registry.valid(listener_component.source) || listener_component.source == source)
                 {
-                    listener_component.callback(components::TimerEventArgs::EVENT_TYPE, event_args);
+                    listener_component.callback(components::TimerEventArgs::EVENT_TYPE, event_args, source);
                 }
             }
         }
