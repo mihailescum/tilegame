@@ -72,8 +72,16 @@ namespace tilegame::systems
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;
-            sol::table result = _lua.script_file(script_path);
-            _registry.emplace<components::LuaTable>(entity, result);
+            sol::load_result load_result = _lua.load_file(script_path);
+            if (load_result.valid())
+            {
+                sol::table result = load_result("test", "test2");
+                _registry.emplace<components::LuaTable>(entity, result);
+            }
+            else
+            {
+                throw "Error loading file";
+            }
 
             _entities_to_clear.push_back(entity);
         }

@@ -11,17 +11,12 @@ local function handle_timer_event(self, event, source)
     end
 end
 
-timer1 = _create_entity()
-c1 = _TimerComponent.new(1, true)
+local timer1 = _create_entity()
+local c1 = _TimerComponent.new(1, true)
 _add_component(timer1, c1)
 
-timer2 = _create_entity()
-c2 = _TimerComponent.new(2, true)
-_add_component(timer2, c2)
-
-_add_timer_event_listener(handle_event, timer1)
-_add_timer_event_listener(handle_event, timer2)
-
+_add_timer_event_listener(
+    function() print("Hello soldier!") end, timer1)
 
 soldier1 = {
     handle_event = handle_event,

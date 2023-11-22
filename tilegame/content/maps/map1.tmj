@@ -263,6 +263,12 @@
                  "height":32,
                  "id":4,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"script",
+                         "type":"string",
+                         "value":"..\/scripts\/man1.lua"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
