@@ -54,6 +54,9 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/engi
 # sol3 Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/sol)
 
+# debugger_lua Header Files
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/debugger_lua)
+
 # Link with Engine
 target_link_libraries(${EXECUTABLE_NAME} engine)
 

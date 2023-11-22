@@ -1,5 +1,7 @@
 #include "script.hpp"
 
+#include "debugger_lua/debugger_lua.h"
+
 #include "components/scriptloader.hpp"
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
@@ -18,8 +20,103 @@ namespace tilegame::systems
 
     void ScriptSystem::initialize()
     {
-        _lua.open_libraries(sol::lib::base, sol::lib::coroutine);
+        open_libs();
         register_api();
+        // dbg_setup(_lua, "debugger", "dbg", NULL, NULL);
+    }
+
+    void ScriptSystem::open_libs()
+    {
+        // See https://blog.rubenwardy.com/2020/07/26/sol3-script-sandbox/ for the setup of our sandbox
+
+        // Create new blank environment
+        auto env = sol::environment(_lua, sol::create);
+
+        // Set global variable for globals
+        env["_G"] = env;
+
+        const std::vector<std::string> whitelisted = {
+            "assert",
+            "error",
+            "ipairs",
+            "next",
+            "pairs",
+            "pcall",
+            "print",
+            "select",
+            "tonumber",
+            "tostring",
+            "type",
+            "unpack",
+            "_VERSION",
+            "xpcall",
+
+            // These functions are unsafe as they can bypass or change metatables,
+            // but they are required to implement classes.
+            "rawequal",
+            "rawget",
+            "rawset",
+            "setmetatable",
+        };
+
+        for (const auto &name : whitelisted)
+        {
+            env[name] = _lua[name];
+        }
+
+        _lua.open_libraries(sol::lib::coroutine, sol::lib::string, sol::lib::table, sol::lib::math);
+        const std::vector<std::string> safeLibraries = {
+            "coroutine", "string", "table", "math"};
+
+        for (const auto &name : safeLibraries)
+        {
+            sol::table copy(_lua, sol::create);
+            sol::table library_table = _lua[name];
+            for (auto pair : library_table)
+            {
+                // first is the name of a function in module, second is the function
+                copy[pair.first] = pair.second;
+            }
+            env[name] = copy;
+        }
+
+        _lua.open_libraries(sol::lib::os);
+        sol::table os(_lua, sol::create);
+        sol::table os_lua = _lua["os"];
+        os["clock"] = _lua["os"]["clock"];
+        os["date"] = _lua["os"]["date"];
+        os["difftime"] = _lua["os"]["difftime"];
+        os["time"] = _lua["os"]["time"];
+
+        // TODO maybe allow only in debug mode?
+        os["exit"] = _lua["os"]["exit"];
+
+        env["os"] = os;
+
+        // Setting the global environment
+#if LUA_VERSION_NUM >= 502
+        // Get environment registry index
+        lua_rawgeti(_lua, LUA_REGISTRYINDEX, env.registry_index());
+
+        // Set the global environment
+        lua_rawseti(_lua, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+#else
+        // Get main thread
+        int is_main = lua_pushthread(lua);
+        assert(is_main);
+        int thread = lua_gettop(lua);
+
+        // Get environment registry index
+        lua_rawgeti(lua, LUA_REGISTRYINDEX, env.registry_index());
+
+        // Set the global environment
+        if (!lua_setfenv(lua, thread))
+        {
+            throw ModException(
+                "Security: Unable to set environment of the main Lua thread!");
+        };
+        lua_pop(lua, 1); // Pop thread
+#endif
     }
 
     void ScriptSystem::register_api()
@@ -72,16 +169,18 @@ namespace tilegame::systems
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;
-            sol::load_result load_result = _lua.load_file(script_path);
+            _lua.script_file(script_path);
+            /*sol::load_result load_result = _lua.load_file(script_path);
             if (load_result.valid())
             {
-                sol::table result = load_result("test", "test2");
+                sol::table arg = _lua.create_table_with("entity", entity);
+                sol::table result = load_result(arg);
                 _registry.emplace<components::LuaTable>(entity, result);
             }
             else
             {
                 throw "Error loading file";
-            }
+            }*/
 
             _entities_to_clear.push_back(entity);
         }

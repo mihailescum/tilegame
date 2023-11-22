@@ -21,6 +21,7 @@ namespace tilegame::systems
         std::vector<entt::entity> _entities_to_clear;
 
         void register_api();
+        void open_libs();
         entt::entity create_entity();
 
         struct EmplaceOrReplaceWrapper
