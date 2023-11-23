@@ -1,14 +1,13 @@
 #pragma once
 
-#define SOL_ALL_SAFETIES_ON 1
-#pragma once
-
 #include <vector>
 
+#define SOL_ALL_SAFETIES_ON 1
 #include "sol/sol.hpp"
 
 #include "engine.hpp"
 
+#include "secureluastate.hpp"
 #include "system.hpp"
 #include "components/event.hpp"
 
@@ -17,7 +16,7 @@ namespace tilegame::systems
     class ScriptSystem : public System
     {
     private:
-        sol::state _lua;
+        tilegame::SecureLuaState _lua;
         std::vector<entt::entity> _entities_to_clear;
 
         void register_api();
@@ -44,7 +43,7 @@ namespace tilegame::systems
             auto overload = sol::overload(
                 [this](entt::entity entity, Ts component)
                 { return F(*this)(entity, component); }...);
-            _lua.set_function(name, overload);
+            _lua().set_function(name, overload);
         }
 
         template <class T>

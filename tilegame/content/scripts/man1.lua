@@ -1,4 +1,4 @@
-local dbg = require "debugger"
+local dbg = require("debugger")
 
 local man1 = {} --...
 

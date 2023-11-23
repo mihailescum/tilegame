@@ -34,6 +34,6 @@ _add_timer_event_listener(
 soldier1["handle_event"] = handle_event
 soldier1["timer"] = coroutine.wrap(handle_timer_event)
 
-print(dump(soldier1))
+-- print(dump(soldier1))
 
 return soldier1
