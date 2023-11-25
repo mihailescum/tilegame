@@ -11,6 +11,7 @@ namespace tilegame
         sol::table result;
         if (name == "debugger")
         {
+            // TODO: something is not quite right with the debugger. 'e' or 'p' cannot access the local variables for some reason
             result = _lua.require_script(name, debugger_lua::debugger_src);
             result.set_function("write", &SecureLuaState::safe_write, this);
             result.set_function("read", &SecureLuaState::safe_read, this);

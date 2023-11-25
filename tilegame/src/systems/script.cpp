@@ -72,8 +72,7 @@ namespace tilegame::systems
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;
-            _lua().script_file(script_path);
-            /*sol::load_result load_result = _lua().load_file(script_path);
+            sol::load_result load_result = _lua().load_file(script_path);
             if (load_result.valid())
             {
                 sol::table arg = _lua().create_table_with("entity", entity);
@@ -83,7 +82,7 @@ namespace tilegame::systems
             else
             {
                 throw "Error loading file";
-            }*/
+            }
 
             _entities_to_clear.push_back(entity);
         }
