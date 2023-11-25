@@ -20,7 +20,8 @@ namespace tilegame::worldscene
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
           _system_timer(*this, _registry),
-          _system_event(*this, _registry)
+          _system_event(*this, _registry),
+          _system_particle(*this, _registry)
     {
     }
 
@@ -30,6 +31,7 @@ namespace tilegame::worldscene
         _system_render.initialize();
         _system_animation.initialize();
         _system_script.initialize();
+        _system_particle.initialize();
 
         _system_player.initialize();
         _system_camera.initialize();
@@ -39,6 +41,7 @@ namespace tilegame::worldscene
     {
         _system_map.load_content();
         _system_player.load_content();
+        _system_particle.load_content();
     }
 
     void WorldScene::unload_content()
@@ -49,6 +52,7 @@ namespace tilegame::worldscene
     void WorldScene::update(const engine::GameTime &update_time)
     {
         _system_timer.update(update_time);
+        _system_particle.update(update_time);
 
         _system_player.update(update_time);
         _system_script.update(update_time);

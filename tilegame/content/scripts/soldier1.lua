@@ -12,7 +12,7 @@ local function handle_timer_event(self, event, source)
 end
 
 local timer1 = _create_entity()
-local c1 = _TimerComponent.new(1, true)
+local c1 = _TimerComponent.new(10, true)
 _add_component(timer1, c1)
 
 _add_timer_event_listener(

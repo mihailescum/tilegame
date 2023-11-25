@@ -18,6 +18,7 @@
 #include "systems/script.hpp"
 #include "systems/timer.hpp"
 #include "systems/event.hpp"
+#include "systems/particle.hpp"
 
 namespace tilegame
 {
@@ -41,6 +42,7 @@ namespace tilegame::worldscene
         systems::ScriptSystem _system_script;
         systems::TimerSystem _system_timer;
         systems::EventSystem _system_event;
+        systems::ParticleSystem _system_particle;
 
     public:
         WorldScene(Tilegame &game);

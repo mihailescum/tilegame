@@ -8,4 +8,6 @@ namespace tilegame::systems
         : _scene(scene), _registry(registry)
     {
     }
+
+    System::~System() {}
 } // namespace tilegame::systems

@@ -15,5 +15,6 @@ namespace tilegame::systems
 
     public:
         System(tilegame::Scene &scene, entt::registry &registry);
+        virtual ~System() = 0;
     };
 } // namespace tilegame
