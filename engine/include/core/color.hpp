@@ -5,13 +5,13 @@ namespace engine
     struct Color
     {
     public:
-        constexpr Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {}
+        constexpr Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
         constexpr Color() : Color(0.0, 0.0, 0.0, 0.0) {}
 
-        double r;
-        double g;
-        double b;
-        double a;
+        float r;
+        float g;
+        float b;
+        float a;
 
         static const Color WHITE;
         static const Color BLACK;

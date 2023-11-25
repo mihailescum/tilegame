@@ -21,7 +21,7 @@ namespace engine
         Window _window;
         GraphicsDevice _graphics_device;
         ResourceManager _resource_manager;
-        double _time_step;
+        float _time_step;
 
         virtual void initialize();
         virtual void load_content();

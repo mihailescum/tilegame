@@ -1,12 +1,14 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "glad/glad.h"
 
-#include <glm/glm.hpp>
+#include "shape.hpp"
 
 namespace engine
 {
-    struct Rectangle
+    struct Rectangle : public Shape
     {
     public:
         Rectangle() {}

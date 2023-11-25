@@ -37,13 +37,13 @@ namespace tilegame::systems
             "path", &components::ScriptLoader::path);
         _lua().new_usertype<components::Timer>(
             "_TimerComponent",
-            sol::constructors<components::Timer(), components::Timer(double, bool)>(),
+            sol::constructors<components::Timer(), components::Timer(float, bool)>(),
             "repeat", &components::Timer::repeat,
             "time_left", &components::Timer::time_left,
             "time_total", &components::Timer::time_total);
         _lua().new_usertype<components::TimerEventArgs>(
             "_TimerEventArgsComponent",
-            sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(double, bool)>(),
+            sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(float, bool)>(),
             "duration", &components::TimerEventArgs::duration,
             "repeated", &components::TimerEventArgs::repeated);
         _lua().new_usertype<components::LuaTable>(

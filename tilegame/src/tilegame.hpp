@@ -10,7 +10,7 @@ namespace tilegame
     private:
         int _frames = 0;
         int _updates = 0;
-        double _timer = 0;
+        float _timer = 0;
 
         engine::SpriteBatch _spritebatch;
         worldscene::WorldScene _worldscene;

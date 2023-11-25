@@ -17,13 +17,14 @@ namespace engine
     public:
         Scene(Game &game) : _game(game) {}
         Scene(const Scene &scene) = delete;
+        virtual ~Scene() {}
 
         const Game &game() const { return _game; }
         Game &game() { return _game; }
         const SceneGraphNode<T> &scene_graph_root() const { return _scene_graph_root; }
         SceneGraphNode<T> &scene_graph_root() { return _scene_graph_root; }
 
-        virtual void initialize(){};
+        virtual void initialize() = 0;
         virtual void load_content(){};
         virtual void unload_content(){};
         virtual void update(const engine::GameTime &update_time){};

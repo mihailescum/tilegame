@@ -19,13 +19,13 @@ namespace engine
         if (_shouldRun)
             load_content();
 
-        double last_update = glfwGetTime();
-        double last_draw = glfwGetTime();
-        double delta_update = 0;
-        double delta_draw = 0;
-        double now = last_update;
+        float last_update = glfwGetTime();
+        float last_draw = glfwGetTime();
+        float delta_update = 0;
+        float delta_draw = 0;
+        float now = last_update;
 
-        double accumulated_time = _time_step;
+        float accumulated_time = _time_step;
 
         // - While window is alive
         while (_shouldRun)
