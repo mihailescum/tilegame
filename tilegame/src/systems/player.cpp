@@ -55,7 +55,7 @@ namespace tilegame::systems
             {
                 auto result = handle_input_1();
                 _registry.patch<components::Movement>(entity, [=](auto &movement)
-                                                                { movement.direction = result; });
+                                                      { movement.direction = result; });
             }
             break;
 

@@ -63,6 +63,10 @@ namespace tilegame::worldscene
         _system_scenegraph.update(update_time);
 
         _system_camera.update(update_time);
+
+        // Clear all event args
+        // TODO overthink this design
+        _system_event.update(update_time);
     }
 
     void WorldScene::draw(const engine::GameTime &draw_time)

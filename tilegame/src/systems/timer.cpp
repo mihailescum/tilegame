@@ -54,6 +54,5 @@ namespace tilegame::systems
                 }
             }
         }
-        _registry.clear<components::TimerEventArgs>();
     }
 } // namespace tilegame::systems

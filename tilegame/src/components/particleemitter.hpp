@@ -17,13 +17,37 @@ namespace tilegame::components
         // Angle of spread in radiants
         float spread_angle;
 
+        // Min/Max particle speed
+        glm::vec2 speed;
+
         // Min/Max lifetime of particle
         glm::vec2 lifetime;
+
+        // Min/Max scale of particle
+        glm::vec2 scale;
 
         // Tint color
         engine::Color color;
 
-        // Min/Max scale of particle
-        glm::vec2 scale;
+        ParticleEmitter() = default;
+        ParticleEmitter(int rate,
+                        glm::vec2 spread_direction,
+                        float spread_angle,
+                        float speed_min,
+                        float speed_max,
+                        float lifetime_min,
+                        float lifetime_max,
+                        float scale_min,
+                        float scale_max,
+                        engine::Color color)
+            : rate(rate),
+              spread_direction(spread_direction),
+              spread_angle(spread_angle),
+              speed(speed_min, speed_max),
+              lifetime(lifetime_min, lifetime_max),
+              scale(scale_min, scale_max),
+              color(color)
+        {
+        }
     };
 } // namespace tilegame::components
