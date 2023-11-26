@@ -20,15 +20,6 @@ namespace tilegame::systems
 
     void PlayerSystem::initialize()
     {
-        _player1_entity = _registry.create();
-        _registry.emplace<components::Player>(_player1_entity, 1);
-        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
-        _registry.emplace<components::Ordering>(_player1_entity, 2.0);
-        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0), 200.0);
-
-        const tilegame::SceneGraphData player1_scenedata(_player1_entity);
-        tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
-        _registry.emplace<components::SceneNode>(_player1_entity, &player1_scenenode);
     }
 
     void PlayerSystem::load_content()
@@ -39,14 +30,23 @@ namespace tilegame::systems
 
         const engine::sprite::Sprite &player1_sprite = (*characters)["man"];
 
+        _player1_entity = _registry.create();
+        _registry.emplace<components::Player>(_player1_entity, 1);
+        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
+        _registry.emplace<components::Ordering>(_player1_entity, 2.0);
+        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0), 200.0);
+
+        const tilegame::SceneGraphData player1_scenedata(_player1_entity);
+        tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
+        _registry.emplace<components::SceneNode>(_player1_entity, &player1_scenenode);
         const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite["down_walking"].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
-        _registry.emplace<components::Sprite>(_player1_entity, characters_texture, player1_animation_component.get_current_frame().source_rect);
+        _registry.emplace<components::Sprite>(_player1_entity, &characters_texture, player1_animation_component.get_current_frame().source_rect);
     }
 
     void PlayerSystem::update(const engine::GameTime &update_time)
     {
-        const auto players = _registry.view<components::Player>(entt::exclude<tilegame::components::Inactive>);
+        const auto players = _registry.view<components::Player>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, player] : players.each())
         {

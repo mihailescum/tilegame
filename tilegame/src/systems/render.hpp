@@ -6,6 +6,7 @@
 #include "components/transform.hpp"
 #include "components/sprite.hpp"
 #include "components/tilelayer.hpp"
+#include "components/particlepool.hpp"
 
 namespace tilegame::systems
 {
@@ -17,6 +18,8 @@ namespace tilegame::systems
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
         void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const;
+        void draw_particles(const components::ParticlePool &pool) const;
+
         void sort_renderables() const;
         void needs_sorting() { _needs_sorting = true; }
 

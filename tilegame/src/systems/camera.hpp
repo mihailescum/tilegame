@@ -14,6 +14,7 @@ namespace tilegame::systems
         CameraSystem(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
+        void load_content();
         void update(const engine::GameTime &update_time);
     };
 } // namespace tilegame

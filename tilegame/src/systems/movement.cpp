@@ -15,32 +15,12 @@ namespace tilegame::systems
 
     void MovementSystem::update(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<components::Movement>(entt::exclude<tilegame::components::Inactive>);
+        auto view = _registry.view<components::Movement>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, movement] : view.each())
         {
-            /*glm::vec2 movement_vector(0.0);
-            if (movement.direction & components::Movement::Left)
-            {
-                movement_vector.x -= 1.0;
-            }
-            if (movement.direction & components::Movement::Right)
-            {
-                movement_vector.x += 1.0;
-            }
-            if (movement.direction & components::Movement::Up)
-            {
-                movement_vector.y -= 1.0;
-            }
-            if (movement.direction & components::Movement::Down)
-            {
-                movement_vector.y += 1.0;
-            }*/
-
-            // if (glm::length2(movement_vector) > 10e-8)
             if (glm::length2(movement.direction) > 10e-8)
             {
-                // movement_vector = update_time.elapsed_time * movement.speed * glm::normalize(movement_vector);
                 _registry.patch<components::Transform>(entity, [=](auto &transform)
                                                        { transform.position_local += update_time.elapsed_time * movement.speed * movement.direction; });
             }

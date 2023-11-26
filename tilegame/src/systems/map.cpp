@@ -161,7 +161,7 @@ namespace tilegame::systems
         //_registry.emplace<components::Movement>(entitiy, components::Movement::None, 100.0);
         _registry.emplace<components::Renderable2D>(entitiy);
         const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
-        _registry.emplace<components::Sprite>(entitiy, texture, animation_component.get_current_frame().source_rect);
+        _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);
 
         auto &properties = const_cast<tson::Object &>(data).getProperties();
         const auto *script_path_property = properties.getProperty(MapSystem::FIELD_SCRIPT);

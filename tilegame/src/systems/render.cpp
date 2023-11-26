@@ -4,6 +4,7 @@
 #include "components/ordering.hpp"
 #include "components/camera.hpp"
 #include "components/inactive.hpp"
+#include "components/particle.hpp"
 
 namespace tilegame::systems
 {
@@ -28,11 +29,12 @@ namespace tilegame::systems
             _needs_sorting = false;
         }
 
-        const auto view_renderable = _registry.view<components::Transform, components::Renderable2D>(entt::exclude<tilegame::components::Inactive>);
-        const auto view_sprites = _registry.view<components::Renderable2D, components::Sprite>(entt::exclude<tilegame::components::Inactive>);
-        const auto view_tilelayers = _registry.view<components::Renderable2D, components::TileLayer>(entt::exclude<tilegame::components::Inactive>);
+        const auto view_renderable = _registry.view<components::Transform, components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_sprites = _registry.view<components::Renderable2D, components::Sprite>(entt::exclude<components::Inactive>);
+        const auto view_tilelayers = _registry.view<components::Renderable2D, components::TileLayer>(entt::exclude<components::Inactive>);
+        const auto view_particle_pools = _registry.view<components::Renderable2D, components::ParticlePool>(entt ::exclude<components::Inactive>);
 
-        const auto cameras = _registry.view<components::Camera>(entt::exclude<tilegame::components::Inactive>);
+        const auto cameras = _registry.view<components::Camera>(entt::exclude<components::Inactive>);
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {
@@ -50,6 +52,11 @@ namespace tilegame::systems
                 {
                     const auto &tilelayer_component = view_tilelayers.get<components::TileLayer>(render_entity);
                     draw_tilelayer(transform, tilelayer_component);
+                }
+                else if (view_particle_pools.contains(render_entity))
+                {
+                    const auto &pool_component = view_particle_pools.get<components::ParticlePool>(render_entity);
+                    draw_particles(pool_component);
                 }
             }
             _spritebatch.end();
@@ -71,7 +78,7 @@ namespace tilegame::systems
         const auto &position_global = transform.position_global;
         const auto &source_rect = sprite.source_rect;
         const engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
-        _spritebatch.draw(sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
+        _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
     void RenderSystem::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const
@@ -79,6 +86,22 @@ namespace tilegame::systems
         for (const auto data : tile_layer.tile_data)
         {
             _spritebatch.draw(data.texture, data.destination_rect + transform.position_global, &data.source_rect, engine::Color::WHITE);
+        }
+    }
+
+    void RenderSystem::draw_particles(const components::ParticlePool &pool) const
+    {
+        // TODO this should be outside of the loop to avoid refeching for every emitter
+        const auto particles_view = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
+
+        for (size_t i = 0; i < pool.first_dead_particle; i++)
+        {
+            const auto &[particle, sprite, transform] = particles_view.get(pool.container[i]);
+
+            const auto &position_global = transform.position_global;
+            const auto &source_rect = sprite.source_rect;
+            const engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
+            _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, particle.color);
         }
     }
 }

@@ -16,8 +16,8 @@ namespace tilegame::systems
 
     void AnimationSystem::update(const engine::GameTime &update_time)
     {
-        const auto animation_view = _registry.view<components::Animation>(entt::exclude<tilegame::components::Inactive>);
-        const auto sprite_view = _registry.view<components::Animation, components::Sprite>(entt::exclude<tilegame::components::Inactive>);
+        const auto animation_view = _registry.view<components::Animation>(entt::exclude<components::Inactive>);
+        const auto sprite_view = _registry.view<components::Animation, components::Sprite>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, animation] : animation_view.each())
         {
