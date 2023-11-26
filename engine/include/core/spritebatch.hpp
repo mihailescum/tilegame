@@ -26,7 +26,7 @@ namespace engine
 
         static const int MAX_BATCH_SIZE = 16384;
 
-        static const int SPRITE_SIZE_VBO = 16;
+        static const int SPRITE_SIZE_VBO = 32;
         static const int SPRITE_SIZE_EBO = 6;
 
         static const std::string VERTEX_SHADER_SOURCE;

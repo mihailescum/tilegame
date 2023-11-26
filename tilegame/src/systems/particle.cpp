@@ -36,7 +36,7 @@ namespace tilegame::systems
         _registry.emplace<components::Shape>(emitter1, components::Shape(std::make_unique<engine::Point>(engine::Point::ZERO)));
         _registry.emplace<components::ParticleEmitter>(emitter1,
                                                        components::ParticleEmitter(
-                                                           20,
+                                                           200,
                                                            glm::vec2(1.0, 0.0),
                                                            glm::pi<float>() / 8.0,
                                                            10.0, 20.0,
@@ -110,7 +110,7 @@ namespace tilegame::systems
     {
         const float lifetime = get_random(emitter.lifetime.x, emitter.lifetime.y);
         const float scale = get_random(emitter.scale.x, emitter.scale.y);
-        const engine::Color color = engine::Color::WHITE;
+        const engine::Color color(1.0, 0.0, 1.0, 1.0);
 
         const float speed = get_random(emitter.speed.x, emitter.speed.y);
         const float angle = get_random(-emitter.spread_angle, emitter.spread_angle);

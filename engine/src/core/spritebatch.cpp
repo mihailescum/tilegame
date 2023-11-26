@@ -138,6 +138,8 @@ namespace engine
 
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(4 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
         _shader.use();
 
@@ -189,6 +191,7 @@ namespace engine
 
             auto &dest_rect = sprite_data.destination_rectangle;
             auto &source_rect = sprite_data.source_rectangle;
+            auto &color = sprite_data.color;
 
             /*  0 -- 1
                 |   /|
@@ -202,31 +205,47 @@ namespace engine
             *(_sprite_data_vbo_ptr++) = dest_rect.y;
             *(_sprite_data_vbo_ptr++) = source_rect.x;
             *(_sprite_data_vbo_ptr++) = source_rect.y;
+            *(_sprite_data_vbo_ptr++) = color.r;
+            *(_sprite_data_vbo_ptr++) = color.g;
+            *(_sprite_data_vbo_ptr++) = color.b;
+            *(_sprite_data_vbo_ptr++) = color.a;
 
             // Top Right
             *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
             *(_sprite_data_vbo_ptr++) = dest_rect.y;
             *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
             *(_sprite_data_vbo_ptr++) = source_rect.y;
+            *(_sprite_data_vbo_ptr++) = color.r;
+            *(_sprite_data_vbo_ptr++) = color.g;
+            *(_sprite_data_vbo_ptr++) = color.b;
+            *(_sprite_data_vbo_ptr++) = color.a;
 
             // Bottom Left
             *(_sprite_data_vbo_ptr++) = dest_rect.x;
             *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
             *(_sprite_data_vbo_ptr++) = source_rect.x;
             *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
+            *(_sprite_data_vbo_ptr++) = color.r;
+            *(_sprite_data_vbo_ptr++) = color.g;
+            *(_sprite_data_vbo_ptr++) = color.b;
+            *(_sprite_data_vbo_ptr++) = color.a;
 
             // Bottom Right
             *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
             *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
             *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
             *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
+            *(_sprite_data_vbo_ptr++) = color.r;
+            *(_sprite_data_vbo_ptr++) = color.g;
+            *(_sprite_data_vbo_ptr++) = color.b;
+            *(_sprite_data_vbo_ptr++) = color.a;
 
-            *(_sprite_data_ebo_ptr++) = i * 4;
-            *(_sprite_data_ebo_ptr++) = i * 4 + 1;
-            *(_sprite_data_ebo_ptr++) = i * 4 + 2;
-            *(_sprite_data_ebo_ptr++) = i * 4 + 2;
-            *(_sprite_data_ebo_ptr++) = i * 4 + 1;
-            *(_sprite_data_ebo_ptr++) = i * 4 + 3;
+            *(_sprite_data_ebo_ptr++) = i * 8;
+            *(_sprite_data_ebo_ptr++) = i * 8 + 2;
+            *(_sprite_data_ebo_ptr++) = i * 8 + 4;
+            *(_sprite_data_ebo_ptr++) = i * 8 + 4;
+            *(_sprite_data_ebo_ptr++) = i * 8 + 2;
+            *(_sprite_data_ebo_ptr++) = i * 8 + 6;
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -241,8 +260,10 @@ namespace engine
     const std::string SpriteBatch::VERTEX_SHADER_SOURCE = R"(
     #version 330 core
     layout (location = 0) in vec4 vertex;
+    layout (location = 1) in vec4 color;
     
     out vec2 TexCoord;
+    out vec4 VertexColor;
     
     uniform mat4 WVP;
     
@@ -250,6 +271,7 @@ namespace engine
     {
         gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);
         TexCoord = vertex.zw;
+        VertexColor = color;
     })";
 
     const std::string SpriteBatch::FRAGMENT_SHADER_SOURCE = R"(
@@ -257,12 +279,13 @@ namespace engine
     out vec4 FragColor;
     
     in vec2 TexCoord;
+    in vec4 VertexColor;
     
     uniform sampler2D Texture;
     
     void main()
     {
-        vec4 color = texture(Texture, TexCoord);
+        vec4 color = texture(Texture, TexCoord) * VertexColor;
         FragColor = color;
     })";
 } // namespace engine
