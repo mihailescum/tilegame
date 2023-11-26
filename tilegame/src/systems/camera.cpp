@@ -6,6 +6,7 @@
 #include "components/camera.hpp"
 #include "components/player.hpp"
 #include "components/scenenode.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -24,7 +25,7 @@ namespace tilegame::systems
         _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
         entt::entity player1_entity = entt::null;
-        auto players = _registry.view<components::Player>();
+        auto players = _registry.view<components::Player>(entt::exclude<tilegame::components::Inactive>);
         for (auto &&[entity, player] : players.each())
         {
             if (player.id == 1)
@@ -46,7 +47,7 @@ namespace tilegame::systems
 
     void CameraSystem::update(const engine::GameTime &update_time)
     {
-        const auto cameras = _registry.view<components::Camera, components::Transform>();
+        const auto cameras = _registry.view<components::Camera, components::Transform>(entt::exclude<tilegame::components::Inactive>);
 
         for (auto &&[entity, camera, transform] : cameras.each())
         {

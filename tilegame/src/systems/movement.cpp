@@ -5,6 +5,7 @@
 
 #include "components/movement.hpp"
 #include "components/transform.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -14,7 +15,7 @@ namespace tilegame::systems
 
     void MovementSystem::update(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<components::Movement>();
+        auto view = _registry.view<components::Movement>(entt::exclude<tilegame::components::Inactive>);
 
         for (auto &&[entity, movement] : view.each())
         {
@@ -40,7 +41,7 @@ namespace tilegame::systems
             {
                 movement_vector = update_time.elapsed_time * movement.speed * glm::normalize(movement_vector);
                 _registry.patch<components::Transform>(entity, [=](auto &transform)
-                                                                 { transform.position_local += movement_vector; });
+                                                       { transform.position_local += movement_vector; });
             }
         }
     }

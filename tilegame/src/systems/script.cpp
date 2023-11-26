@@ -3,6 +3,7 @@
 #include "components/scriptloader.hpp"
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -68,7 +69,7 @@ namespace tilegame::systems
 
     void ScriptSystem::update(const engine::GameTime &update_time)
     {
-        const auto script_view = _registry.view<components::ScriptLoader>();
+        const auto script_view = _registry.view<components::ScriptLoader>(entt::exclude<tilegame::components::Inactive>);
         for (const auto &&[entity, script] : script_view.each())
         {
             const auto &script_path = script.path;

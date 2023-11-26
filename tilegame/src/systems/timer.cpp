@@ -2,6 +2,7 @@
 
 #include "components/timer.hpp"
 #include "components/event.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -12,7 +13,7 @@ namespace tilegame::systems
     void TimerSystem::update(const engine::GameTime &update_time)
     {
         // Advance Timers
-        const auto timer_view = _registry.view<components::Timer>();
+        const auto timer_view = _registry.view<components::Timer>(entt::exclude<tilegame::components::Inactive>);
         for (auto &&[entity, timer] : timer_view.each())
         {
             timer.time_left -= update_time.elapsed_time;
@@ -42,8 +43,8 @@ namespace tilegame::systems
         }
 
         // Trigger Timer Events
-        const auto timer_event_view = _registry.view<components::TimerEventArgs>();
-        const auto timer_listener_view = _registry.view<components::EventListener<components::TimerEventArgs>>();
+        const auto timer_event_view = _registry.view<components::TimerEventArgs>(entt::exclude<tilegame::components::Inactive>);
+        const auto timer_listener_view = _registry.view<components::EventListener<components::TimerEventArgs>>(entt::exclude<tilegame::components::Inactive>);
         for (auto &&[source, event_args] : timer_event_view.each())
         {
             for (auto &&[listener, listener_component] : timer_listener_view.each())

@@ -3,6 +3,7 @@
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/camera.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -27,11 +28,11 @@ namespace tilegame::systems
             _needs_sorting = false;
         }
 
-        const auto view_renderable = _registry.view<components::Transform, components::Renderable2D>();
-        const auto view_sprites = _registry.view<components::Renderable2D, components::Sprite>();
-        const auto view_tilelayers = _registry.view<components::Renderable2D, components::TileLayer>();
+        const auto view_renderable = _registry.view<components::Transform, components::Renderable2D>(entt::exclude<tilegame::components::Inactive>);
+        const auto view_sprites = _registry.view<components::Renderable2D, components::Sprite>(entt::exclude<tilegame::components::Inactive>);
+        const auto view_tilelayers = _registry.view<components::Renderable2D, components::TileLayer>(entt::exclude<tilegame::components::Inactive>);
 
-        const auto cameras = _registry.view<components::Camera>();
+        const auto cameras = _registry.view<components::Camera>(entt::exclude<tilegame::components::Inactive>);
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {

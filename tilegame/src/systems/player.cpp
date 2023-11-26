@@ -10,6 +10,7 @@
 #include "components/ordering.hpp"
 #include "components/sprite.hpp"
 #include "components/animation.hpp"
+#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -45,7 +46,7 @@ namespace tilegame::systems
 
     void PlayerSystem::update(const engine::GameTime &update_time)
     {
-        const auto players = _registry.view<components::Player>();
+        const auto players = _registry.view<components::Player>(entt::exclude<tilegame::components::Inactive>);
 
         for (auto &&[entity, player] : players.each())
         {
