@@ -10,6 +10,7 @@ namespace tilegame::components
     {
         // Particles per second
         int rate;
+        float rate_clock;
 
         // Direction of spread
         glm::vec2 spread_direction;
@@ -41,6 +42,7 @@ namespace tilegame::components
                         float scale_max,
                         engine::Color color)
             : rate(rate),
+              rate_clock(0.0),
               spread_direction(spread_direction),
               spread_angle(spread_angle),
               speed(speed_min, speed_max),

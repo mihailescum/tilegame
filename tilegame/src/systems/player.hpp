@@ -13,7 +13,7 @@ namespace tilegame::systems
     {
     private:
         entt::entity _player1_entity;
-        components::Movement::MovementDirection handle_input_1();
+        glm::vec2 handle_input_1();
 
     public:
         PlayerSystem(tilegame::Scene &scene, entt::registry &registry);

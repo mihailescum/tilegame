@@ -1,10 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 namespace tilegame::components
 {
     struct Movement
     {
-        enum MovementDirection : char
+        /*enum MovementDirection : char
         {
             None = 0,
             Left = 1 << 1,
@@ -13,11 +15,12 @@ namespace tilegame::components
             Down = 1 << 4
         };
 
-        MovementDirection direction;
+        MovementDirection direction;*/
+        glm::vec2 direction;
         float speed;
     };
 
-    inline Movement::MovementDirection operator|(Movement::MovementDirection a, Movement::MovementDirection b)
+    /*inline Movement::MovementDirection operator|(Movement::MovementDirection a, Movement::MovementDirection b)
     {
         return static_cast<Movement::MovementDirection>(static_cast<int>(a) | static_cast<int>(b));
     }
@@ -41,4 +44,5 @@ namespace tilegame::components
     {
         return static_cast<Movement::MovementDirection>(~static_cast<int>(a));
     }
+    */
 } // namespace tilegame

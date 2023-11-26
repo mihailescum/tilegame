@@ -19,7 +19,7 @@ namespace tilegame::systems
 
         for (auto &&[entity, movement] : view.each())
         {
-            glm::vec2 movement_vector(0.0);
+            /*glm::vec2 movement_vector(0.0);
             if (movement.direction & components::Movement::Left)
             {
                 movement_vector.x -= 1.0;
@@ -35,13 +35,14 @@ namespace tilegame::systems
             if (movement.direction & components::Movement::Down)
             {
                 movement_vector.y += 1.0;
-            }
+            }*/
 
-            if (glm::length2(movement_vector) > 10e-8)
+            // if (glm::length2(movement_vector) > 10e-8)
+            if (glm::length2(movement.direction) > 10e-8)
             {
-                movement_vector = update_time.elapsed_time * movement.speed * glm::normalize(movement_vector);
+                // movement_vector = update_time.elapsed_time * movement.speed * glm::normalize(movement_vector);
                 _registry.patch<components::Transform>(entity, [=](auto &transform)
-                                                       { transform.position_local += movement_vector; });
+                                                       { transform.position_local += update_time.elapsed_time * movement.speed * movement.direction; });
             }
         }
     }

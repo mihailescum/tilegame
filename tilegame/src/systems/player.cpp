@@ -24,7 +24,7 @@ namespace tilegame::systems
         _registry.emplace<components::Player>(_player1_entity, 1);
         _registry.emplace<components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
-        _registry.emplace<components::Movement>(_player1_entity, components::Movement::None, 200.0);
+        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0), 200.0);
 
         const tilegame::SceneGraphData player1_scenedata(_player1_entity);
         tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
@@ -67,34 +67,39 @@ namespace tilegame::systems
         }
     }
 
-    components::Movement::MovementDirection PlayerSystem::handle_input_1()
+    glm::vec2 PlayerSystem::handle_input_1()
     {
         const auto &window = _scene.game().window();
 
-        auto result = static_cast<components::Movement::MovementDirection>(0);
+        // auto result = static_cast<components::Movement::MovementDirection>(0);
+        auto result = glm::vec2(0.0);
         if (window.is_key_pressed(GLFW_KEY_LEFT))
         {
-            result |= components::Movement::Left;
+            // result |= components::Movement::Left;
+            result.x -= 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_RIGHT))
         {
-            result |= components::Movement::Right;
+            // result |= components::Movement::Right;
+            result.x += 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_UP))
         {
-            result |= components::Movement::Up;
+            // result |= components::Movement::Up;
+            result.y -= 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_DOWN))
         {
-            result |= components::Movement::Down;
+            // result |= components::Movement::Down;
+            result.y += 1.0;
         }
 
         // For some reason, when Up + Down are pressed, and later Left as well, GLFW does not recognize that Left is pressed.
 
-        if ((result & components::Movement::Left) && (result & components::Movement::Right))
+        /* if ((result & components::Movement::Left) && (result & components::Movement::Right))
         {
             result &= ~components::Movement::Left;
             result &= ~components::Movement::Right;
@@ -104,8 +109,8 @@ namespace tilegame::systems
         {
             result &= ~components::Movement::Up;
             result &= ~components::Movement::Down;
-        }
+        }*/
 
-        return result;
+        return glm::normalize(result);
     }
 } // namespace tilegame::systems
