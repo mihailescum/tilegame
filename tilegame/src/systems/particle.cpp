@@ -5,6 +5,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "helper.hpp"
+#include "math.hpp"
+
 #include "components/particleemitter.hpp"
 #include "components/particlepool.hpp"
 #include "components/transform.hpp"
@@ -33,16 +35,18 @@ namespace tilegame::systems
 
         auto emitter1 = _registry.create();
         _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150), glm::vec2(0.0));
-        _registry.emplace<components::Shape>(emitter1, components::Shape(std::make_unique<engine::Point>(engine::Point::ZERO)));
+        _registry.emplace<components::Shape>(emitter1,
+                                             components::Shape(
+                                                 std::make_unique<engine::Rectangle>(-100, -50, 200, 100)));
         _registry.emplace<components::ParticleEmitter>(emitter1,
                                                        components::ParticleEmitter(
                                                            200,
-                                                           glm::vec2(1.0, 0.0),
+                                                           glm::vec2(0.0, 1.0),
                                                            glm::pi<float>() / 8.0,
                                                            10.0, 20.0,
-                                                           1.0, 2.0,
+                                                           5.0, 10.0,
                                                            0.9, 1.1,
-                                                           engine::Color::WHITE));
+                                                           engine::Color(1.0, 0.0, 1.0, 1.0)));
         _registry.emplace<components::ParticlePool>(emitter1, components::ParticlePool());
         _registry.emplace<components::Renderable2D>(emitter1);
         _registry.emplace<components::Ordering>(emitter1, 100.0);
@@ -100,23 +104,35 @@ namespace tilegame::systems
 
                 for (int i = 0; i < num_new_particles; ++i)
                 {
-                    const auto new_particle = emit_particle(emitter, pool);
+                    const auto new_particle = emit_particle(emitter, pool, shape);
                 }
             }
         }
     }
 
-    entt::entity ParticleSystem::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool)
+    glm::vec2 ParticleSystem::generate_random_position(const components::Shape &shape)
+    {
+        if (const auto *rect_ptr = dynamic_cast<const engine::Rectangle *>(shape()))
+        {
+            return tilegame::random_point_in_rectangle(*rect_ptr);
+        }
+        else // Shape is Point
+        {
+            return glm::vec2(0.0);
+        }
+    }
+
+    entt::entity ParticleSystem::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool, const components::Shape &shape)
     {
         const float lifetime = get_random(emitter.lifetime.x, emitter.lifetime.y);
         const float scale = get_random(emitter.scale.x, emitter.scale.y);
-        const engine::Color color(1.0, 0.0, 1.0, 1.0);
+        const engine::Color color = emitter.color;
 
         const float speed = get_random(emitter.speed.x, emitter.speed.y);
         const float angle = get_random(-emitter.spread_angle, emitter.spread_angle);
         const glm::vec2 direction = speed * glm::rotate(emitter.spread_direction, angle);
 
-        const glm::vec2 position(0.0);
+        const glm::vec2 position = generate_random_position(shape);
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
         const engine::Rectangle source_rect(0, 0, 16, 16);
@@ -180,6 +196,7 @@ namespace tilegame::systems
                 tilegame::SceneGraphNode &scenenode = emitter_scenenode->add_child(scenedata);
                 _registry.emplace<components::SceneNode>(new_particle, &scenenode);
             }
+
             return true;
         }
         return false;
