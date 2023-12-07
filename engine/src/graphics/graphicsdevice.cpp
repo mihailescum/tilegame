@@ -37,7 +37,7 @@ namespace engine::graphics
 
     void GraphicsDevice::clear(const Color &color) const
     {
-        glClearColor(color.r, color.g, color.b, color.a);
+        glClearColor(color.r(), color.g(), color.b(), color.a());
         glClear(_clear_mask);
     }
 } // namespace engine::graphics

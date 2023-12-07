@@ -46,14 +46,15 @@ namespace engine::graphics
 
     void SpriteBatch::create_vbo()
     {
-        _sprite_data_vbo.resize(MAX_BATCH_SIZE * VERTEX_SIZE);
+        _sprite_data_vbo.resize(MAX_BATCH_SIZE * 4);
+
         glGenBuffers(1, &_vbo);
         glCheckError();
 
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
         glCheckError();
         // Allocate an empty buffer of the max size
-        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * VERTEX_SIZE * 4, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * sizeof(VertexPositionTextureColor) * 4, NULL, GL_DYNAMIC_DRAW);
         glCheckError();
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -74,16 +75,48 @@ namespace engine::graphics
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
         glCheckError();
 
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPositionTextureColor), (void *)offsetof(VertexPositionTextureColor, position));
         glEnableVertexAttribArray(0);
         glCheckError();
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (void *)(4 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPositionTextureColor), (void *)offsetof(VertexPositionTextureColor, uv));
         glEnableVertexAttribArray(1);
+        glCheckError();
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexPositionTextureColor), (void *)offsetof(VertexPositionTextureColor, color));
+        glEnableVertexAttribArray(2);
         glCheckError();
 
         glBindVertexArray(0);
         glCheckError();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glCheckError();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glCheckError();
+    }
+
+    void SpriteBatch::create_ebo()
+    {
+        /*  0 -- 1
+            |\   |
+            | \  |
+            |  \ |
+            2 -- 3
+        */
+        _sprite_data_ebo.resize(MAX_BATCH_SIZE * 6);
+        for (std::size_t i = 0; i < MAX_BATCH_SIZE; ++i)
+        {
+            _sprite_data_ebo[i * 6] = i * 4;
+            _sprite_data_ebo[i * 6 + 1] = i * 4 + 1;
+            _sprite_data_ebo[i * 6 + 2] = i * 4 + 3;
+            _sprite_data_ebo[i * 6 + 3] = i * 4;
+            _sprite_data_ebo[i * 6 + 4] = i * 4 + 3;
+            _sprite_data_ebo[i * 6 + 5] = i * 4 + 2;
+        }
+
+        glGenBuffers(1, &_ebo);
+        glCheckError();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+        glCheckError();
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_BATCH_SIZE * ELEMENT_SIZE * 6, &_sprite_data_ebo[0], GL_STATIC_DRAW);
         glCheckError();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glCheckError();
@@ -214,74 +247,20 @@ namespace engine::graphics
                 break;
             }
 
-            /*if (offset_vbo >= _sprite_data_vbo.size()) // Grow the VBO if necessary
-            {
-                for (int j = 0; j < VERTEX_SIZE; ++j)
-                {
-                    _sprite_data_vbo.push_back(0.0);
-                }
-            }*/
-
-            auto &dest_rect = sprite_data.destination_rectangle;
-            auto &source_rect = sprite_data.source_rectangle;
-            auto &color = sprite_data.color;
-
-            /*  0 -- 1
-                |   /|
-                |  / |
-                | /  |
-                2 -- 3
-            */
-
-            // Top Left
-            *(_sprite_data_vbo_ptr++) = dest_rect.x;
-            *(_sprite_data_vbo_ptr++) = dest_rect.y;
-            *(_sprite_data_vbo_ptr++) = source_rect.x;
-            *(_sprite_data_vbo_ptr++) = source_rect.y;
-            *(_sprite_data_vbo_ptr++) = color.r;
-            *(_sprite_data_vbo_ptr++) = color.g;
-            *(_sprite_data_vbo_ptr++) = color.b;
-            *(_sprite_data_vbo_ptr++) = color.a;
-
-            // Top Right
-            *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
-            *(_sprite_data_vbo_ptr++) = dest_rect.y;
-            *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
-            *(_sprite_data_vbo_ptr++) = source_rect.y;
-            *(_sprite_data_vbo_ptr++) = color.r;
-            *(_sprite_data_vbo_ptr++) = color.g;
-            *(_sprite_data_vbo_ptr++) = color.b;
-            *(_sprite_data_vbo_ptr++) = color.a;
-
-            // Bottom Left
-            *(_sprite_data_vbo_ptr++) = dest_rect.x;
-            *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
-            *(_sprite_data_vbo_ptr++) = source_rect.x;
-            *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
-            *(_sprite_data_vbo_ptr++) = color.r;
-            *(_sprite_data_vbo_ptr++) = color.g;
-            *(_sprite_data_vbo_ptr++) = color.b;
-            *(_sprite_data_vbo_ptr++) = color.a;
-
-            // Bottom Right
-            *(_sprite_data_vbo_ptr++) = dest_rect.x + dest_rect.width;
-            *(_sprite_data_vbo_ptr++) = dest_rect.y + dest_rect.height;
-            *(_sprite_data_vbo_ptr++) = source_rect.x + source_rect.width;
-            *(_sprite_data_vbo_ptr++) = source_rect.y + source_rect.height;
-            *(_sprite_data_vbo_ptr++) = color.r;
-            *(_sprite_data_vbo_ptr++) = color.g;
-            *(_sprite_data_vbo_ptr++) = color.b;
-            *(_sprite_data_vbo_ptr++) = color.a;
+            *(_sprite_data_vbo_ptr++) = sprite_data.top_left;
+            *(_sprite_data_vbo_ptr++) = sprite_data.top_right;
+            *(_sprite_data_vbo_ptr++) = sprite_data.bottom_left;
+            *(_sprite_data_vbo_ptr++) = sprite_data.bottom_right;
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
         glCheckError();
         // Orphan the vertex buffer
         // Refer to https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
-        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * VERTEX_SIZE * 4, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * sizeof(VertexPositionTextureColor) * 4, NULL, GL_DYNAMIC_DRAW);
         glCheckError();
         // Update the needed subregion of the buffer
-        glBufferSubData(GL_ARRAY_BUFFER, 0, batch_size * VERTEX_SIZE * 4, &_sprite_data_vbo[0]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, batch_size * sizeof(VertexPositionTextureColor) * 4, &_sprite_data_vbo[0]);
         glCheckError();
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -289,65 +268,4 @@ namespace engine::graphics
 
         return batch_size;
     }
-
-    void SpriteBatch::create_ebo()
-    {
-        /*  0 -- 1
-            |\   |
-            | \  |
-            |  \ |
-            2 -- 3
-        */
-        _sprite_data_ebo.resize(MAX_BATCH_SIZE * 6);
-        for (std::size_t i = 0; i < MAX_BATCH_SIZE; ++i)
-        {
-            _sprite_data_ebo[i * 6] = i * 4;
-            _sprite_data_ebo[i * 6 + 1] = i * 4 + 1;
-            _sprite_data_ebo[i * 6 + 2] = i * 4 + 3;
-            _sprite_data_ebo[i * 6 + 3] = i * 4;
-            _sprite_data_ebo[i * 6 + 4] = i * 4 + 3;
-            _sprite_data_ebo[i * 6 + 5] = i * 4 + 2;
-        }
-
-        glGenBuffers(1, &_ebo);
-        glCheckError();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glCheckError();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_BATCH_SIZE * ELEMENT_SIZE * 6, &_sprite_data_ebo[0], GL_STATIC_DRAW);
-        glCheckError();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        glCheckError();
-    }
-
-    const std::string SpriteBatch::VERTEX_SHADER_SOURCE = R"(
-    #version 330 core
-    layout (location = 0) in vec4 vertex;
-    layout (location = 1) in vec4 color;
-    
-    out vec2 TexCoord;
-    out vec4 VertexColor;
-    
-    uniform mat4 WVP;
-    
-    void main()
-    {
-        gl_Position = WVP * vec4(vertex.xy, 0.0, 1.0);
-        TexCoord = vertex.zw;
-        VertexColor = color;
-    })";
-
-    const std::string SpriteBatch::FRAGMENT_SHADER_SOURCE = R"(
-    #version 330 core
-    out vec4 FragColor;
-    
-    in vec2 TexCoord;
-    in vec4 VertexColor;
-    
-    uniform sampler2D Texture;
-    
-    void main()
-    {
-        vec4 color = texture(Texture, TexCoord) * VertexColor;
-        FragColor = color;
-    })";
 } // namespace engine::graphics

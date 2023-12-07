@@ -8,6 +8,7 @@
 #include "core/shader.hpp"
 #include "graphics/graphicsdevice.hpp"
 #include "graphics/spritedata.hpp"
+#include "graphics/vertexpositiontexturecolor.hpp"
 
 namespace engine::graphics
 {
@@ -16,11 +17,15 @@ namespace engine::graphics
     private:
         using ebo_type = GLushort;
         static const ebo_type MAX_BATCH_SIZE = 65535U / 6;
-        static const int VERTEX_SIZE = 8 * sizeof(GLfloat);
-        static const int ELEMENT_SIZE = 1 * sizeof(ebo_type);
+        static const int ELEMENT_SIZE = sizeof(ebo_type);
 
-        static const std::string VERTEX_SHADER_SOURCE;
-        static const std::string FRAGMENT_SHADER_SOURCE;
+        const std::string VERTEX_SHADER_SOURCE{
+#include "graphics/shader/spritebatch.vs"
+        };
+
+        const std::string FRAGMENT_SHADER_SOURCE{
+#include "graphics/shader/spritebatch.fs"
+        };
 
         GraphicsDevice &_graphics_device;
         GLuint _vbo;
@@ -32,7 +37,7 @@ namespace engine::graphics
         glm::mat4 _wvp;
         glm::mat4 _projection;
         std::vector<SpriteData> _sprite_data;
-        std::vector<GLfloat> _sprite_data_vbo;
+        std::vector<VertexPositionTextureColor> _sprite_data_vbo;
         std::vector<ebo_type> _sprite_data_ebo;
 
         std::size_t _num_active_sprites;
