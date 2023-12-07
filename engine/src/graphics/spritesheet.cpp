@@ -1,12 +1,12 @@
-#include "sprite/spritesheet.hpp"
+#include "graphics/spritesheet.hpp"
 
 #include <string>
 #include <vector>
 
-#include "sprite/spritestate.hpp"
-#include "sprite/spriteframe.hpp"
+#include "graphics/spritestate.hpp"
+#include "graphics/spriteframe.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     bool SpriteSheet::load_resource(ResourceManager &resource_manager, va_list args)
     {
@@ -83,4 +83,4 @@ namespace engine::sprite
     {
         return const_cast<Texture2D &>(const_cast<const SpriteSheet *>(this)->texture());
     }
-} // namespace engine::sprite
+} // namespace engine::graphics

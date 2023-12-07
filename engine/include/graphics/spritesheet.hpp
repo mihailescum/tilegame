@@ -10,9 +10,9 @@
 #include "core/texture2d.hpp"
 #include "core/rectangle.hpp"
 
-#include "sprite/sprite.hpp"
+#include "graphics/sprite.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     class SpriteSheet : public engine::Resource
     {
@@ -44,4 +44,4 @@ namespace engine::sprite
         int tile_width() const { return _tile_width; }
         int tile_height() const { return _tile_height; }
     };
-} // namespace engine::sprite
+} // namespace engine::graphics

@@ -8,7 +8,7 @@
 
 namespace tilegame::systems
 {
-    RenderSystem::RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::SpriteBatch &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
+    RenderSystem::RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
     {
     }
 

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "sprite/spriteframe.hpp"
+#include "graphics/spriteframe.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     struct SpriteState
     {
@@ -16,4 +16,4 @@ namespace engine::sprite
         SpriteState(std::string name) : name(name) {}
     };
 
-} // namespace engine::sprite
+} // namespace engine::graphics

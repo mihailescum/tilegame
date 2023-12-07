@@ -1,9 +1,9 @@
-#include "core/graphicsdevice.hpp"
+#include "graphics/graphicsdevice.hpp"
 
 #include <sstream>
 #include "core/log.hpp"
 
-namespace engine
+namespace engine::graphics
 {
     GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(0, 0, window.width(), window.height())
     {
@@ -21,6 +21,7 @@ namespace engine
         }
 
         viewport(_viewport);
+        glDisable(GL_CULL_FACE);
         // glEnable(GL_DEPTH_TEST);
         // glEnable(GL_CULL_FACE);
         // glCullFace(GL_BACK);
@@ -39,4 +40,4 @@ namespace engine
         glClearColor(color.r, color.g, color.b, color.a);
         glClear(_clear_mask);
     }
-} // namespace engine
+} // namespace engine::graphics

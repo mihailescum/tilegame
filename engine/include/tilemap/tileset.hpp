@@ -6,18 +6,18 @@
 
 #include "core/texture2d.hpp"
 #include "core/rectangle.hpp"
-#include "sprite/spritesheet.hpp"
+#include "graphics/spritesheet.hpp"
 
 namespace engine::tilemap
 {
     class Tileset
     {
     protected:
-        engine::sprite::SpriteSheet &_sprite_sheet;
+        engine::graphics::SpriteSheet &_sprite_sheet;
         tson::Tileset _native_tileset;
 
     public:
-        Tileset(engine::sprite::SpriteSheet &sprite_sheet, const tson::Tileset &native_tileset)
+        Tileset(engine::graphics::SpriteSheet &sprite_sheet, const tson::Tileset &native_tileset)
             : _sprite_sheet(sprite_sheet), _native_tileset(native_tileset)
         {
         }

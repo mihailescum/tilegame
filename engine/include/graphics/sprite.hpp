@@ -5,9 +5,9 @@
 
 #include "tileson/tileson.hpp"
 
-#include "sprite/spritestate.hpp"
+#include "graphics/spritestate.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     class SpriteSheet;
 
@@ -31,4 +31,4 @@ namespace engine::sprite
         const SpriteState &operator[](std::string name) const { return _states.at(name); }
         SpriteState &operator[](std::string name) { return _states.at(name); }
     };
-} // namespace engine::sprite
+} // namespace engine::graphics

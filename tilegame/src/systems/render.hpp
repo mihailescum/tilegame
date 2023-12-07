@@ -14,7 +14,7 @@ namespace tilegame::systems
     {
     private:
         bool _needs_sorting;
-        engine::SpriteBatch &_spritebatch;
+        engine::graphics::SpriteBatch &_spritebatch;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
         void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const;
@@ -24,7 +24,7 @@ namespace tilegame::systems
         void needs_sorting() { _needs_sorting = true; }
 
     public:
-        RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::SpriteBatch &spritebatch);
+        RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch);
 
         void initialize();
         void draw(const engine::GameTime &draw_time);

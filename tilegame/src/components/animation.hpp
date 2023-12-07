@@ -10,9 +10,9 @@ namespace tilegame::components
     {
         float clock;
         std::size_t current_frame_idx;
-        std::vector<engine::sprite::SpriteFrame> frames;
+        std::vector<engine::graphics::SpriteFrame> frames;
 
-        inline const engine::sprite::SpriteFrame &get_current_frame() const
+        inline const engine::graphics::SpriteFrame &get_current_frame() const
         {
             return frames[current_frame_idx];
         }

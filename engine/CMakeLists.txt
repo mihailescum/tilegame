@@ -3,14 +3,14 @@ set (HEADER_PATH include)
 
 file(GLOB HEADER_ENGINE_CORE "${HEADER_PATH}/core/*.hpp")
 file(GLOB HEADER_ENGINE_TILEMAP "${HEADER_PATH}/tilemap/*.hpp")
-file(GLOB HEADER_ENGINE_SPRITE "${HEADER_PATH}/sprite/*.hpp")
+file(GLOB HEADER_ENGINE_GRAPHICS "${HEADER_PATH}/graphics/*.hpp")
 
 # Source Files
 set (SOURCES_PATH src)
 
 file(GLOB SOURCES_ENGINE_CORE "${SOURCES_PATH}/core/*.cpp")
 file(GLOB SOURCES_ENGINE_TILEMAP "${SOURCES_PATH}/tilemap/*.cpp")
-file(GLOB SOURCES_ENGINE_SPRITE "${SOURCES_PATH}/sprite/*.cpp")
+file(GLOB SOURCES_ENGINE_GRAPHICS "${SOURCES_PATH}/graphics/*.cpp")
 
 # Create Library
 set (LIBRARY_NAME engine)
@@ -20,11 +20,11 @@ add_library(${LIBRARY_NAME}
 
                 ${SOURCES_ENGINE_CORE} 
                 ${SOURCES_ENGINE_TILEMAP} 
-                ${SOURCES_ENGINE_SPRITE} 
+                ${SOURCES_ENGINE_GRAPHICS} 
 
                 ${HEADER_ENGINE_CORE}
                 ${HEADER_ENGINE_TILEMAP}
-                ${HEADER_ENGINE_SPRITE}
+                ${HEADER_ENGINE_GRAPHICS}
 )
 
 set_target_properties(

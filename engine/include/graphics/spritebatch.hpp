@@ -4,30 +4,20 @@
 #include <optional>
 #include <memory>
 
-#include "graphicsdevice.hpp"
-#include "texture2d.hpp"
-#include "shader.hpp"
+#include "core/texture2d.hpp"
+#include "core/shader.hpp"
+#include "graphics/graphicsdevice.hpp"
+#include "graphics/spritedata.hpp"
 
-namespace engine
+namespace engine::graphics
 {
     class SpriteBatch
     {
     private:
-        struct SpriteData
-        {
-            engine::Rectangle destination_rectangle;
-            engine::Rectangle source_rectangle;
-            engine::Color color;
-            GLuint gl_texture;
-            float z;
-
-            SpriteData() {}
-        };
-
-        static const int MAX_BATCH_SIZE = 16384;
-
-        static const int SPRITE_SIZE_VBO = 32;
-        static const int SPRITE_SIZE_EBO = 6;
+        using ebo_type = GLushort;
+        static const ebo_type MAX_BATCH_SIZE = 65535U / 6;
+        static const int VERTEX_SIZE = 8 * sizeof(GLfloat);
+        static const int ELEMENT_SIZE = 1 * sizeof(ebo_type);
 
         static const std::string VERTEX_SHADER_SOURCE;
         static const std::string FRAGMENT_SHADER_SOURCE;
@@ -42,8 +32,8 @@ namespace engine
         glm::mat4 _wvp;
         glm::mat4 _projection;
         std::vector<SpriteData> _sprite_data;
-        std::array<GLfloat, MAX_BATCH_SIZE * SPRITE_SIZE_VBO> _sprite_data_vbo;
-        std::array<GLuint, MAX_BATCH_SIZE * SPRITE_SIZE_EBO> _sprite_data_ebo;
+        std::vector<GLfloat> _sprite_data_vbo;
+        std::vector<ebo_type> _sprite_data_ebo;
 
         std::size_t _num_active_sprites;
         std::size_t _current_batch_start;
@@ -51,7 +41,10 @@ namespace engine
 
         void flush();
         void add_sprite_data(const Texture2D &texture, const Rectangle &destination_rectangle, const Rectangle *const source_rectangle, const Color &color, float z);
-        GLuint set_buffer_data(std::size_t &batch_size);
+        std::size_t update_vbo(GLuint &active_texture);
+        void create_ebo();
+        void create_vbo();
+        void create_vao();
 
     public:
         SpriteBatch(GraphicsDevice &graphics_device);

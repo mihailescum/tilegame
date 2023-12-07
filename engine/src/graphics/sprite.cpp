@@ -1,8 +1,8 @@
-#include "sprite/sprite.hpp"
+#include "graphics/sprite.hpp"
 
-#include "sprite/spritesheet.hpp"
+#include "graphics/spritesheet.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     void Sprite::parse(tson::Tile &data)
     {
@@ -32,4 +32,4 @@ namespace engine::sprite
             }
         }
     }
-} // namespace engine::sprite
+} // namespace engine::graphics

@@ -2,7 +2,7 @@
 
 #include "core/rectangle.hpp"
 
-namespace engine::sprite
+namespace engine::graphics
 {
     struct SpriteFrame
     {
@@ -16,4 +16,4 @@ namespace engine::sprite
         }
     };
 
-} // namespace engine::sprite
+} // namespace engine::graphics

@@ -6,7 +6,7 @@
 #include "core/window.hpp"
 #include "core/color.hpp"
 
-namespace engine
+namespace engine::graphics
 {
     class GraphicsDevice
     {
@@ -24,4 +24,4 @@ namespace engine
         const Viewport &viewport() const { return _viewport; }
         void viewport(const Viewport &viewport);
     };
-} // namespace engine
+} // namespace engine::graphics

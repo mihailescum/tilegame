@@ -29,13 +29,13 @@ namespace engine::tilemap
                 // TODO Tileson does not provide access to the path, maybe backward engineer it
                 const std::string tileset_path = "";
 
-                engine::sprite::SpriteSheet sprite_sheet;
+                engine::graphics::SpriteSheet sprite_sheet;
                 sprite_sheet.resource_path(tileset_path);
 
                 // const_cast is okay, because the original tileset vector was not const
                 sprite_sheet.parse(const_cast<tson::Tileset &>(tson_tileset), resource_manager);
 
-                engine::sprite::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::sprite::SpriteSheet>(tileset_name, sprite_sheet);
+                engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(tileset_name, sprite_sheet);
 
                 std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, tson_tileset);
                 _tilesets.push_back(std::move(tileset));

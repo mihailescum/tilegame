@@ -1,9 +1,9 @@
 #pragma once
 
-#include "graphicsdevice.hpp"
-#include "window.hpp"
-#include "resourcemanager.hpp"
-#include "gametime.hpp"
+#include "graphics/graphicsdevice.hpp"
+#include "core/window.hpp"
+#include "core/resourcemanager.hpp"
+#include "core/gametime.hpp"
 
 namespace engine
 {
@@ -19,7 +19,7 @@ namespace engine
 
     protected:
         Window _window;
-        GraphicsDevice _graphics_device;
+        graphics::GraphicsDevice _graphics_device;
         ResourceManager _resource_manager;
         float _time_step;
 
@@ -40,7 +40,7 @@ namespace engine
         virtual ~Game();
 
         const Window &window() const { return _window; }
-        const GraphicsDevice &graphics_device() const { return _graphics_device; }
+        const graphics::GraphicsDevice &graphics_device() const { return _graphics_device; }
 
         ResourceManager &resource_manager() { return _resource_manager; }
         const ResourceManager &resource_manager() const { return _resource_manager; }

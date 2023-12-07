@@ -1,10 +1,12 @@
+#include "graphics/spritebatch.hpp"
+
 #include "glad/glad.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "core/spritebatch.hpp"
+#include "core/glerror.hpp"
 
-namespace engine
+namespace engine::graphics
 {
     SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
         : _graphics_device(graphicsDevice),
@@ -26,9 +28,9 @@ namespace engine
 
     void SpriteBatch::create()
     {
-        glGenBuffers(1, &_vbo);
-        glGenBuffers(1, &_ebo);
-        glGenVertexArrays(1, &_vao);
+        create_vbo();
+        create_ebo();
+        create_vao();
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
@@ -40,6 +42,51 @@ namespace engine
             static_cast<float>(viewport.y),
             -1.0f,
             1.0f);
+    }
+
+    void SpriteBatch::create_vbo()
+    {
+        _sprite_data_vbo.resize(MAX_BATCH_SIZE * VERTEX_SIZE);
+        glGenBuffers(1, &_vbo);
+        glCheckError();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glCheckError();
+        // Allocate an empty buffer of the max size
+        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * VERTEX_SIZE * 4, NULL, GL_DYNAMIC_DRAW);
+        glCheckError();
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glCheckError();
+    }
+
+    void SpriteBatch::create_vao()
+    {
+        glGenVertexArrays(1, &_vao);
+        glCheckError();
+
+        glBindVertexArray(_vao);
+        glCheckError();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glCheckError();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+        glCheckError();
+
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (void *)0);
+        glEnableVertexAttribArray(0);
+        glCheckError();
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (void *)(4 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+        glCheckError();
+
+        glBindVertexArray(0);
+        glCheckError();
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glCheckError();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glCheckError();
     }
 
     void SpriteBatch::begin(const bool alpha_blending_enabled)
@@ -61,7 +108,9 @@ namespace engine
         if (alpha_blending_enabled)
         {
             glEnable(GL_BLEND);
+            glCheckError();
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glCheckError();
         }
         _num_active_sprites = 0;
     }
@@ -111,55 +160,40 @@ namespace engine
             _sprite_data.push_back(SpriteData());
         }
         auto &data = _sprite_data[_num_active_sprites];
-        data.color = color;
-        data.gl_texture = texture.gl_texture();
-        data.destination_rectangle = destination_rectangle;
-        if (source_rectangle)
-        {
-            data.source_rectangle = *source_rectangle;
-            data.source_rectangle.x /= texture.width();
-            data.source_rectangle.y /= texture.height();
-            data.source_rectangle.width /= texture.width();
-            data.source_rectangle.height /= texture.height();
-        }
-        else
-        {
-            data.source_rectangle = engine::Rectangle(0.0, 0.0, 1.0, 1.0);
-        }
-        data.z = z;
+        data.set(texture, destination_rectangle, source_rectangle, color, z);
     }
 
     void SpriteBatch::flush()
     {
-        glBindVertexArray(_vao);
-
-        std::size_t batch_size;
-        auto active_texture = set_buffer_data(batch_size);
-
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(4 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+        GLuint active_texture;
+        std::size_t batch_size = update_vbo(active_texture);
 
         _shader.use();
 
         glActiveTexture(GL_TEXTURE0);
+        glCheckError();
         glBindTexture(GL_TEXTURE_2D, active_texture);
+        glCheckError();
 
         _shader.set_int("Texture", 0);
         _shader.set_mat4("WVP", _wvp);
 
-        // glDrawArrays(GL_TRIANGLES, 0, batch_size * 6);
-        glDrawElements(GL_TRIANGLES, batch_size * 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(_vao);
+        glCheckError();
+
+        glDrawElements(GL_TRIANGLES, batch_size * 6, GL_UNSIGNED_SHORT, 0);
+        glCheckError();
+
         glBindVertexArray(0);
+        glCheckError();
 
         _current_batch_start += batch_size;
     }
 
-    GLuint SpriteBatch::set_buffer_data(std::size_t &batch_size)
+    std::size_t SpriteBatch::update_vbo(GLuint &active_texture)
     {
-        GLuint active_texture = 0;
-        batch_size = _num_active_sprites - _current_batch_start;
+        active_texture = 0;
+        std::size_t batch_size = _num_active_sprites - _current_batch_start;
         if (batch_size > MAX_BATCH_SIZE)
         {
             batch_size = MAX_BATCH_SIZE;
@@ -167,7 +201,6 @@ namespace engine
 
         auto _sprite_data_ptr = &(_sprite_data[_current_batch_start]);
         auto _sprite_data_vbo_ptr = &(_sprite_data_vbo[0]);
-        auto _sprite_data_ebo_ptr = &(_sprite_data_ebo[0]);
         for (std::size_t i = 0; i < batch_size; ++i)
         {
             auto &sprite_data = *(_sprite_data_ptr++);
@@ -183,7 +216,7 @@ namespace engine
 
             /*if (offset_vbo >= _sprite_data_vbo.size()) // Grow the VBO if necessary
             {
-                for (int j = 0; j < SPRITE_SIZE_VBO; ++j)
+                for (int j = 0; j < VERTEX_SIZE; ++j)
                 {
                     _sprite_data_vbo.push_back(0.0);
                 }
@@ -239,22 +272,51 @@ namespace engine
             *(_sprite_data_vbo_ptr++) = color.g;
             *(_sprite_data_vbo_ptr++) = color.b;
             *(_sprite_data_vbo_ptr++) = color.a;
-
-            *(_sprite_data_ebo_ptr++) = i * 8;
-            *(_sprite_data_ebo_ptr++) = i * 8 + 2;
-            *(_sprite_data_ebo_ptr++) = i * 8 + 4;
-            *(_sprite_data_ebo_ptr++) = i * 8 + 4;
-            *(_sprite_data_ebo_ptr++) = i * 8 + 2;
-            *(_sprite_data_ebo_ptr++) = i * 8 + 6;
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, batch_size * SPRITE_SIZE_VBO * sizeof(GLfloat), &_sprite_data_vbo[0], GL_STATIC_DRAW);
+        glCheckError();
+        // Orphan the vertex buffer
+        // Refer to https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
+        glBufferData(GL_ARRAY_BUFFER, MAX_BATCH_SIZE * VERTEX_SIZE * 4, NULL, GL_DYNAMIC_DRAW);
+        glCheckError();
+        // Update the needed subregion of the buffer
+        glBufferSubData(GL_ARRAY_BUFFER, 0, batch_size * VERTEX_SIZE * 4, &_sprite_data_vbo[0]);
+        glCheckError();
 
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glCheckError();
+
+        return batch_size;
+    }
+
+    void SpriteBatch::create_ebo()
+    {
+        /*  0 -- 1
+            |\   |
+            | \  |
+            |  \ |
+            2 -- 3
+        */
+        _sprite_data_ebo.resize(MAX_BATCH_SIZE * 6);
+        for (std::size_t i = 0; i < MAX_BATCH_SIZE; ++i)
+        {
+            _sprite_data_ebo[i * 6] = i * 4;
+            _sprite_data_ebo[i * 6 + 1] = i * 4 + 1;
+            _sprite_data_ebo[i * 6 + 2] = i * 4 + 3;
+            _sprite_data_ebo[i * 6 + 3] = i * 4;
+            _sprite_data_ebo[i * 6 + 4] = i * 4 + 3;
+            _sprite_data_ebo[i * 6 + 5] = i * 4 + 2;
+        }
+
+        glGenBuffers(1, &_ebo);
+        glCheckError();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, batch_size * SPRITE_SIZE_EBO * sizeof(GLuint), &_sprite_data_ebo[0], GL_STATIC_DRAW);
-
-        return active_texture;
+        glCheckError();
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_BATCH_SIZE * ELEMENT_SIZE * 6, &_sprite_data_ebo[0], GL_STATIC_DRAW);
+        glCheckError();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glCheckError();
     }
 
     const std::string SpriteBatch::VERTEX_SHADER_SOURCE = R"(
@@ -288,4 +350,4 @@ namespace engine
         vec4 color = texture(Texture, TexCoord) * VertexColor;
         FragColor = color;
     })";
-} // namespace engine
+} // namespace engine::graphics

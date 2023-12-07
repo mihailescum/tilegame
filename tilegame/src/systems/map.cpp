@@ -147,7 +147,7 @@ namespace tilegame::systems
 
         // We know that the sprite sheet is a resource, as it was loaded before
         auto &resource_manager = _scene.game().resource_manager();
-        const engine::sprite::SpriteSheet &sprite_sheet = resource_manager.get<engine::sprite::SpriteSheet>(tileset_name);
+        const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::graphics::SpriteSheet>(tileset_name);
         const engine::Texture2D &texture = sprite_sheet.texture();
 
         auto *tile = tileset_of_sprite->tile(tile_gid);
