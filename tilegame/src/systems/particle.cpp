@@ -37,10 +37,10 @@ namespace tilegame::systems
         _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150), glm::vec2(0.0));
         _registry.emplace<components::Shape>(emitter1,
                                              components::Shape(
-                                                 std::make_unique<engine::Rectangle>(-100, -50, 200, 100)));
+                                                 std::make_unique<engine::Rectangle>(-200, -50, 400, 100)));
         _registry.emplace<components::ParticleEmitter>(emitter1,
                                                        components::ParticleEmitter(
-                                                           200,
+                                                           20,
                                                            glm::vec2(0.0, 1.0),
                                                            glm::pi<float>() / 8.0,
                                                            10.0, 20.0,
@@ -135,7 +135,7 @@ namespace tilegame::systems
         const glm::vec2 position = generate_random_position(shape);
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
-        const engine::Rectangle source_rect(0, 0, 16, 16);
+        const engine::Rectangle source_rect(0, 0, 64, 64);
 
         // Get entity and update components
         const auto new_particle = pool.container[pool.first_dead_particle++];
