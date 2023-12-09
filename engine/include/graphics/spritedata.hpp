@@ -18,7 +18,7 @@ namespace engine::graphics
 
         SpriteData() {}
         void set(
-            const engine::Texture2D texture,
+            const engine::Texture2D &texture,
             const Rectangle &destination_rectangle,
             const Rectangle *const source_rectangle,
             const Color &color,
@@ -38,21 +38,21 @@ namespace engine::graphics
             top_right.position.z = z;
             top_right.uv.x = (source_rectangle) ? (source_rectangle->x + source_rectangle->width) / texture.width() : 1.0;
             top_right.uv.y = top_left.uv.y;
-            top_right.color = color;
+            top_right.color = top_left.color;
 
             bottom_left.position.x = destination_rectangle.x;
             bottom_left.position.y = destination_rectangle.y + destination_rectangle.height;
             bottom_left.position.z = z;
             bottom_left.uv.x = top_left.uv.x;
             bottom_left.uv.y = (source_rectangle) ? (source_rectangle->y + source_rectangle->height) / texture.height() : 1.0;
-            bottom_left.color = color;
+            bottom_left.color = top_left.color;
 
             bottom_right.position.x = destination_rectangle.x + destination_rectangle.width;
             bottom_right.position.y = destination_rectangle.y + destination_rectangle.height;
             bottom_right.position.z = z;
             bottom_right.uv.x = top_right.uv.x;
             bottom_right.uv.y = bottom_left.uv.y;
-            bottom_right.color = color;
+            bottom_right.color = top_left.color;
         }
     };
 } // namespace engine::graphics

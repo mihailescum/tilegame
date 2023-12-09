@@ -83,7 +83,7 @@ namespace tilegame::systems
 
     void RenderSystem::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const
     {
-        for (const auto data : tile_layer.tile_data)
+        for (const auto &data : tile_layer.tile_data)
         {
             _spritebatch.draw(data.texture, data.destination_rect + transform.position_global, &data.source_rect, engine::Color::WHITE);
         }

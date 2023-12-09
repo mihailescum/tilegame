@@ -20,11 +20,11 @@ namespace engine::graphics
         static const int ELEMENT_SIZE = sizeof(ebo_type);
 
         const std::string VERTEX_SHADER_SOURCE{
-#include "graphics/shader/spritebatch.vs"
+#include "graphics/shader/spritebatch.vert"
         };
 
         const std::string FRAGMENT_SHADER_SOURCE{
-#include "graphics/shader/spritebatch.fs"
+#include "graphics/shader/spritebatch.frag"
         };
 
         GraphicsDevice &_graphics_device;

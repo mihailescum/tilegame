@@ -18,11 +18,11 @@ namespace engine::graphics
 
     SpriteBatch::~SpriteBatch()
     {
-        if (this->_vbo != 0)
+        if (_vbo != 0)
             glDeleteBuffers(1, &_vbo);
-        if (this->_ebo != 0)
+        if (_ebo != 0)
             glDeleteBuffers(1, &_ebo);
-        if (this->_vao != 0)
+        if (_vao != 0)
             glDeleteVertexArrays(1, &_vao);
     }
 
@@ -34,7 +34,7 @@ namespace engine::graphics
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
-        const Viewport &viewport = this->_graphics_device.viewport();
+        const Viewport &viewport = _graphics_device.viewport();
         _projection = glm::ortho(
             static_cast<float>(viewport.x),
             static_cast<float>(viewport.width),
@@ -125,7 +125,7 @@ namespace engine::graphics
     void SpriteBatch::begin(const bool alpha_blending_enabled)
     {
         glm::mat4 transform(1.0);
-        this->begin(transform, alpha_blending_enabled);
+        begin(transform, alpha_blending_enabled);
     }
 
     void SpriteBatch::begin(const glm::mat4 &transform, const bool alpha_blending_enabled)
@@ -150,7 +150,7 @@ namespace engine::graphics
 
     void SpriteBatch::end()
     {
-        if (!this->_has_begun)
+        if (!_has_begun)
         {
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
@@ -162,7 +162,7 @@ namespace engine::graphics
 
         glDisable(GL_BLEND);
 
-        this->_has_begun = false;
+        _has_begun = false;
     }
 
     void SpriteBatch::draw(
@@ -172,13 +172,13 @@ namespace engine::graphics
         const Color &color,
         float z)
     {
-        if (!this->_has_begun)
+        if (!_has_begun)
         {
             throw "You have to call 'begin()' on a SpriteBatch first.";
         }
 
-        this->add_sprite_data(texture, destination_rectangle, source_rectangle, color, z);
-        this->_num_active_sprites++;
+        add_sprite_data(texture, destination_rectangle, source_rectangle, color, z);
+        _num_active_sprites++;
     }
 
     void SpriteBatch::add_sprite_data(

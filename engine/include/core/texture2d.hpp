@@ -5,6 +5,7 @@
 #include <string>
 
 #include "resource.hpp"
+#include "log.hpp"
 
 namespace engine
 {

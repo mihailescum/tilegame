@@ -4,7 +4,8 @@
 
 #include "glad/glad.h"
 
-#include "shape.hpp"
+#include "core/shape.hpp"
+#include "core/log.hpp"
 
 namespace engine
 {
