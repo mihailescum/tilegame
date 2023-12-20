@@ -19,7 +19,6 @@
 #include "systems/timer.hpp"
 #include "systems/event.hpp"
 #include "systems/particle.hpp"
-
 namespace tilegame
 {
     class Tilegame;

@@ -2,6 +2,9 @@
 
 #include <random>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
+
 namespace tilegame
 {
     float get_random()
@@ -15,5 +18,10 @@ namespace tilegame
     {
         float v = get_random();
         return v * (max - min) + min;
+    }
+
+    glm::vec2 clamp_with_precision(const glm::vec2 &x, const glm::vec2 &target, float precision)
+    {
+        return (glm::length2(x - target) < precision * precision) ? target : x;
     }
 } // namespace tilegame

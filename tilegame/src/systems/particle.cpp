@@ -18,6 +18,7 @@
 #include "components/sprite.hpp"
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
+#include "components/velocity.hpp"
 
 namespace tilegame::systems
 {
@@ -135,14 +136,18 @@ namespace tilegame::systems
         const glm::vec2 position = generate_random_position(shape);
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
-        static const engine::Rectangle source_rect(0, 0, 64, 64);
+        const engine::Rectangle source_rect(0, 0, 64, 64);
 
         // Get entity and update components
         const auto new_particle = pool.container[pool.first_dead_particle++];
 
         _registry.remove<components::Inactive>(new_particle);
-        _registry.patch<components::Movement>(new_particle, [speed, &direction](auto &movement)
-                                              { movement.direction = direction; movement.speed = speed; });
+        _registry.patch<components::Movement>(new_particle,
+                                              [&direction, speed](auto &movement)
+                                              {
+                                                  movement.direction = direction;
+                                                  movement.speed = speed;
+                                              });
         _registry.patch<components::Particle>(new_particle,
                                               [lifetime, scale, &color](auto &particle)
                                               {

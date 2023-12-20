@@ -4,6 +4,8 @@
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
 #include "components/inactive.hpp"
+#include "components/movetotarget.hpp"
+#include "components/velocity.hpp"
 
 namespace tilegame::systems
 {
@@ -30,6 +32,11 @@ namespace tilegame::systems
         // _lua().set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
         // Define the user types
+        _lua().new_usertype<glm::vec2>(
+            "vec2",
+            sol::constructors<glm::vec2(), glm::vec2(float, float), glm::vec2(const glm::vec2 &)>(),
+            "x", &glm::vec2::x,
+            "y", &glm::vec2::y);
         _lua().new_usertype<entt::entity>(
             "_entity", sol::constructors<entt::entity>());
         _lua().new_usertype<components::ScriptLoader>(
@@ -51,13 +58,27 @@ namespace tilegame::systems
             "_TableComponent",
             sol::constructors<components::LuaTable(), components::LuaTable(const sol::table &)>(),
             "table", &components::LuaTable::table);
+        _lua().new_usertype<components::Inactive>(
+            "_InactiveComponent",
+            sol::constructors<components::Inactive()>());
+        _lua().new_usertype<components::MoveToTarget>(
+            "_MoveToTargetComponent",
+            sol::constructors<components::MoveToTarget(), components::MoveToTarget(glm::vec2, glm::vec2)>(),
+            "start", &components::MoveToTarget::start,
+            "end", &components::MoveToTarget::end);
+        _lua().new_usertype<components::Velocity>(
+            "_VelocityComponent",
+            sol::constructors<components::Velocity(), components::Velocity(float)>(),
+            "velocity", &components::Velocity::velocity);
 
         add_component_function<
             EmplaceOrReplaceWrapper,
             components::Timer,
             components::TimerEventArgs,
             components::ScriptLoader,
-            components::LuaTable>("_add_component");
+            components::LuaTable,
+            components::MoveToTarget,
+            components::Velocity>("_add_component");
 
         _lua().set_function("_add_timer_event_listener", &ScriptSystem::add_event_listener<components::TimerEventArgs>, this);
     }
