@@ -6,13 +6,13 @@
 
 namespace tilegame::systems
 {
-    class TimerSystem : public System
+    class Timer : public System
     {
     private:
         std::vector<entt::entity> _entities_to_clear;
 
     public:
-        TimerSystem(tilegame::Scene &scene, entt::registry &registry);
+        Timer(tilegame::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

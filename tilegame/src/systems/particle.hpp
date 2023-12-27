@@ -10,7 +10,7 @@
 
 namespace tilegame::systems
 {
-    class ParticleSystem : public System
+    class Particle : public System
     {
     private:
         void update_particles(const engine::GameTime &update_time);
@@ -22,7 +22,7 @@ namespace tilegame::systems
         bool grow_pool(const entt::entity emitter_entity, components::ParticlePool &pool, int num_new_particles);
 
     public:
-        ParticleSystem(tilegame::Scene &scene, entt::registry &registry);
+        Particle(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

@@ -8,20 +8,20 @@
 
 namespace tilegame::systems
 {
-    RenderSystem::RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
+    Render::Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
     {
     }
 
-    void RenderSystem::initialize()
+    void Render::initialize()
     {
         needs_sorting(_registry, entt::null);
 
-        _registry.on_construct<components::Ordering>().connect<&systems::RenderSystem::needs_sorting>(*this);
-        _registry.on_update<components::Ordering>().connect<&systems::RenderSystem::needs_sorting>(*this);
-        _registry.on_destroy<components::Ordering>().connect<&systems::RenderSystem::needs_sorting>(*this);
+        _registry.on_construct<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
+        _registry.on_update<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
+        _registry.on_destroy<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
     }
 
-    void RenderSystem::draw(const engine::GameTime &draw_time)
+    void Render::draw(const engine::GameTime &draw_time)
     {
         if (_needs_sorting)
         {
@@ -63,7 +63,7 @@ namespace tilegame::systems
         }
     }
 
-    void RenderSystem::sort_renderables() const
+    void Render::sort_renderables() const
     {
         // TODO can we make this more efficient somehow?
         _registry.sort<components::Ordering>(
@@ -73,7 +73,7 @@ namespace tilegame::systems
         _registry.sort<components::Renderable2D, components::Ordering>();
     }
 
-    void RenderSystem::draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const
+    void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const
     {
         const auto &position_global = transform.position_global;
         const auto &source_rect = sprite.source_rect;
@@ -81,7 +81,7 @@ namespace tilegame::systems
         _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
-    void RenderSystem::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const
+    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const
     {
         for (const auto &data : tile_layer.tile_data)
         {
@@ -89,7 +89,7 @@ namespace tilegame::systems
         }
     }
 
-    void RenderSystem::draw_particles(const components::ParticlePool &pool) const
+    void Render::draw_particles(const components::ParticlePool &pool) const
     {
         // TODO this should be outside of the loop to avoid refeching for every emitter
         const auto particles_view = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);

@@ -11,28 +11,28 @@
 
 namespace tilegame::systems
 {
-    MovementSystem::MovementSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Movement::Movement(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void MovementSystem::initialize()
+    void Movement::initialize()
     {
-        _registry.on_construct<components::Target>().connect<&MovementSystem::add_movement_component>(this);
+        _registry.on_construct<components::Target>().connect<&Movement::add_movement_component>(this);
     }
 
-    void MovementSystem::add_movement_component(entt::registry &registry, entt::entity entity)
+    void Movement::add_movement_component(entt::registry &registry, entt::entity entity)
     {
         registry.emplace_or_replace<components::Movement>(entity, glm::vec2(0.0), 0.0);
     }
 
-    void MovementSystem::update(const engine::GameTime &update_time)
+    void Movement::update(const engine::GameTime &update_time)
     {
         update_move_to_target(update_time);
 
         apply_movement(update_time);
     }
 
-    void MovementSystem::update_move_to_target(const engine::GameTime &update_time)
+    void Movement::update_move_to_target(const engine::GameTime &update_time)
     {
         auto view = _registry.view<components::Transform, components::Target, components::Velocity, components::Movement>(entt::exclude<components::Inactive>);
 
@@ -56,7 +56,7 @@ namespace tilegame::systems
         }
     }
 
-    void MovementSystem::apply_movement(const engine::GameTime &update_time)
+    void Movement::apply_movement(const engine::GameTime &update_time)
     {
         auto view = _registry.view<components::Movement>(entt::exclude<components::Inactive>);
 

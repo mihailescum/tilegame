@@ -8,10 +8,10 @@
 
 namespace tilegame::systems
 {
-    class EventSystem : public System
+    class Event : public System
     {
     public:
-        EventSystem(tilegame::Scene &scene, entt::registry &registry);
+        Event(tilegame::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

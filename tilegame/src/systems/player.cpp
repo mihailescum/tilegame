@@ -15,15 +15,15 @@
 
 namespace tilegame::systems
 {
-    PlayerSystem::PlayerSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Player::Player(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void PlayerSystem::initialize()
+    void Player::initialize()
     {
     }
 
-    void PlayerSystem::load_content()
+    void Player::load_content()
     {
         auto &resource_manager = _scene.game().resource_manager();
         const engine::graphics::SpriteSheet *characters = resource_manager.load_resource<engine::graphics::SpriteSheet>("characters", "content/characters/characters.tsj");
@@ -46,7 +46,7 @@ namespace tilegame::systems
         _registry.emplace<components::Sprite>(_player1_entity, &characters_texture, player1_animation_component.get_current_frame().source_rect);
     }
 
-    void PlayerSystem::update(const engine::GameTime &update_time)
+    void Player::update(const engine::GameTime &update_time)
     {
         const auto players = _registry.view<components::Player>(entt::exclude<components::Inactive>);
 
@@ -74,7 +74,7 @@ namespace tilegame::systems
         }
     }
 
-    glm::vec2 PlayerSystem::handle_input_1()
+    glm::vec2 Player::handle_input_1()
     {
         const auto &window = _scene.game().window();
 

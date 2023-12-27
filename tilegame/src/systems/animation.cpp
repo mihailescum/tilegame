@@ -6,15 +6,15 @@
 
 namespace tilegame::systems
 {
-    AnimationSystem::AnimationSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Animation::Animation(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void AnimationSystem::initialize()
+    void Animation::initialize()
     {
     }
 
-    void AnimationSystem::update(const engine::GameTime &update_time)
+    void Animation::update(const engine::GameTime &update_time)
     {
         const auto animation_view = _registry.view<components::Animation>(entt::exclude<components::Inactive>);
         const auto sprite_view = _registry.view<components::Animation, components::Sprite>(entt::exclude<components::Inactive>);

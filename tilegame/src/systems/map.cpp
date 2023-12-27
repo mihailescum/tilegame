@@ -13,18 +13,18 @@
 
 namespace tilegame::systems
 {
-    MapSystem::MapSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Map::Map(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void MapSystem::load_content()
+    void Map::load_content()
     {
         auto &resource_manager = _scene.game().resource_manager();
         const engine::tilemap::TileMap &map = *resource_manager.load_resource<engine::tilemap::TileMap>("map1", "content/maps/map1.tmj");
         create_map_entity(map);
     }
 
-    const entt::entity MapSystem::create_map_entity(const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_map_entity(const engine::tilemap::TileMap &map)
     {
         const auto entity = _registry.create();
         _registry.emplace<components::TileMap>(entity, map);
@@ -69,7 +69,7 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity MapSystem::create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map)
     {
         const auto entity = _registry.create();
 
@@ -118,7 +118,7 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity MapSystem::create_tileset_entity(const engine::tilemap::Tileset &tileset)
+    const entt::entity Map::create_tileset_entity(const engine::tilemap::Tileset &tileset)
     {
         const auto entity = _registry.create();
         _registry.emplace<components::Tileset>(entity, tileset);
@@ -126,7 +126,7 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity MapSystem::create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map)
     {
         const auto &data = object.data;
 
@@ -152,7 +152,7 @@ namespace tilegame::systems
 
         auto *tile = tileset_of_sprite->tile(tile_gid);
         const auto &sprite_class_name = tile->getClassType();
-        const auto &sprite_state_name = tile->get<std::string>(MapSystem::FIELD_STATE);
+        const auto &sprite_state_name = tile->get<std::string>(Map::FIELD_STATE);
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();
@@ -164,7 +164,7 @@ namespace tilegame::systems
         _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);
 
         auto &properties = const_cast<tson::Object &>(data).getProperties();
-        const auto *script_path_property = properties.getProperty(MapSystem::FIELD_SCRIPT);
+        const auto *script_path_property = properties.getProperty(Map::FIELD_SCRIPT);
         if (script_path_property)
         {
             std::filesystem::path script_path = map.resource_path().parent_path() / script_path_property->getValue<std::string>();

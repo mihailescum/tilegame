@@ -31,17 +31,17 @@ namespace tilegame::worldscene
     private:
         entt::registry _registry;
 
-        systems::RenderSystem _system_render;
-        systems::MapSystem _system_map;
-        systems::CameraSystem _system_camera;
-        systems::PlayerSystem _system_player;
-        systems::MovementSystem _system_movement;
-        systems::SceneGraphSystem _system_scenegraph;
-        systems::AnimationSystem _system_animation;
-        systems::ScriptSystem _system_script;
-        systems::TimerSystem _system_timer;
-        systems::EventSystem _system_event;
-        systems::ParticleSystem _system_particle;
+        systems::Render _system_render;
+        systems::Map _system_map;
+        systems::Camera _system_camera;
+        systems::Player _system_player;
+        systems::Movement _system_movement;
+        systems::SceneGraph _system_scenegraph;
+        systems::Animation _system_animation;
+        systems::Script _system_script;
+        systems::Timer _system_timer;
+        systems::Event _system_event;
+        systems::Particle _system_particle;
 
     public:
         WorldScene(Tilegame &game);

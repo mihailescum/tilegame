@@ -8,10 +8,10 @@
 
 namespace tilegame::systems
 {
-    class AnimationSystem : public System
+    class Animation : public System
     {
     public:
-        AnimationSystem(tilegame::Scene &scene, entt::registry &registry);
+        Animation(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

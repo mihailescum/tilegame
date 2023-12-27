@@ -13,7 +13,7 @@
 
 namespace tilegame::systems
 {
-    class ScriptSystem : public System
+    class Script : public System
     {
     private:
         tilegame::SecureLuaState _lua;
@@ -25,7 +25,7 @@ namespace tilegame::systems
 
         struct EmplaceOrReplaceWrapper
         {
-            EmplaceOrReplaceWrapper(ScriptSystem &parent) : _parent(parent) {}
+            EmplaceOrReplaceWrapper(Script &parent) : _parent(parent) {}
 
             template <typename T>
             T &operator()(entt::entity entity, const T &component) const
@@ -34,7 +34,7 @@ namespace tilegame::systems
             }
 
         private:
-            ScriptSystem &_parent;
+            Script &_parent;
         };
 
         template <typename F, typename... Ts>
@@ -54,8 +54,8 @@ namespace tilegame::systems
         }
 
     public:
-        ScriptSystem(tilegame::Scene &scene, entt::registry &registry);
-        ~ScriptSystem();
+        Script(tilegame::Scene &scene, entt::registry &registry);
+        ~Script();
 
         void initialize();
         void update(const engine::GameTime &update_time);

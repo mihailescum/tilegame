@@ -9,14 +9,14 @@
 
 namespace tilegame::systems
 {
-    class PlayerSystem : public System
+    class Player : public System
     {
     private:
         entt::entity _player1_entity;
         glm::vec2 handle_input_1();
 
     public:
-        PlayerSystem(tilegame::Scene &scene, entt::registry &registry);
+        Player(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

@@ -5,11 +5,11 @@
 
 namespace tilegame::systems
 {
-    SceneGraphSystem::SceneGraphSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    SceneGraph::SceneGraph(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void SceneGraphSystem::initialize()
+    void SceneGraph::initialize()
     {
         const auto root_entity = _registry.create();
         _registry.emplace<components::Transform>(root_entity, glm::vec2(0.0), glm::vec2(0.0));
@@ -23,12 +23,12 @@ namespace tilegame::systems
             entt::collector.update<components::Transform>().where<components::SceneNode>());
     }
 
-    void SceneGraphSystem::unload_content()
+    void SceneGraph::unload_content()
     {
         _transformation_observer.disconnect();
     }
 
-    void SceneGraphSystem::update(const engine::GameTime &update_time)
+    void SceneGraph::update(const engine::GameTime &update_time)
     {
         if (_is_first_update)
         {
@@ -46,7 +46,7 @@ namespace tilegame::systems
         _transformation_observer.clear();
     }
 
-    void SceneGraphSystem::update_node_transform(const tilegame::SceneGraphNode &node)
+    void SceneGraph::update_node_transform(const tilegame::SceneGraphNode &node)
     {
         const auto entity = node.data().entity;
         const auto parent = node.parent();

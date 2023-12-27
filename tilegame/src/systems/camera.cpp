@@ -10,15 +10,15 @@
 
 namespace tilegame::systems
 {
-    CameraSystem::CameraSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Camera::Camera(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void CameraSystem::initialize()
+    void Camera::initialize()
     {
     }
 
-    void CameraSystem::load_content()
+    void Camera::load_content()
     {
         const auto camera_entity = _registry.create();
         _registry.emplace<components::Camera>(
@@ -49,7 +49,7 @@ namespace tilegame::systems
         }
     }
 
-    void CameraSystem::update(const engine::GameTime &update_time)
+    void Camera::update(const engine::GameTime &update_time)
     {
         const auto cameras = _registry.view<components::Camera, components::Transform>(entt::exclude<components::Inactive>);
 

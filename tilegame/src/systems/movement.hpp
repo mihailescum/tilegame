@@ -8,7 +8,7 @@
 
 namespace tilegame::systems
 {
-    class MovementSystem : public System
+    class Movement : public System
     {
     private:
         void apply_movement(const engine::GameTime &update_time);
@@ -16,7 +16,7 @@ namespace tilegame::systems
         void add_movement_component(entt::registry &registry, entt::entity entity);
 
     public:
-        MovementSystem(tilegame::Scene &scene, entt::registry &registry);
+        Movement(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

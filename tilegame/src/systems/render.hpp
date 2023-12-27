@@ -10,7 +10,7 @@
 
 namespace tilegame::systems
 {
-    class RenderSystem : public System
+    class Render : public System
     {
     private:
         bool _needs_sorting;
@@ -24,7 +24,7 @@ namespace tilegame::systems
         void needs_sorting(entt::registry &, entt::entity) { _needs_sorting = true; }
 
     public:
-        RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch);
+        Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch);
 
         void initialize();
         void draw(const engine::GameTime &draw_time);

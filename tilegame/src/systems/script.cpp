@@ -9,25 +9,25 @@
 
 namespace tilegame::systems
 {
-    ScriptSystem::ScriptSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Script::Script(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    ScriptSystem::~ScriptSystem()
+    Script::~Script()
     {
         // Clear all components before the lua state is destroyed to avoid invalid references which would lead to a SegFault
         _registry.clear();
     }
 
-    void ScriptSystem::initialize()
+    void Script::initialize()
     {
         _lua.open_libraries();
         register_api();
     }
 
-    void ScriptSystem::register_api()
+    void Script::register_api()
     {
-        _lua().set_function("_create_entity", &ScriptSystem::create_entity, this);
+        _lua().set_function("_create_entity", &Script::create_entity, this);
         // Possible syntax to directly bind the _registry.create() function:
         // _lua().set_function("_create_entity_direct", (entt::entity(entt::registry::*)()) & entt::registry::create, &_registry);
 
@@ -79,15 +79,15 @@ namespace tilegame::systems
             components::Target,
             components::Velocity>("_add_component");
 
-        _lua().set_function("_add_timer_event_listener", &ScriptSystem::add_event_listener<components::TimerEventArgs>, this);
+        _lua().set_function("_add_timer_event_listener", &Script::add_event_listener<components::TimerEventArgs>, this);
     }
 
-    entt::entity ScriptSystem::create_entity()
+    entt::entity Script::create_entity()
     {
         return _registry.create();
     }
 
-    void ScriptSystem::update(const engine::GameTime &update_time)
+    void Script::update(const engine::GameTime &update_time)
     {
         // TODO loading scripts should happen somewhere else, not on update
 

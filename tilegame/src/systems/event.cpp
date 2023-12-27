@@ -4,11 +4,11 @@
 
 namespace tilegame::systems
 {
-    EventSystem::EventSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Event::Event(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void EventSystem::update(const engine::GameTime &update_time)
+    void Event::update(const engine::GameTime &update_time)
     {
         // Clears all remaining events
         _registry.clear<components::TimerEventArgs>();

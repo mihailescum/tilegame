@@ -6,11 +6,11 @@
 
 namespace tilegame::systems
 {
-    TimerSystem::TimerSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Timer::Timer(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void TimerSystem::update(const engine::GameTime &update_time)
+    void Timer::update(const engine::GameTime &update_time)
     {
         // Advance Timers
         const auto timer_view = _registry.view<components::Timer>(entt::exclude<components::Inactive>);

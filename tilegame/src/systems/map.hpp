@@ -9,7 +9,7 @@
 
 namespace tilegame::systems
 {
-    class MapSystem : public System
+    class Map : public System
     {
     private:
         inline static const std::string FIELD_STATE = "state";
@@ -21,7 +21,7 @@ namespace tilegame::systems
         const entt::entity create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map);
 
     public:
-        MapSystem(tilegame::Scene &scene, entt::registry &registry);
+        Map(tilegame::Scene &scene, entt::registry &registry);
 
         void load_content();
     };

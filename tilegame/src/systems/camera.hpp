@@ -8,10 +8,10 @@
 
 namespace tilegame::systems
 {
-    class CameraSystem : public System
+    class Camera : public System
     {
     public:
-        CameraSystem(tilegame::Scene &scene, entt::registry &registry);
+        Camera(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

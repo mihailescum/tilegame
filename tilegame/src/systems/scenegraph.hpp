@@ -10,7 +10,7 @@
 
 namespace tilegame::systems
 {
-    class SceneGraphSystem : public System
+    class SceneGraph : public System
     {
     private:
         entt::observer _transformation_observer;
@@ -19,7 +19,7 @@ namespace tilegame::systems
         void update_node_transform(const tilegame::SceneGraphNode &node);
 
     public:
-        SceneGraphSystem(tilegame::Scene &scene, entt::registry &registry);
+        SceneGraph(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
         void unload_content();

@@ -22,15 +22,15 @@
 
 namespace tilegame::systems
 {
-    ParticleSystem::ParticleSystem(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Particle::Particle(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
-    void ParticleSystem::initialize()
+    void Particle::initialize()
     {
     }
 
-    void ParticleSystem::load_content()
+    void Particle::load_content()
     {
         const auto &particles_texture = *_scene.game().resource_manager().load_resource<engine::Texture2D>("particles", "content/textures/particles.png");
 
@@ -57,13 +57,13 @@ namespace tilegame::systems
         _registry.emplace<components::SceneNode>(emitter1, &emitter1_scenenode);
     }
 
-    void ParticleSystem::update(const engine::GameTime &update_time)
+    void Particle::update(const engine::GameTime &update_time)
     {
         update_particles(update_time);
         emit_particles(update_time);
     }
 
-    void ParticleSystem::update_particles(const engine::GameTime &update_time)
+    void Particle::update_particles(const engine::GameTime &update_time)
     {
         const auto emitter_view = _registry.view<components::ParticlePool>(entt::exclude<components::Inactive>);
         auto particles_view = _registry.view<components::Particle>(entt::exclude<components::Inactive>);
@@ -85,7 +85,7 @@ namespace tilegame::systems
         }
     }
 
-    void ParticleSystem::emit_particles(const engine::GameTime &update_time)
+    void Particle::emit_particles(const engine::GameTime &update_time)
     {
         const auto emitter_view = _registry.view<components::ParticleEmitter, components::ParticlePool, components::Transform, components::Shape>(entt::exclude<components::Inactive>);
 
@@ -111,7 +111,7 @@ namespace tilegame::systems
         }
     }
 
-    glm::vec2 ParticleSystem::generate_random_position(const components::Shape &shape)
+    glm::vec2 Particle::generate_random_position(const components::Shape &shape)
     {
         if (const auto *rect_ptr = dynamic_cast<const engine::Rectangle *>(shape()))
         {
@@ -123,7 +123,7 @@ namespace tilegame::systems
         }
     }
 
-    entt::entity ParticleSystem::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool, const components::Shape &shape)
+    entt::entity Particle::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool, const components::Shape &shape)
     {
         const float lifetime = get_random(emitter.lifetime.x, emitter.lifetime.y);
         const float scale = get_random(emitter.scale.x, emitter.scale.y);
@@ -167,14 +167,14 @@ namespace tilegame::systems
         return new_particle;
     }
 
-    void ParticleSystem::kill_particle(const entt::entity particle_entity, size_t index, components::ParticlePool &pool)
+    void Particle::kill_particle(const entt::entity particle_entity, size_t index, components::ParticlePool &pool)
     {
         _registry.emplace<components::Inactive>(particle_entity);
         std::iter_swap(pool.container.begin() + index, pool.container.begin() + pool.first_dead_particle - 1);
         --pool.first_dead_particle;
     }
 
-    bool ParticleSystem::grow_pool(const entt::entity emitter_entity, components::ParticlePool &pool, int num_new_particles)
+    bool Particle::grow_pool(const entt::entity emitter_entity, components::ParticlePool &pool, int num_new_particles)
     {
         std::size_t old_size = pool.container.size();
         if (pool.first_dead_particle >= old_size * pool.growth_threshold || pool.container.size() - pool.first_dead_particle < num_new_particles)
