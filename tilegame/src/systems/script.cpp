@@ -49,11 +49,11 @@ namespace tilegame::systems
             "repeat", &components::Timer::repeat,
             "time_left", &components::Timer::time_left,
             "time_total", &components::Timer::time_total);
-        _lua().new_usertype<components::TimerEventArgs>(
-            "_TimerEventArgsComponent",
-            sol::constructors<components::TimerEventArgs(), components::TimerEventArgs(float, bool)>(),
-            "duration", &components::TimerEventArgs::duration,
-            "repeated", &components::TimerEventArgs::repeated);
+        _lua().new_usertype<components::TimerEvent>(
+            "_TimerEventComponent",
+            // sol::constructors<components::TimerEvent(), components::TimerEvent(float, bool)>(),
+            "duration", &components::TimerEvent::duration,
+            "repeated", &components::TimerEvent::repeated);
         _lua().new_usertype<components::LuaTable>(
             "_TableComponent",
             sol::constructors<components::LuaTable(), components::LuaTable(const sol::table &)>(),
@@ -65,6 +65,10 @@ namespace tilegame::systems
             "_TargetComponent",
             sol::constructors<components::Target(), components::Target(glm::vec2)>(),
             "target", &components::Target::target);
+        _lua().new_usertype<components::TargetReachedEvent>(
+            "_TargetReachedEvent",
+            // sol::constructors<components::TargetReachedEvent()>(),
+            "target", &components::TargetReachedEvent::target);
         _lua().new_usertype<components::Velocity>(
             "_VelocityComponent",
             sol::constructors<components::Velocity(), components::Velocity(float)>(),
@@ -73,18 +77,35 @@ namespace tilegame::systems
         add_component_function<
             EmplaceOrReplaceWrapper,
             components::Timer,
-            components::TimerEventArgs,
+            components::TimerEvent,
             components::ScriptLoader,
             components::LuaTable,
             components::Target,
             components::Velocity>("_add_component");
 
-        _lua().set_function("_add_timer_event_listener", &Script::add_event_listener<components::TimerEventArgs>, this);
+        _lua().set_function("_add_event_listener", &Script::add_event_listener, this);
     }
 
     entt::entity Script::create_entity()
     {
         return _registry.create();
+    }
+
+    bool Script::add_event_listener(std::string event_type, sol::function callback, entt::entity source)
+    {
+        const auto listener_entity = _registry.create();
+        if (event_type == components::TimerEvent::EVENT_TYPE)
+        {
+            _registry.emplace<components::EventListener<components::TimerEvent>>(listener_entity, components::EventListener<components::TimerEvent>(callback, source));
+            return true;
+        }
+        else if (event_type == components::TargetReachedEvent::EVENT_TYPE)
+        {
+            _registry.emplace<components::EventListener<components::TargetReachedEvent>>(listener_entity, components::EventListener<components::TargetReachedEvent>(callback, source));
+            return true;
+        }
+
+        return false;
     }
 
     void Script::update(const engine::GameTime &update_time)
@@ -107,13 +128,7 @@ namespace tilegame::systems
                 throw "Error loading file";
             }
 
-            _entities_to_clear.push_back(entity);
-        }
-
-        if (!_entities_to_clear.empty())
-        {
-            _registry.remove<components::ScriptLoader>(_entities_to_clear.begin(), _entities_to_clear.end());
-            _entities_to_clear.clear();
+            _registry.erase<components::ScriptLoader>(entity);
         }
     }
 } // namespace tilegame::systems

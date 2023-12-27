@@ -20,7 +20,7 @@ namespace tilegame::systems
             if (timer.time_left <= 0)
             {
                 // Add an event
-                _registry.emplace<components::TimerEventArgs>(entity, timer.time_total, timer.repeat);
+                _registry.emplace<components::TimerEvent>(entity, timer.time_total, timer.repeat);
 
                 if (timer.repeat)
                 {
@@ -28,7 +28,7 @@ namespace tilegame::systems
                 }
                 else
                 {
-                    _entities_to_clear.push_back(entity);
+                    _registry.erase<components::Timer>(entity);
                 }
             }
 
@@ -36,24 +36,6 @@ namespace tilegame::systems
             _registry.patch<components::Timer>(entity);
         }
 
-        if (!_entities_to_clear.empty())
-        {
-            _registry.remove<components::Timer>(_entities_to_clear.begin(), _entities_to_clear.end());
-            _entities_to_clear.clear();
-        }
-
-        // Trigger Timer Events
-        const auto timer_event_view = _registry.view<components::TimerEventArgs>(entt::exclude<components::Inactive>);
-        const auto timer_listener_view = _registry.view<components::EventListener<components::TimerEventArgs>>(entt::exclude<components::Inactive>);
-        for (auto &&[source, event_args] : timer_event_view.each())
-        {
-            for (auto &&[listener, listener_component] : timer_listener_view.each())
-            {
-                if (!_registry.valid(listener_component.source) || listener_component.source == source)
-                {
-                    listener_component.callback(components::TimerEventArgs::EVENT_TYPE, event_args, source);
-                }
-            }
-        }
+        raise_events<components::TimerEvent>();
     }
 } // namespace tilegame::systems

@@ -42,11 +42,11 @@ namespace tilegame::systems
             auto &position = transform.position_local;
             // If we almost reached the target, up to epsilon, we clamp the position to the target
             const auto direction = target() - position;
-            if (glm::length2(direction) < 1e-6)
+            if (glm::length2(direction) < 10) // TODO finda better measure for when the movement is finished
             {
                 position = target();
                 _registry.erase<components::Target, components::Movement>(entity);
-                // TODO possibly fire some event that the target is reached
+                _registry.emplace<components::TargetReachedEvent>(entity);
             }
             else
             {
@@ -54,6 +54,8 @@ namespace tilegame::systems
                 movement.speed = velocity();
             }
         }
+
+        raise_events<components::TargetReachedEvent>();
     }
 
     void Movement::apply_movement(const engine::GameTime &update_time)

@@ -16,13 +16,13 @@ namespace tilegame::components
         Timer(float time_total, bool repeat) : time_total(time_total), time_left(time_total), repeat(repeat) {}
     };
 
-    struct TimerEventArgs
+    struct TimerEvent
     {
-        inline static const std::string EVENT_TYPE = "timer";
+        inline static const std::string EVENT_TYPE = "TIMER_EVENT";
         float duration;
         bool repeated;
 
-        TimerEventArgs() {}
-        TimerEventArgs(float duration, bool repeated) : duration(duration), repeated(repeated) {}
+        TimerEvent() {}
+        TimerEvent(float duration, bool repeated) : duration(duration), repeated(repeated) {}
     };
 } // namespace tilegame

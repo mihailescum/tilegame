@@ -17,11 +17,10 @@ namespace tilegame::systems
     {
     private:
         tilegame::SecureLuaState _lua;
-        std::vector<entt::entity> _entities_to_clear;
 
         void register_api();
-        void open_libs();
         entt::entity create_entity();
+        bool add_event_listener(std::string event_type, sol::function callback, entt::entity source);
 
         struct EmplaceOrReplaceWrapper
         {
@@ -44,13 +43,6 @@ namespace tilegame::systems
                 [this](entt::entity entity, Ts component)
                 { return F(*this)(entity, component); }...);
             _lua().set_function(name, overload);
-        }
-
-        template <class T>
-        void add_event_listener(std::function<void(const std::string, const T &, entt::entity)> callback, entt::entity source)
-        {
-            const auto listener_entity = _registry.create();
-            _registry.emplace<components::EventListener<T>>(listener_entity, components::EventListener(callback, source));
         }
 
     public:
