@@ -21,7 +21,7 @@ namespace tilegame::systems
         void draw_particles(const components::ParticlePool &pool) const;
 
         void sort_renderables() const;
-        void needs_sorting() { _needs_sorting = true; }
+        void needs_sorting(entt::registry &, entt::entity) { _needs_sorting = true; }
 
     public:
         RenderSystem(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch);

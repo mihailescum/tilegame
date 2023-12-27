@@ -52,7 +52,7 @@ namespace tilegame::systems
 
         for (auto &&[entity, player] : players.each())
         {
-            switch (player.id)
+            switch (player())
             {
             case 1:
             {
@@ -78,45 +78,28 @@ namespace tilegame::systems
     {
         const auto &window = _scene.game().window();
 
-        // auto result = static_cast<components::Movement::MovementDirection>(0);
         auto result = glm::vec2(0.0);
         if (window.is_key_pressed(GLFW_KEY_LEFT))
         {
-            // result |= components::Movement::Left;
             result.x -= 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_RIGHT))
         {
-            // result |= components::Movement::Right;
             result.x += 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_UP))
         {
-            // result |= components::Movement::Up;
             result.y -= 1.0;
         }
 
         if (window.is_key_pressed(GLFW_KEY_DOWN))
         {
-            // result |= components::Movement::Down;
             result.y += 1.0;
         }
 
         // For some reason, when Up + Down are pressed, and later Left as well, GLFW does not recognize that Left is pressed.
-
-        /* if ((result & components::Movement::Left) && (result & components::Movement::Right))
-        {
-            result &= ~components::Movement::Left;
-            result &= ~components::Movement::Right;
-        }
-
-        if ((result & components::Movement::Up) && (result & components::Movement::Down))
-        {
-            result &= ~components::Movement::Up;
-            result &= ~components::Movement::Down;
-        }*/
 
         return glm::normalize(result);
     }

@@ -39,8 +39,8 @@ namespace tilegame::systems
 
         for (const auto entity : _transformation_observer)
         {
-            auto &scene_node_component = _registry.get<components::SceneNode>(entity);
-            update_node_transform(*scene_node_component.node);
+            const auto &scene_node_component = _registry.get<components::SceneNode>(entity);
+            update_node_transform(scene_node_component());
         }
 
         _transformation_observer.clear();

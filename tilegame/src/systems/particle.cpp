@@ -4,8 +4,8 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-#include "helper.hpp"
 #include "math.hpp"
+#include "helper.hpp"
 
 #include "components/particleemitter.hpp"
 #include "components/particlepool.hpp"

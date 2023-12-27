@@ -14,7 +14,7 @@ namespace tilegame::systems
 
     void RenderSystem::initialize()
     {
-        needs_sorting();
+        needs_sorting(_registry, entt::null);
 
         _registry.on_construct<components::Ordering>().connect<&systems::RenderSystem::needs_sorting>(*this);
         _registry.on_update<components::Ordering>().connect<&systems::RenderSystem::needs_sorting>(*this);
@@ -68,7 +68,7 @@ namespace tilegame::systems
         // TODO can we make this more efficient somehow?
         _registry.sort<components::Ordering>(
             [](const auto &lhs, const auto &rhs)
-            { return lhs.z < rhs.z; },
+            { return lhs() < rhs(); },
             entt::insertion_sort());
         _registry.sort<components::Renderable2D, components::Ordering>();
     }

@@ -10,5 +10,7 @@ namespace tilegame::components
 
         Velocity() : Velocity(0.0) {}
         Velocity(float velocity) : velocity(velocity) {}
+
+        float operator()() const { return velocity; }
     };
 } // namespace tilegame

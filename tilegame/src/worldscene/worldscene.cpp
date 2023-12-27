@@ -35,6 +35,7 @@ namespace tilegame::worldscene
 
         _system_player.initialize();
         _system_camera.initialize();
+        _system_movement.initialize();
     }
 
     void WorldScene::load_content()

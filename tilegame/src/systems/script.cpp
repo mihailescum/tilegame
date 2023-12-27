@@ -4,7 +4,7 @@
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
 #include "components/inactive.hpp"
-#include "components/movetotarget.hpp"
+#include "components/target.hpp"
 #include "components/velocity.hpp"
 
 namespace tilegame::systems
@@ -61,11 +61,10 @@ namespace tilegame::systems
         _lua().new_usertype<components::Inactive>(
             "_InactiveComponent",
             sol::constructors<components::Inactive()>());
-        _lua().new_usertype<components::MoveToTarget>(
-            "_MoveToTargetComponent",
-            sol::constructors<components::MoveToTarget(), components::MoveToTarget(glm::vec2, glm::vec2)>(),
-            "start", &components::MoveToTarget::start,
-            "end", &components::MoveToTarget::end);
+        _lua().new_usertype<components::Target>(
+            "_TargetComponent",
+            sol::constructors<components::Target(), components::Target(glm::vec2)>(),
+            "target", &components::Target::target);
         _lua().new_usertype<components::Velocity>(
             "_VelocityComponent",
             sol::constructors<components::Velocity(), components::Velocity(float)>(),
@@ -77,7 +76,7 @@ namespace tilegame::systems
             components::TimerEventArgs,
             components::ScriptLoader,
             components::LuaTable,
-            components::MoveToTarget,
+            components::Target,
             components::Velocity>("_add_component");
 
         _lua().set_function("_add_timer_event_listener", &ScriptSystem::add_event_listener<components::TimerEventArgs>, this);
@@ -93,9 +92,9 @@ namespace tilegame::systems
         // TODO loading scripts should happen somewhere else, not on update
 
         const auto script_view = _registry.view<components::ScriptLoader>(entt::exclude<components::Inactive>);
-        for (const auto &&[entity, script] : script_view.each())
+        for (const auto &&[entity, script_loader] : script_view.each())
         {
-            const auto &script_path = script.path;
+            const auto &script_path = script_loader.path;
             sol::load_result load_result = _lua().load_file(script_path);
             if (load_result.valid())
             {

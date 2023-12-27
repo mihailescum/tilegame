@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "debugger_lua/debugger_lua.hpp"
+#include "inspect.lua/inspect.lua.hpp"
 
 namespace tilegame
 {
@@ -15,6 +16,11 @@ namespace tilegame
             result = _lua.require_script(name, debugger_lua::debugger_src);
             result.set_function("write", &SecureLuaState::safe_write, this);
             result.set_function("read", &SecureLuaState::safe_read, this);
+        }
+        else if (name == "inspect")
+        {
+            // TODO: something is not quite right with the debugger. 'e' or 'p' cannot access the local variables for some reason
+            result = _lua.require_script(name, inspect_lua::src);
         }
         else
         {
