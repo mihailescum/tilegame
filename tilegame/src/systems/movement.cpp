@@ -69,7 +69,7 @@ namespace tilegame::systems
             {
                 transform() = target();
                 _registry.patch<components::Transform>(entity);
-                _registry.erase<components::Target, components::Movement>(entity);
+                _registry.erase<components::Target, components::Movement, components::Velocity>(entity);
                 _registry.emplace<components::TargetReachedEvent>(entity);
             }
         }
