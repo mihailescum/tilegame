@@ -68,7 +68,7 @@ namespace tilegame::systems
         const auto emitter_view = _registry.view<components::ParticlePool>(entt::exclude<components::Inactive>);
         auto particles_view = _registry.view<components::Particle>(entt::exclude<components::Inactive>);
 
-        for (const auto &&[entity, pool] : emitter_view.each())
+        for (const auto &&[emitter_entity, pool] : emitter_view.each())
         {
             for (size_t i = 0; i < pool.first_dead_particle; ++i)
             {
@@ -76,9 +76,12 @@ namespace tilegame::systems
 
                 auto &particle = particles_view.get<components::Particle>(particle_entity);
                 particle.lifetime_left -= update_time.elapsed_time;
+                _registry.patch<components::Particle>(particle_entity);
+
                 if (particle.lifetime_left <= 0)
                 {
                     kill_particle(particle_entity, i, pool);
+                    _registry.patch<components::ParticlePool>(emitter_entity);
                     --i;
                 }
             }
@@ -87,19 +90,21 @@ namespace tilegame::systems
 
     void Particle::emit_particles(const engine::GameTime &update_time)
     {
-        const auto emitter_view = _registry.view<components::ParticleEmitter, components::ParticlePool, components::Transform, components::Shape>(entt::exclude<components::Inactive>);
+        const auto emitter_view = _registry.view<components::ParticleEmitter, components::ParticlePool, const components::Transform, const components::Shape>(entt::exclude<components::Inactive>);
 
-        for (const auto &&[entity, emitter, pool, transform, shape] : emitter_view.each())
+        for (auto &&[entity, emitter, pool, transform, shape] : emitter_view.each())
         {
             emitter.rate_clock += update_time.elapsed_time;
             int num_new_particles = static_cast<int>(emitter.rate * emitter.rate_clock);
             float time_to_produce_new_particles = num_new_particles / static_cast<float>(emitter.rate);
             emitter.rate_clock -= time_to_produce_new_particles;
+            _registry.patch<components::ParticleEmitter>(entity);
 
             if (num_new_particles > 0)
             {
                 if (grow_pool(entity, pool, num_new_particles))
                 {
+                    _registry.patch<components::ParticlePool>(entity);
                     // TODO trigger pool resize event
                 }
 
@@ -143,10 +148,14 @@ namespace tilegame::systems
 
         _registry.remove<components::Inactive>(new_particle);
         _registry.patch<components::Movement>(new_particle,
-                                              [&direction, speed](auto &movement)
+                                              [&direction](auto &movement)
                                               {
                                                   movement.direction = direction;
-                                                  movement.speed = speed;
+                                              });
+        _registry.patch<components::Velocity>(new_particle,
+                                              [&speed](auto &velocity)
+                                              {
+                                                  velocity.velocity = speed;
                                               });
         _registry.patch<components::Particle>(new_particle,
                                               [lifetime, scale, &color](auto &particle)
@@ -193,6 +202,7 @@ namespace tilegame::systems
 
                 _registry.emplace<components::Inactive>(new_particle);
                 _registry.emplace<components::Movement>(new_particle);
+                _registry.emplace<components::Velocity>(new_particle);
                 _registry.emplace<components::Particle>(new_particle);
                 _registry.emplace<components::Sprite>(new_particle);
                 _registry.emplace<components::Transform>(new_particle);

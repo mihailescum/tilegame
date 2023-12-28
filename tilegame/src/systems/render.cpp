@@ -29,12 +29,12 @@ namespace tilegame::systems
             _needs_sorting = false;
         }
 
-        const auto view_renderable = _registry.view<components::Transform, components::Renderable2D>(entt::exclude<components::Inactive>);
-        const auto view_sprites = _registry.view<components::Renderable2D, components::Sprite>(entt::exclude<components::Inactive>);
-        const auto view_tilelayers = _registry.view<components::Renderable2D, components::TileLayer>(entt::exclude<components::Inactive>);
-        const auto view_particle_pools = _registry.view<components::Renderable2D, components::ParticlePool>(entt ::exclude<components::Inactive>);
+        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite>(entt::exclude<components::Inactive>);
+        const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<components::Inactive>);
+        const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool>(entt ::exclude<components::Inactive>);
 
-        const auto cameras = _registry.view<components::Camera>(entt::exclude<components::Inactive>);
+        const auto cameras = _registry.view<const components::Camera>(entt::exclude<components::Inactive>);
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {
@@ -45,17 +45,17 @@ namespace tilegame::systems
             {
                 if (view_sprites.contains(render_entity))
                 {
-                    const auto &sprite_component = view_sprites.get<components::Sprite>(render_entity);
+                    auto &sprite_component = view_sprites.get<const components::Sprite>(render_entity);
                     draw_sprite(transform, sprite_component);
                 }
                 else if (view_tilelayers.contains(render_entity))
                 {
-                    const auto &tilelayer_component = view_tilelayers.get<components::TileLayer>(render_entity);
+                    auto &tilelayer_component = view_tilelayers.get<const components::TileLayer>(render_entity);
                     draw_tilelayer(transform, tilelayer_component);
                 }
                 else if (view_particle_pools.contains(render_entity))
                 {
-                    const auto &pool_component = view_particle_pools.get<components::ParticlePool>(render_entity);
+                    auto &pool_component = view_particle_pools.get<const components::ParticlePool>(render_entity);
                     draw_particles(pool_component);
                 }
             }

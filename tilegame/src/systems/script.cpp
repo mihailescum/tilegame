@@ -112,7 +112,7 @@ namespace tilegame::systems
     {
         // TODO loading scripts should happen somewhere else, not on update
 
-        const auto script_view = _registry.view<components::ScriptLoader>(entt::exclude<components::Inactive>);
+        const auto script_view = _registry.view<const components::ScriptLoader>(entt::exclude<components::Inactive>);
         for (const auto &&[entity, script_loader] : script_view.each())
         {
             const auto &script_path = script_loader.path;

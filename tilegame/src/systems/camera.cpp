@@ -29,7 +29,7 @@ namespace tilegame::systems
         _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
 
         entt::entity player1_entity = entt::null;
-        auto players = _registry.view<components::Player>(entt::exclude<components::Inactive>);
+        auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
         for (auto &&[entity, player] : players.each())
         {
             if (player.id == 1)
@@ -51,7 +51,7 @@ namespace tilegame::systems
 
     void Camera::update(const engine::GameTime &update_time)
     {
-        const auto cameras = _registry.view<components::Camera, components::Transform>(entt::exclude<components::Inactive>);
+        const auto cameras = _registry.view<components::Camera, const components::Transform>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, camera, transform] : cameras.each())
         {

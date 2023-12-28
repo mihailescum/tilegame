@@ -22,53 +22,58 @@ namespace tilegame::systems
 
     void Movement::add_movement_component(entt::registry &registry, entt::entity entity)
     {
-        registry.emplace_or_replace<components::Movement>(entity, glm::vec2(0.0), 0.0);
+        auto [target, transform] = registry.get<const components::Target, const components::Transform>(entity);
+        const glm::vec2 direction = glm::normalize(target() - transform());
+        registry.emplace_or_replace<components::Movement>(entity, direction);
+
+        if (!target.start)
+        {
+            registry.patch<components::Target>(entity,
+                                               [transform](auto &target_component)
+                                               {
+                                                   target_component.start = transform();
+                                               });
+        }
     }
 
     void Movement::update(const engine::GameTime &update_time)
     {
-        update_move_to_target(update_time);
-
         apply_movement(update_time);
-    }
-
-    void Movement::update_move_to_target(const engine::GameTime &update_time)
-    {
-        auto view = _registry.view<components::Transform, components::Target, components::Velocity, components::Movement>(entt::exclude<components::Inactive>);
-
-        for (auto &&[entity, transform, target, velocity, movement] : view.each())
-        {
-            // Fix here if we want to use local or global position
-            auto &position = transform.position_local;
-            // If we almost reached the target, up to epsilon, we clamp the position to the target
-            const auto direction = target() - position;
-            if (glm::length2(direction) < 10) // TODO finda better measure for when the movement is finished
-            {
-                position = target();
-                _registry.erase<components::Target, components::Movement>(entity);
-                _registry.emplace<components::TargetReachedEvent>(entity);
-            }
-            else
-            {
-                movement.direction = glm::normalize(direction);
-                movement.speed = velocity();
-            }
-        }
-
-        raise_events<components::TargetReachedEvent>();
+        check_target_reached();
     }
 
     void Movement::apply_movement(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<components::Movement>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<const components::Movement, const components::Velocity>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, movement] : view.each())
+        for (auto &&[entity, movement, velocity] : view.each())
         {
             if (glm::length2(movement.direction) > 10e-8)
             {
-                _registry.patch<components::Transform>(entity, [movement, update_time](auto &transform)
-                                                       { transform.position_local += update_time.elapsed_time * movement.speed * movement.direction; });
+                _registry.patch<components::Transform>(entity, [movement, velocity, update_time](auto &transform)
+                                                       { transform.position_local += update_time.elapsed_time * velocity() * movement.direction; });
             }
         }
+    }
+
+    void Movement::check_target_reached()
+    {
+        auto view = _registry.view<components::Transform, const components::Target, components::Movement>(entt::exclude<components::Inactive>);
+
+        for (auto &&[entity, transform, target, movement] : view.each())
+        {
+            // If we almost reached the target, up to epsilon, we clamp the position to the target
+            const auto direction_movement = movement.direction;
+            const auto direction_to_target = target() - transform();
+            if (glm::dot(direction_movement, direction_to_target) < 0)
+            {
+                transform() = target();
+                _registry.patch<components::Transform>(entity);
+                _registry.erase<components::Target, components::Movement>(entity);
+                _registry.emplace<components::TargetReachedEvent>(entity);
+            }
+        }
+
+        raise_events<components::TargetReachedEvent>();
     }
 } // namespace tilegame::systems

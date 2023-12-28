@@ -35,7 +35,7 @@ namespace tilegame::systems
         _registry.emplace<components::Player>(_player1_entity, 1);
         _registry.emplace<components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
-        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0), 0.0);
+        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0));
         _registry.emplace<components::Velocity>(_player1_entity, 200.0);
 
         const tilegame::SceneGraphData player1_scenedata(_player1_entity);
@@ -48,7 +48,7 @@ namespace tilegame::systems
 
     void Player::update(const engine::GameTime &update_time)
     {
-        const auto players = _registry.view<components::Player>(entt::exclude<components::Inactive>);
+        const auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, player] : players.each())
         {
@@ -56,13 +56,11 @@ namespace tilegame::systems
             {
             case 1:
             {
-                auto result = handle_input_1();
-                auto &velocity = _registry.get<components::Velocity>(entity);
+                glm::vec2 direction = handle_input_1();
                 _registry.patch<components::Movement>(entity,
-                                                      [result, velocity](auto &movement)
+                                                      [direction](auto &movement)
                                                       {
-                                                          movement.direction = result;
-                                                          movement.speed = velocity.velocity;
+                                                          movement.direction = direction;
                                                       });
             }
             break;
