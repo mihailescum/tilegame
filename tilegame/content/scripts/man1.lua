@@ -15,9 +15,32 @@ local function handle_timer_event()
     end
 end
 
+local positions = {
+    vec2.new(32.0, 32.0),
+    vec2.new(64.0, 128.0),
+    vec2.new(512.0, 256.0),
+    vec2.new(256.0, 48.0),
+    vec2.new(128.0, 128.0)
+}
+
 local function handle_target_reached_event() 
+    local current_index = -1
     while true do
         print("Man reached the target!")
+
+        local new_index = -1
+        repeat
+            new_index = math.random(1,5)
+        until new_index ~= current_index
+        
+        current_index = new_index
+
+        local new_target = positions[current_index]
+        local target_component = _TargetComponent.new(new_target)
+        local velocity_component = _VelocityComponent.new(300)
+        _add_component(man1.entity, target_component)
+        _add_component(man1.entity, velocity_component)
+
         coroutine.yield()
     end
 end

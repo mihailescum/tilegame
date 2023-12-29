@@ -20,7 +20,6 @@ namespace tilegame::worldscene
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
           _system_timer(*this, _registry),
-          _system_event(*this, _registry),
           _system_particle(*this, _registry)
     {
     }
@@ -66,10 +65,12 @@ namespace tilegame::worldscene
         _system_scenegraph.update(update_time);
 
         _system_camera.update(update_time);
+    }
 
-        // Clear all event args
-        // TODO overthink this design
-        _system_event.update(update_time);
+    void WorldScene::end_update()
+    {
+        _system_timer.end_update();
+        _system_movement.end_update();
     }
 
     void WorldScene::draw(const engine::GameTime &draw_time)

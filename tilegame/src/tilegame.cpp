@@ -53,6 +53,18 @@ namespace tilegame
         }
     }
 
+    void Tilegame::begin_update()
+    {
+        Game::begin_update();
+    }
+
+    void Tilegame::end_update()
+    {
+        _worldscene.end_update();
+
+        Game::end_update();
+    }
+
     void Tilegame::draw(const engine::GameTime &draw_time)
     {
         _graphics_device.clear(engine::Color::CORNFLOWER_BLUE);
@@ -60,5 +72,15 @@ namespace tilegame
         _worldscene.draw(draw_time);
 
         _frames++;
+    }
+
+    void Tilegame::begin_draw()
+    {
+        Game::begin_draw();
+    }
+
+    void Tilegame::end_draw()
+    {
+        Game::end_draw();
     }
 } // namespace tilegame

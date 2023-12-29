@@ -38,4 +38,9 @@ namespace tilegame::systems
 
         raise_events<components::TimerEvent>();
     }
+
+    void Timer::end_update()
+    {
+        _registry.clear<components::TimerEvent>();
+    }
 } // namespace tilegame::systems

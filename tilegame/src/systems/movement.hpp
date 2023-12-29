@@ -20,5 +20,6 @@ namespace tilegame::systems
 
         void initialize();
         void update(const engine::GameTime &update_time);
+        void end_update();
     };
 } // namespace tilegame

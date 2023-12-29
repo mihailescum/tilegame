@@ -13,5 +13,6 @@ namespace tilegame::systems
         Timer(tilegame::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
+        void end_update();
     };
 } // namespace tilegame

@@ -17,8 +17,8 @@
 #include "systems/animation.hpp"
 #include "systems/script.hpp"
 #include "systems/timer.hpp"
-#include "systems/event.hpp"
 #include "systems/particle.hpp"
+
 namespace tilegame
 {
     class Tilegame;
@@ -40,7 +40,6 @@ namespace tilegame::worldscene
         systems::Animation _system_animation;
         systems::Script _system_script;
         systems::Timer _system_timer;
-        systems::Event _system_event;
         systems::Particle _system_particle;
 
     public:
@@ -51,6 +50,7 @@ namespace tilegame::worldscene
         virtual void load_content() override;
         virtual void unload_content() override;
         virtual void update(const engine::GameTime &update_time) override;
+        virtual void end_update() override;
         virtual void draw(const engine::GameTime &draw_time) override;
     };
 } // namespace tilegame::worldscene

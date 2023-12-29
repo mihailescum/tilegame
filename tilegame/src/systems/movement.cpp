@@ -42,6 +42,11 @@ namespace tilegame::systems
         check_target_reached();
     }
 
+    void Movement::end_update()
+    {
+        _registry.clear<components::TargetReachedEvent>();
+    }
+
     void Movement::apply_movement(const engine::GameTime &update_time)
     {
         auto view = _registry.view<const components::Movement, const components::Velocity>(entt::exclude<components::Inactive>);
@@ -62,9 +67,9 @@ namespace tilegame::systems
 
         for (auto &&[entity, transform, target, movement] : view.each())
         {
-            // If we almost reached the target, up to epsilon, we clamp the position to the target
             const auto direction_movement = movement.direction;
             const auto direction_to_target = target() - transform();
+            // If we overshot the target, we clamp the position to the target
             if (glm::dot(direction_movement, direction_to_target) < 0)
             {
                 transform() = target();

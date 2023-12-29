@@ -28,6 +28,10 @@ namespace engine
         virtual void load_content(){};
         virtual void unload_content(){};
         virtual void update(const engine::GameTime &update_time){};
+        virtual void begin_update(){};
+        virtual void end_update(){};
         virtual void draw(const engine::GameTime &draw_time){};
+        virtual void begin_draw(){};
+        virtual void end_draw(){};
     };
 }
