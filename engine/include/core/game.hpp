@@ -60,6 +60,9 @@ namespace engine
         ResourceManager &resource_manager() { return _resource_manager; }
         const ResourceManager &resource_manager() const { return _resource_manager; }
 
+        graphics::PostProcessor &postprocessor() { return _postprocessor; }
+        const graphics::PostProcessor &postprocessor() const { return _postprocessor; }
+
         void run();
 
         bool &postprocessing_enabled() { return _postprocessing_enabled; }

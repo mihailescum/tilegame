@@ -28,11 +28,11 @@ namespace engine
         virtual bool load_resource(ResourceManager &_resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
-        void set_bool(const std::string &name, GLboolean value) const;
-        void set_int(const std::string &name, GLint value) const;
-        void set_float(const std::string &name, GLfloat value) const;
-        void set_vec4(const std::string &name, glm::vec4 value) const;
-        void set_mat4(const std::string &name, glm::mat4 value) const;
+        void set(const std::string &name, GLboolean value) const;
+        void set(const std::string &name, GLint value) const;
+        void set(const std::string &name, GLfloat value) const;
+        void set(const std::string &name, glm::vec4 value) const;
+        void set(const std::string &name, glm::mat4 value) const;
 
         bool compile(const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source);
         void use() const;

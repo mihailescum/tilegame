@@ -26,14 +26,7 @@ namespace engine::graphics
         short _current_pass;
 
         std::array<engine::Texture2D, NUM_BUFFERS> _texture;
-        std::vector<engine::Shader *> _shader;
-        const std::string VERTEX_SHADER_SOURCE{
-#include "graphics/shader/postprocessor.vert"
-        };
-
-        const std::string FRAGMENT_SHADER_SOURCE{
-#include "graphics/shader/postprocessor.frag"
-        };
+        std::vector<engine::Shader *> _shaders;
         graphics::GraphicsDevice &_graphicsdevice;
 
         int generate_buffers();
@@ -48,5 +41,8 @@ namespace engine::graphics
         void begin();
         void end();
         void draw(const engine::GameTime &draw_time);
+
+        const std::vector<engine::Shader *> &shaders() const { return _shaders; }
+        std::vector<engine::Shader *> &shaders() { return _shaders; }
     };
 } // namespace engine::graphics

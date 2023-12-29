@@ -34,6 +34,9 @@ namespace engine::graphics
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
+        _shader.use();
+        _shader.set("Texture", 0);
+
         const Viewport &viewport = _graphicsdevice.viewport();
         _projection = glm::ortho(
             static_cast<float>(viewport.x),
@@ -208,8 +211,7 @@ namespace engine::graphics
         glBindTexture(GL_TEXTURE_2D, active_texture);
         glCheckError();
 
-        _shader.set_int("Texture", 0);
-        _shader.set_mat4("WVP", _wvp);
+        _shader.set("WVP", _wvp);
 
         glBindVertexArray(_vao);
         glCheckError();

@@ -24,12 +24,6 @@ namespace engine::graphics
             return 0;
         }
 
-        Shader *shader1 = new Shader();
-        shader1->compile(PostProcessor::VERTEX_SHADER_SOURCE, "", PostProcessor::FRAGMENT_SHADER_SOURCE);
-        _shader.push_back(shader1);
-        _shader.push_back(shader1);
-        _shader.push_back(shader1);
-
         return 1;
     }
 
@@ -144,7 +138,7 @@ namespace engine::graphics
 
     void PostProcessor::begin()
     {
-        if (_current_pass == _shader.size())
+        if (_current_pass == _shaders.size())
         {
             return;
         }
@@ -155,7 +149,7 @@ namespace engine::graphics
 
     void PostProcessor::end()
     {
-        if (_current_pass == _shader.size())
+        if (_current_pass == _shaders.size())
         {
             return;
         }
@@ -176,7 +170,7 @@ namespace engine::graphics
 
     void PostProcessor::draw(const engine::GameTime &draw_time)
     {
-        for (auto s : _shader)
+        for (auto s : _shaders)
         {
             _current_pass++;
 

@@ -20,12 +20,16 @@ namespace tilegame::worldscene
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
           _system_timer(*this, _registry),
-          _system_particle(*this, _registry)
+          _system_particle(*this, _registry),
+          _system_daytime(*this, _registry)
     {
     }
 
     void WorldScene::initialize()
     {
+        _game.postprocessing_enabled() = true;
+        _system_daytime.initialize();
+
         _system_scenegraph.initialize();
         _system_render.initialize();
         _system_animation.initialize();
@@ -35,12 +39,12 @@ namespace tilegame::worldscene
         _system_player.initialize();
         _system_camera.initialize();
         _system_movement.initialize();
-
-        _game.postprocessing_enabled() = true;
     }
 
     void WorldScene::load_content()
     {
+        _system_daytime.load_content();
+
         _system_map.load_content();
         _system_player.load_content();
         _system_particle.load_content();
@@ -55,6 +59,8 @@ namespace tilegame::worldscene
 
     void WorldScene::update(const engine::GameTime &update_time)
     {
+        _system_daytime.update(update_time);
+
         _system_timer.update(update_time);
         _system_particle.update(update_time);
 
