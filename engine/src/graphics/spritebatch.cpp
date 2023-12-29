@@ -1,15 +1,15 @@
 #include "graphics/spritebatch.hpp"
 
-#include "glad/glad.h"
-
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "glad/glad.h"
 
 #include "core/glerror.hpp"
 
 namespace engine::graphics
 {
     SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
-        : _graphics_device(graphicsDevice),
+        : _graphicsdevice(graphicsDevice),
           _num_active_sprites(0),
           _has_begun(false),
           _sprite_data(MAX_BATCH_SIZE)
@@ -34,7 +34,7 @@ namespace engine::graphics
 
         _shader.compile(SpriteBatch::VERTEX_SHADER_SOURCE, "", SpriteBatch::FRAGMENT_SHADER_SOURCE);
 
-        const Viewport &viewport = _graphics_device.viewport();
+        const Viewport &viewport = _graphicsdevice.viewport();
         _projection = glm::ortho(
             static_cast<float>(viewport.x),
             static_cast<float>(viewport.width),

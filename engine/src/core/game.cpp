@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include <GLFW/glfw3.h>
-
 namespace engine
 {
     Game::~Game()
@@ -30,7 +28,6 @@ namespace engine
         // - While window is alive
         while (_shouldRun)
         {
-
             now = glfwGetTime();
             delta_update = now - last_update;
             accumulated_time += delta_update;
@@ -59,10 +56,10 @@ namespace engine
 
             // - Render at maximum possible frames
             begin_draw();
-            draw(_draw_time); // - Render function
-            end_draw();
-            glfwSwapBuffers(&_window.native_window());
+            draw(_draw_time);
+            end_draw(_draw_time);
 
+            glfwSwapBuffers(&_window.native_window());
             last_draw = now;
 
             _shouldRun = !_window.should_close();
@@ -70,10 +67,6 @@ namespace engine
 
         // Calls unload_content() of derived class
         unload_content();
-    }
-
-    void Game::begin_update()
-    {
     }
 
     void Game::initialize()
@@ -87,8 +80,15 @@ namespace engine
             return;
         }
 
-        int graphicsDeviceResult = _graphics_device.create();
+        int graphicsDeviceResult = _graphicsdevice.create();
         if (!graphicsDeviceResult)
+        {
+            _shouldRun = false;
+            return;
+        }
+
+        int postprocessor_result = _postprocessor.initialize();
+        if (!postprocessor_result)
         {
             _shouldRun = false;
             return;
@@ -104,11 +104,32 @@ namespace engine
         _resource_manager.unload_resources();
     }
 
+    void Game::begin_update()
+    {
+    }
+
+    void Game::begin_draw()
+    {
+        if (_postprocessing_enabled)
+        {
+            _postprocessor.begin();
+        }
+    }
+
+    void Game::end_draw(const engine::GameTime &draw_time)
+    {
+        if (_postprocessing_enabled)
+        {
+            _postprocessor.end();
+            _postprocessor.draw(draw_time);
+        }
+    }
+
     void Game::resize(int width, int height)
     {
-        Viewport currentViewport = _graphics_device.viewport();
+        Viewport currentViewport = _graphicsdevice.viewport();
         currentViewport.width = width;
         currentViewport.height = height;
-        _graphics_device.viewport(currentViewport);
+        _graphicsdevice.viewport(currentViewport);
     }
 } // namespace engine

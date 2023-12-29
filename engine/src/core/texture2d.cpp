@@ -21,10 +21,10 @@ namespace engine
 
     void Texture2D::unload_resource()
     {
-        if (this->_gl_texture != 0)
+        if (_gl_texture != 0)
         {
-            glDeleteTextures(1, &this->_gl_texture);
-            this->_gl_texture = 0;
+            glDeleteTextures(1, &_gl_texture);
+            _gl_texture = 0;
         }
     }
 
@@ -33,23 +33,22 @@ namespace engine
         bool hasAlphaChannel = va_arg(args, int);
         if (hasAlphaChannel)
         {
-            this->internal_format(GL_RGBA);
-            this->image_format(GL_RGBA);
+            internal_format(GL_RGBA);
+            image_format(GL_RGBA);
         }
         // load image
         int width, height, nrChannels;
-        unsigned char *data = stbi_load(this->_resource_path.c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(_resource_path.c_str(), &width, &height, &nrChannels, 0);
         // now generate texture
         if (data)
         {
-
-            this->create_texture_from_raw_data(width, height, data);
+            create_texture_from_raw_data(width, height, data);
             // and finally free image data
             stbi_image_free(data);
         }
         else
         {
-            Log::e("Failed to load texture. FILE: ", this->_resource_path);
+            Log::e("Failed to load texture. FILE: ", _resource_path);
             return false;
         }
 
@@ -58,16 +57,16 @@ namespace engine
 
     void Texture2D::create_texture_from_raw_data(int width, int height, unsigned char *data)
     {
-        this->_width = width;
-        this->_height = height;
+        _width = width;
+        _height = height;
 
         glGenTextures(1, &_gl_texture);
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, this->_internalFormat, this->_width, this->_height, 0, this->_imageFormat, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->_wrapS);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->_wrapT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this->_filterMin);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this->_filterMax);
+        glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _imageFormat, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrapS);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrapT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filterMin);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filterMax);
 
         // unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -79,6 +78,6 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
     }
 
-    void Texture2D::internal_format(GLint internalFormat) { this->_internalFormat = internalFormat; }
-    void Texture2D::image_format(GLint imageFormat) { this->_imageFormat = imageFormat; }
+    void Texture2D::internal_format(GLint internalFormat) { _internalFormat = internalFormat; }
+    void Texture2D::image_format(GLint imageFormat) { _imageFormat = imageFormat; }
 } // namespace engine

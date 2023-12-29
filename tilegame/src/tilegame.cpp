@@ -67,7 +67,7 @@ namespace tilegame
 
     void Tilegame::draw(const engine::GameTime &draw_time)
     {
-        _graphics_device.clear(engine::Color::CORNFLOWER_BLUE);
+        _graphicsdevice.clear(engine::Color::CORNFLOWER_BLUE);
 
         _worldscene.draw(draw_time);
 
@@ -79,8 +79,8 @@ namespace tilegame
         Game::begin_draw();
     }
 
-    void Tilegame::end_draw()
+    void Tilegame::end_draw(const engine::GameTime &draw_time)
     {
-        Game::end_draw();
+        Game::end_draw(draw_time);
     }
 } // namespace tilegame

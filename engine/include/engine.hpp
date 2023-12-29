@@ -22,9 +22,10 @@
 #include "tilemap/tileobject.hpp"
 #include "tilemap/tileset.hpp"
 
+#include "graphics/graphicsdevice.hpp"
+#include "graphics/postprocessor.hpp"
 #include "graphics/sprite.hpp"
 #include "graphics/spriteframe.hpp"
 #include "graphics/spritesheet.hpp"
 #include "graphics/spritestate.hpp"
-#include "graphics/graphicsdevice.hpp"
 #include "graphics/spritebatch.hpp"

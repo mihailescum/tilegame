@@ -27,7 +27,7 @@ namespace engine::graphics
 #include "graphics/shader/spritebatch.frag"
         };
 
-        GraphicsDevice &_graphics_device;
+        GraphicsDevice &_graphicsdevice;
         GLuint _vbo;
         GLuint _vao;
         GLuint _ebo;

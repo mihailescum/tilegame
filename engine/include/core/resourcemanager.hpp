@@ -6,7 +6,7 @@
 #include <cstdarg>
 #include <filesystem>
 
-#include <glad/glad.h>
+#include "glad/glad.h"
 
 #include "resource.hpp"
 
