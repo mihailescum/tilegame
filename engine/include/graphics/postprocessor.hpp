@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <array>
+
 #include "glad/glad.h"
 
 #include "core/gametime.hpp"
@@ -14,13 +17,16 @@ namespace engine::graphics
     class PostProcessor
     {
     private:
-        GLuint _msfbo, _fbo; // MSFBO = Multisampled FBO. FBO is regular, used for blitting MS color-buffer to texture
-        GLuint _rbo;         // RBO is used for multisampled color buffer
+        // Since we allow multiple effects, we need to use multibuffering
+        static const short NUM_BUFFERS = 2;
+        std::array<GLuint, NUM_BUFFERS> _msfbo, _fbo; // MSFBO = Multisampled FBO. FBO is regular, used for blitting MS color-buffer to texture
+        std::array<GLuint, NUM_BUFFERS> _rbo;         // RBO is used for multisampled color buffer
         GLuint _vao;
 
-        engine::Texture2D _texture;
-        engine::Shader _shader;
+        short _current_pass;
 
+        std::array<engine::Texture2D, NUM_BUFFERS> _texture;
+        std::vector<engine::Shader *> _shader;
         const std::string VERTEX_SHADER_SOURCE{
 #include "graphics/shader/postprocessor.vert"
         };
@@ -28,7 +34,6 @@ namespace engine::graphics
         const std::string FRAGMENT_SHADER_SOURCE{
 #include "graphics/shader/postprocessor.frag"
         };
-
         graphics::GraphicsDevice &_graphicsdevice;
 
         int generate_buffers();
@@ -37,7 +42,7 @@ namespace engine::graphics
         int initialize_vao();
 
     public:
-        PostProcessor(graphics::GraphicsDevice &graphicsdevice) : _graphicsdevice(graphicsdevice) {}
+        PostProcessor(graphics::GraphicsDevice &graphicsdevice) : _graphicsdevice(graphicsdevice), _current_pass(0) {}
 
         int initialize();
         void begin();

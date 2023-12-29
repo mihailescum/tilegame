@@ -7,7 +7,6 @@ R""(
 
     void main()
     {
-        color = vec4(0.0f);
         color = texture(scene, TexCoords) * 0.5;
     }
 )""

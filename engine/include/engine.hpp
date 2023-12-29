@@ -16,12 +16,6 @@
 #include "core/viewport.hpp"
 #include "core/window.hpp"
 
-#include "tilemap/tile.hpp"
-#include "tilemap/tilemap.hpp"
-#include "tilemap/tilelayer.hpp"
-#include "tilemap/tileobject.hpp"
-#include "tilemap/tileset.hpp"
-
 #include "graphics/graphicsdevice.hpp"
 #include "graphics/postprocessor.hpp"
 #include "graphics/sprite.hpp"
@@ -29,3 +23,10 @@
 #include "graphics/spritesheet.hpp"
 #include "graphics/spritestate.hpp"
 #include "graphics/spritebatch.hpp"
+#include "graphics/vertexpositiontexturecolor.hpp"
+
+#include "tilemap/tile.hpp"
+#include "tilemap/tilemap.hpp"
+#include "tilemap/tilelayer.hpp"
+#include "tilemap/tileobject.hpp"
+#include "tilemap/tileset.hpp"
