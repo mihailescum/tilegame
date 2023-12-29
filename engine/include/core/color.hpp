@@ -25,6 +25,8 @@ namespace engine
 
         operator glm::vec4() const { return _native; }
 
+        static Color lerp(const Color &a, const Color &b, float amount);
+
         static const Color WHITE;
         static const Color BLACK;
         static const Color CORNFLOWER_BLUE;
