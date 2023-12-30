@@ -21,7 +21,8 @@ namespace tilegame::worldscene
           _system_script(*this, _registry),
           _system_timer(*this, _registry),
           _system_particle(*this, _registry),
-          _system_daytime(*this, _registry)
+          _system_daytime(*this, _registry),
+          _system_collision_detection(*this, _registry)
     {
     }
 
@@ -39,6 +40,8 @@ namespace tilegame::worldscene
         _system_player.initialize();
         _system_camera.initialize();
         _system_movement.initialize();
+
+        _system_collision_detection.initialize();
     }
 
     void WorldScene::load_content()
@@ -68,6 +71,7 @@ namespace tilegame::worldscene
         _system_script.update(update_time);
 
         _system_movement.update(update_time);
+        _system_collision_detection.update(update_time);
 
         _system_animation.update(update_time);
         _system_scenegraph.update(update_time);

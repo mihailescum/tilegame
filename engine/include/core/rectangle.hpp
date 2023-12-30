@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 
 #include "core/shape.hpp"
+#include "core/point.hpp"
 #include "core/log.hpp"
 
 namespace engine
@@ -12,15 +13,17 @@ namespace engine
     struct Rectangle : public Shape
     {
     public:
-        Rectangle() {}
-        Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height) : x(x), y(y), width(width), height(height) {}
-
+        static const Rectangle EMPTY;
         GLfloat x;
         GLfloat y;
         GLfloat width;
         GLfloat height;
 
-        static const Rectangle EMPTY;
+        Rectangle() {}
+        Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height) : x(x), y(y), width(width), height(height) {}
+
+        bool intersects(const Rectangle &other);
+        bool intersects(const Point &other);
 
         inline Rectangle operator+(const glm::vec2 &other) const
         {

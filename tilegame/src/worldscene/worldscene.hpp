@@ -19,6 +19,7 @@
 #include "systems/timer.hpp"
 #include "systems/particle.hpp"
 #include "systems/daytime.hpp"
+#include "systems/collisiondetection.hpp"
 
 namespace tilegame
 {
@@ -43,6 +44,7 @@ namespace tilegame::worldscene
         systems::Timer _system_timer;
         systems::Particle _system_particle;
         systems::Daytime _system_daytime;
+        systems::CollisionDetection _system_collision_detection;
 
     public:
         WorldScene(Tilegame &game);

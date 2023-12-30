@@ -48,18 +48,18 @@ namespace tilegame::systems
         _lua().new_usertype<entt::entity>(
             "_entity", sol::no_constructor);
 
-        components::Timer::register_component(_lua());
-        components::TimerEvent::register_component(_lua());
-        components::Velocity::register_component(_lua());
-        components::Target::register_component(_lua());
-        components::TargetReachedEvent::register_component(_lua());
         components::Inactive::register_component(_lua());
         components::LuaTable::register_component(_lua());
         components::ScriptLoader::register_component(_lua());
+        components::Target::register_component(_lua());
+        components::TargetReachedEvent::register_component(_lua());
+        components::Timer::register_component(_lua());
+        components::TimerEvent::register_component(_lua());
+        components::Velocity::register_component(_lua());
 
         _lua().set_function("_add_event_listener", sol::resolve<bool(const sol::table &, sol::function, entt::entity)>(&Script::add_event_listener), this);
-        register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
+        register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
     }
 
     bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)

@@ -5,6 +5,7 @@
 #include "core/gametime.hpp"
 #include "core/log.hpp"
 #include "core/point.hpp"
+#include "core/ray.hpp"
 #include "core/rectangle.hpp"
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"
