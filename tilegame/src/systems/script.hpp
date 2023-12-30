@@ -19,30 +19,14 @@ namespace tilegame::systems
         tilegame::SecureLuaState _lua;
 
         void register_api();
-        entt::entity create_entity();
-        bool add_event_listener(std::string event_type, sol::function callback, entt::entity source);
+        bool add_event_listener(const sol::table &event, sol::function callback, entt::entity source);
 
-        struct EmplaceOrReplaceWrapper
+        template <class EventListener>
+        bool add_event_listener(sol::function callback, entt::entity source)
         {
-            EmplaceOrReplaceWrapper(Script &parent) : _parent(parent) {}
-
-            template <typename T>
-            T &operator()(entt::entity entity, const T &component) const
-            {
-                return _parent._registry.emplace_or_replace<T>(entity, component);
-            }
-
-        private:
-            Script &_parent;
-        };
-
-        template <typename F, typename... Ts>
-        void add_component_function(const std::string name)
-        {
-            auto overload = sol::overload(
-                [this](entt::entity entity, Ts component)
-                { return F(*this)(entity, component); }...);
-            _lua().set_function(name, overload);
+            const auto listener_entity = _registry.create();
+            _registry.emplace<EventListener>(listener_entity, EventListener(callback, source));
+            return true;
         }
 
     public:

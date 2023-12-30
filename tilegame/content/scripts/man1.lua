@@ -16,11 +16,11 @@ local function handle_timer_event()
 end
 
 local positions = {
-    vec2.new(32.0, 32.0),
-    vec2.new(64.0, 128.0),
-    vec2.new(512.0, 256.0),
-    vec2.new(256.0, 48.0),
-    vec2.new(128.0, 128.0)
+    vec2(32.0, 32.0),
+    vec2(64.0, 128.0),
+    vec2(512.0, 256.0),
+    vec2(256.0, 48.0),
+    vec2(128.0, 128.0)
 }
 
 local function handle_target_reached_event() 
@@ -36,31 +36,36 @@ local function handle_target_reached_event()
         current_index = new_index
 
         local new_target = positions[current_index]
-        local target_component = _TargetComponent.new(new_target)
-        local velocity_component = _VelocityComponent.new(300)
-        _add_component(man1.entity, target_component)
-        _add_component(man1.entity, velocity_component)
+        local target_component = _Target(new_target)
+        local velocity_component = _Velocity(300)
+        _registry:emplace(man1.entity, target_component)
+        _registry:emplace(man1.entity, velocity_component)
 
         coroutine.yield()
     end
 end
 
-local timer1 = _create_entity()
-local timer_component = _TimerComponent.new(20, true)
-_add_component(timer1, timer_component)
+local timer1 = _registry:create()
+local timer_component = _Timer(20, true)
+_registry:emplace(timer1, timer_component)
 
-_add_event_listener("TIMER_EVENT", handle_event, timer1)
-events["TIMER_EVENT"] = coroutine.wrap(handle_timer_event)
+_add_event_listener(_TimerEvent, handle_event, timer1)
+events[_TimerEvent.EVENT_TYPE] = coroutine.wrap(handle_timer_event)
 
-local target = vec2.new(16.0, 16.0)
-local target_component = _TargetComponent.new(target)
-local velocity_component = _VelocityComponent.new(300)
-_add_component(man1.entity, target_component)
-_add_component(man1.entity, velocity_component)
+local target = vec2(16.0, 16.0)
+local target_component = _Target(target)
+local velocity_component = _Velocity(300)
+_registry:emplace(man1.entity, target_component)
+_registry:emplace(man1.entity, velocity_component)
 
-_add_event_listener("TARGET_REACHED_EVENT", handle_event, man1.entity)
-events["TARGET_REACHED_EVENT"] = coroutine.wrap(handle_target_reached_event)
+_add_event_listener(_TargetReachedEvent, handle_event, man1.entity)
+events[_TargetReachedEvent.EVENT_TYPE] = coroutine.wrap(handle_target_reached_event)
 
 print("Man loaded")
+
+local inactive_component = _Inactive()
+--_registry:emplace(man1.entity, inactive_component)
+print(_registry:has(man1.entity, _Inactive))
+print(_registry:has(man1.entity, _Target))
 
 return man1

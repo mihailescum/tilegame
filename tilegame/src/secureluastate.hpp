@@ -64,10 +64,7 @@ namespace tilegame
 
     public:
         sol::state &
-        operator()()
-        {
-            return _lua;
-        }
+        operator()() { return _lua; }
         void open_libraries();
     };
 } // namespace tilegame

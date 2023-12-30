@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "sol/sol.hpp"
+
 namespace tilegame::components
 {
     struct ScriptLoader
@@ -11,5 +13,8 @@ namespace tilegame::components
 
         ScriptLoader() {}
         ScriptLoader(const std::string path) : path(path) {}
+        [[nodiscard]] std::string to_string() const;
+
+        static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

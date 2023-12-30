@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+#include "sol/sol.hpp"
+
 namespace tilegame::components
 {
     struct Target
@@ -18,6 +20,9 @@ namespace tilegame::components
 
         const glm::vec2 &operator()() const { return target; }
         glm::vec2 &operator()() { return target; }
+        [[nodiscard]] std::string to_string() const;
+
+        static void register_component(sol::state &lua);
     };
 
     struct TargetReachedEvent
@@ -27,5 +32,8 @@ namespace tilegame::components
 
         TargetReachedEvent() {}
         TargetReachedEvent(const glm::vec2 &target) : target(target) {}
+        [[nodiscard]] std::string to_string() const;
+
+        static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

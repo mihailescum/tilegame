@@ -54,6 +54,9 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/engi
 # sol3 Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/sol)
 
+# entt_meets_sol2 Header Files
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/entt_sol)
+
 # debugger_lua Header Files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/lua_libs)
 

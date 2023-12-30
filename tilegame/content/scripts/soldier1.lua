@@ -15,11 +15,11 @@ local function handle_timer_event(event, source)
     end
 end
 
-local timer1 = _create_entity()
-local timer_component = _TimerComponent.new(10, true)
-_add_component(timer1, timer_component)
+local timer1 = _registry:create()
+local timer_component = _Timer(10, true)
+_registry:emplace(timer1, timer_component)
 
-_add_event_listener("TIMER_EVENT", handle_event, timer1)
-events["TIMER_EVENT"] = coroutine.wrap(handle_timer_event)
+_add_event_listener(_TimerEvent, handle_event, timer1)
+events[_TimerEvent.EVENT_TYPE] = coroutine.wrap(handle_timer_event)
 
 return soldier1
