@@ -26,8 +26,6 @@ local positions = {
 local function handle_target_reached_event() 
     local current_index = -1
     while true do
-        print("Man reached the target!")
-
         local new_index = -1
         repeat
             new_index = math.random(1,5)
@@ -62,10 +60,5 @@ _add_event_listener(_TargetReachedEvent, handle_event, man1.entity)
 events[_TargetReachedEvent.EVENT_TYPE] = coroutine.wrap(handle_target_reached_event)
 
 print("Man loaded")
-
-local inactive_component = _Inactive()
---_registry:emplace(man1.entity, inactive_component)
-print(_registry:has(man1.entity, _Inactive))
-print(_registry:has(man1.entity, _Target))
 
 return man1

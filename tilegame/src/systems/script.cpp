@@ -58,26 +58,21 @@ namespace tilegame::systems
         components::ScriptLoader::register_component(_lua());
 
         _lua().set_function("_add_event_listener", sol::resolve<bool(const sol::table &, sol::function, entt::entity)>(&Script::add_event_listener), this);
+        register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
+        register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
     }
 
     bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
     {
-        bool result = false;
-
         auto event_type = event["EVENT_TYPE"];
-        if (event_type.valid())
+        if (event_type.valid() && _event_types.find(event_type) != _event_types.end())
         {
-            if (event_type == components::TimerEvent::EVENT_TYPE)
-            {
-                result = add_event_listener<components::EventListener<components::TimerEvent>>(callback, source);
-            }
-            else if (event_type == components::TargetReachedEvent::EVENT_TYPE)
-            {
-                result = add_event_listener<components::EventListener<components::TargetReachedEvent>>(callback, source);
-            }
+            return _event_types[event_type](callback, source);
         }
-
-        return result;
+        else
+        {
+            return false;
+        }
     }
 
     void Script::update(const engine::GameTime &update_time)
