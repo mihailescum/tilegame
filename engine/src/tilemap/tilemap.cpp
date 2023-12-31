@@ -56,7 +56,9 @@ namespace engine::tilemap
 
             engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(tileset_name, sprite_sheet);
 
-            std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource, tson_tileset);
+            std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource);
+            tileset->parse(tson_tileset);
+
             _tilesets.push_back(std::move(tileset));
         }
     }
@@ -70,46 +72,45 @@ namespace engine::tilemap
         {
             if (tson_layer.getType() == tson::LayerType::ObjectGroup)
             {
-                // 'const_cast' is okay, because tson::Layer::getObjects should have been declared 'const'
-                const auto &tson_objects = const_cast<tson::Layer &>(tson_layer).getObjects();
-                for (const auto &tson_object : tson_objects)
-                {
-                    std::unique_ptr<TileObject> object = std::make_unique<TileObject>(tson_object);
-                    _objects.push_back(std::move(object));
-                }
+                parse_objectgroup(tson_layer, resource_manager);
             }
             else if (tson_layer.getType() == tson::LayerType::TileLayer)
             {
-                std::vector<Tile> tile_data(_width * _height);
-                for (int x = 0; x < _width; ++x)
-                {
-                    for (int y = 0; y < _height; ++y)
-                    {
-                        auto &tile = tile_data[x + _width * y];
-
-                        int gid = get_ID_at(tson_layer, x, y);
-                        const Tileset *tileset = get_tileset_from_gid(gid);
-                        if (tileset)
-                        {
-                            tile.width = tileset->tile_width();
-                            tile.height = tileset->tile_height();
-                            tile.tileset = tileset;
-                        }
-
-                        tile.gid = gid;
-                    }
-                }
-
-                std::unique_ptr<TileLayer> tile_layer = std::make_unique<TileLayer>(_width, _height, z_index);
-                tile_layer->data(tile_data);
-
-                _layers.push_back(std::move(tile_layer));
+                parse_tilelayer(tson_layer, resource_manager, z_index);
             }
             z_index++;
         }
     }
 
-    int TileMap::get_ID_at(const tson::Layer &tson_layer, int x, int y)
+    void TileMap::parse_objectgroup(const tson::Layer &tson_layer, ResourceManager &resource_manager)
+    {
+        // 'const_cast' is okay, because tson::Layer::getObjects should have been declared 'const'
+        const auto &tson_objects = const_cast<tson::Layer &>(tson_layer).getObjects();
+        for (const auto &tson_object : tson_objects)
+        {
+            std::unique_ptr<TileObject> object = std::make_unique<TileObject>(tson_object);
+            _objects.push_back(std::move(object));
+        }
+    }
+
+    void TileMap::parse_tilelayer(const tson::Layer &tson_layer, ResourceManager &resource_manager, int z_index)
+    {
+        std::vector<int> tile_data(_width * _height);
+        for (int x = 0; x < _width; ++x)
+        {
+            for (int y = 0; y < _height; ++y)
+            {
+                tile_data[x + _width * y] = get_gid_at(tson_layer, x, y);
+            }
+        }
+
+        std::unique_ptr<TileLayer> tile_layer = std::make_unique<TileLayer>(_width, _height, z_index);
+        tile_layer->data(tile_data);
+
+        _layers.push_back(std::move(tile_layer));
+    }
+
+    int TileMap::get_gid_at(const tson::Layer &tson_layer, int x, int y) const
     {
         // 'const_cast' is okay, because tson::Layer::getTileData should have been declared 'const'
         const tson::Tile *tson_tile = const_cast<tson::Layer &>(tson_layer).getTileData(x, y);
@@ -124,7 +125,20 @@ namespace engine::tilemap
         }
     }
 
-    const Tileset *TileMap::get_tileset_from_gid(int gid)
+    const Tile *TileMap::get(int gid) const
+    {
+        const auto tileset = get_tileset_from_gid(gid);
+        if (tileset)
+        {
+            return tileset->get(gid);
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    const Tileset *TileMap::get_tileset_from_gid(int gid) const
     {
         for (const auto &tileset : _tilesets)
         {
@@ -138,25 +152,5 @@ namespace engine::tilemap
 
     void TileMap::unload_resource()
     {
-    }
-
-    const Tileset *TileMap::find_tileset_by_gid(int gid) const
-    {
-        for (const auto &tileset : _tilesets)
-        {
-            auto first_gid = tileset->first_GID();
-            auto last_gid = tileset->last_GID();
-
-            if (gid >= first_gid && gid <= last_gid)
-            {
-                return tileset.get();
-            }
-        }
-        return nullptr;
-    }
-
-    Tileset *TileMap::find_tileset_by_gid(int gid)
-    {
-        return const_cast<Tileset *>(const_cast<const TileMap *>(this)->find_tileset_by_gid(gid));
     }
 } // namespace engine::tilemap

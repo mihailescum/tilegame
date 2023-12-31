@@ -14,6 +14,8 @@ namespace engine::graphics
     class Sprite
     {
     private:
+        inline static const std::string NAME_SPRITE_STATE = "state";
+
         std::string _name;
         SpriteSheet *_sprite_sheet;
         std::unordered_map<std::string, SpriteState> _states;

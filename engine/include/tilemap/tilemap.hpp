@@ -9,6 +9,7 @@
 #include "tilemap/tilelayer.hpp"
 #include "tilemap/tileset.hpp"
 #include "tilemap/tileobject.hpp"
+#include "tilemap/tile.hpp"
 
 namespace engine::tilemap
 {
@@ -24,15 +25,17 @@ namespace engine::tilemap
 
         void parse_tilesets(const tson::Map &tson_map, ResourceManager &resource_manager);
         void parse_layers(const tson::Map &tson_map, ResourceManager &resource_manager);
-        int get_ID_at(const tson::Layer &tson_layer, int x, int y);
-        const Tileset *get_tileset_from_gid(int gid);
+        void parse_objectgroup(const tson::Layer &tson_layer, ResourceManager &resource_manager);
+        void parse_tilelayer(const tson::Layer &tson_layer, ResourceManager &resource_manager, int z_index);
+
+        int get_gid_at(const tson::Layer &tson_layer, int x, int y) const;
+        const Tileset *get_tileset_from_gid(int gid) const;
 
     public:
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
-        const Tileset *find_tileset_by_gid(int gid) const;
-        Tileset *find_tileset_by_gid(int gid);
+        const Tile *get(int gid) const;
 
         // TODO return iterators instead
         const std::vector<std::unique_ptr<TileLayer>> &layers() const { return _layers; }

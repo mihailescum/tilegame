@@ -40,11 +40,11 @@ namespace engine::graphics
         _texture = resource_manager.load_resource<Texture2D>(texture_name, texture_path);
 
         // 'const_cast' is okay, because tson::Tileset::getTiles should have been declared 'const'
-        const auto &tiles = const_cast<tson::Tileset &>(data).getTiles();
-        for (const auto &tile : tiles)
+        const auto &tson_tiles = const_cast<tson::Tileset &>(data).getTiles();
+        for (const auto &tson_tile : tson_tiles)
         {
             // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
-            const auto &animation = const_cast<tson::Tile &>(tile).getAnimation();
+            const auto &animation = const_cast<tson::Tile &>(tson_tile).getAnimation();
 
             // Skip if we don't have animation data
             if (animation.size() == 0)
@@ -52,10 +52,10 @@ namespace engine::graphics
                 continue;
             }
 
-            const std::string name = tile.getType();
+            const std::string name = tson_tile.getType();
             Sprite &sprite = _sprites[name];
             sprite.sprite_sheet(this);
-            sprite.parse(tile);
+            sprite.parse(tson_tile);
         }
     }
 

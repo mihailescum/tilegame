@@ -77,7 +77,7 @@ namespace tilegame::systems
         _registry.emplace<components::Ordering>(entity, layer.z_index());
         _registry.emplace<components::Renderable2D>(entity);
 
-        const auto tiles = layer.tiles();
+        const auto &tiles = layer.tiles();
         const auto width = layer.width();
         const auto height = layer.height();
 
@@ -87,17 +87,22 @@ namespace tilegame::systems
         {
             for (int y = 0; y < height; ++y)
             {
-                const auto &tile = tiles[x + width * y];
+                const auto gid = tiles[x + width * y];
+                const auto tile = map.get(gid);
 
-                if (tile.tileset)
+                if (tile)
                 {
-                    const engine::Texture2D &tileset_texture = tile.tileset->texture();
+                    const auto tileset = tile->tileset;
+                    if (tileset)
+                    {
+                        const engine::Texture2D &tileset_texture = tileset->texture();
 
-                    const engine::Rectangle tile_dest_rect(x * tile.width, y * tile.height, tile.width, tile.height);
-                    const auto tile_source_rect = tile.tileset->source_rect(tile.gid);
+                        const engine::Rectangle tile_dest_rect(x * tileset->tile_width(), y * tileset->tile_height(), tileset->tile_width(), tileset->tile_height());
+                        const auto tile_source_rect = tileset->source_rect(tile->gid);
 
-                    components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
-                    tile_data.push_back(data);
+                        components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
+                        tile_data.push_back(data);
+                    }
                 }
             }
         }
@@ -121,8 +126,13 @@ namespace tilegame::systems
         const glm::vec2 sprite_position(data.getPosition().x, data.getPosition().y);
 
         int tile_gid = data.getGid();
-        const engine::tilemap::Tileset *tileset_of_sprite = map.find_tileset_by_gid(tile_gid);
+        const engine::tilemap::Tile *tile = map.get(tile_gid);
+        if (!tile)
+        {
+            throw "Tile not found";
+        }
 
+        const engine::tilemap::Tileset *tileset_of_sprite = tile->tileset;
         if (!tileset_of_sprite)
         {
             throw "corresponding tileset not found";
@@ -138,10 +148,10 @@ namespace tilegame::systems
         const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::graphics::SpriteSheet>(tileset_name);
         const engine::Texture2D &texture = sprite_sheet.texture();
 
-        const auto *tile = tileset_of_sprite->tile(tile_gid);
-        const auto &sprite_class_name = tile->getClassType();
-        // 'const_cast' is okay, because tson::Tile::get<> should have been declared 'const'
-        const auto &sprite_state_name = const_cast<tson::Tile *>(tile)->get<std::string>(Map::FIELD_STATE);
+        const auto &sprite_class_name = tile->class_type;
+        const auto &sprite_properties = tile->properties;
+        // 'const_cast' is okay, because tson::PropertyCollection::get<> should have been declared 'const'
+        const auto &sprite_state_name = const_cast<tson::PropertyCollection &>(sprite_properties).getValue<std::string>(Map::FIELD_STATE);
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();

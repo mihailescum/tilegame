@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <memory>
+
+#include "core/shape.hpp"
+
 namespace engine::tilemap
 {
     class Tileset;
@@ -7,14 +12,10 @@ namespace engine::tilemap
     struct Tile
     {
         int gid;
-        int width;
-        int height;
         const Tileset *tileset;
+        std::string class_type;
+        tson::PropertyCollection properties;
 
-        Tile() : Tile(0, 0, 0, nullptr) {}
-        Tile(int id, int width, int height, const Tileset *tileset) : gid(id),
-                                                                      width(width),
-                                                                      height(height),
-                                                                      tileset(tileset) {}
+        std::unique_ptr<const Shape> collision_shape;
     };
 } // namespace engine::tilemap
