@@ -49,19 +49,15 @@ namespace engine::tilemap
             // TODO Tileson does not provide access to the path, maybe backward engineer it
             const std::filesystem::path tileset_path = "";
 
-            engine::graphics::SpriteSheet sprite_sheet;
-            sprite_sheet.resource_path(tileset_path);
-
-            sprite_sheet.parse(tson_tileset, resource_manager);
-
-            engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(tileset_name, sprite_sheet);
-
-            std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource);
-            tileset->parse(tson_tileset);
+            std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>();
+            tileset->resource_name(tileset_name);
+            tileset->resource_path(tileset_path);
+            tileset->parse(tson_tileset, resource_manager);
+            const Tileset &tileset_resource = resource_manager.emplace_resource<Tileset>(tileset_name, tileset);
 
             const int first_gid = tson_tileset.getFirstgid();
             const int last_gid = first_gid + tson_tileset.getTileCount() - 1;
-            _tilesets.push_back({first_gid, last_gid, std::move(tileset)});
+            _tilesets.push_back({first_gid, last_gid, &tileset_resource});
         }
     }
 
@@ -148,7 +144,7 @@ namespace engine::tilemap
             if (gid >= first_gid && gid <= last_gid)
             {
                 id = gid - first_gid + 1;
-                return tileset.get();
+                return tileset;
             }
         }
         return nullptr;

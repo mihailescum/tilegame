@@ -77,12 +77,12 @@ namespace engine
         }
 
         template <typename T>
-        T &emplace_resource(const std::string name, const T &resource)
+        T &emplace_resource(const std::string name, std::unique_ptr<T> &res)
         {
             static_assert(std::is_base_of<Resource, T>::value);
-            static_assert(std::is_copy_constructible<T>::value);
+            // static_assert(std::is_copy_constructible<T>::value);
 
-            std::unique_ptr<T> res = std::unique_ptr<T>(new T(resource));
+            // std::unique_ptr<T> res = std::make_unique<T>(std::move(resource));
             res->resource_id(_resources.size());
             res->resource_name(name);
 

@@ -95,9 +95,10 @@ namespace tilegame::systems
                     const auto tileset = tile->tileset;
                     if (tileset)
                     {
-                        const engine::Texture2D &tileset_texture = tileset->texture();
+                        const auto sprite_sheet = tileset->sprite_sheet();
+                        const engine::Texture2D &tileset_texture = sprite_sheet->texture();
 
-                        const engine::Rectangle tile_dest_rect(x * tileset->tile_width(), y * tileset->tile_height(), tileset->tile_width(), tileset->tile_height());
+                        const engine::Rectangle tile_dest_rect(x * sprite_sheet->tile_width(), y * sprite_sheet->tile_height(), sprite_sheet->tile_width(), sprite_sheet->tile_height());
                         const auto tile_source_rect = tileset->source_rect(tile->id);
 
                         components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
@@ -146,11 +147,11 @@ namespace tilegame::systems
         // We have to interpret the object as a sprite and the tileset as its sprite sheet
         // Need to inherit class from tileset
 
-        const std::string tileset_name = tileset_of_sprite->name();
+        const std::string tileset_name = tileset_of_sprite->resource_name();
 
         // We know that the sprite sheet is a resource, as it was loaded before
         auto &resource_manager = _scene.game().resource_manager();
-        const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::graphics::SpriteSheet>(tileset_name);
+        const engine::graphics::SpriteSheet &sprite_sheet = *resource_manager.get<engine::tilemap::Tileset>(tileset_name).sprite_sheet();
         const engine::Texture2D &texture = sprite_sheet.texture();
 
         const auto &sprite_class_name = tile->class_type;

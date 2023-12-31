@@ -20,7 +20,7 @@ namespace engine::tilemap
         int _height;
 
         std::vector<std::unique_ptr<TileLayer>> _layers;
-        std::vector<std::tuple<int, int, std::unique_ptr<Tileset>>> _tilesets;
+        std::vector<std::tuple<int, int, const Tileset *>> _tilesets;
         std::vector<std::unique_ptr<TileObject>> _objects;
 
         void parse_tilesets(const tson::Map &tson_map, ResourceManager &resource_manager);

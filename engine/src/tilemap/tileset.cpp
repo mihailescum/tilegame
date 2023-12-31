@@ -6,8 +6,38 @@
 
 namespace engine::tilemap
 {
-    void Tileset::parse(const tson::Tileset &tson_tileset)
+    bool Tileset::load_resource(ResourceManager &resource_manager, va_list args)
     {
+        tson::Json11 parser;
+
+        std::filesystem::path working_dir = _resource_path.parent_path();
+
+        if (parser.parse(_resource_path))
+        {
+            tson::Tileset data;
+            if (data.parse(parser, nullptr))
+            {
+                parse(data, resource_manager);
+            }
+        }
+
+        return false;
+    }
+
+    void Tileset::unload_resource()
+    {
+    }
+
+    void Tileset::parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager)
+    {
+        std::unique_ptr<engine::graphics::SpriteSheet> sprite_sheet = std::make_unique<engine::graphics::SpriteSheet>();
+        const std::string sprite_sheet_name = _resource_name + "__sprite_sheet";
+        // sprite_sheet.resource_path(_resource_path);
+        sprite_sheet->resource_name(sprite_sheet_name);
+        sprite_sheet->parse(tson_tileset, resource_manager);
+        engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(sprite_sheet_name, sprite_sheet);
+        _sprite_sheet = &sprite_sheet_resource;
+
         const int first_gid = tson_tileset.getFirstgid();
         const int last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
 
@@ -97,7 +127,14 @@ namespace engine::tilemap
 
     engine::Rectangle Tileset::source_rect(int id) const
     {
-        return _sprite_sheet.source_rect(id - 1);
+        if (_sprite_sheet)
+        {
+            return _sprite_sheet->source_rect(id - 1);
+        }
+        else
+        {
+            return Rectangle::EMPTY;
+        }
     }
 
     const Tile *Tileset::get(int id) const
