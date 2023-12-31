@@ -4,18 +4,20 @@
 
 namespace engine::graphics
 {
-    void Sprite::parse(tson::Tile &data)
+    void Sprite::parse(const tson::Tile &data)
     {
         _name = data.getType();
 
         if (_sprite_sheet)
         {
-            const std::string state_name = data.get<std::string>("state");
+            // 'const_cast' is okay, because tson::Tile::get<> should have been declared 'const'
+            const std::string state_name = const_cast<tson::Tile &>(data).get<std::string>("state");
 
             auto &state = _states[state_name];
             state.name = state_name;
 
-            const auto &animation = data.getAnimation();
+            // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
+            const auto &animation = const_cast<tson::Tile &>(data).getAnimation();
             if (animation.size() > 0)
             {
                 const auto &tson_frames = animation.getFrames();

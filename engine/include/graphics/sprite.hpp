@@ -22,8 +22,7 @@ namespace engine::graphics
         Sprite() : Sprite("", nullptr) {}
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
-        // TODO this should be const, but we get in trouble with Tileson then
-        void parse(tson::Tile &data);
+        void parse(const tson::Tile &data);
 
         // TODO review if this is necessarys
         void sprite_sheet(SpriteSheet *const sprite_sheet) { _sprite_sheet = sprite_sheet; }

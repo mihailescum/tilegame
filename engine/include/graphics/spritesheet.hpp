@@ -30,8 +30,7 @@ namespace engine::graphics
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
-        // TODO data should be const, but then we get in trouble with Tileson
-        void parse(tson::Tileset &data, ResourceManager &resource_manager);
+        void parse(const tson::Tileset &data, ResourceManager &resource_manager);
 
         engine::Rectangle source_rect(unsigned int id) const;
 

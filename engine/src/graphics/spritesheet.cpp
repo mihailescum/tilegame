@@ -30,7 +30,7 @@ namespace engine::graphics
     {
     }
 
-    void SpriteSheet::parse(tson::Tileset &data, ResourceManager &resource_manager)
+    void SpriteSheet::parse(const tson::Tileset &data, ResourceManager &resource_manager)
     {
         _tile_width = data.getTileSize().x;
         _tile_height = data.getTileSize().y;
@@ -39,10 +39,11 @@ namespace engine::graphics
         const auto texture_name = texture_path.filename();
         _texture = resource_manager.load_resource<Texture2D>(texture_name, texture_path);
 
-        const auto &tiles = data.getTiles();
+        // 'const_cast' is okay, because tson::Tileset::getTiles should have been declared 'const'
+        const auto &tiles = const_cast<tson::Tileset &>(data).getTiles();
         for (const auto &tile : tiles)
         {
-            // const_cast is okay, because the original tiles vector was not const
+            // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
             const auto &animation = const_cast<tson::Tile &>(tile).getAnimation();
 
             // Skip if we don't have animation data
@@ -54,7 +55,7 @@ namespace engine::graphics
             const std::string name = tile.getType();
             Sprite &sprite = _sprites[name];
             sprite.sprite_sheet(this);
-            sprite.parse(const_cast<tson::Tile &>(tile));
+            sprite.parse(tile);
         }
     }
 

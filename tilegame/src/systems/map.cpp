@@ -101,6 +101,8 @@ namespace tilegame::systems
 
                 if (tileset_containing_tile)
                 {
+                    const auto tson_tile = *tileset_containing_tile->tile(tile.ID);
+
                     const engine::Texture2D &tileset_texture = tileset_containing_tile->texture();
                     const auto tile_width = tileset_containing_tile->tile_width();
                     const auto tile_height = tileset_containing_tile->tile_height();
@@ -133,7 +135,7 @@ namespace tilegame::systems
         const glm::vec2 sprite_position(data.getPosition().x, data.getPosition().y);
 
         int tile_gid = data.getGid();
-        engine::tilemap::Tileset *tileset_of_sprite = const_cast<engine::tilemap::TileMap &>(map).find_tileset_by_gid(tile_gid);
+        const engine::tilemap::Tileset *tileset_of_sprite = map.find_tileset_by_gid(tile_gid);
 
         if (!tileset_of_sprite)
         {
@@ -150,9 +152,10 @@ namespace tilegame::systems
         const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::graphics::SpriteSheet>(tileset_name);
         const engine::Texture2D &texture = sprite_sheet.texture();
 
-        auto *tile = tileset_of_sprite->tile(tile_gid);
+        const auto *tile = tileset_of_sprite->tile(tile_gid);
         const auto &sprite_class_name = tile->getClassType();
-        const auto &sprite_state_name = tile->get<std::string>(Map::FIELD_STATE);
+        // 'const_cast' is okay, because tson::Tile::get<> should have been declared 'const'
+        const auto &sprite_state_name = const_cast<tson::Tile *>(tile)->get<std::string>(Map::FIELD_STATE);
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
         const auto entitiy = _registry.create();
@@ -162,8 +165,10 @@ namespace tilegame::systems
         const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
         _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);
 
-        auto &properties = const_cast<tson::Object &>(data).getProperties();
-        const auto *script_path_property = properties.getProperty(Map::FIELD_SCRIPT);
+        // 'const_cast' is okay, because tson::Object::getProperties should have been declared 'const'
+        const auto &properties = const_cast<tson::Object &>(data).getProperties();
+        // 'const_cast' is okay, because tson::PropertyCollection::getProperty should have been declared 'const'
+        const auto *script_path_property = const_cast<tson::PropertyCollection &>(properties).getProperty(Map::FIELD_SCRIPT);
         if (script_path_property)
         {
             std::filesystem::path script_path = map.resource_path().parent_path() / script_path_property->getValue<std::string>();

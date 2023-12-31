@@ -1,6 +1,7 @@
 #include "tilemap/tilemap.hpp"
 
 #include <vector>
+#include <filesystem>
 
 #include "tileson/tileson.hpp"
 
@@ -15,25 +16,27 @@ namespace engine::tilemap
     bool TileMap::load_resource(ResourceManager &resource_manager, va_list args)
     {
         tson::Tileson t(std::make_unique<tson::Json11>());
-        std::unique_ptr<tson::Map> tson_map = t.parse(_resource_path);
+        // const tson::Map &tson_map = *(t.parse(_resource_path));
+        const auto tson_map_ptr = t.parse(_resource_path);
+        const auto &tson_map = *tson_map_ptr;
 
-        if (tson_map->getStatus() == tson::ParseStatus::OK)
+        if (tson_map.getStatus() == tson::ParseStatus::OK)
         {
-            const auto map_size = tson_map->getSize();
+            const auto map_size = tson_map.getSize();
 
-            const auto &tson_tilesets = tson_map->getTilesets();
+            // 'const_cast' is okay, because tson::Map::getTilesets should have been declared 'const'
+            const auto &tson_tilesets = const_cast<tson::Map &>(tson_map).getTilesets();
             for (const auto &tson_tileset : tson_tilesets)
             {
                 const std::string tileset_name = tson_tileset.getName();
 
                 // TODO Tileson does not provide access to the path, maybe backward engineer it
-                const std::string tileset_path = "";
+                const std::filesystem::path tileset_path = "";
 
                 engine::graphics::SpriteSheet sprite_sheet;
                 sprite_sheet.resource_path(tileset_path);
 
-                // const_cast is okay, because the original tileset vector was not const
-                sprite_sheet.parse(const_cast<tson::Tileset &>(tson_tileset), resource_manager);
+                sprite_sheet.parse(tson_tileset, resource_manager);
 
                 engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(tileset_name, sprite_sheet);
 
@@ -41,13 +44,15 @@ namespace engine::tilemap
                 _tilesets.push_back(std::move(tileset));
             }
 
-            auto &tson_layers = tson_map->getLayers();
+            // 'const_cast' is okay, because tson::Map::getLayers should have been declared 'const'
+            const auto &tson_layers = const_cast<tson::Map &>(tson_map).getLayers();
             int z_index = 0;
             for (auto &tson_layer : tson_layers)
             {
                 if (tson_layer.getType() == tson::LayerType::ObjectGroup)
                 {
-                    const auto &tson_objects = tson_layer.getObjects();
+                    // 'const_cast' is okay, because tson::Layer::getObjects should have been declared 'const'
+                    const auto &tson_objects = const_cast<tson::Layer &>(tson_layer).getObjects();
                     for (const auto &tson_object : tson_objects)
                     {
                         std::unique_ptr<TileObject> object = std::make_unique<TileObject>(tson_object);
@@ -61,7 +66,8 @@ namespace engine::tilemap
                     {
                         for (int y = 0; y < map_size.y; ++y)
                         {
-                            const tson::Tile *tson_tile = tson_layer.getTileData(x, y);
+                            // 'const_cast' is okay, because tson::Layer::getTileData should have been declared 'const'
+                            const tson::Tile *tson_tile = const_cast<tson::Layer &>(tson_layer).getTileData(x, y);
 
                             int id = 0;
                             if (tson_tile)

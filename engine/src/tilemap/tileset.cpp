@@ -21,13 +21,14 @@ namespace engine::tilemap
         return result;
     }
 
-    tson::Tile *Tileset::tile(int gid)
+    const tson::Tile *Tileset::tile(int gid) const
     {
         if (has_tile(gid))
         {
             // Some ID magic
             const int tile_id = gid - first_GID() + 1;
-            tson::Tile *tson_tile = _native_tileset.getTile(tile_id);
+            // 'const_cast' is okay, because tson::Tileset::getTile should have been declared 'const'
+            const tson::Tile *tson_tile = const_cast<tson::Tileset &>(_native_tileset).getTile(tile_id);
             return tson_tile;
         }
         else

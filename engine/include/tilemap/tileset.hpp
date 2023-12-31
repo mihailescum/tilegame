@@ -23,6 +23,7 @@ namespace engine::tilemap
         }
 
         bool has_tile(unsigned int id) const;
+        const tson::Tile *tile(int gid) const;
         engine::Rectangle source_rect(unsigned int id) const;
 
         Texture2D &texture() { return _sprite_sheet.texture(); }
@@ -35,7 +36,5 @@ namespace engine::tilemap
         int last_GID() const { return _native_tileset.getFirstgid() + _native_tileset.getTileCount() - 1; }
 
         std::string name() const { return _sprite_sheet.resource_name(); }
-
-        tson::Tile *tile(int gid);
     };
 }
