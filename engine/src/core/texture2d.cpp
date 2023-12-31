@@ -10,7 +10,8 @@
 
 namespace engine
 {
-    Texture2D::Texture2D() : _internalFormat(GL_RGB),
+    Texture2D::Texture2D() : _gl_texture(0),
+                             _internalFormat(GL_RGB),
                              _imageFormat(GL_RGB),
                              _wrapS(GL_REPEAT),
                              _wrapT(GL_REPEAT),

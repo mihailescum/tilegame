@@ -9,8 +9,8 @@ namespace engine
     struct Ray : public Shape
     {
     public:
-        Rectangle() {}
-        Rectangle(const glm::vec2 &origin, const glm::vec2 &direction) : origin(origin), direction(direction) {}
+        Ray() : Ray(glm::vec2(0.0), glm::vec2(0.0)) {}
+        Ray(const glm::vec2 &origin, const glm::vec2 &direction) : origin(origin), direction(direction) {}
 
         glm::vec2 origin;
         glm::vec2 direction;

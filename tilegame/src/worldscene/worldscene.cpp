@@ -67,11 +67,10 @@ namespace tilegame::worldscene
         _system_timer.update(update_time);
         _system_particle.update(update_time);
 
-        _system_player.update(update_time);
-        _system_script.update(update_time);
-
-        _system_movement.update(update_time);
-        _system_collision_detection.update(update_time);
+        _system_player.update(update_time);              // Can generate movement of a colliding entity
+        _system_script.update(update_time);              // Can generate movement of a colliding entity
+        _system_collision_detection.update(update_time); // Resolves all collisions on movement direction level
+        _system_movement.update(update_time);            // Actually updated the positions
 
         _system_animation.update(update_time);
         _system_scenegraph.update(update_time);

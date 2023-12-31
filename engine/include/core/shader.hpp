@@ -12,7 +12,7 @@ namespace engine
     class Shader : public Resource
     {
     private:
-        GLuint _gl_program = 0;
+        GLuint _gl_program;
 
         // Returns true if there were errors
         bool check_compile_errors(GLuint shader, std::string type) const;

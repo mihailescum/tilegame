@@ -10,9 +10,8 @@
 
 namespace engine
 {
-    Shader::Shader()
+    Shader::Shader() : _gl_program(0)
     {
-        _gl_program = 0;
     }
 
     void Shader::unload_resource()

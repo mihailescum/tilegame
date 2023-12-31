@@ -11,7 +11,7 @@ namespace engine
     struct Point : public Shape
     {
     public:
-        Point() {}
+        Point() : Point(0.0f, 0.0f) {}
         Point(GLfloat x, GLfloat y) : x(x), y(y) {}
 
         GLfloat x;

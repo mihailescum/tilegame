@@ -14,7 +14,7 @@ namespace engine
         std::string _title;
         int _width;
         int _height;
-        bool _resizable = GLFW_FALSE;
+        bool _resizable;
 
     public:
         Window(int width, int height);

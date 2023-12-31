@@ -5,7 +5,7 @@
 
 namespace engine
 {
-    Window::Window(int width, int height) : _width(width), _height(height)
+    Window::Window(int width, int height) : _width(width), _height(height), _resizable(GLFW_FALSE), _title("")
     {
     }
 

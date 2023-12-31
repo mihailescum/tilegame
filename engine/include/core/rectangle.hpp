@@ -19,7 +19,7 @@ namespace engine
         GLfloat width;
         GLfloat height;
 
-        Rectangle() {}
+        Rectangle() : Rectangle(0.0f, 0.0f, 0.0f, 0.0f) {}
         Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height) : x(x), y(y), width(width), height(height) {}
 
         bool intersects(const Rectangle &other);

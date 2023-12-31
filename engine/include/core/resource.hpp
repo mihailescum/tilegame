@@ -15,7 +15,7 @@ namespace engine
         std::string _resource_name;
 
     public:
-        Resource() {}
+        Resource() : _resource_id(0), _resource_path(""), _resource_name("") {}
         virtual ~Resource();
 
         virtual bool load_resource(ResourceManager &_resource_manager, va_list args) = 0;

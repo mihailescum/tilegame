@@ -16,6 +16,30 @@
                  "tileid":0
                 }],
          "id":0,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":8,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":6,
+                     "y":8
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",
@@ -140,6 +164,30 @@
                  "tileid":9
                 }],
          "id":8,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":6,
+                     "y":8
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",
@@ -186,6 +234,30 @@
                  "tileid":17
                 }],
          "id":16,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":6,
+                     "y":8
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",
@@ -232,6 +304,30 @@
                  "tileid":25
                 }],
          "id":24,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":6,
+                     "y":8
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",
@@ -278,6 +374,30 @@
                  "tileid":33
                 }],
          "id":32,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":6,
+                     "y":8
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",

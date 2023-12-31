@@ -5,7 +5,7 @@
 
 namespace engine::graphics
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(0, 0, window.width(), window.height())
+    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(0, 0, window.width(), window.height()), _clear_mask(0)
     {
     }
 

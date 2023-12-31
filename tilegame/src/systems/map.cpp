@@ -158,7 +158,6 @@ namespace tilegame::systems
         const auto entitiy = _registry.create();
         _registry.emplace<components::Transform>(entitiy, sprite_position, glm::vec2(0.0));
         _registry.emplace<components::Ordering>(entitiy, 3.0);
-        //_registry.emplace<components::Movement>(entitiy, components::Movement::None, 100.0);
         _registry.emplace<components::Renderable2D>(entitiy);
         const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
         _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);

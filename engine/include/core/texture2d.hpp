@@ -12,7 +12,7 @@ namespace engine
     class Texture2D : public Resource
     {
     private:
-        GLuint _gl_texture = 0;
+        GLuint _gl_texture;
         GLint _internalFormat;
         GLint _imageFormat;
         GLint _wrapS;

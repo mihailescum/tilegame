@@ -17,9 +17,10 @@ namespace engine
     private:
         // resource storage
         std::unordered_map<std::string, std::unique_ptr<Resource>> _resources;
+        std::size_t _last_resource_id;
 
     public:
-        ResourceManager() {}
+        ResourceManager() : _last_resource_id(0) {}
         ResourceManager(const ResourceManager &manager) = delete;
         virtual ~ResourceManager();
 
@@ -37,7 +38,7 @@ namespace engine
             if (this->_resources.count(name) == 0)
             {
                 std::unique_ptr<T> res = std::make_unique<T>();
-                res->resource_id(_resources.size());
+                res->resource_id(++_last_resource_id);
                 res->resource_path(std::filesystem::absolute(path));
                 res->resource_name(name);
 
