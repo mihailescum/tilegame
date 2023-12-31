@@ -59,7 +59,9 @@ namespace engine::tilemap
             std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>(sprite_sheet_resource);
             tileset->parse(tson_tileset);
 
-            _tilesets.push_back(std::move(tileset));
+            const int first_gid = tson_tileset.getFirstgid();
+            const int last_gid = first_gid + tson_tileset.getTileCount() - 1;
+            _tilesets.push_back({first_gid, last_gid, std::move(tileset)});
         }
     }
 
@@ -127,10 +129,11 @@ namespace engine::tilemap
 
     const Tile *TileMap::get(int gid) const
     {
-        const auto tileset = get_tileset_from_gid(gid);
+        int id;
+        const auto tileset = get_tileset_from_gid(gid, id);
         if (tileset)
         {
-            return tileset->get(gid);
+            return tileset->get(id);
         }
         else
         {
@@ -138,12 +141,13 @@ namespace engine::tilemap
         }
     }
 
-    const Tileset *TileMap::get_tileset_from_gid(int gid) const
+    const Tileset *TileMap::get_tileset_from_gid(int gid, int &id) const
     {
-        for (const auto &tileset : _tilesets)
+        for (const auto &[first_gid, last_gid, tileset] : _tilesets)
         {
-            if (tileset->has_tile(gid))
+            if (gid >= first_gid && gid <= last_gid)
             {
+                id = gid - first_gid + 1;
                 return tileset.get();
             }
         }

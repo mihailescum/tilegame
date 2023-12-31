@@ -18,8 +18,6 @@ namespace engine::tilemap
     private:
         inline static const std::string NAME_COLLISION_SHAPE = "collision";
 
-        int _first_gid;
-        int _last_gid;
         engine::graphics::SpriteSheet &_sprite_sheet;
         std::vector<Tile> _tiles;
         std::unique_ptr<const Shape> parse_shape(const tson::Object &object) const;
@@ -28,10 +26,9 @@ namespace engine::tilemap
         Tileset(engine::graphics::SpriteSheet &sprite_sheet) : _sprite_sheet(sprite_sheet) {}
 
         void parse(const tson::Tileset &tson_tileset);
-        const Tile *get(int gid) const;
+        const Tile *get(int id) const;
 
-        bool has_tile(unsigned int gid) const;
-        engine::Rectangle source_rect(unsigned int gid) const;
+        engine::Rectangle source_rect(int id) const;
 
         Texture2D &texture() { return _sprite_sheet.texture(); }
         const Texture2D &texture() const { return _sprite_sheet.texture(); }

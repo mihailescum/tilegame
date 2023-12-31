@@ -35,7 +35,7 @@ namespace tilegame::systems
         _registry.emplace<components::SceneNode>(entity, &map_scenenode);
 
         std::vector<entt::entity> tileset_entities;
-        for (const auto &tileset : map.tilesets())
+        for (const auto &[first_gid, last_gid, tileset] : map.tilesets())
         {
             const auto tileset_entity = create_tileset_entity(*tileset);
             tileset_entities.push_back(tileset_entity);
@@ -98,9 +98,14 @@ namespace tilegame::systems
                         const engine::Texture2D &tileset_texture = tileset->texture();
 
                         const engine::Rectangle tile_dest_rect(x * tileset->tile_width(), y * tileset->tile_height(), tileset->tile_width(), tileset->tile_height());
-                        const auto tile_source_rect = tileset->source_rect(tile->gid);
+                        const auto tile_source_rect = tileset->source_rect(tile->id);
 
                         components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
+                        if (tile->collision_shape)
+                        {
+                            data.collision_shape = tile->collision_shape.get();
+                        }
+
                         tile_data.push_back(data);
                     }
                 }
@@ -160,6 +165,8 @@ namespace tilegame::systems
         _registry.emplace<components::Renderable2D>(entitiy);
         const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
         _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);
+
+        // TODO add collision component
 
         // 'const_cast' is okay, because tson::Object::getProperties should have been declared 'const'
         const auto &properties = const_cast<tson::Object &>(data).getProperties();

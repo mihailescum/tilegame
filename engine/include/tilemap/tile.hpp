@@ -11,7 +11,7 @@ namespace engine::tilemap
 
     struct Tile
     {
-        int gid;
+        int id;
         const Tileset *tileset;
         std::string class_type;
         tson::PropertyCollection properties;

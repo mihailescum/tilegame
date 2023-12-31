@@ -8,8 +8,8 @@ namespace engine::tilemap
 {
     void Tileset::parse(const tson::Tileset &tson_tileset)
     {
-        _first_gid = tson_tileset.getFirstgid();
-        _last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
+        const int first_gid = tson_tileset.getFirstgid();
+        const int last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
 
         // 'const_cast' is okay, because tson::Tileset::getTiles should have been declared 'const'
         const auto &tson_tiles = const_cast<tson::Tileset &>(tson_tileset).getTiles();
@@ -17,13 +17,13 @@ namespace engine::tilemap
         // Careful: Due to a bug Tileson generates more tiles than there are between firstgid and lastgid (some are duplicates)
         // This happens because tson::Tileset::generateMissingTiles mixes ids/gids incorrectly
         // _tiles.resize(tson_tiles.size()); WRONG!!
-        _tiles.resize(_last_gid - _first_gid + 1);
+        _tiles.resize(last_gid - first_gid + 1);
         for (auto &tson_tile : tson_tiles)
         {
             int gid = tson_tile.getGid();
 
             Tile tile;
-            tile.gid = gid;
+            tile.id = gid - first_gid + 1;
             tile.tileset = this;
             tile.class_type = tson_tile.getClassType();
             // 'const_cast' is okay, because tson::Tile::getProperties should have been declared 'const'
@@ -53,12 +53,12 @@ namespace engine::tilemap
             // tson_tile.getId() refers to the ID used by tiled. If this is less than gid,
             // this means that the current tileset is not the first tileset of the map, but
             // the tson_tile contains the actual Tiled data (and is not automatically generated
-            // by Tileson), which is why we keep it. If old_tile.gid == 0, then the old tile was
-            // still default initialized (as GID >= 1 for all valid tiles) and we overwrite it.
-            const auto &old_tile = _tiles[gid - _first_gid];
-            if (old_tile.gid == 0 || tson_tile.getId() < gid)
+            // by Tileson), which is why we keep it. If old_tile.id == 0, then the old tile was
+            // still default initialized (as ID >= 1 for all valid tiles) and we overwrite it.
+            const auto &old_tile = _tiles[tile.id - 1];
+            if (old_tile.id == 0 || tson_tile.getId() < gid)
             {
-                _tiles[gid - _first_gid] = std::move(tile);
+                _tiles[tile.id - 1] = std::move(tile);
             }
         }
     }
@@ -95,31 +95,17 @@ namespace engine::tilemap
         return result;
     }
 
-    bool Tileset::has_tile(unsigned int gid) const
+    engine::Rectangle Tileset::source_rect(int id) const
     {
-        return gid >= _first_gid && gid <= _last_gid;
+        return _sprite_sheet.source_rect(id - 1);
     }
 
-    engine::Rectangle Tileset::source_rect(unsigned int id) const
+    const Tile *Tileset::get(int id) const
     {
-        id -= _first_gid;
-
-        int tile_width = _sprite_sheet.tile_width();
-        int tile_height = _sprite_sheet.tile_height();
-        int tex_width = _sprite_sheet.texture().width();
-        int x = (id % (tex_width / tile_width)) * tile_width;
-        int y = (id / (tex_width / tile_width)) * tile_width;
-
-        engine::Rectangle result(x, y, tile_width, tile_height);
-        return result;
-    }
-
-    const Tile *Tileset::get(int gid) const
-    {
-        if (has_tile(gid))
+        id--;
+        if (id >= 0 && id < _tiles.size())
         {
-            const int tile_id = gid - _first_gid;
-            return &_tiles[tile_id];
+            return &_tiles[id];
         }
         else
         {
