@@ -89,26 +89,12 @@ namespace tilegame::systems
             {
                 const auto &tile = tiles[x + width * y];
 
-                const engine::tilemap::Tileset *tileset_containing_tile = nullptr;
-                for (const auto &tileset : map.tilesets())
+                if (tile.tileset)
                 {
-                    if (tileset->has_tile(tile.ID))
-                    {
-                        tileset_containing_tile = tileset.get();
-                        break;
-                    }
-                }
+                    const engine::Texture2D &tileset_texture = tile.tileset->texture();
 
-                if (tileset_containing_tile)
-                {
-                    const auto tson_tile = *tileset_containing_tile->tile(tile.ID);
-
-                    const engine::Texture2D &tileset_texture = tileset_containing_tile->texture();
-                    const auto tile_width = tileset_containing_tile->tile_width();
-                    const auto tile_height = tileset_containing_tile->tile_height();
-
-                    const engine::Rectangle tile_dest_rect(x * tile_width, y * tile_height, tile_width, tile_height);
-                    const auto tile_source_rect = tileset_containing_tile->source_rect(tile.ID);
+                    const engine::Rectangle tile_dest_rect(x * tile.width, y * tile.height, tile.width, tile.height);
+                    const auto tile_source_rect = tile.tileset->source_rect(tile.gid);
 
                     components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
                     tile_data.push_back(data);

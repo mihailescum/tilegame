@@ -2,9 +2,9 @@
 
 namespace engine::tilemap
 {
-    bool Tileset::has_tile(unsigned int id) const
+    bool Tileset::has_tile(unsigned int gid) const
     {
-        return id >= first_GID() && id <= last_GID();
+        return gid >= first_GID() && gid <= last_GID();
     }
 
     engine::Rectangle Tileset::source_rect(unsigned int id) const

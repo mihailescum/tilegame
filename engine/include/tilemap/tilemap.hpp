@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+#include "tileson/tileson.hpp"
+
 #include "core/resource.hpp"
 #include "tilemap/tilelayer.hpp"
 #include "tilemap/tileset.hpp"
@@ -13,9 +15,17 @@ namespace engine::tilemap
     class TileMap : public engine::Resource
     {
     private:
+        int _width;
+        int _height;
+
         std::vector<std::unique_ptr<TileLayer>> _layers;
         std::vector<std::unique_ptr<Tileset>> _tilesets;
         std::vector<std::unique_ptr<TileObject>> _objects;
+
+        void parse_tilesets(const tson::Map &tson_map, ResourceManager &resource_manager);
+        void parse_layers(const tson::Map &tson_map, ResourceManager &resource_manager);
+        int get_ID_at(const tson::Layer &tson_layer, int x, int y);
+        const Tileset *get_tileset_from_gid(int gid);
 
     public:
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;

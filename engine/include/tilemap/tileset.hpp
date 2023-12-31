@@ -22,9 +22,9 @@ namespace engine::tilemap
         {
         }
 
-        bool has_tile(unsigned int id) const;
+        bool has_tile(unsigned int gid) const;
         const tson::Tile *tile(int gid) const;
-        engine::Rectangle source_rect(unsigned int id) const;
+        engine::Rectangle source_rect(unsigned int gid) const;
 
         Texture2D &texture() { return _sprite_sheet.texture(); }
         const Texture2D &texture() const { return _sprite_sheet.texture(); }
