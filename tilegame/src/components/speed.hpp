@@ -8,14 +8,14 @@
 
 namespace tilegame::components
 {
-    struct Velocity
+    struct Speed
     {
-        float velocity;
+        float speed;
 
-        Velocity() : Velocity(0.0) {}
-        Velocity(float velocity) : velocity(velocity) {}
+        Speed() : Speed(0.0) {}
+        Speed(float speed) : speed(speed) {}
 
-        float operator()() const { return velocity; }
+        float operator()() const { return speed; }
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);

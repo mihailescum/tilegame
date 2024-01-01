@@ -107,9 +107,8 @@ namespace engine::tilemap
             else
             {
                 float radius = static_cast<float>(size.x) / 2;
-                float center_x = position.x + radius;
-                float center_y = position.y + radius;
-                result = std::make_unique<engine::Circle>(center_x, center_y, radius);
+                glm::vec2 center(position.x + radius, position.y + radius);
+                result = std::make_unique<engine::Circle>(center, radius);
             }
         }
         else // object is Rectangle

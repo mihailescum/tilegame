@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 
+#include "tileson/tileson.hpp"
+
 #include "core/shape.hpp"
 
 namespace engine::tilemap

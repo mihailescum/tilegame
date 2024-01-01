@@ -18,7 +18,7 @@
 #include "components/sprite.hpp"
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
-#include "components/velocity.hpp"
+#include "components/speed.hpp"
 
 namespace tilegame::systems
 {
@@ -34,7 +34,7 @@ namespace tilegame::systems
     {
         const auto &particles_texture = *_scene.game().resource_manager().load_resource<engine::Texture2D>("particles", "content/textures/particles.png");
 
-        auto emitter1 = _registry.create();
+        /*auto emitter1 = _registry.create();
         _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150));
         _registry.emplace<components::Shape>(emitter1,
                                              components::Shape(
@@ -50,7 +50,7 @@ namespace tilegame::systems
                                                            engine::Color(1.0, 0.0, 1.0, 1.0)));
         _registry.emplace<components::ParticlePool>(emitter1, components::ParticlePool());
         _registry.emplace<components::Renderable2D>(emitter1);
-        _registry.emplace<components::Ordering>(emitter1, 100.0);
+        _registry.emplace<components::Ordering>(emitter1, 100.0);*/
 
         // const tilegame::SceneGraphData emitter1_scenedata(emitter1);
         // tilegame::SceneGraphNode &emitter1_scenenode = _scene.scene_graph_root().add_child(emitter1_scenedata);
@@ -65,16 +65,16 @@ namespace tilegame::systems
 
     void Particle::update_particles(const engine::GameTime &update_time)
     {
-        const auto emitter_view = _registry.view<components::ParticlePool>(entt::exclude<components::Inactive>);
-        auto particles_view = _registry.view<components::Particle>(entt::exclude<components::Inactive>);
+        const auto emitter_entities = _registry.view<components::ParticlePool>(entt::exclude<components::Inactive>);
+        auto particles_entities = _registry.view<components::Particle>(entt::exclude<components::Inactive>);
 
-        for (const auto &&[emitter_entity, pool] : emitter_view.each())
+        for (const auto &&[emitter_entity, pool] : emitter_entities.each())
         {
             for (size_t i = 0; i < pool.first_dead_particle; ++i)
             {
                 const auto particle_entity = pool.container[i];
 
-                auto &particle = particles_view.get<components::Particle>(particle_entity);
+                auto &particle = particles_entities.get<components::Particle>(particle_entity);
                 particle.lifetime_left -= update_time.elapsed_time;
                 _registry.patch<components::Particle>(particle_entity);
 
@@ -90,9 +90,9 @@ namespace tilegame::systems
 
     void Particle::emit_particles(const engine::GameTime &update_time)
     {
-        const auto emitter_view = _registry.view<components::ParticleEmitter, components::ParticlePool, const components::Transform, const components::Shape>(entt::exclude<components::Inactive>);
+        const auto emitter_entities = _registry.view<components::ParticleEmitter, components::ParticlePool, const components::Transform, const components::Shape>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, emitter, pool, transform, shape] : emitter_view.each())
+        for (auto &&[entity, emitter, pool, transform, shape] : emitter_entities.each())
         {
             emitter.rate_clock += update_time.elapsed_time;
             int num_new_particles = static_cast<int>(emitter.rate * emitter.rate_clock);
@@ -147,16 +147,16 @@ namespace tilegame::systems
         const auto new_particle = pool.container[pool.first_dead_particle++];
 
         _registry.remove<components::Inactive>(new_particle);
-        _registry.patch<components::Movement>(new_particle,
+        /*_registry.patch<components::Movement>(new_particle,
                                               [&direction](auto &movement)
                                               {
-                                                  movement.direction = direction;
-                                              });
-        _registry.patch<components::Velocity>(new_particle,
-                                              [&speed](auto &velocity)
-                                              {
-                                                  velocity.velocity = speed;
-                                              });
+                                                  movement.velocity = direction;
+                                              });*/
+        _registry.patch<components::Speed>(new_particle,
+                                           [&speed](auto &comp)
+                                           {
+                                               comp.speed = speed;
+                                           });
         _registry.patch<components::Particle>(new_particle,
                                               [lifetime, scale, &color](auto &particle)
                                               {
@@ -202,7 +202,7 @@ namespace tilegame::systems
 
                 _registry.emplace<components::Inactive>(new_particle);
                 _registry.emplace<components::Movement>(new_particle);
-                _registry.emplace<components::Velocity>(new_particle);
+                _registry.emplace<components::Speed>(new_particle);
                 _registry.emplace<components::Particle>(new_particle);
                 _registry.emplace<components::Sprite>(new_particle);
                 _registry.emplace<components::Transform>(new_particle);

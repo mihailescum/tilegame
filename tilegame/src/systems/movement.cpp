@@ -5,7 +5,7 @@
 
 #include "components/movement.hpp"
 #include "components/target.hpp"
-#include "components/velocity.hpp"
+#include "components/speed.hpp"
 #include "components/transform.hpp"
 #include "components/inactive.hpp"
 
@@ -49,14 +49,14 @@ namespace tilegame::systems
 
     void Movement::apply_movement(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<const components::Movement, const components::Velocity>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<const components::Movement>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, movement, velocity] : view.each())
+        for (auto &&[entity, movement] : view.each())
         {
-            if (glm::length2(movement.direction) > 10e-8)
+            if (glm::length2(movement.velocity) > 10e-8)
             {
-                _registry.patch<components::Transform>(entity, [movement, velocity, update_time](auto &transform)
-                                                       { transform.position += update_time.elapsed_time * velocity() * movement.direction; });
+                _registry.patch<components::Transform>(entity, [movement](auto &transform)
+                                                       { transform.position += movement.velocity; });
             }
         }
     }
@@ -67,14 +67,14 @@ namespace tilegame::systems
 
         for (auto &&[entity, transform, target, movement] : view.each())
         {
-            const auto direction_movement = movement.direction;
+            const auto direction_movement = movement.velocity;
             const auto direction_to_target = target() - transform.position;
             // If we overshot the target, we clamp the position to the target
             if (glm::dot(direction_movement, direction_to_target) < 0)
             {
                 transform.position = target();
                 _registry.patch<components::Transform>(entity);
-                _registry.erase<components::Target, components::Movement, components::Velocity>(entity);
+                _registry.erase<components::Target, components::Movement, components::Speed>(entity);
                 _registry.emplace<components::TargetReachedEvent>(entity);
             }
         }

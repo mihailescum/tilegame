@@ -17,7 +17,8 @@ namespace tilegame::systems
         _times_of_day.push_back(TimeOfDayMark(22 * 3600, engine::Color(0.6, 0.6, 0.6, 1.0)));   // night
 
         _now = 43200;
-        _speedup = 3600;
+        // TODO Enable time of day
+        _speedup = 0; // 3600;
         for (_now_mark = _times_of_day.end() - 1; _now_mark != _times_of_day.begin(); --_now_mark)
         {
             if (_now >= _now_mark->start)

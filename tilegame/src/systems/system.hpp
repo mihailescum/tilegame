@@ -19,11 +19,11 @@ namespace tilegame::systems
         template <class Event, class EventListener = components::EventListener<Event>>
         void raise_events()
         {
-            const auto event_view = _registry.view<const Event>(entt::exclude<components::Inactive>);
-            const auto listener_view = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
-            for (const auto &&[source, event] : event_view.each())
+            const auto event_entities = _registry.view<const Event>(entt::exclude<components::Inactive>);
+            const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
+            for (const auto &&[source, event] : event_entities.each())
             {
-                for (auto &&[listener, listener_component] : listener_view.each())
+                for (auto &&[listener, listener_component] : listener_entities.each())
                 {
                     listener_component(Event::EVENT_TYPE, event, source);
                 }

@@ -7,7 +7,7 @@
 #include "components/luatable.hpp"
 #include "components/inactive.hpp"
 #include "components/target.hpp"
-#include "components/velocity.hpp"
+#include "components/speed.hpp"
 #include "components/transform.hpp"
 #include "components/pin.hpp"
 
@@ -59,7 +59,7 @@ namespace tilegame::systems
         components::Timer::register_component(_lua());
         components::TimerEvent::register_component(_lua());
         components::Transform::register_component(_lua());
-        components::Velocity::register_component(_lua());
+        components::Speed::register_component(_lua());
 
         _lua().set_function("_add_event_listener", sol::resolve<bool(const sol::table &, sol::function, entt::entity)>(&Script::add_event_listener), this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
@@ -83,8 +83,8 @@ namespace tilegame::systems
     {
         // TODO loading scripts should happen somewhere else, not on update
 
-        const auto script_view = _registry.view<const components::ScriptLoader>(entt::exclude<components::Inactive>);
-        for (const auto &&[entity, script_loader] : script_view.each())
+        const auto script_entities = _registry.view<const components::ScriptLoader>(entt::exclude<components::Inactive>);
+        for (const auto &&[entity, script_loader] : script_entities.each())
         {
             const auto &script_path = script_loader.path;
             sol::load_result load_result = _lua().load_file(script_path);

@@ -83,13 +83,13 @@ namespace tilegame::systems
         const auto width = layer.width();
         const auto height = layer.height();
 
-        std::vector<components::TileLayer::TileData> tile_data;
-        tile_data.reserve(width * height);
+        std::vector<components::TileLayer::TileData> tile_data(width * height);
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
             {
-                const auto gid = tiles[x + width * y];
+                int index = layer.index(x, y);
+                const auto gid = tiles[index];
                 const auto tile = map.get(gid);
 
                 if (tile)
@@ -103,14 +103,19 @@ namespace tilegame::systems
                         const engine::Rectangle tile_dest_rect(x * sprite_sheet->tile_width(), y * sprite_sheet->tile_height(), sprite_sheet->tile_width(), sprite_sheet->tile_height());
                         const auto tile_source_rect = tileset->source_rect(tile->id);
 
-                        components::TileLayer::TileData data{tileset_texture, tile_dest_rect, tile_source_rect};
+                        components::TileLayer::TileData data(&tileset_texture, tile_dest_rect, tile_source_rect);
                         if (tile->collision_shape)
                         {
                             data.collision_shape = tile->collision_shape.get();
                         }
 
-                        tile_data.push_back(data);
+                        tile_data[index] = data;
                     }
+                }
+                else
+                {
+                    components::TileLayer::TileData data;
+                    tile_data[index] = data;
                 }
             }
         }

@@ -13,8 +13,8 @@ namespace tilegame::systems
     void Timer::update(const engine::GameTime &update_time)
     {
         // Advance Timers
-        const auto timer_view = _registry.view<components::Timer>(entt::exclude<components::Inactive>);
-        for (auto &&[entity, timer] : timer_view.each())
+        const auto timer_entities = _registry.view<components::Timer>(entt::exclude<components::Inactive>);
+        for (auto &&[entity, timer] : timer_entities.each())
         {
             timer.time_left -= update_time.elapsed_time;
             if (timer.time_left <= 0)

@@ -6,6 +6,6 @@ namespace tilegame::components
 {
     struct Movement
     {
-        glm::vec2 direction;
+        glm::vec2 velocity;
     };
 } // namespace tilegame

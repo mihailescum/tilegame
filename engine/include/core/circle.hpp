@@ -11,13 +11,24 @@ namespace engine
     struct Circle : public Shape
     {
     public:
-        GLfloat x;
-        GLfloat y;
+        glm::vec2 origin;
         GLfloat radius;
 
-        Circle() : Circle(0.0f, 0.0f, 0.0f) {}
-        Circle(GLfloat x, GLfloat y, GLfloat radius) : x(x), y(y), radius(radius) {}
+        Circle() : Circle(glm::vec2(0.0), 0.0f) {}
+        Circle(const glm::vec2 &origin, GLfloat radius) : origin(origin), radius(radius) {}
 
         inline Shape *clone() const override { return new Circle(*this); }
+
+        inline Circle operator+(const glm::vec2 &other) const
+        {
+            Circle result(origin + other, radius);
+            return result;
+        }
+
+        inline Circle operator-(const glm::vec2 &other) const
+        {
+            Circle result = *this + (-other);
+            return result;
+        }
     };
 } // namespace engine

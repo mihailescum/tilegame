@@ -1,6 +1,7 @@
 #include "player.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include "components/player.hpp"
 #include "components/movement.hpp"
@@ -11,7 +12,7 @@
 #include "components/sprite.hpp"
 #include "components/animation.hpp"
 #include "components/inactive.hpp"
-#include "components/velocity.hpp"
+#include "components/speed.hpp"
 #include "components/collider.hpp"
 
 namespace tilegame::systems
@@ -37,7 +38,7 @@ namespace tilegame::systems
         _registry.emplace<components::Transform>(_player1_entity, glm::vec2(80, 80));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0));
-        _registry.emplace<components::Velocity>(_player1_entity, 200.0);
+        _registry.emplace<components::Speed>(_player1_entity, 200.0);
 
         // const tilegame::SceneGraphData player1_scenedata(_player1_entity);
         // tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
@@ -56,19 +57,20 @@ namespace tilegame::systems
 
     void Player::update(const engine::GameTime &update_time)
     {
-        const auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
+        const auto players = _registry.view<const components::Player, const components::Speed>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, player] : players.each())
+        for (auto &&[entity, player, velocity] : players.each())
         {
             switch (player())
             {
             case 1:
             {
                 glm::vec2 direction = handle_input_1();
+                direction *= velocity() * update_time.elapsed_time;
                 _registry.patch<components::Movement>(entity,
                                                       [direction](auto &movement)
                                                       {
-                                                          movement.direction = direction;
+                                                          movement.velocity = direction;
                                                       });
             }
             break;
@@ -107,6 +109,13 @@ namespace tilegame::systems
 
         // For some reason, when Up + Down are pressed, and later Left as well, GLFW does not recognize that Left is pressed.
 
-        return glm::normalize(result);
+        if (glm::length2(result) > 1e-10)
+        {
+            return glm::normalize(result);
+        }
+        else
+        {
+            return glm::vec2(0.0);
+        }
     }
 } // namespace tilegame::systems

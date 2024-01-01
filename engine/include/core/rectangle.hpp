@@ -6,6 +6,7 @@
 
 #include "core/shape.hpp"
 #include "core/point.hpp"
+#include "core/ray.hpp"
 #include "core/log.hpp"
 
 namespace engine
@@ -24,8 +25,9 @@ namespace engine
 
         inline Shape *clone() const override { return new Rectangle(*this); }
 
-        bool intersects(const Rectangle &other);
-        bool intersects(const Point &other);
+        bool intersects(const Rectangle &other) const;
+        bool intersects(const Point &other) const;
+        bool intersects(const Ray &other, glm::vec2 &contact_point, glm::vec2 &contact_normal, float &t_hit_near) const;
 
         inline Rectangle operator+(const glm::vec2 &other) const
         {

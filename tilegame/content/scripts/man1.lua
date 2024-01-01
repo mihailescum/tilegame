@@ -52,9 +52,9 @@ events[_TimerEvent.EVENT_TYPE] = coroutine.wrap(handle_timer_event)
 
 local target = vec2(16.0, 16.0)
 local target_component = _Target(target)
-local velocity_component = _Velocity(300)
-_registry:emplace(man1.entity, target_component)
-_registry:emplace(man1.entity, velocity_component)
+local speed_component = _Speed(300)
+--_registry:emplace(man1.entity, target_component)
+_registry:emplace(man1.entity, speed_component)
 
 _add_event_listener(_TargetReachedEvent, handle_event, man1.entity)
 events[_TargetReachedEvent.EVENT_TYPE] = coroutine.wrap(handle_target_reached_event)

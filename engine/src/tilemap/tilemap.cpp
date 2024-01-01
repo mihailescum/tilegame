@@ -93,19 +93,20 @@ namespace engine::tilemap
 
     void TileMap::parse_tilelayer(const tson::Layer &tson_layer, ResourceManager &resource_manager, int z_index)
     {
-        std::vector<int> tile_data(_width * _height);
-        for (int x = 0; x < _width; ++x)
+        const auto &tile_size = tson_layer.getMap()->getTileSize();
+
+        std::unique_ptr<TileLayer> tilelayer = std::make_unique<TileLayer>(_width, _height, tile_size.x, tile_size.y, z_index);
+        std::vector<int> tile_data(tilelayer->width() * tilelayer->height());
+        for (int x = 0; x < tilelayer->width(); ++x)
         {
-            for (int y = 0; y < _height; ++y)
+            for (int y = 0; y < tilelayer->height(); ++y)
             {
-                tile_data[x + _width * y] = get_gid_at(tson_layer, x, y);
+                tile_data[tilelayer->index(x, y)] = get_gid_at(tson_layer, x, y);
             }
         }
+        tilelayer->data(tile_data);
 
-        std::unique_ptr<TileLayer> tile_layer = std::make_unique<TileLayer>(_width, _height, z_index);
-        tile_layer->data(tile_data);
-
-        _layers.push_back(std::move(tile_layer));
+        _layers.push_back(std::move(tilelayer));
     }
 
     int TileMap::get_gid_at(const tson::Layer &tson_layer, int x, int y) const

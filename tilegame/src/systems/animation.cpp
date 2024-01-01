@@ -16,10 +16,10 @@ namespace tilegame::systems
 
     void Animation::update(const engine::GameTime &update_time)
     {
-        const auto animation_view = _registry.view<components::Animation>(entt::exclude<components::Inactive>);
-        const auto sprite_view = _registry.view<const components::Animation, const components::Sprite>(entt::exclude<components::Inactive>);
+        const auto animation_entities = _registry.view<components::Animation>(entt::exclude<components::Inactive>);
+        const auto sprite_entities = _registry.view<const components::Animation, const components::Sprite>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, animation] : animation_view.each())
+        for (auto &&[entity, animation] : animation_entities.each())
         {
             animation.clock += update_time.elapsed_time;
             auto &current_frame = animation.frames[animation.current_frame_idx];
@@ -35,7 +35,7 @@ namespace tilegame::systems
                 }
                 animation.clock -= current_frame.duration;
 
-                if (sprite_view.contains(entity))
+                if (sprite_entities.contains(entity))
                 {
                     _registry.patch<components::Sprite>(entity, [=](auto &sprite)
                                                         { sprite.source_rect = animation.frames[animation.current_frame_idx].source_rect; });

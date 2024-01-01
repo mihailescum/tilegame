@@ -17,7 +17,7 @@ namespace tilegame::systems
         engine::graphics::SpriteBatch &_spritebatch;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
-        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tile_layer) const;
+        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer) const;
         void draw_particles(const components::ParticlePool &pool) const;
 
         void sort_renderables() const;
