@@ -23,7 +23,7 @@ namespace tilegame::systems
     void Movement::add_movement_component(entt::registry &registry, entt::entity entity)
     {
         auto [target, transform] = registry.get<const components::Target, const components::Transform>(entity);
-        const glm::vec2 direction = glm::normalize(target() - transform());
+        const glm::vec2 direction = glm::normalize(target() - transform.position);
         registry.emplace_or_replace<components::Movement>(entity, direction);
 
         if (!target.start)
@@ -31,7 +31,7 @@ namespace tilegame::systems
             registry.patch<components::Target>(entity,
                                                [transform](auto &target_component)
                                                {
-                                                   target_component.start = transform();
+                                                   target_component.start = transform.position;
                                                });
         }
     }
@@ -56,7 +56,7 @@ namespace tilegame::systems
             if (glm::length2(movement.direction) > 10e-8)
             {
                 _registry.patch<components::Transform>(entity, [movement, velocity, update_time](auto &transform)
-                                                       { transform.position_local += update_time.elapsed_time * velocity() * movement.direction; });
+                                                       { transform.position += update_time.elapsed_time * velocity() * movement.direction; });
             }
         }
     }
@@ -68,11 +68,11 @@ namespace tilegame::systems
         for (auto &&[entity, transform, target, movement] : view.each())
         {
             const auto direction_movement = movement.direction;
-            const auto direction_to_target = target() - transform();
+            const auto direction_to_target = target() - transform.position;
             // If we overshot the target, we clamp the position to the target
             if (glm::dot(direction_movement, direction_to_target) < 0)
             {
-                transform() = target();
+                transform.position = target();
                 _registry.patch<components::Transform>(entity);
                 _registry.erase<components::Target, components::Movement, components::Velocity>(entity);
                 _registry.emplace<components::TargetReachedEvent>(entity);

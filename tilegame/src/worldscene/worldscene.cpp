@@ -16,7 +16,7 @@ namespace tilegame::worldscene
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
           _system_movement(*this, _registry),
-          _system_scenegraph(*this, _registry),
+          _system_pin(*this, _registry),
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
           _system_timer(*this, _registry),
@@ -31,7 +31,7 @@ namespace tilegame::worldscene
         _game.postprocessing_enabled() = true;
         _system_daytime.initialize();
 
-        _system_scenegraph.initialize();
+        _system_pin.initialize();
         _system_render.initialize();
         _system_animation.initialize();
         _system_script.initialize();
@@ -59,7 +59,6 @@ namespace tilegame::worldscene
 
     void WorldScene::unload_content()
     {
-        _system_scenegraph.unload_content();
     }
 
     void WorldScene::update(const engine::GameTime &update_time)
@@ -75,7 +74,7 @@ namespace tilegame::worldscene
         _system_movement.update(update_time);            // Actually updated the positions
 
         _system_animation.update(update_time);
-        _system_scenegraph.update(update_time);
+        _system_pin.update(update_time);
 
         _system_camera.update(update_time);
     }

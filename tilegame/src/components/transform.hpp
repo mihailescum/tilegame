@@ -1,15 +1,19 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <string>
+
+#include <glm/glm.hpp>
+
+#include "sol/sol.hpp"
 
 namespace tilegame::components
 {
     struct Transform
     {
-        glm::vec2 position_local;
-        glm::vec2 position_global;
+        glm::vec2 position;
 
-        const glm::vec2 &operator()() const { return position_local; }
-        glm::vec2 &operator()() { return position_local; }
+        [[nodiscard]] std::string to_string() const;
+
+        static void register_component(sol::state &lua);
     };
 } // namespace tilegame

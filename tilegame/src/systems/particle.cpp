@@ -35,7 +35,7 @@ namespace tilegame::systems
         const auto &particles_texture = *_scene.game().resource_manager().load_resource<engine::Texture2D>("particles", "content/textures/particles.png");
 
         auto emitter1 = _registry.create();
-        _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150));
         _registry.emplace<components::Shape>(emitter1,
                                              components::Shape(
                                                  std::make_unique<engine::Rectangle>(-200, -50, 400, 100)));
@@ -52,9 +52,9 @@ namespace tilegame::systems
         _registry.emplace<components::Renderable2D>(emitter1);
         _registry.emplace<components::Ordering>(emitter1, 100.0);
 
-        const tilegame::SceneGraphData emitter1_scenedata(emitter1);
-        tilegame::SceneGraphNode &emitter1_scenenode = _scene.scene_graph_root().add_child(emitter1_scenedata);
-        _registry.emplace<components::SceneNode>(emitter1, &emitter1_scenenode);
+        // const tilegame::SceneGraphData emitter1_scenedata(emitter1);
+        // tilegame::SceneGraphNode &emitter1_scenenode = _scene.scene_graph_root().add_child(emitter1_scenedata);
+        // _registry.emplace<components::SceneNode>(emitter1, &emitter1_scenenode);
     }
 
     void Particle::update(const engine::GameTime &update_time)
@@ -110,7 +110,7 @@ namespace tilegame::systems
 
                 for (int i = 0; i < num_new_particles; ++i)
                 {
-                    const auto new_particle = emit_particle(emitter, pool, shape);
+                    const auto new_particle = emit_particle(emitter, pool, transform, shape);
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace tilegame::systems
         }
     }
 
-    entt::entity Particle::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool, const components::Shape &shape)
+    entt::entity Particle::emit_particle(const components::ParticleEmitter &emitter, components::ParticlePool &pool, const components::Transform &emmiter_transform, const components::Shape &emitter_shape)
     {
         const float lifetime = get_random(emitter.lifetime.x, emitter.lifetime.y);
         const float scale = get_random(emitter.scale.x, emitter.scale.y);
@@ -138,7 +138,7 @@ namespace tilegame::systems
         const float angle = get_random(-emitter.spread_angle, emitter.spread_angle);
         const glm::vec2 direction = speed * glm::rotate(emitter.spread_direction, angle);
 
-        const glm::vec2 position = generate_random_position(shape);
+        const glm::vec2 position = generate_random_position(emitter_shape) + emmiter_transform.position;
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
         const engine::Rectangle source_rect(0, 0, 64, 64);
@@ -171,7 +171,7 @@ namespace tilegame::systems
                                                 sprite.source_rect = source_rect;
                                             });
         _registry.patch<components::Transform>(new_particle, [&position](auto &transform)
-                                               { transform.position_local = position; });
+                                               { transform.position = position; });
 
         return new_particle;
     }
@@ -193,7 +193,7 @@ namespace tilegame::systems
 
             pool.container.resize(new_size);
 
-            auto emitter_scenenode = _registry.get<components::SceneNode>(emitter_entity).node;
+            // auto emitter_scenenode = _registry.get<components::SceneNode>(emitter_entity).node;
 
             for (std::size_t i = old_size; i < new_size; ++i)
             {
@@ -207,9 +207,9 @@ namespace tilegame::systems
                 _registry.emplace<components::Sprite>(new_particle);
                 _registry.emplace<components::Transform>(new_particle);
 
-                const tilegame::SceneGraphData scenedata(new_particle);
-                tilegame::SceneGraphNode &scenenode = emitter_scenenode->add_child(scenedata);
-                _registry.emplace<components::SceneNode>(new_particle, &scenenode);
+                // const tilegame::SceneGraphData scenedata(new_particle);
+                // tilegame::SceneGraphNode &scenenode = emitter_scenenode->add_child(scenedata);
+                //_registry.emplace<components::SceneNode>(new_particle, &scenenode);
             }
 
             return true;

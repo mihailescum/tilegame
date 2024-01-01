@@ -5,7 +5,7 @@
 
 #include "components/camera.hpp"
 #include "components/player.hpp"
-#include "components/scenenode.hpp"
+#include "components/pin.hpp"
 #include "components/inactive.hpp"
 
 namespace tilegame::systems
@@ -26,7 +26,7 @@ namespace tilegame::systems
             1.0,
             glm::mat4(1.0),
             _scene.game().graphics_device().viewport());
-        _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0));
 
         entt::entity player1_entity = entt::null;
         auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
@@ -41,11 +41,13 @@ namespace tilegame::systems
 
         if (player1_entity != entt::null)
         {
-            auto player1_scenenode = _registry.get<components::SceneNode>(player1_entity).node;
+            // auto player1_scenenode = _registry.get<components::SceneNode>(player1_entity).node;
 
-            const tilegame::SceneGraphData camera_scenedata(camera_entity);
-            tilegame::SceneGraphNode &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
-            _registry.emplace<components::SceneNode>(camera_entity, &camera_scenenode);
+            // const tilegame::SceneGraphData camera_scenedata(camera_entity);
+            // tilegame::SceneGraphNode &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
+            //_registry.emplace<components::SceneNode>(camera_entity, &camera_scenenode);
+
+            _registry.emplace<components::Pin>(camera_entity, player1_entity);
         }
     }
 
@@ -55,7 +57,7 @@ namespace tilegame::systems
 
         for (auto &&[entity, camera, transform] : cameras.each())
         {
-            glm::vec2 position = transform.position_global;
+            glm::vec2 position = transform.position;
             float scale = camera.scale;
 
             glm::vec3 translate(

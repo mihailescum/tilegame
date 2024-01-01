@@ -8,6 +8,8 @@
 #include "components/inactive.hpp"
 #include "components/target.hpp"
 #include "components/velocity.hpp"
+#include "components/transform.hpp"
+#include "components/pin.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -50,11 +52,13 @@ namespace tilegame::systems
 
         components::Inactive::register_component(_lua());
         components::LuaTable::register_component(_lua());
+        components::Pin::register_component(_lua());
         components::ScriptLoader::register_component(_lua());
         components::Target::register_component(_lua());
         components::TargetReachedEvent::register_component(_lua());
         components::Timer::register_component(_lua());
         components::TimerEvent::register_component(_lua());
+        components::Transform::register_component(_lua());
         components::Velocity::register_component(_lua());
 
         _lua().set_function("_add_event_listener", sol::resolve<bool(const sol::table &, sol::function, entt::entity)>(&Script::add_event_listener), this);

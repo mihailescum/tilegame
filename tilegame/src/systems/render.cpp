@@ -83,15 +83,17 @@ namespace tilegame::systems
             engine::Color shape_color(0.4, 0.16, 0.93, 0.7);
             for (const auto &&[render_entity, transform, collider] : view_collision_shapes.each())
             {
+                const auto &position = transform.position;
+
                 if (const auto shape_circle = dynamic_cast<engine::Circle *>(collider.shape.get()))
                 {
-                    glm::vec2 pos(transform.position_global.x + shape_circle->x - shape_circle->radius, transform.position_global.y + shape_circle->y - shape_circle->radius);
+                    glm::vec2 pos(position.x + shape_circle->x - shape_circle->radius, position.y + shape_circle->y - shape_circle->radius);
                     engine::Rectangle dest_rect(pos.x, pos.y, shape_circle->radius * 2, shape_circle->radius * 2);
                     _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color);
                 }
                 else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
                 {
-                    glm::vec2 pos(transform.position_global.x + shape_rect->x, transform.position_global.y + shape_rect->y);
+                    glm::vec2 pos(position.x + shape_rect->x, position.y + shape_rect->y);
                     engine::Rectangle dest_rect(pos.x, pos.y, shape_rect->width, shape_rect->height);
                     _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color);
                 }
@@ -99,17 +101,19 @@ namespace tilegame::systems
             engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
             for (const auto &&[render_entity, transform, tile_layer] : view_tilelayer_shapes.each())
             {
+                const auto &position = transform.position;
+
                 for (const auto &data : tile_layer.tile_data)
                 {
                     if (const auto shape_circle = dynamic_cast<const engine::Circle *>(data.collision_shape))
                     {
-                        glm::vec2 pos(transform.position_global.x + data.destination_rect.x + shape_circle->x - shape_circle->radius, transform.position_global.y + data.destination_rect.y + shape_circle->y - shape_circle->radius);
+                        glm::vec2 pos(position.x + data.destination_rect.x + shape_circle->x - shape_circle->radius, position.y + data.destination_rect.y + shape_circle->y - shape_circle->radius);
                         engine::Rectangle dest_rect(pos.x, pos.y, shape_circle->radius * 2, shape_circle->radius * 2);
                         _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                     else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
                     {
-                        glm::vec2 pos(transform.position_global.x + data.destination_rect.x + shape_rect->x, transform.position_global.y + data.destination_rect.y + shape_rect->y);
+                        glm::vec2 pos(position.x + data.destination_rect.x + shape_rect->x, position.y + data.destination_rect.y + shape_rect->y);
                         engine::Rectangle dest_rect(pos.x, pos.y, shape_rect->width, shape_rect->height);
                         // engine::Rectangle source_rect(0, 0, _rect_tex->width(), _rect_tex->height());
                         _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color_tiles);
@@ -133,9 +137,9 @@ namespace tilegame::systems
 
     void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const
     {
-        const auto &position_global = transform.position_global;
+        const auto &position = transform.position;
         const auto &source_rect = sprite.source_rect;
-        const engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
+        const engine::Rectangle dest_rect(position.x, position.y, source_rect.width, source_rect.height);
         _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
@@ -143,7 +147,7 @@ namespace tilegame::systems
     {
         for (const auto &data : tile_layer.tile_data)
         {
-            _spritebatch.draw(data.texture, data.destination_rect + transform.position_global, &data.source_rect, engine::Color::WHITE);
+            _spritebatch.draw(data.texture, data.destination_rect + transform.position, &data.source_rect, engine::Color::WHITE);
         }
     }
 
@@ -156,9 +160,9 @@ namespace tilegame::systems
         {
             const auto &[particle, sprite, transform] = particles_view.get(pool.container[i]);
 
-            const auto &position_global = transform.position_global;
+            const auto &position = transform.position;
             const auto &source_rect = sprite.source_rect;
-            const engine::Rectangle dest_rect(position_global.x, position_global.y, source_rect.width, source_rect.height);
+            const engine::Rectangle dest_rect(position.x, position.y, source_rect.width, source_rect.height);
             _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, particle.color);
         }
     }

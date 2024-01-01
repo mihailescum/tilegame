@@ -29,11 +29,11 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
         _registry.emplace<components::TileMap>(entity, map);
-        _registry.emplace<components::Transform>(entity, glm::vec2(0.0), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(entity, glm::vec2(0.0));
 
-        const tilegame::SceneGraphData map_scenedata(entity);
-        tilegame::SceneGraphNode &map_scenenode = _scene.scene_graph_root().add_child(map_scenedata);
-        _registry.emplace<components::SceneNode>(entity, &map_scenenode);
+        // const tilegame::SceneGraphData map_scenedata(entity);
+        // tilegame::SceneGraphNode &map_scenenode = _scene.scene_graph_root().add_child(map_scenedata);
+        //_registry.emplace<components::SceneNode>(entity, &map_scenenode);
 
         std::vector<entt::entity> tileset_entities;
         for (const auto &[first_gid, last_gid, tileset] : map.tilesets())
@@ -46,9 +46,9 @@ namespace tilegame::systems
         {
             const auto layer_entity = create_layer_entity(*layer, map);
 
-            const tilegame::SceneGraphData layer_scenedata(layer_entity);
-            tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
-            _registry.emplace<components::SceneNode>(layer_entity, &layer_scenenode);
+            // const tilegame::SceneGraphData layer_scenedata(layer_entity);
+            // tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
+            //_registry.emplace<components::SceneNode>(layer_entity, &layer_scenenode);
         }
 
         for (const auto &object : map.objects())
@@ -57,9 +57,10 @@ namespace tilegame::systems
             if (data.getGid() > 0) // parse a sprite
             {
                 const auto sprite_entity = create_sprite_entity(*object, map);
-                const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
-                tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
-                _registry.emplace<components::SceneNode>(sprite_entity, &sprite_scenenode);
+
+                // const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
+                // tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
+                //_registry.emplace<components::SceneNode>(sprite_entity, &sprite_scenenode);
             }
             else
             {
@@ -74,7 +75,7 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
 
-        _registry.emplace<components::Transform>(entity, glm::vec2(0.0, 0.0), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(entity, glm::vec2(0.0, 0.0));
         _registry.emplace<components::Ordering>(entity, layer.z_index());
         _registry.emplace<components::Renderable2D>(entity);
 
@@ -153,7 +154,7 @@ namespace tilegame::systems
         const auto &sprite_state = (*tileset_of_sprite)[sprite_class_name][sprite_state_name];
 
         const auto entity = _registry.create();
-        _registry.emplace<components::Transform>(entity, sprite_position, glm::vec2(0.0));
+        _registry.emplace<components::Transform>(entity, sprite_position);
         _registry.emplace<components::Ordering>(entity, 3.0);
         _registry.emplace<components::Renderable2D>(entity);
         const auto &animation_component = _registry.emplace<components::Animation>(entity, 0.0, 0, sprite_state.frames);
