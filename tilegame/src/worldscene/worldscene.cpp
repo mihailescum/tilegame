@@ -53,6 +53,8 @@ namespace tilegame::worldscene
         _system_particle.load_content();
 
         _system_camera.load_content();
+
+        _system_render.load_content();
     }
 
     void WorldScene::unload_content()

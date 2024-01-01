@@ -5,6 +5,7 @@
 #include "components/camera.hpp"
 #include "components/inactive.hpp"
 #include "components/particle.hpp"
+#include "components/collider.hpp"
 
 namespace tilegame::systems
 {
@@ -19,6 +20,12 @@ namespace tilegame::systems
         _registry.on_construct<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
         _registry.on_update<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
         _registry.on_destroy<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
+    }
+
+    void Render::load_content()
+    {
+        _rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
+        _circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
     }
 
     void Render::draw(const engine::GameTime &draw_time)
@@ -59,6 +66,57 @@ namespace tilegame::systems
                     draw_particles(pool_component);
                 }
             }
+            _spritebatch.end();
+        }
+
+        //
+        // Debug drawing of collision shapes
+        //
+
+        const auto view_collision_shapes = _registry.view<const components::Transform, const components::Collider, const components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_tilelayer_shapes = _registry.view<const components::Transform, const components::TileLayer, const components::Renderable2D>(entt::exclude<components::Inactive>);
+
+        for (const auto &&[camera_entity, camera] : cameras.each())
+        {
+            _spritebatch.begin(camera.transform, true);
+
+            engine::Color shape_color(0.4, 0.16, 0.93, 0.7);
+            for (const auto &&[render_entity, transform, collider] : view_collision_shapes.each())
+            {
+                if (const auto shape_circle = dynamic_cast<engine::Circle *>(collider.shape.get()))
+                {
+                    glm::vec2 pos(transform.position_global.x + shape_circle->x - shape_circle->radius, transform.position_global.y + shape_circle->y - shape_circle->radius);
+                    engine::Rectangle dest_rect(pos.x, pos.y, shape_circle->radius * 2, shape_circle->radius * 2);
+                    _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color);
+                }
+                else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
+                {
+                    glm::vec2 pos(transform.position_global.x + shape_rect->x, transform.position_global.y + shape_rect->y);
+                    engine::Rectangle dest_rect(pos.x, pos.y, shape_rect->width, shape_rect->height);
+                    _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color);
+                }
+            }
+            engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
+            for (const auto &&[render_entity, transform, tile_layer] : view_tilelayer_shapes.each())
+            {
+                for (const auto &data : tile_layer.tile_data)
+                {
+                    if (const auto shape_circle = dynamic_cast<const engine::Circle *>(data.collision_shape))
+                    {
+                        glm::vec2 pos(transform.position_global.x + data.destination_rect.x + shape_circle->x - shape_circle->radius, transform.position_global.y + data.destination_rect.y + shape_circle->y - shape_circle->radius);
+                        engine::Rectangle dest_rect(pos.x, pos.y, shape_circle->radius * 2, shape_circle->radius * 2);
+                        _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color_tiles);
+                    }
+                    else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
+                    {
+                        glm::vec2 pos(transform.position_global.x + data.destination_rect.x + shape_rect->x, transform.position_global.y + data.destination_rect.y + shape_rect->y);
+                        engine::Rectangle dest_rect(pos.x, pos.y, shape_rect->width, shape_rect->height);
+                        // engine::Rectangle source_rect(0, 0, _rect_tex->width(), _rect_tex->height());
+                        _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                    }
+                }
+            }
+
             _spritebatch.end();
         }
     }

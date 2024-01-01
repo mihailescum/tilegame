@@ -23,10 +23,14 @@ namespace tilegame::systems
         void sort_renderables() const;
         void needs_sorting(entt::registry &, entt::entity) { _needs_sorting = true; }
 
+        engine::Texture2D *_rect_tex;
+        engine::Texture2D *_circle_tex;
+
     public:
         Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch);
 
         void initialize();
+        void load_content();
         void draw(const engine::GameTime &draw_time);
     };
 } // namespace tilegame

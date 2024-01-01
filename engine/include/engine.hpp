@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/circle.hpp"
 #include "core/color.hpp"
 #include "core/game.hpp"
 #include "core/gametime.hpp"
