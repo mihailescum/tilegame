@@ -40,6 +40,8 @@ namespace engine::tilemap
         // TODO return iterators instead
         const std::vector<std::unique_ptr<TileLayer>> &layers() const { return _layers; }
         const std::vector<std::unique_ptr<TileObject>> &objects() const { return _objects; }
+
+        // TODO return only the tilesets, without gids
         const auto &tilesets() const { return _tilesets; }
     };
 }

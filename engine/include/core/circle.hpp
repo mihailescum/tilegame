@@ -8,14 +8,16 @@
 
 namespace engine
 {
-    struct Cirle : public Shape
+    struct Circle : public Shape
     {
     public:
         GLfloat x;
         GLfloat y;
         GLfloat radius;
 
-        Cirle() : Cirle(0.0f, 0.0f, 0.0f) {}
-        Cirle(GLfloat x, GLfloat y, GLfloat radius) : x(x), y(y), radius(radius) {}
+        Circle() : Circle(0.0f, 0.0f, 0.0f) {}
+        Circle(GLfloat x, GLfloat y, GLfloat radius) : x(x), y(y), radius(radius) {}
+
+        inline Shape *clone() const override { return new Circle(*this); }
     };
 } // namespace engine

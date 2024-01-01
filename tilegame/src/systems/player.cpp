@@ -12,6 +12,7 @@
 #include "components/animation.hpp"
 #include "components/inactive.hpp"
 #include "components/velocity.hpp"
+#include "components/collider.hpp"
 
 namespace tilegame::systems
 {
@@ -26,7 +27,7 @@ namespace tilegame::systems
     void Player::load_content()
     {
         auto &resource_manager = _scene.game().resource_manager();
-        const engine::graphics::SpriteSheet *characters = resource_manager.load_resource<engine::tilemap::Tileset>("characters", "content/characters/characters.tsj");
+        const engine::tilemap::Tileset *characters = resource_manager.load_resource<engine::tilemap::Tileset>("characters", "content/characters/characters.tsj");
         const engine::Texture2D &characters_texture = characters->texture();
 
         const engine::graphics::Sprite &player1_sprite = (*characters)["man"];
@@ -44,6 +45,12 @@ namespace tilegame::systems
         const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite["down_walking"].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
         _registry.emplace<components::Sprite>(_player1_entity, &characters_texture, player1_animation_component.get_current_frame().source_rect);
+
+        const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
+        if (current_animation_tile->collision_shape)
+        {
+            _registry.emplace<components::Collider>(_player1_entity, std::unique_ptr<engine::Shape>(current_animation_tile->collision_shape->clone()));
+        }
     }
 
     void Player::update(const engine::GameTime &update_time)

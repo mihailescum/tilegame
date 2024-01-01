@@ -17,6 +17,8 @@ namespace engine
         GLfloat x;
         GLfloat y;
 
+        inline Shape *clone() const override { return new Point(*this); }
+
         static const Point ZERO;
 
         inline Point operator+(const glm::vec2 &other) const

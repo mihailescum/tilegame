@@ -10,6 +10,7 @@
 #include "components/animation.hpp"
 #include "components/sprite.hpp"
 #include "components/scriptloader.hpp"
+#include "components/collider.hpp"
 
 namespace tilegame::systems
 {
@@ -160,14 +161,17 @@ namespace tilegame::systems
         const auto &sprite_state_name = const_cast<tson::PropertyCollection &>(sprite_properties).getValue<std::string>(Map::FIELD_STATE);
         const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
 
-        const auto entitiy = _registry.create();
-        _registry.emplace<components::Transform>(entitiy, sprite_position, glm::vec2(0.0));
-        _registry.emplace<components::Ordering>(entitiy, 3.0);
-        _registry.emplace<components::Renderable2D>(entitiy);
-        const auto &animation_component = _registry.emplace<components::Animation>(entitiy, 0.0, 0, sprite_state.frames);
-        _registry.emplace<components::Sprite>(entitiy, &texture, animation_component.get_current_frame().source_rect);
+        const auto entity = _registry.create();
+        _registry.emplace<components::Transform>(entity, sprite_position, glm::vec2(0.0));
+        _registry.emplace<components::Ordering>(entity, 3.0);
+        _registry.emplace<components::Renderable2D>(entity);
+        const auto &animation_component = _registry.emplace<components::Animation>(entity, 0.0, 0, sprite_state.frames);
+        _registry.emplace<components::Sprite>(entity, &texture, animation_component.get_current_frame().source_rect);
 
-        // TODO add collision component
+        if (tile->collision_shape)
+        {
+            _registry.emplace<components::Collider>(entity, std::unique_ptr<engine::Shape>(tile->collision_shape->clone()));
+        }
 
         // 'const_cast' is okay, because tson::Object::getProperties should have been declared 'const'
         const auto &properties = const_cast<tson::Object &>(data).getProperties();
@@ -176,9 +180,9 @@ namespace tilegame::systems
         if (script_path_property)
         {
             std::filesystem::path script_path = map.resource_path().parent_path() / script_path_property->getValue<std::string>();
-            _registry.emplace<components::ScriptLoader>(entitiy, script_path);
+            _registry.emplace<components::ScriptLoader>(entity, script_path);
         }
 
-        return entitiy;
+        return entity;
     }
 }
