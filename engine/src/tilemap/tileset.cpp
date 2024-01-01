@@ -3,6 +3,7 @@
 #include "core/circle.hpp"
 #include "core/point.hpp"
 #include "core/rectangle.hpp"
+#include "graphics/sprite.hpp"
 
 namespace engine::tilemap
 {
@@ -30,30 +31,48 @@ namespace engine::tilemap
 
     void Tileset::parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager)
     {
-        std::unique_ptr<engine::graphics::SpriteSheet> sprite_sheet = std::make_unique<engine::graphics::SpriteSheet>();
-        const std::string sprite_sheet_name = _resource_name + "__sprite_sheet";
-        // sprite_sheet.resource_path(_resource_path);
-        sprite_sheet->resource_name(sprite_sheet_name);
-        sprite_sheet->parse(tson_tileset, resource_manager);
-        engine::graphics::SpriteSheet &sprite_sheet_resource = resource_manager.emplace_resource<engine::graphics::SpriteSheet>(sprite_sheet_name, sprite_sheet);
-        _sprite_sheet = &sprite_sheet_resource;
+        _tile_width = tson_tileset.getTileSize().x;
+        _tile_height = tson_tileset.getTileSize().y;
+
+        const auto texture_path = tson_tileset.getFullImagePath();
+        const auto texture_name = texture_path.filename();
+        _texture = resource_manager.load_resource<Texture2D>(texture_name, texture_path);
 
         const int first_gid = tson_tileset.getFirstgid();
         const int last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
-
-        // 'const_cast' is okay, because tson::Tileset::getTiles should have been declared 'const'
-        const auto &tson_tiles = const_cast<tson::Tileset &>(tson_tileset).getTiles();
 
         // Careful: Due to a bug Tileson generates more tiles than there are between firstgid and lastgid (some are duplicates)
         // This happens because tson::Tileset::generateMissingTiles mixes ids/gids incorrectly
         // _tiles.resize(tson_tiles.size()); WRONG!!
         _tiles.resize(last_gid - first_gid + 1);
-        for (auto &tson_tile : tson_tiles)
+
+        // 'const_cast' is okay, because tson::Tileset::getTiles should have been declared 'const'
+        const auto &tson_tiles = const_cast<tson::Tileset &>(tson_tileset).getTiles();
+        for (const auto &tson_tile : tson_tiles)
         {
             int gid = tson_tile.getGid();
 
+            //
+            // SpriteSheet
+            //
+
+            // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
+            const auto &animation = const_cast<tson::Tile &>(tson_tile).getAnimation();
+
+            if (animation.size() > 0)
+            {
+                const std::string name = tson_tile.getType();
+                graphics::Sprite &sprite = _sprites[name];
+                sprite.sprite_sheet(this);
+                sprite.parse(tson_tile);
+            }
+
+            //
+            // Tileset
+            //
+
             Tile tile;
-            tile.id = gid - first_gid + 1;
+            tile.id = gid - first_gid;
             tile.tileset = this;
             tile.class_type = tson_tile.getClassType();
             // 'const_cast' is okay, because tson::Tile::getProperties should have been declared 'const'
@@ -83,12 +102,12 @@ namespace engine::tilemap
             // tson_tile.getId() refers to the ID used by tiled. If this is less than gid,
             // this means that the current tileset is not the first tileset of the map, but
             // the tson_tile contains the actual Tiled data (and is not automatically generated
-            // by Tileson), which is why we keep it. If old_tile.id == 0, then the old tile was
+            // by Tileson), which is why we keep it. If old_tile.id < 0, then the old tile was
             // still default initialized (as ID >= 1 for all valid tiles) and we overwrite it.
-            const auto &old_tile = _tiles[tile.id - 1];
-            if (old_tile.id == 0 || tson_tile.getId() < gid)
+            const auto &old_tile = _tiles[tile.id];
+            if (old_tile.id < 0 || tson_tile.getId() < gid)
             {
-                _tiles[tile.id - 1] = std::move(tile);
+                _tiles[tile.id] = std::move(tile);
             }
         }
     }
@@ -125,21 +144,8 @@ namespace engine::tilemap
         return result;
     }
 
-    engine::Rectangle Tileset::source_rect(int id) const
-    {
-        if (_sprite_sheet)
-        {
-            return _sprite_sheet->source_rect(id - 1);
-        }
-        else
-        {
-            return Rectangle::EMPTY;
-        }
-    }
-
     const Tile *Tileset::get(int id) const
     {
-        id--;
         if (id >= 0 && id < _tiles.size())
         {
             return &_tiles[id];

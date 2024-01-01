@@ -143,7 +143,7 @@ namespace engine::tilemap
         {
             if (gid >= first_gid && gid <= last_gid)
             {
-                id = gid - first_gid + 1;
+                id = gid - first_gid;
                 return tileset;
             }
         }

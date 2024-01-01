@@ -95,7 +95,7 @@ namespace tilegame::systems
                     const auto tileset = tile->tileset;
                     if (tileset)
                     {
-                        const auto sprite_sheet = tileset->sprite_sheet();
+                        const auto sprite_sheet = tileset;
                         const engine::Texture2D &tileset_texture = sprite_sheet->texture();
 
                         const engine::Rectangle tile_dest_rect(x * sprite_sheet->tile_width(), y * sprite_sheet->tile_height(), sprite_sheet->tile_width(), sprite_sheet->tile_height());
@@ -151,7 +151,7 @@ namespace tilegame::systems
 
         // We know that the sprite sheet is a resource, as it was loaded before
         auto &resource_manager = _scene.game().resource_manager();
-        const engine::graphics::SpriteSheet &sprite_sheet = *resource_manager.get<engine::tilemap::Tileset>(tileset_name).sprite_sheet();
+        const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::tilemap::Tileset>(tileset_name);
         const engine::Texture2D &texture = sprite_sheet.texture();
 
         const auto &sprite_class_name = tile->class_type;
