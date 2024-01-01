@@ -31,12 +31,7 @@ namespace engine::tilemap
 
     void Tileset::parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager)
     {
-        _tile_width = tson_tileset.getTileSize().x;
-        _tile_height = tson_tileset.getTileSize().y;
-
-        const auto texture_path = tson_tileset.getFullImagePath();
-        const auto texture_name = texture_path.filename();
-        _texture = resource_manager.load_resource<Texture2D>(texture_name, texture_path);
+        SpriteSheet::parse(tson_tileset, resource_manager);
 
         const int first_gid = tson_tileset.getFirstgid();
         const int last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
@@ -51,25 +46,6 @@ namespace engine::tilemap
         for (const auto &tson_tile : tson_tiles)
         {
             int gid = tson_tile.getGid();
-
-            //
-            // SpriteSheet
-            //
-
-            // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
-            const auto &animation = const_cast<tson::Tile &>(tson_tile).getAnimation();
-
-            if (animation.size() > 0)
-            {
-                const std::string name = tson_tile.getType();
-                graphics::Sprite &sprite = _sprites[name];
-                sprite.sprite_sheet(this);
-                sprite.parse(tson_tile);
-            }
-
-            //
-            // Tileset
-            //
 
             Tile tile;
             tile.id = gid - first_gid;

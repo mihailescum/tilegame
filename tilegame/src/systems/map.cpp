@@ -144,22 +144,13 @@ namespace tilegame::systems
         {
             throw "corresponding tileset not found";
         }
-
-        // We have to interpret the object as a sprite and the tileset as its sprite sheet
-        // Need to inherit class from tileset
-
-        const std::string tileset_name = tileset_of_sprite->resource_name();
-
-        // We know that the sprite sheet is a resource, as it was loaded before
-        auto &resource_manager = _scene.game().resource_manager();
-        const engine::graphics::SpriteSheet &sprite_sheet = resource_manager.get<engine::tilemap::Tileset>(tileset_name);
-        const engine::Texture2D &texture = sprite_sheet.texture();
+        const engine::Texture2D &texture = tileset_of_sprite->texture();
 
         const auto &sprite_class_name = tile->class_type;
         const auto &sprite_properties = tile->properties;
         // 'const_cast' is okay, because tson::PropertyCollection::get<> should have been declared 'const'
         const auto &sprite_state_name = const_cast<tson::PropertyCollection &>(sprite_properties).getValue<std::string>(Map::FIELD_STATE);
-        const auto &sprite_state = sprite_sheet[sprite_class_name][sprite_state_name];
+        const auto &sprite_state = (*tileset_of_sprite)[sprite_class_name][sprite_state_name];
 
         const auto entity = _registry.create();
         _registry.emplace<components::Transform>(entity, sprite_position, glm::vec2(0.0));

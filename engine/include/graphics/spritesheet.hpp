@@ -14,7 +14,7 @@
 
 namespace engine::graphics
 {
-    class SpriteSheet
+    class SpriteSheet : public Resource
     {
     protected:
         int _tile_width;
@@ -27,6 +27,10 @@ namespace engine::graphics
         SpriteSheet() : SpriteSheet(nullptr, 0, 0) {}
         SpriteSheet(engine::Texture2D *texture, int tile_width, int tile_height) : _texture(texture), _tile_width(tile_width), _tile_height(tile_height) {}
 
+        virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
+        virtual void unload_resource() override;
+
+        void parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager);
         engine::Rectangle source_rect(int id) const;
 
         const Sprite &operator[](std::string name) const { return _sprites.at(name); }

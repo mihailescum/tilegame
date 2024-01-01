@@ -34,7 +34,7 @@ namespace tilegame::systems
 
         _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
-        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(100, 100), glm::vec2(0.0));
+        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(80, 80), glm::vec2(0.0));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0));
         _registry.emplace<components::Velocity>(_player1_entity, 200.0);

@@ -20,6 +20,6 @@ namespace engine::tilemap
 
         std::unique_ptr<const Shape> collision_shape;
 
-        Tile() : id(-1) {}
+        Tile() : id(-1), tileset(nullptr), class_type(""), properties(), collision_shape() {}
     };
 } // namespace engine::tilemap

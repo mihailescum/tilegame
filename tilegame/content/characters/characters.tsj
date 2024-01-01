@@ -281,29 +281,6 @@
                  "tileid":21
                 }],
          "id":20,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "id":2,
-             "name":"",
-             "objects":[
-                    {
-                     "height":21,
-                     "id":1,
-                     "name":"",
-                     "rotation":0,
-                     "type":"collision",
-                     "visible":true,
-                     "width":18,
-                     "x":8,
-                     "y":11
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            },
          "properties":[
                 {
                  "name":"state",

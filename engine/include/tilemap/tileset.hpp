@@ -14,7 +14,7 @@
 
 namespace engine::tilemap
 {
-    class Tileset : public Resource, public engine::graphics::SpriteSheet
+    class Tileset : public engine::graphics::SpriteSheet
     {
     private:
         inline static const std::string NAME_COLLISION_SHAPE = "collision";
