@@ -141,7 +141,7 @@ namespace tilegame::systems
         const glm::vec2 position = generate_random_position(emitter_shape) + emmiter_transform.position;
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
-        const engine::Rectangle source_rect(0, 0, 64, 64);
+        const engine::Rectangle source_rect(glm::vec2(0.0, 0.0), glm::vec2(64.0, 64.0));
 
         // Get entity and update components
         const auto new_particle = pool.container[pool.first_dead_particle++];

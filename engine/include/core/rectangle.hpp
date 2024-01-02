@@ -15,13 +15,12 @@ namespace engine
     {
     public:
         static const Rectangle EMPTY;
-        GLfloat x;
-        GLfloat y;
-        GLfloat width;
-        GLfloat height;
 
-        Rectangle() : Rectangle(0.0f, 0.0f, 0.0f, 0.0f) {}
-        Rectangle(GLfloat x, GLfloat y, GLfloat width, GLfloat height) : x(x), y(y), width(width), height(height) {}
+        glm::vec2 position;
+        glm::vec2 size;
+
+        Rectangle() : Rectangle(glm::vec2(0.0), glm::vec2(0.0)) {}
+        Rectangle(const glm::vec2 &position, const glm::vec2 &size) : position(position), size(size) {}
 
         inline Shape *clone() const override { return new Rectangle(*this); }
 
@@ -31,7 +30,7 @@ namespace engine
 
         inline Rectangle operator+(const glm::vec2 &other) const
         {
-            Rectangle result(x + other.x, y + other.y, width, height);
+            Rectangle result(position + other, size);
             return result;
         }
 

@@ -16,8 +16,7 @@ namespace engine::tilemap
     class TileMap : public engine::Resource
     {
     private:
-        int _width;
-        int _height;
+        glm::ivec2 _size;
 
         std::vector<std::unique_ptr<TileLayer>> _layers;
         std::vector<std::tuple<int, int, const Tileset *>> _tilesets;

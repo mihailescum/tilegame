@@ -1,8 +1,10 @@
 #pragma once
 
-#include "glad/glad.h"
-
 #include <string>
+
+#include <glm/glm.hpp>
+
+#include "glad/glad.h"
 
 #include "resource.hpp"
 #include "log.hpp"
@@ -19,8 +21,7 @@ namespace engine
         GLint _wrapT;
         GLint _filterMin;
         GLint _filterMax;
-        int _width;
-        int _height;
+        glm::ivec2 _size;
 
     public:
         Texture2D();
@@ -40,8 +41,7 @@ namespace engine
         */
         // TODO check if this is necessary
         GLuint gl_texture() const { return _gl_texture; }
-        int width() const { return _width; }
-        int height() const { return _height; }
+        const glm::ivec2 &size() const { return _size; }
         void internal_format(GLint interal_format);
         void image_format(GLint image_format);
 

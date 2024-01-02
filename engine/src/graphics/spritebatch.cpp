@@ -39,10 +39,10 @@ namespace engine::graphics
 
         const Viewport &viewport = _graphicsdevice.viewport();
         _projection = glm::ortho(
-            static_cast<float>(viewport.x),
-            static_cast<float>(viewport.width),
-            static_cast<float>(viewport.height),
-            static_cast<float>(viewport.y),
+            static_cast<float>(viewport.position.x),
+            static_cast<float>(viewport.size.x),
+            static_cast<float>(viewport.size.y),
+            static_cast<float>(viewport.position.y),
             -1.0f,
             1.0f);
     }

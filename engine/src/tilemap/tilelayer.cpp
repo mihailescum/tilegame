@@ -4,9 +4,9 @@ namespace engine::tilemap
 {
     int TileLayer::index(int x, int y) const
     {
-        if (x >= 0 && x < _width && y >= 0 && y < _height)
+        if (x >= 0 && x < _size.x && y >= 0 && y < _size.y)
         {
-            return x + _width * y;
+            return x + _size.x * y;
         }
         else
         {

@@ -23,8 +23,8 @@ namespace engine::tilemap
         if (tson_map.getStatus() == tson::ParseStatus::OK)
         {
             const auto map_size = tson_map.getSize();
-            _width = map_size.x;
-            _height = map_size.y;
+            _size.x = map_size.x;
+            _size.y = map_size.y;
 
             parse_tilesets(tson_map, resource_manager);
             parse_layers(tson_map, resource_manager);
@@ -95,11 +95,11 @@ namespace engine::tilemap
     {
         const auto &tile_size = tson_layer.getMap()->getTileSize();
 
-        std::unique_ptr<TileLayer> tilelayer = std::make_unique<TileLayer>(_width, _height, tile_size.x, tile_size.y, z_index);
-        std::vector<int> tile_data(tilelayer->width() * tilelayer->height());
-        for (int x = 0; x < tilelayer->width(); ++x)
+        std::unique_ptr<TileLayer> tilelayer = std::make_unique<TileLayer>(_size, glm::ivec2(tile_size.x, tile_size.y), z_index);
+        std::vector<int> tile_data(tilelayer->size().x * tilelayer->size().y);
+        for (int x = 0; x < tilelayer->size().x; ++x)
         {
-            for (int y = 0; y < tilelayer->height(); ++y)
+            for (int y = 0; y < tilelayer->size().y; ++y)
             {
                 tile_data[tilelayer->index(x, y)] = get_gid_at(tson_layer, x, y);
             }

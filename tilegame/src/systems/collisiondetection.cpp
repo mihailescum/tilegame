@@ -97,9 +97,9 @@ namespace tilegame::systems
         // Near phase detection
         std::vector<std::pair<int, float>> found_collisions;
 
-        for (int x = 0; x < tilelayer().width(); x++)
+        for (int x = 0; x < tilelayer().size().x; x++)
         {
-            for (int y = 0; y < tilelayer().height(); y++)
+            for (int y = 0; y < tilelayer().size().y; y++)
             {
                 const auto &tile = tilelayer.tile_data[tilelayer().index(x, y)];
                 if (!tile.collision_shape)
@@ -115,7 +115,7 @@ namespace tilegame::systems
                     else if (const auto tile_rectangle = dynamic_cast<const engine::Rectangle *>(tile.collision_shape))
                     {
                         const auto a = *entity_circle + entity_transform.position;
-                        const auto b = *tile_rectangle + tilelayer_transform.position + glm::vec2(tile.destination_rect.x, tile.destination_rect.y);
+                        const auto b = *tile_rectangle + tilelayer_transform.position + tile.destination_rect.position;
                         // circle_aabb_detection(a, b, entity_movement.velocity);
                     }
                     else
@@ -131,7 +131,7 @@ namespace tilegame::systems
                     else if (const auto tile_rectangle = dynamic_cast<const engine::Rectangle *>(tile.collision_shape))
                     {
                         const auto a = *entity_rectangle + entity_transform.position;
-                        const auto b = *tile_rectangle + tilelayer_transform.position + glm::vec2(tile.destination_rect.x, tile.destination_rect.y);
+                        const auto b = *tile_rectangle + tilelayer_transform.position + tile.destination_rect.position;
 
                         glm::vec2 contact_normal;
                         float contact_time;
@@ -180,7 +180,7 @@ namespace tilegame::systems
                 else if (const auto tile_rectangle = dynamic_cast<const engine::Rectangle *>(tile.collision_shape))
                 {
                     const auto a = *entity_rectangle + entity_transform.position;
-                    const auto b = *tile_rectangle + tilelayer_transform.position + glm::vec2(tile.destination_rect.x, tile.destination_rect.y);
+                    const auto b = *tile_rectangle + tilelayer_transform.position + tile.destination_rect.position;
 
                     aabb_aabb_resolution(a, b, entity_movement.velocity);
                 }
@@ -203,13 +203,9 @@ namespace tilegame::systems
             return false;
         }
 
-        engine::Rectangle expanded_rect(
-            b.x - a.width / 2,
-            b.y - a.height / 2,
-            b.width + a.width,
-            b.height + a.height);
+        engine::Rectangle expanded_rect(b.position - a.size * 0.5f, b.size + a.size);
 
-        engine::Ray ray(glm::vec2(a.x + a.width / 2, a.y + a.height / 2), a_vel);
+        engine::Ray ray(a.position + a.size * 0.5f, a_vel);
 
         glm::vec2 contact_point;
         if (expanded_rect.intersects(ray, contact_point, contact_normal, contact_time))

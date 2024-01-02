@@ -2,5 +2,5 @@
 
 namespace engine
 {
-    const Point Point::ZERO(0.0f, 0.0f);
+    const Point Point::ZERO(glm::vec2(0.0));
 }

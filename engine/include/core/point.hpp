@@ -11,11 +11,10 @@ namespace engine
     struct Point : public Shape
     {
     public:
-        Point() : Point(0.0f, 0.0f) {}
-        Point(GLfloat x, GLfloat y) : x(x), y(y) {}
+        Point() : Point(glm::vec2(0.0)) {}
+        Point(const glm::vec2 &position) : position(position) {}
 
-        GLfloat x;
-        GLfloat y;
+        glm::vec2 position;
 
         inline Shape *clone() const override { return new Point(*this); }
 
@@ -23,7 +22,7 @@ namespace engine
 
         inline Point operator+(const glm::vec2 &other) const
         {
-            Point result(x + other.x, y + other.y);
+            Point result(position + other);
             return result;
         }
 
@@ -31,11 +30,6 @@ namespace engine
         {
             Point result = *this + (-other);
             return result;
-        }
-
-        operator glm::vec2() const
-        {
-            return glm::vec2(x, y);
         }
     };
 } // namespace engine

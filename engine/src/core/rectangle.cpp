@@ -2,18 +2,18 @@
 
 namespace engine
 {
-    const Rectangle Rectangle::EMPTY(0.0f, 0.0f, 0.0f, 0.0f);
+    const Rectangle Rectangle::EMPTY(glm::vec2(0.0), glm::vec2(0.0));
 
     bool Rectangle::intersects(const Rectangle &other) const
     {
-        return (x < other.x + other.width && x + width > other.x) &&
-               (y < other.y + other.height && y + height > other.y);
+        return (position.x < other.position.x + other.size.x && position.x + size.x > other.position.x) &&
+               (position.y < other.position.y + other.size.y && position.y + size.y > other.position.y);
     }
 
     bool Rectangle::intersects(const Point &point) const
     {
-        return (point.x > x && point.x < x + width) &&
-               (point.y > y && point.y < y + height);
+        return (point.position.x > position.x && point.position.x < position.x + size.x) &&
+               (point.position.y > position.y && point.position.y < position.y + size.y);
     }
 
     bool Rectangle::intersects(const Ray &ray, glm::vec2 &contact_point, glm::vec2 &contact_normal, float &t_hit_near) const
@@ -76,12 +76,9 @@ namespace engine
             David Barr, aka javidx9, ©OneLoneCoder 2018, 2019, 2020
         */
 
-        glm::vec2 pos(x, y);
-        glm::vec2 size(width, height);
-
         glm::vec2 inv_div = glm::vec2(1.0) / ray.direction;
-        glm::vec2 t_near = (pos - ray.origin) * inv_div;
-        glm::vec2 t_far = (pos + size - ray.origin) * inv_div;
+        glm::vec2 t_near = (position - ray.origin) * inv_div;
+        glm::vec2 t_far = (position + size - ray.origin) * inv_div;
 
         if (std::isnan(t_far.y) || std::isnan(t_far.x))
         {

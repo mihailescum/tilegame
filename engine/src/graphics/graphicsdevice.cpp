@@ -5,7 +5,7 @@
 
 namespace engine::graphics
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(0, 0, window.width(), window.height()), _clear_mask(0)
+    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(glm::ivec2(0), window.size()), _clear_mask(0)
     {
     }
 
@@ -32,7 +32,7 @@ namespace engine::graphics
     void GraphicsDevice::viewport(const Viewport &viewport)
     {
         _viewport = viewport;
-        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+        glViewport(viewport.position.x, viewport.position.y, viewport.size.x, viewport.size.y);
     }
 
     void GraphicsDevice::clear(const Color &color) const

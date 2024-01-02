@@ -96,7 +96,7 @@ namespace engine::tilemap
         std::unique_ptr<const Shape> result;
         if (object.isPoint())
         {
-            result = std::make_unique<engine::Point>(position.x, position.y);
+            result = std::make_unique<engine::Point>(glm::vec2(position.x, position.y));
         }
         else if (object.isEllipse())
         {
@@ -113,7 +113,7 @@ namespace engine::tilemap
         }
         else // object is Rectangle
         {
-            result = std::make_unique<engine::Rectangle>(position.x, position.y, size.x, size.y);
+            result = std::make_unique<engine::Rectangle>(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y));
         }
 
         return result;

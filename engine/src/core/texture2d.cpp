@@ -58,12 +58,11 @@ namespace engine
 
     void Texture2D::create_texture_from_raw_data(int width, int height, unsigned char *data)
     {
-        _width = width;
-        _height = height;
+        _size = glm::ivec2(width, height);
 
         glGenTextures(1, &_gl_texture);
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _imageFormat, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, width, height, 0, _imageFormat, GL_UNSIGNED_BYTE, data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrapS);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrapT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filterMin);

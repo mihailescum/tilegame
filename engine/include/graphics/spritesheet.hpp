@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <string>
 
+#include <glm/glm.hpp>
+
 #include "tileson/tileson.hpp"
 
 #include "core/resource.hpp"
@@ -17,15 +19,14 @@ namespace engine::graphics
     class SpriteSheet : public Resource
     {
     protected:
-        int _tile_width;
-        int _tile_height;
+        glm::ivec2 _tile_size;
         Texture2D *_texture;
 
         std::unordered_map<std::string, Sprite> _sprites;
 
     public:
-        SpriteSheet() : SpriteSheet(nullptr, 0, 0) {}
-        SpriteSheet(engine::Texture2D *texture, int tile_width, int tile_height) : _texture(texture), _tile_width(tile_width), _tile_height(tile_height) {}
+        SpriteSheet() : SpriteSheet(nullptr, glm::ivec2(0)) {}
+        SpriteSheet(engine::Texture2D *texture, const glm::ivec2 &tile_size) : _texture(texture), _tile_size(tile_size) {}
 
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
@@ -39,7 +40,6 @@ namespace engine::graphics
         const Texture2D &texture() const;
         Texture2D &texture();
 
-        int tile_width() const { return _tile_width; }
-        int tile_height() const { return _tile_height; }
+        const glm::ivec2 &tile_size() const { return _tile_size; }
     };
 } // namespace engine::graphics

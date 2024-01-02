@@ -128,8 +128,7 @@ namespace engine
     void Game::resize(int width, int height)
     {
         Viewport currentViewport = _graphicsdevice.viewport();
-        currentViewport.width = width;
-        currentViewport.height = height;
+        currentViewport.size = glm::ivec2(width, height);
         _graphicsdevice.viewport(currentViewport);
     }
 } // namespace engine

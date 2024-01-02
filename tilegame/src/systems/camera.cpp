@@ -61,8 +61,8 @@ namespace tilegame::systems
             float scale = camera.scale;
 
             glm::vec3 translate(
-                floor(-(position.x - camera.viewport.width / 2) * scale) / scale,
-                floor(-(position.y - camera.viewport.height / 2) * scale) / scale,
+                floor(-(position.x - camera.viewport.size.x / 2) * scale) / scale,
+                floor(-(position.y - camera.viewport.size.y / 2) * scale) / scale,
                 0.0);
 
             // TODO use patch
