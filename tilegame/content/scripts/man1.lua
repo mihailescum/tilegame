@@ -16,28 +16,27 @@ local function handle_timer_event()
 end
 
 local positions = {
-    vec2(32.0, 32.0),
-    vec2(64.0, 128.0),
-    vec2(512.0, 256.0),
-    vec2(256.0, 48.0),
-    vec2(128.0, 128.0)
+    vec2(320, 288),
+    vec2(354.0, 514),
+    vec2(546.0, 546.0),
+    vec2(512.0, 320.0),
 }
+local target = positions[1]
+local target_component = _Target(target)
+local speed_component = _Speed(300)
+_registry:emplace(man1.entity, target_component)
+_registry:emplace(man1.entity, speed_component)
 
-local function handle_target_reached_event() 
-    local current_index = -1
+local function handle_target_reached_event()
+    local current_index = 1
     while true do
-        local new_index = -1
-        repeat
-            new_index = math.random(1,5)
-        until new_index ~= current_index
-        
-        current_index = new_index
+        current_index = current_index + 1
+        if current_index > 4 then current_index = 1 end
 
         local new_target = positions[current_index]
         local target_component = _Target(new_target)
-        local velocity_component = _Velocity(300)
         _registry:emplace(man1.entity, target_component)
-        _registry:emplace(man1.entity, velocity_component)
+        _registry:emplace(man1.entity, speed_component)
 
         coroutine.yield()
     end
@@ -49,12 +48,6 @@ _registry:emplace(timer1, timer_component)
 
 _add_event_listener(_TimerEvent, handle_event, timer1)
 events[_TimerEvent.EVENT_TYPE] = coroutine.wrap(handle_timer_event)
-
-local target = vec2(16.0, 16.0)
-local target_component = _Target(target)
-local speed_component = _Speed(300)
---_registry:emplace(man1.entity, target_component)
-_registry:emplace(man1.entity, speed_component)
 
 _add_event_listener(_TargetReachedEvent, handle_event, man1.entity)
 events[_TargetReachedEvent.EVENT_TYPE] = coroutine.wrap(handle_target_reached_event)

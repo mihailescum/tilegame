@@ -5,6 +5,7 @@
 
 #include "components/player.hpp"
 #include "components/movement.hpp"
+#include "components/direction.hpp"
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
 #include "components/renderable2d.hpp"
@@ -37,7 +38,8 @@ namespace tilegame::systems
         _registry.emplace<components::Player>(_player1_entity, 1);
         _registry.emplace<components::Transform>(_player1_entity, glm::vec2(80, 80));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
-        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(0.0));
+        _registry.emplace<components::Direction>(_player1_entity);
+        _registry.emplace<components::Movement>(_player1_entity);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);
 
         // const tilegame::SceneGraphData player1_scenedata(_player1_entity);
@@ -66,12 +68,11 @@ namespace tilegame::systems
             case 1:
             {
                 glm::vec2 direction = handle_input_1();
-                direction *= velocity() * update_time.elapsed_time;
-                _registry.patch<components::Movement>(entity,
-                                                      [direction](auto &movement)
-                                                      {
-                                                          movement.velocity = direction;
-                                                      });
+                _registry.patch<components::Direction>(entity,
+                                                       [direction](auto &comp)
+                                                       {
+                                                           comp.direction = direction;
+                                                       });
             }
             break;
 

@@ -17,23 +17,6 @@ namespace tilegame::systems
 
     void Movement::initialize()
     {
-        _registry.on_construct<components::Target>().connect<&Movement::add_movement_component>(this);
-    }
-
-    void Movement::add_movement_component(entt::registry &registry, entt::entity entity)
-    {
-        auto [target, transform] = registry.get<const components::Target, const components::Transform>(entity);
-        const glm::vec2 direction = glm::normalize(target() - transform.position);
-        registry.emplace_or_replace<components::Movement>(entity, direction);
-
-        if (!target.start)
-        {
-            registry.patch<components::Target>(entity,
-                                               [transform](auto &target_component)
-                                               {
-                                                   target_component.start = transform.position;
-                                               });
-        }
     }
 
     void Movement::update(const engine::GameTime &update_time)
@@ -63,14 +46,12 @@ namespace tilegame::systems
 
     void Movement::check_target_reached()
     {
-        auto view = _registry.view<components::Transform, const components::Target, components::Movement>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<components::Transform, const components::Target>(entt::exclude<components::Inactive>);
 
-        for (auto &&[entity, transform, target, movement] : view.each())
+        for (auto &&[entity, transform, target] : view.each())
         {
-            const auto direction_movement = movement.velocity;
-            const auto direction_to_target = target() - transform.position;
-            // If we overshot the target, we clamp the position to the target
-            if (glm::dot(direction_movement, direction_to_target) < 0)
+            // If we almost hit the target, we clamp the position to the target
+            if (glm::length2(transform.position - target()) < 1e-8)
             {
                 transform.position = target();
                 _registry.patch<components::Transform>(entity);

@@ -29,7 +29,7 @@ namespace tilegame::components
                 [](const glm::vec2 &target, const glm::vec2 &start)
                 { return Target(target, start); }),
             "target", &Target::target,
-            //"start", &Target::start,
+            "start", &Target::start,
             sol::meta_function::to_string, &Target::to_string);
     }
 

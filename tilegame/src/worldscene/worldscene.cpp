@@ -16,6 +16,7 @@ namespace tilegame::worldscene
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
           _system_movement(*this, _registry),
+          _system_movement_controller(*this, _registry),
           _system_pin(*this, _registry),
           _system_animation(*this, _registry),
           _system_script(*this, _registry),
@@ -40,6 +41,7 @@ namespace tilegame::worldscene
         _system_player.initialize();
         _system_camera.initialize();
         _system_movement.initialize();
+        _system_movement_controller.initialize();
 
         _system_collision_detection.initialize();
     }
@@ -68,8 +70,10 @@ namespace tilegame::worldscene
         _system_timer.update(update_time);
         _system_particle.update(update_time);
 
-        _system_player.update(update_time);              // Can generate movement of a colliding entity
-        _system_script.update(update_time);              // Can generate movement of a colliding entity
+        _system_player.update(update_time);              // Can generate direction of a colliding entity
+        _system_script.update(update_time);              // Can generate direction of a colliding
+        _system_movement_controller.update(update_time); // Transforms directions to movement instruction
+
         _system_collision_detection.update(update_time); // Resolves all collisions on movement direction level
         _system_movement.update(update_time);            // Actually updated the positions
 
@@ -82,6 +86,7 @@ namespace tilegame::worldscene
     void WorldScene::end_update()
     {
         _system_timer.end_update();
+        _system_movement_controller.end_update();
         _system_movement.end_update();
     }
 

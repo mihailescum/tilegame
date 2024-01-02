@@ -10,6 +10,7 @@
 #include "components/speed.hpp"
 #include "components/transform.hpp"
 #include "components/pin.hpp"
+#include "components/direction.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -50,6 +51,7 @@ namespace tilegame::systems
         _lua().new_usertype<entt::entity>(
             "_entity", sol::no_constructor);
 
+        components::Direction::register_component(_lua());
         components::Inactive::register_component(_lua());
         components::LuaTable::register_component(_lua());
         components::Pin::register_component(_lua());

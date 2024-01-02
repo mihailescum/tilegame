@@ -13,7 +13,6 @@ namespace tilegame::systems
     private:
         void apply_movement(const engine::GameTime &update_time);
         void check_target_reached();
-        void add_movement_component(entt::registry &registry, entt::entity entity);
 
     public:
         Movement(tilegame::Scene &scene, entt::registry &registry);

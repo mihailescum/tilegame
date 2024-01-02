@@ -278,6 +278,30 @@
                  "tileid":21
                 }],
          "id":20,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "ellipse":true,
+                     "height":20,
+                     "id":1,
+                     "name":"",
+                     "rotation":0,
+                     "type":"collision",
+                     "visible":true,
+                     "width":20,
+                     "x":8,
+                     "y":12
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"state",
@@ -304,7 +328,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
              "name":"",
              "objects":[
                     {

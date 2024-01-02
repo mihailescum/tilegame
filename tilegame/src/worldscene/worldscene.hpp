@@ -13,6 +13,7 @@
 #include "systems/camera.hpp"
 #include "systems/player.hpp"
 #include "systems/movement.hpp"
+#include "systems/movementcontroller.hpp"
 #include "systems/pin.hpp"
 #include "systems/animation.hpp"
 #include "systems/script.hpp"
@@ -38,6 +39,7 @@ namespace tilegame::worldscene
         systems::Camera _system_camera;
         systems::Player _system_player;
         systems::Movement _system_movement;
+        systems::MovementController _system_movement_controller;
         systems::Pin _system_pin;
         systems::Animation _system_animation;
         systems::Script _system_script;

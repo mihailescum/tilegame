@@ -19,6 +19,7 @@
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/speed.hpp"
+#include "components/direction.hpp"
 
 namespace tilegame::systems
 {
@@ -34,11 +35,11 @@ namespace tilegame::systems
     {
         const auto &particles_texture = *_scene.game().resource_manager().load_resource<engine::Texture2D>("particles", "content/textures/particles.png");
 
-        /*auto emitter1 = _registry.create();
+        auto emitter1 = _registry.create();
         _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150));
         _registry.emplace<components::Shape>(emitter1,
                                              components::Shape(
-                                                 std::make_unique<engine::Rectangle>(-200, -50, 400, 100)));
+                                                 std::make_unique<engine::Rectangle>(glm::vec2(-200, -50), glm::vec2(400, 100))));
         _registry.emplace<components::ParticleEmitter>(emitter1,
                                                        components::ParticleEmitter(
                                                            20,
@@ -50,7 +51,7 @@ namespace tilegame::systems
                                                            engine::Color(1.0, 0.0, 1.0, 1.0)));
         _registry.emplace<components::ParticlePool>(emitter1, components::ParticlePool());
         _registry.emplace<components::Renderable2D>(emitter1);
-        _registry.emplace<components::Ordering>(emitter1, 100.0);*/
+        _registry.emplace<components::Ordering>(emitter1, 100.0);
 
         // const tilegame::SceneGraphData emitter1_scenedata(emitter1);
         // tilegame::SceneGraphNode &emitter1_scenenode = _scene.scene_graph_root().add_child(emitter1_scenedata);
@@ -147,11 +148,11 @@ namespace tilegame::systems
         const auto new_particle = pool.container[pool.first_dead_particle++];
 
         _registry.remove<components::Inactive>(new_particle);
-        /*_registry.patch<components::Movement>(new_particle,
-                                              [&direction](auto &movement)
-                                              {
-                                                  movement.velocity = direction;
-                                              });*/
+        _registry.patch<components::Direction>(new_particle,
+                                               [&direction](auto &comp)
+                                               {
+                                                   comp.direction = direction;
+                                               });
         _registry.patch<components::Speed>(new_particle,
                                            [&speed](auto &comp)
                                            {
@@ -201,6 +202,7 @@ namespace tilegame::systems
                 pool.container[i] = new_particle;
 
                 _registry.emplace<components::Inactive>(new_particle);
+                _registry.emplace<components::Direction>(new_particle);
                 _registry.emplace<components::Movement>(new_particle);
                 _registry.emplace<components::Speed>(new_particle);
                 _registry.emplace<components::Particle>(new_particle);
