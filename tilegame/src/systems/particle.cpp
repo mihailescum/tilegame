@@ -4,7 +4,7 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-#include "math.hpp"
+#include "math_helper.hpp"
 #include "helper.hpp"
 
 #include "components/particleemitter.hpp"
