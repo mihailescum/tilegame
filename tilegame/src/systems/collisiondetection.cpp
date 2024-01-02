@@ -294,7 +294,7 @@ namespace tilegame::systems
         if (overlap > 0)
         {
             contact_normal = glm::normalize(ray_to_neares_point);
-            contact_time = overlap;
+            contact_time = 1 - overlap / a.radius;
             return true;
         }
         return false;
@@ -311,7 +311,7 @@ namespace tilegame::systems
         float contact_time;
         if (circle_aabb_detection(a, b, a_vel, contact_normal, contact_time))
         {
-            a_vel -= contact_normal * contact_time;
+            a_vel -= contact_normal * (1 - contact_time) * a.radius;
         }
     }
 } // namespace tilegame::systems
