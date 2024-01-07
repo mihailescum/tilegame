@@ -9,7 +9,7 @@
 
 namespace tilegame::systems
 {
-    Render::Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
+    Render::Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch<> &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
     {
     }
 
@@ -94,7 +94,7 @@ namespace tilegame::systems
                 else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
                 {
                     glm::vec2 pos = position + shape_rect->position;
-                    engine::Rectangle dest_rect(pos, shape_rect->size);
+                    engine::Rectangle dest_rect(pos, shape_rect->dimensions);
                     _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color);
                 }
             }
@@ -119,7 +119,7 @@ namespace tilegame::systems
                     else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
                     {
                         glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
-                        engine::Rectangle dest_rect(pos, shape_rect->size);
+                        engine::Rectangle dest_rect(pos, shape_rect->dimensions);
                         _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                 }
@@ -143,7 +143,7 @@ namespace tilegame::systems
     {
         const auto &position = transform.position;
         const auto &source_rect = sprite.source_rect;
-        const engine::Rectangle dest_rect(position, source_rect.size);
+        const engine::Rectangle dest_rect(position, source_rect.dimensions);
         _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
@@ -171,7 +171,7 @@ namespace tilegame::systems
 
             const auto &position = transform.position;
             const auto &source_rect = sprite.source_rect;
-            const engine::Rectangle dest_rect(position, source_rect.size);
+            const engine::Rectangle dest_rect(position, source_rect.dimensions);
             _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, particle.color);
         }
     }

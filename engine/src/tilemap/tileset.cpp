@@ -91,7 +91,7 @@ namespace engine::tilemap
     std::unique_ptr<const Shape> Tileset::parse_shape(const tson::Object &object) const
     {
         const auto &position = object.getPosition();
-        const auto &size = object.getSize();
+        const auto &dimensions = object.getSize();
 
         std::unique_ptr<const Shape> result;
         if (object.isPoint())
@@ -100,20 +100,20 @@ namespace engine::tilemap
         }
         else if (object.isEllipse())
         {
-            if (std::abs(size.x - size.y) > 1e-4) // We have a true ellipse in this case
+            if (std::abs(dimensions.x - dimensions.y) > 1e-4) // We have a true ellipse in this case
             {
                 throw "Ellipses are not supported";
             }
             else
             {
-                float radius = static_cast<float>(size.x) / 2;
+                float radius = static_cast<float>(dimensions.x) / 2;
                 glm::vec2 center(position.x + radius, position.y + radius);
                 result = std::make_unique<engine::Circle>(center, radius);
             }
         }
         else // object is Rectangle
         {
-            result = std::make_unique<engine::Rectangle>(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y));
+            result = std::make_unique<engine::Rectangle>(glm::vec2(position.x, position.y), glm::vec2(dimensions.x, dimensions.y));
         }
 
         return result;

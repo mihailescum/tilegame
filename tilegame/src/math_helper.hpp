@@ -9,8 +9,8 @@ namespace tilegame
 {
     inline glm::vec2 random_point_in_rectangle(const engine::Rectangle &rect)
     {
-        float x = get_random(rect.position.x, rect.position.x + rect.size.x);
-        float y = get_random(rect.position.y, rect.position.y + rect.size.y);
+        float x = get_random(rect.position.x, rect.position.x + rect.dimensions.x);
+        float y = get_random(rect.position.y, rect.position.y + rect.dimensions.y);
         return glm::vec2(x, y);
     }
 

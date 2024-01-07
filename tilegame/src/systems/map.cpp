@@ -80,12 +80,12 @@ namespace tilegame::systems
         _registry.emplace<components::Renderable2D>(entity);
 
         const auto &tiles = layer.tiles();
-        const auto &size = layer.size();
+        const auto &dimensions = layer.dimensions();
 
-        std::vector<components::TileLayer::TileData> tile_data(size.x * size.y);
-        for (int x = 0; x < size.x; ++x)
+        std::vector<components::TileLayer::TileData> tile_data(dimensions.x * dimensions.y);
+        for (int x = 0; x < dimensions.x; ++x)
         {
-            for (int y = 0; y < size.y; ++y)
+            for (int y = 0; y < dimensions.y; ++y)
             {
                 int index = layer.index(x, y);
                 const auto gid = tiles[index];
@@ -100,8 +100,8 @@ namespace tilegame::systems
                         const engine::Texture2D &tileset_texture = sprite_sheet->texture();
 
                         const engine::Rectangle tile_dest_rect(
-                            glm::vec2(x * sprite_sheet->tile_size().x, y * sprite_sheet->tile_size().y),
-                            sprite_sheet->tile_size());
+                            glm::vec2(x * sprite_sheet->tile_dimensions().x, y * sprite_sheet->tile_dimensions().y),
+                            sprite_sheet->tile_dimensions());
                         const auto tile_source_rect = tileset->source_rect(tile->id);
 
                         components::TileLayer::TileData data(&tileset_texture, tile_dest_rect, tile_source_rect);

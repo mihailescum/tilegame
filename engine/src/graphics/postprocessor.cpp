@@ -76,6 +76,11 @@ namespace engine::graphics
 
     void PostProcessor::draw(const engine::GameTime &draw_time)
     {
+        if (_effects.size() == 0)
+        {
+            return;
+        }
+
         for (auto effect = _effects.begin();; ++effect)
         {
             const auto next_effect = std::next(effect);

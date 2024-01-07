@@ -17,10 +17,10 @@ namespace engine
         static const Rectangle EMPTY;
 
         glm::vec2 position;
-        glm::vec2 size;
+        glm::vec2 dimensions;
 
         Rectangle() : Rectangle(glm::vec2(0.0), glm::vec2(0.0)) {}
-        Rectangle(const glm::vec2 &position, const glm::vec2 &size) : position(position), size(size) {}
+        Rectangle(const glm::vec2 &position, const glm::vec2 &dimensions) : position(position), dimensions(dimensions) {}
 
         inline Shape *clone() const override { return new Rectangle(*this); }
 
@@ -30,7 +30,7 @@ namespace engine
 
         inline Rectangle operator+(const glm::vec2 &other) const
         {
-            Rectangle result(position + other, size);
+            Rectangle result(position + other, dimensions);
             return result;
         }
 

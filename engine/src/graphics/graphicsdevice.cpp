@@ -5,7 +5,7 @@
 
 namespace engine::graphics
 {
-    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(glm::ivec2(0), window.size()), _clear_mask(0)
+    GraphicsDevice::GraphicsDevice(const Window &window) : _viewport(glm::ivec2(0), window.dimensions()), _clear_mask(0)
     {
     }
 
@@ -21,7 +21,7 @@ namespace engine::graphics
         }
 
         viewport(_viewport);
-        glDisable(GL_CULL_FACE);
+        // glDisable(GL_CULL_FACE);
         // glEnable(GL_DEPTH_TEST);
         // glEnable(GL_CULL_FACE);
         // glCullFace(GL_BACK);
@@ -32,7 +32,7 @@ namespace engine::graphics
     void GraphicsDevice::viewport(const Viewport &viewport)
     {
         _viewport = viewport;
-        glViewport(viewport.position.x, viewport.position.y, viewport.size.x, viewport.size.y);
+        glViewport(viewport.position.x, viewport.position.y, viewport.dimensions.x, viewport.dimensions.y);
     }
 
     void GraphicsDevice::clear(const Color &color) const

@@ -58,7 +58,7 @@ namespace engine
 
     void Texture2D::create_texture_from_raw_data(int width, int height, unsigned char *data)
     {
-        _size = glm::ivec2(width, height);
+        _dimensions = glm::ivec2(width, height);
 
         glGenTextures(1, &_gl_texture);
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
@@ -74,8 +74,13 @@ namespace engine
 
     void Texture2D::use(GLenum unit) const
     {
+        use(_gl_texture, unit);
+    }
+
+    void Texture2D::use(native_type gl_texture, GLenum unit)
+    {
         glActiveTexture(GL_TEXTURE0 + unit);
-        glBindTexture(GL_TEXTURE_2D, _gl_texture);
+        glBindTexture(GL_TEXTURE_2D, gl_texture);
     }
 
     void Texture2D::internal_format(GLint internalFormat) { _internalFormat = internalFormat; }

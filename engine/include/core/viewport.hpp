@@ -12,10 +12,10 @@ namespace engine
     {
     public:
         Viewport() : Viewport(glm::ivec2(0), glm::ivec2(0)) {}
-        Viewport(const Rectangle &rect) : Viewport(rect.position, rect.size) {}
-        Viewport(const glm::ivec2 &position, const glm::ivec2 &size) : position(position), size(size) {}
+        Viewport(const Rectangle &rect) : Viewport(rect.position, rect.dimensions) {}
+        Viewport(const glm::ivec2 &position, const glm::ivec2 &dimensions) : position(position), dimensions(dimensions) {}
 
         glm::ivec2 position;
-        glm::ivec2 size;
+        glm::ivec2 dimensions;
     };
 } // namespace engine

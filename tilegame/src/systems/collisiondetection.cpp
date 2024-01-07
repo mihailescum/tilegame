@@ -38,9 +38,9 @@ namespace tilegame::systems
 
         const auto entity_circle = dynamic_cast<const engine::Circle *>(entity_collider.shape.get());
         auto entity_rectangle = dynamic_cast<const engine::Rectangle *>(entity_collider.shape.get());
-        for (int x = 0; x < tilelayer().size().x; x++)
+        for (int x = 0; x < tilelayer().dimensions().x; x++)
         {
-            for (int y = 0; y < tilelayer().size().y; y++)
+            for (int y = 0; y < tilelayer().dimensions().y; y++)
             {
                 const auto &tile = tilelayer.tile_data[tilelayer().index(x, y)];
                 if (!tile.collision_shape)
@@ -204,9 +204,9 @@ namespace tilegame::systems
             return false;
         }
 
-        engine::Rectangle expanded_rect(b.position - a.size * 0.5f, b.size + a.size);
+        engine::Rectangle expanded_rect(b.position - a.dimensions * 0.5f, b.dimensions + a.dimensions);
 
-        engine::Ray ray(a.position + a.size * 0.5f, a_vel);
+        engine::Ray ray(a.position + a.dimensions * 0.5f, a_vel);
 
         glm::vec2 contact_point;
         if (expanded_rect.intersects(ray, contact_point, contact_normal, contact_time))
@@ -296,8 +296,8 @@ namespace tilegame::systems
 
         glm::vec2 potential_position = a.origin + a_vel;
         glm::vec2 nearest_point;
-        nearest_point.x = std::max(b.position.x, std::min(potential_position.x, b.position.x + b.size.x));
-        nearest_point.y = std::max(b.position.y, std::min(potential_position.y, b.position.y + b.size.y));
+        nearest_point.x = std::max(b.position.x, std::min(potential_position.x, b.position.x + b.dimensions.x));
+        nearest_point.y = std::max(b.position.y, std::min(potential_position.y, b.position.y + b.dimensions.y));
 
         glm::vec2 ray_to_neares_point = nearest_point - potential_position;
         float overlap = a.radius - glm::length(ray_to_neares_point);

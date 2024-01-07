@@ -15,6 +15,7 @@
 #include "core/shader.hpp"
 #include "core/shape.hpp"
 #include "core/texture2d.hpp"
+#include "core/texture2dcontainer.hpp"
 #include "core/viewport.hpp"
 #include "core/window.hpp"
 

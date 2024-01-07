@@ -14,7 +14,7 @@ namespace engine
         GLFWwindow *_native_window;
 
         std::string _title;
-        glm::ivec2 _size;
+        glm::ivec2 _dimensions;
         bool _resizable;
 
     public:
@@ -38,7 +38,7 @@ namespace engine
         void resizable(bool resizable);
         std::string title() const;
         void title(const std::string &title);
-        const glm::ivec2 &size() const { return _size; }
+        const glm::ivec2 &dimensions() const { return _dimensions; }
         /*
             Set the dimensions of the window. Passing negative values will leave the properties unchanged
         */

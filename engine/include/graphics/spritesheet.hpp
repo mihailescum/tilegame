@@ -19,14 +19,14 @@ namespace engine::graphics
     class SpriteSheet : public Resource
     {
     protected:
-        glm::ivec2 _tile_size;
+        glm::ivec2 _tile_dimensions;
         Texture2D *_texture;
 
         std::unordered_map<std::string, Sprite> _sprites;
 
     public:
         SpriteSheet() : SpriteSheet(nullptr, glm::ivec2(0)) {}
-        SpriteSheet(engine::Texture2D *texture, const glm::ivec2 &tile_size) : _texture(texture), _tile_size(tile_size) {}
+        SpriteSheet(engine::Texture2D *texture, const glm::ivec2 &tile_dimensions) : _texture(texture), _tile_dimensions(tile_dimensions) {}
 
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
@@ -40,6 +40,6 @@ namespace engine::graphics
         const Texture2D &texture() const;
         Texture2D &texture();
 
-        const glm::ivec2 &tile_size() const { return _tile_size; }
+        const glm::ivec2 &tile_dimensions() const { return _tile_dimensions; }
     };
 } // namespace engine::graphics

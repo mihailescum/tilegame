@@ -32,8 +32,8 @@ namespace engine::graphics
 
     void SpriteSheet::parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager)
     {
-        _tile_size.x = tson_tileset.getTileSize().x;
-        _tile_size.y = tson_tileset.getTileSize().y;
+        _tile_dimensions.x = tson_tileset.getTileSize().x;
+        _tile_dimensions.y = tson_tileset.getTileSize().y;
 
         const auto texture_path = tson_tileset.getFullImagePath();
         const auto texture_name = texture_path.filename();
@@ -60,10 +60,10 @@ namespace engine::graphics
     {
         assert(id >= 0);
 
-        int x = (id % (_texture->size().x / _tile_size.x)) * _tile_size.x;
-        int y = (id / (_texture->size().x / _tile_size.x)) * _tile_size.x;
+        int x = (id % (_texture->dimensions().x / _tile_dimensions.x)) * _tile_dimensions.x;
+        int y = (id / (_texture->dimensions().x / _tile_dimensions.x)) * _tile_dimensions.x;
 
-        engine::Rectangle result(glm::vec2(x, y), _tile_size);
+        engine::Rectangle result(glm::vec2(x, y), _tile_dimensions);
         return result;
     }
 

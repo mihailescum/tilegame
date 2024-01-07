@@ -186,17 +186,17 @@ namespace tilegame::systems
 
     bool Particle::grow_pool(const entt::entity emitter_entity, components::ParticlePool &pool, int num_new_particles)
     {
-        std::size_t old_size = pool.container.size();
-        if (pool.first_dead_particle >= old_size * pool.growth_threshold || pool.container.size() - pool.first_dead_particle < num_new_particles)
+        std::size_t old_dimensions = pool.container.size();
+        if (pool.first_dead_particle >= old_dimensions * pool.growth_threshold || pool.container.size() - pool.first_dead_particle < num_new_particles)
         {
-            std::size_t new_size = old_size * pool.growth_factor;
-            new_size = std::max(new_size, pool.first_dead_particle + num_new_particles);
+            std::size_t new_dimensions = old_dimensions * pool.growth_factor;
+            new_dimensions = std::max(new_dimensions, pool.first_dead_particle + num_new_particles);
 
-            pool.container.resize(new_size);
+            pool.container.resize(new_dimensions);
 
             // auto emitter_scenenode = _registry.get<components::SceneNode>(emitter_entity).node;
 
-            for (std::size_t i = old_size; i < new_size; ++i)
+            for (std::size_t i = old_dimensions; i < new_dimensions; ++i)
             {
                 const auto new_particle = _registry.create();
                 pool.container[i] = new_particle;

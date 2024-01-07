@@ -6,14 +6,14 @@ namespace engine
 
     bool Rectangle::intersects(const Rectangle &other) const
     {
-        return (position.x < other.position.x + other.size.x && position.x + size.x > other.position.x) &&
-               (position.y < other.position.y + other.size.y && position.y + size.y > other.position.y);
+        return (position.x < other.position.x + other.dimensions.x && position.x + dimensions.x > other.position.x) &&
+               (position.y < other.position.y + other.dimensions.y && position.y + dimensions.y > other.position.y);
     }
 
     bool Rectangle::intersects(const Point &point) const
     {
-        return (point.position.x > position.x && point.position.x < position.x + size.x) &&
-               (point.position.y > position.y && point.position.y < position.y + size.y);
+        return (point.position.x > position.x && point.position.x < position.x + dimensions.x) &&
+               (point.position.y > position.y && point.position.y < position.y + dimensions.y);
     }
 
     bool Rectangle::intersects(const Ray &ray, glm::vec2 &contact_point, glm::vec2 &contact_normal, float &t_hit_near) const
@@ -78,7 +78,7 @@ namespace engine
 
         glm::vec2 inv_div = glm::vec2(1.0) / ray.direction;
         glm::vec2 t_near = (position - ray.origin) * inv_div;
-        glm::vec2 t_far = (position + size - ray.origin) * inv_div;
+        glm::vec2 t_far = (position + dimensions - ray.origin) * inv_div;
 
         if (std::isnan(t_far.y) || std::isnan(t_far.x))
         {
