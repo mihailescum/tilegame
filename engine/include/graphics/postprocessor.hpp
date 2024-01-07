@@ -9,6 +9,7 @@
 #include "core/texture2d.hpp"
 #include "core/shader.hpp"
 #include "graphics/graphicsdevice.hpp"
+#include "graphics/postprocessingeffect.hpp"
 
 // See here for a reference tutorial: https://learnopengl.com/In-Practice/2D-Game/Postprocessing
 
@@ -17,32 +18,22 @@ namespace engine::graphics
     class PostProcessor
     {
     private:
-        // Since we allow multiple effects, we need to use multibuffering
-        static const short NUM_BUFFERS = 2;
-        std::array<GLuint, NUM_BUFFERS> _msfbo, _fbo; // MSFBO = Multisampled FBO. FBO is regular, used for blitting MS color-buffer to texture
-        std::array<GLuint, NUM_BUFFERS> _rbo;         // RBO is used for multisampled color buffer
         GLuint _vao;
+        std::vector<PostProcessingEffect> _effects;
 
-        short _current_pass;
-
-        std::array<engine::Texture2D, NUM_BUFFERS> _texture;
-        std::vector<engine::Shader *> _shaders;
         graphics::GraphicsDevice &_graphicsdevice;
-
-        int generate_buffers();
-        int initialize_rbo();
-        int initialize_fbo();
         int initialize_vao();
+        void activate_color_attachements(const PostProcessingEffect &effect) const;
 
     public:
-        PostProcessor(graphics::GraphicsDevice &graphicsdevice) : _graphicsdevice(graphicsdevice), _current_pass(0) {}
+        PostProcessor(graphics::GraphicsDevice &graphicsdevice) : _graphicsdevice(graphicsdevice) {}
 
         int initialize();
         void begin();
         void end();
         void draw(const engine::GameTime &draw_time);
 
-        const std::vector<engine::Shader *> &shaders() const { return _shaders; }
-        std::vector<engine::Shader *> &shaders() { return _shaders; }
+        const std::vector<PostProcessingEffect> &effects() const { return _effects; }
+        std::vector<PostProcessingEffect> &effects() { return _effects; }
     };
 } // namespace engine::graphics

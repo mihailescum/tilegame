@@ -7,91 +7,11 @@ namespace engine::graphics
 {
     int PostProcessor::initialize()
     {
-        if (!generate_buffers())
-        {
-            return 0;
-        }
-        if (!initialize_rbo())
-        {
-            return 0;
-        }
-        if (!initialize_fbo())
-        {
-            return 0;
-        }
         if (!initialize_vao())
         {
             return 0;
         }
 
-        return 1;
-    }
-
-    int PostProcessor::generate_buffers()
-    {
-        // initialize renderbuffer/framebuffer objects
-        for (std::size_t i = 0; i < NUM_BUFFERS; ++i)
-        {
-            glGenFramebuffers(1, &_msfbo[i]);
-            glCheckError();
-            glGenFramebuffers(1, &_fbo[i]);
-            glCheckError();
-            glGenRenderbuffers(1, &_rbo[i]);
-            glCheckError();
-        }
-
-        return 1;
-    }
-
-    int PostProcessor::initialize_rbo()
-    {
-        const auto &size = _graphicsdevice.viewport().size;
-
-        GLint max_samples;
-        glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-        glCheckError();
-
-        // initialize renderbuffer storage with a multisampled color buffer (don't need a depth/stencil buffer)
-        for (std::size_t i = 0; i < NUM_BUFFERS; ++i)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, _msfbo[i]);
-            glCheckError();
-            glBindRenderbuffer(GL_RENDERBUFFER, _rbo[i]);
-            glCheckError();
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER, max_samples, GL_RGB, size.x, size.y); // allocate storage for render buffer object
-            glCheckError();
-
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _rbo[i]); // attach MS render buffer object to framebuffer
-            glCheckError();
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            {
-                Log::e("ERROR::POSTPROCESSOR: Failed to initialize MSFBO");
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    int PostProcessor::initialize_fbo()
-    {
-        const auto &size = _graphicsdevice.viewport().size;
-
-        // also initialize the FBOs/textures to blit multisampled color-buffer to; used for shader operations (for postprocessing effects)
-        for (std::size_t i = 0; i < NUM_BUFFERS; ++i)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, _fbo[i]);
-            glCheckError();
-            _texture[i].create_texture_from_raw_data(size.x, size.y, NULL);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture[i].gl_texture(), 0); // attach texture to framebuffer as its color attachment
-            glCheckError();
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            {
-                Log::e("ERROR::POSTPROCESSOR: Failed to initialize FBO");
-                return 0;
-            }
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glCheckError();
-        }
         return 1;
     }
 
@@ -136,49 +56,38 @@ namespace engine::graphics
 
     void PostProcessor::begin()
     {
-        if (_current_pass == _shaders.size())
+        const auto first_effect = _effects.begin();
+        if (first_effect == _effects.end())
         {
             return;
         }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, _msfbo[_current_pass & 1]); // fast mod 2
-        glCheckError();
+        first_effect->activate_render_target();
     }
 
     void PostProcessor::end()
     {
-        if (_current_pass == _shaders.size())
+        const auto first_effect = _effects.begin();
+        if (first_effect == _effects.end())
         {
             return;
         }
-
-        const auto &size = _graphicsdevice.viewport().size;
-
-        // now resolve multisampled color-buffer into intermediate FBO to store to texture
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, _msfbo[_current_pass & 1]);
-        glCheckError();
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo[_current_pass & 1]);
-        glCheckError();
-        glBlitFramebuffer(0, 0, size.x, size.y, 0, 0, size.x, size.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        glCheckError();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); // binds both READ and WRITE framebuffer to default framebuffer
-        glCheckError();
+        first_effect->copy_target_to_texture();
     }
 
     void PostProcessor::draw(const engine::GameTime &draw_time)
     {
-        for (auto s : _shaders)
+        for (auto effect = _effects.begin();; ++effect)
         {
-            _current_pass++;
+            const auto next_effect = std::next(effect);
+            if (next_effect != _effects.end())
+            {
+                effect->activate_render_target();
+            }
 
-            begin();
-
-            // activate shader
-            s->use();
+            effect->shader().use();
+            effect->use_input_textures();
 
             // render textured quad
-            _texture[(_current_pass - 1) & 1].use(0);
-
             glBindVertexArray(_vao);
             glCheckError();
             glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -186,9 +95,18 @@ namespace engine::graphics
             glBindVertexArray(0);
             glCheckError();
 
-            end();
+            if (next_effect != _effects.end())
+            {
+                effect->copy_target_to_texture();
+            }
+            else
+            {
+                break;
+            }
         }
+    }
 
-        _current_pass = 0;
+    void PostProcessor::activate_color_attachements(const PostProcessingEffect &effect) const
+    {
     }
 } // namespace engine::graphics

@@ -28,7 +28,7 @@ namespace tilegame::systems
     const entt::entity Map::create_map_entity(const engine::tilemap::TileMap &map)
     {
         const auto entity = _registry.create();
-        _registry.emplace<components::TileMap>(entity, map);
+        _registry.emplace<components::TileMap>(entity, std::ref(map));
         _registry.emplace<components::Transform>(entity, glm::vec2(0.0));
 
         // const tilegame::SceneGraphData map_scenedata(entity);
@@ -120,7 +120,7 @@ namespace tilegame::systems
                 }
             }
         }
-        _registry.emplace<components::TileLayer>(entity, layer, tile_data);
+        _registry.emplace<components::TileLayer>(entity, std::ref(layer), tile_data);
 
         return entity;
     }
@@ -128,7 +128,7 @@ namespace tilegame::systems
     const entt::entity Map::create_tileset_entity(const engine::tilemap::Tileset &tileset)
     {
         const auto entity = _registry.create();
-        _registry.emplace<components::Tileset>(entity, tileset);
+        _registry.emplace<components::Tileset>(entity, std::ref(tileset));
 
         return entity;
     }

@@ -22,7 +22,7 @@ namespace tilegame::systems
     private:
         static const int DAY_DURATION = 86400;
 
-        engine::Shader *_shader;
+        engine::Shader *_daytime_shader;
 
         std::vector<TimeOfDayMark> _times_of_day;
         std::vector<TimeOfDayMark>::iterator _now_mark;

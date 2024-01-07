@@ -29,7 +29,7 @@ namespace tilegame::systems
         }
     }
 
-    void CollisionDetection::entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform)
+    void CollisionDetection::entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform) const
     {
         // Broad phase detection
 
@@ -80,6 +80,15 @@ namespace tilegame::systems
                 }
                 else if (entity_circle && tile_circle)
                 {
+                    const auto a = *entity_circle + entity_transform.position;
+                    const auto b = *tile_circle + tilelayer_transform.position + tile.destination_rect.position;
+
+                    glm::vec2 contact_normal;
+                    float contact_time;
+                    if (circle_circle_detection(a, b, entity_movement.velocity, contact_normal, contact_time))
+                    {
+                        found_collisions.push_back({tilelayer().index(x, y), contact_time});
+                    }
                 }
                 else
                 {
@@ -116,6 +125,10 @@ namespace tilegame::systems
             }
             else if (entity_circle && tile_circle)
             {
+                const auto a = *entity_circle + entity_transform.position;
+                const auto b = *tile_circle + tilelayer_transform.position + tile.destination_rect.position;
+
+                circle_circle_resolution(a, b, entity_movement.velocity);
             }
             else
             {
@@ -124,7 +137,7 @@ namespace tilegame::systems
         }
     }
 
-    bool CollisionDetection::aabb_aabb_detection(const engine::Rectangle &a, const engine::Rectangle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time)
+    bool CollisionDetection::aabb_aabb_detection(const engine::Rectangle &a, const engine::Rectangle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time) const
     {
         /*  We implement a sweaped AABB collision detection/resolution system based on
             the video 'Arbitrary Rectangle Collision Detection & Resolution - Complete!' by 'javidx9'
@@ -206,7 +219,7 @@ namespace tilegame::systems
         }
     }
 
-    void CollisionDetection::aabb_aabb_resolution(const engine::Rectangle &a, const engine::Rectangle &b, glm::vec2 &a_vel)
+    void CollisionDetection::aabb_aabb_resolution(const engine::Rectangle &a, const engine::Rectangle &b, glm::vec2 &a_vel) const
     {
         if (a_vel.x == 0.0 && a_vel.y == 0.0)
         {
@@ -222,7 +235,7 @@ namespace tilegame::systems
         }
     }
 
-    bool CollisionDetection::circle_aabb_detection(const engine::Circle &a, const engine::Rectangle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time)
+    bool CollisionDetection::circle_aabb_detection(const engine::Circle &a, const engine::Rectangle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time) const
     {
         /*  We implement a Circle AABB collision detection/resolution system (not coninuous!) based on
             the video 'Circle Vs Rectangle Collisions (and TransformedView PGEX)' by 'javidx9'
@@ -293,14 +306,14 @@ namespace tilegame::systems
 
         if (overlap > 0)
         {
-            contact_normal = glm::normalize(ray_to_neares_point);
+            contact_normal = -glm::normalize(ray_to_neares_point);
             contact_time = 1 - overlap / a.radius;
             return true;
         }
         return false;
     }
 
-    void CollisionDetection::circle_aabb_resolution(const engine::Circle &a, const engine::Rectangle &b, glm::vec2 &a_vel)
+    void CollisionDetection::circle_aabb_resolution(const engine::Circle &a, const engine::Rectangle &b, glm::vec2 &a_vel) const
     {
         if (a_vel.x == 0.0 && a_vel.y == 0.0)
         {
@@ -311,7 +324,55 @@ namespace tilegame::systems
         float contact_time;
         if (circle_aabb_detection(a, b, a_vel, contact_normal, contact_time))
         {
-            a_vel -= contact_normal * (1 - contact_time) * a.radius;
+            a_vel += contact_normal * (1 - contact_time) * a.radius;
+        }
+    }
+
+    bool CollisionDetection::circle_circle_detection(const engine::Circle &a, const engine::Circle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time) const
+    {
+        if (a_vel.x == 0.0 && a_vel.y == 0.0)
+        {
+            return false;
+        }
+
+        float R = a.radius + b.radius;
+        glm::vec2 distance = a.origin - b.origin;
+        float distance_dot_v = glm::dot(distance, a_vel);
+
+        float discriminant = distance_dot_v * distance_dot_v + glm::length2(a_vel) * (R * R - glm::length2(distance));
+        if (discriminant < 0)
+        {
+            return false;
+        }
+
+        float discriminant_sqrt = std::sqrt(discriminant);
+        float t_near = (-distance_dot_v - discriminant_sqrt) / glm::length2(a_vel);
+        float t_far = (-distance_dot_v + discriminant_sqrt) / glm::length2(a_vel);
+
+        if (t_near < 1.0 && t_far > 0.0)
+        {
+            contact_time = t_near;
+            contact_normal = glm::normalize(a.origin + contact_time * a_vel - b.origin);
+
+            engine::Log::d(contact_time, contact_normal.x, contact_normal.y);
+
+            return true;
+        }
+        return false;
+    }
+
+    void CollisionDetection::circle_circle_resolution(const engine::Circle &a, const engine::Circle &b, glm::vec2 &a_vel) const
+    {
+        if (a_vel.x == 0.0 && a_vel.y == 0.0)
+        {
+            return;
+        }
+
+        glm::vec2 contact_normal;
+        float contact_time;
+        if (circle_circle_detection(a, b, a_vel, contact_normal, contact_time))
+        {
+            a_vel = glm::vec2(0.0);
         }
     }
 } // namespace tilegame::systems

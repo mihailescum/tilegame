@@ -11,8 +11,8 @@ namespace tilegame::systems
     class Movement : public System
     {
     private:
-        void apply_movement(const engine::GameTime &update_time);
-        void check_target_reached();
+        void apply_movement(const engine::GameTime &update_time) const;
+        void check_target_reached() const;
 
     public:
         Movement(tilegame::Scene &scene, entt::registry &registry);

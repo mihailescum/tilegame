@@ -17,8 +17,7 @@ namespace tilegame::systems
         _times_of_day.push_back(TimeOfDayMark(22 * 3600, engine::Color(0.6, 0.6, 0.6, 1.0)));   // night
 
         _now = 43200;
-        // TODO Enable time of day
-        _speedup = 0; // 3600;
+        _speedup = 3600;
         for (_now_mark = _times_of_day.end() - 1; _now_mark != _times_of_day.begin(); --_now_mark)
         {
             if (_now >= _now_mark->start)
@@ -30,14 +29,15 @@ namespace tilegame::systems
 
     void Daytime::load_content()
     {
-        _shader = _scene.game().resource_manager().load_resource<engine::Shader>(
+        _daytime_shader = _scene.game().resource_manager().load_resource<engine::Shader>(
             "daytime_shader",
             "content/shaders/daytime",
             "content/shaders/daytime.vert", "", "content/shaders/daytime.frag");
-        _scene.game().postprocessor().shaders().push_back(_shader);
 
-        _shader->use();
-        _shader->set("scene", 0);
+        engine::graphics::PostProcessingEffect daytime_effect(_scene.game().graphics_device(), *_daytime_shader);
+        daytime_effect.add_color_attachments(1);
+        daytime_effect.input_textures().push_back(std::ref(daytime_effect.color_attachment_at(0)));
+        _scene.game().postprocessor().effects().push_back(std::move(daytime_effect));
     }
 
     void Daytime::update(const engine::GameTime &update_time)
@@ -86,7 +86,8 @@ namespace tilegame::systems
         {
             lerp_amount = static_cast<float>(_now - _now_mark->start) / (DAY_DURATION - _now_mark->start);
         }
-        _shader->use();
-        _shader->set("tint_color", static_cast<glm::vec4>(engine::Color::lerp(_now_mark->tint_color, _next_mark->tint_color, lerp_amount)));
+
+        _daytime_shader->use();
+        _daytime_shader->set("tint_color", static_cast<glm::vec4>(engine::Color::lerp(_now_mark->tint_color, _next_mark->tint_color, lerp_amount)));
     }
 } // namespace tilegame::systems

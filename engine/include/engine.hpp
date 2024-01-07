@@ -19,6 +19,7 @@
 #include "core/window.hpp"
 
 #include "graphics/graphicsdevice.hpp"
+#include "graphics/postprocessingeffect.hpp"
 #include "graphics/postprocessor.hpp"
 #include "graphics/sprite.hpp"
 #include "graphics/spriteframe.hpp"

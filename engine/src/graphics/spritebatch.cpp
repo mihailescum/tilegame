@@ -8,7 +8,7 @@
 
 namespace engine::graphics
 {
-    SpriteBatch::SpriteBatch(GraphicsDevice &graphicsDevice)
+    SpriteBatch::SpriteBatch(const GraphicsDevice &graphicsDevice)
         : _graphicsdevice(graphicsDevice),
           _num_active_sprites(0),
           _has_begun(false),

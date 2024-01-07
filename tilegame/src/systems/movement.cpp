@@ -30,7 +30,7 @@ namespace tilegame::systems
         _registry.clear<components::TargetReachedEvent>();
     }
 
-    void Movement::apply_movement(const engine::GameTime &update_time)
+    void Movement::apply_movement(const engine::GameTime &update_time) const
     {
         auto view = _registry.view<const components::Movement>(entt::exclude<components::Inactive>);
 
@@ -44,7 +44,7 @@ namespace tilegame::systems
         }
     }
 
-    void Movement::check_target_reached()
+    void Movement::check_target_reached() const
     {
         auto view = _registry.view<components::Transform, const components::Target>(entt::exclude<components::Inactive>);
 

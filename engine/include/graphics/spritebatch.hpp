@@ -27,7 +27,7 @@ namespace engine::graphics
 #include "graphics/shader/spritebatch.frag"
         };
 
-        GraphicsDevice &_graphicsdevice;
+        const GraphicsDevice &_graphicsdevice;
         GLuint _vbo;
         GLuint _vao;
         GLuint _ebo;
@@ -52,7 +52,7 @@ namespace engine::graphics
         void create_vao();
 
     public:
-        SpriteBatch(GraphicsDevice &graphics_device);
+        SpriteBatch(const GraphicsDevice &graphics_device);
         SpriteBatch(const SpriteBatch &sprite_batch) = delete;
         virtual ~SpriteBatch();
 

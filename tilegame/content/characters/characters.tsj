@@ -281,7 +281,7 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
+             "id":3,
              "name":"",
              "objects":[
                     {
@@ -290,7 +290,7 @@
                      "id":1,
                      "name":"",
                      "rotation":0,
-                     "type":"collision",
+                     "type":"",
                      "visible":true,
                      "width":20,
                      "x":8,

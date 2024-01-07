@@ -56,6 +56,7 @@ namespace engine
 
         const Window &window() const { return _window; }
         const graphics::GraphicsDevice &graphics_device() const { return _graphicsdevice; }
+        graphics::GraphicsDevice &graphics_device() { return _graphicsdevice; }
 
         ResourceManager &resource_manager() { return _resource_manager; }
         const ResourceManager &resource_manager() const { return _resource_manager; }

@@ -17,7 +17,7 @@ namespace tilegame::systems
         entt::registry &_registry;
 
         template <class Event, class EventListener = components::EventListener<Event>>
-        void raise_events()
+        void raise_events() const
         {
             const auto event_entities = _registry.view<const Event>(entt::exclude<components::Inactive>);
             const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
