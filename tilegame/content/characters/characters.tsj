@@ -4,6 +4,12 @@
  "imagewidth":256,
  "margin":0,
  "name":"characters",
+ "properties":[
+        {
+         "name":"image_luminosity",
+         "type":"file",
+         "value":"..\/textures\/sprite_sheet_32x32_luminosity.png"
+        }],
  "spacing":0,
  "tilecount":80,
  "tiledversion":"1.10.2",
@@ -281,7 +287,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":3,
              "name":"",
              "objects":[
                     {

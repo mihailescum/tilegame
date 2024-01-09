@@ -4,8 +4,6 @@
 
 #include "entt_sol/bond.hpp"
 
-#include "engine.hpp"
-
 namespace tilegame::components
 {
     std::string Inactive::to_string() const

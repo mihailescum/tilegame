@@ -46,8 +46,12 @@ namespace engine::tilemap
         {
             const std::string tileset_name = tson_tileset.getName();
 
-            // TODO Tileson does not provide access to the path, maybe backward engineer it
-            const std::filesystem::path tileset_path = "";
+            // TODO Tileson does not provide access to the path, we backward engineer it
+            std::string image_path = tson_tileset.getFullImagePath();
+            const std::string image_name = tson_tileset.getImagePath();
+            image_path.erase(image_path.rfind(image_name), image_name.size());
+
+            const std::filesystem::path tileset_path = std::filesystem::path(image_path) / (tileset_name + ".tsj");
 
             std::unique_ptr<Tileset> tileset = std::make_unique<Tileset>();
             tileset->resource_name(tileset_name);

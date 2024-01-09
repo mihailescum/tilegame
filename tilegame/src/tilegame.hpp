@@ -12,7 +12,7 @@ namespace tilegame
         int _updates = 0;
         float _timer = 0;
 
-        engine::graphics::SpriteBatch<engine::Texture2D> _spritebatch;
+        engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> _spritebatch;
         worldscene::WorldScene _worldscene;
 
     protected:
@@ -31,6 +31,6 @@ namespace tilegame
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
 
-        engine::graphics::SpriteBatch<engine::Texture2D> &spritebatch() { return _spritebatch; }
+        auto &spritebatch() { return _spritebatch; }
     };
 } // namespace tilegame

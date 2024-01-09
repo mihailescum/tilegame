@@ -33,6 +33,11 @@ namespace engine::tilemap
     {
         SpriteSheet::parse(tson_tileset, resource_manager);
 
+        // 'const_cast' is okay, because tson::Tileset::get should have been declared 'const'
+        const auto luminosity_path = const_cast<tson::Tileset &>(tson_tileset).get<std::filesystem::path>(NAME_IMAGE_LUMINOSITY);
+        const auto luminosity_name = luminosity_path.filename();
+        _luminosity_texture = resource_manager.load_resource<Texture2D>(luminosity_name, _resource_path.parent_path() / luminosity_path);
+
         const int first_gid = tson_tileset.getFirstgid();
         const int last_gid = tson_tileset.getFirstgid() + tson_tileset.getTileCount() - 1;
 
@@ -129,5 +134,22 @@ namespace engine::tilemap
         {
             return nullptr;
         }
+    }
+
+    const Texture2D &Tileset::luminosity_texture() const
+    {
+        if (_luminosity_texture)
+        {
+            return *_luminosity_texture;
+        }
+        else
+        {
+            throw "No luminosity texture";
+        }
+    }
+
+    Texture2D &Tileset::luminosity_texture()
+    {
+        return const_cast<Texture2D &>(const_cast<const Tileset *>(this)->luminosity_texture());
     }
 } //

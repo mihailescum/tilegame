@@ -39,12 +39,11 @@ namespace engine
         */
         void use(GLenum unit = 0) const;
         static void use(native_type gl_texture, GLenum unit);
-
-        native_type native() const { return _gl_texture; }
         const glm::ivec2 &dimensions() const { return _dimensions; }
         void internal_format(GLint interal_format);
         void image_format(GLint image_format);
 
+        operator native_type() const { return _gl_texture; }
         friend bool operator==(const Texture2D &lhs, const Texture2D &rhs) { return lhs._gl_texture == rhs._gl_texture; }
         friend bool operator!=(const Texture2D &lhs, const Texture2D &rhs) { return !(lhs == rhs); }
     };

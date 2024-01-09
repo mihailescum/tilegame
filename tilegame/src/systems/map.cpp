@@ -96,15 +96,15 @@ namespace tilegame::systems
                     const auto tileset = tile->tileset;
                     if (tileset)
                     {
-                        const auto sprite_sheet = tileset;
-                        const engine::Texture2D &tileset_texture = sprite_sheet->texture();
+                        const engine::Texture2D &tileset_texture = tileset->texture();
+                        const engine::Texture2D &luminosity_texture = tileset->luminosity_texture();
 
                         const engine::Rectangle tile_dest_rect(
-                            glm::vec2(x * sprite_sheet->tile_dimensions().x, y * sprite_sheet->tile_dimensions().y),
-                            sprite_sheet->tile_dimensions());
+                            glm::vec2(x * tileset->tile_dimensions().x, y * tileset->tile_dimensions().y),
+                            tileset->tile_dimensions());
                         const auto tile_source_rect = tileset->source_rect(tile->id);
 
-                        components::TileLayer::TileData data(&tileset_texture, tile_dest_rect, tile_source_rect);
+                        components::TileLayer::TileData data(engine::Texture2DContainer<2>{&tileset_texture, &luminosity_texture}, tile_dest_rect, tile_source_rect);
                         if (tile->collision_shape)
                         {
                             data.collision_shape = tile->collision_shape.get();
@@ -152,6 +152,7 @@ namespace tilegame::systems
             throw "corresponding tileset not found";
         }
         const engine::Texture2D &texture = tileset_of_sprite->texture();
+        const engine::Texture2D &luminosity_texture = tileset_of_sprite->luminosity_texture();
 
         const auto &sprite_class_name = tile->class_type;
         const auto &sprite_properties = tile->properties;
@@ -164,7 +165,7 @@ namespace tilegame::systems
         _registry.emplace<components::Ordering>(entity, 3.0);
         _registry.emplace<components::Renderable2D>(entity);
         const auto &animation_component = _registry.emplace<components::Animation>(entity, 0.0, 0, sprite_state.frames);
-        _registry.emplace<components::Sprite>(entity, &texture, animation_component.get_current_frame().source_rect);
+        _registry.emplace<components::Sprite>(entity, engine::Texture2DContainer<2>{&texture, &luminosity_texture}, animation_component.get_current_frame().source_rect);
 
         if (tile->collision_shape)
         {

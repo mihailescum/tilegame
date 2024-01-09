@@ -9,7 +9,7 @@
 
 namespace tilegame::systems
 {
-    Render::Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch<> &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
+    Render::Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> &spritebatch) : System(scene, registry), _spritebatch(spritebatch)
     {
     }
 
@@ -24,8 +24,11 @@ namespace tilegame::systems
 
     void Render::load_content()
     {
-        _rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
-        _circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
+        const engine::Texture2D *rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
+        const engine::Texture2D *circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
+
+        _rect_tex = {rect_tex, rect_tex};
+        _circle_tex = {circle_tex, circle_tex};
     }
 
     void Render::draw(const engine::GameTime &draw_time)
@@ -89,13 +92,13 @@ namespace tilegame::systems
                 {
                     glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
                     engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                    _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color);
+                    _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
                 }
                 else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
                 {
                     glm::vec2 pos = position + shape_rect->position;
                     engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                    _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color);
+                    _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color);
                 }
             }
             engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
@@ -105,7 +108,7 @@ namespace tilegame::systems
 
                 for (const auto &data : tilelayer.tile_data)
                 {
-                    if (!data.texture)
+                    if (!data.textures)
                     {
                         continue;
                     }
@@ -114,13 +117,13 @@ namespace tilegame::systems
                     {
                         glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
                         engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                        _spritebatch.draw(*_circle_tex, dest_rect, nullptr, shape_color_tiles);
+                        _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                     else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
                     {
                         glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
                         engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                        _spritebatch.draw(*_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                        _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                 }
             }
@@ -144,19 +147,19 @@ namespace tilegame::systems
         const auto &position = transform.position;
         const auto &source_rect = sprite.source_rect;
         const engine::Rectangle dest_rect(position, source_rect.dimensions);
-        _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, engine::Color::WHITE);
+        _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
     void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer) const
     {
         for (const auto &data : tilelayer.tile_data)
         {
-            if (!data.texture)
+            if (!data.textures)
             {
                 continue;
             }
 
-            _spritebatch.draw(*data.texture, data.destination_rect + transform.position, &data.source_rect, engine::Color::WHITE);
+            _spritebatch.draw(data.textures, data.destination_rect + transform.position, &data.source_rect, engine::Color::WHITE);
         }
     }
 
@@ -172,7 +175,7 @@ namespace tilegame::systems
             const auto &position = transform.position;
             const auto &source_rect = sprite.source_rect;
             const engine::Rectangle dest_rect(position, source_rect.dimensions);
-            _spritebatch.draw(*sprite.texture, dest_rect, &source_rect, particle.color);
+            _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color);
         }
     }
 }

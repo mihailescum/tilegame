@@ -4,6 +4,12 @@
  "imagewidth":3840,
  "margin":0,
  "name":"tileset1",
+ "properties":[
+        {
+         "name":"image_luminosity",
+         "type":"file",
+         "value":"..\/textures\/tileset1_32x32_luminosity.png"
+        }],
  "spacing":0,
  "tilecount":15120,
  "tiledversion":"1.10.2",
@@ -264,7 +270,6 @@
          "objectgroup":
             {
              "draworder":"index",
-             "id":2,
              "name":"",
              "objects":[
                     {

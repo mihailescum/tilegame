@@ -30,7 +30,7 @@ namespace engine::graphics
             // Set attachment on FBO
             glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
             glCheckError();
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->native(), 0); // attach texture to framebuffer as its color attachment
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, *texture, 0); // attach texture to framebuffer as its color attachment
             glCheckError();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glCheckError();

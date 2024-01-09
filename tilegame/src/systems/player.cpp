@@ -31,6 +31,7 @@ namespace tilegame::systems
         auto &resource_manager = _scene.game().resource_manager();
         const engine::tilemap::Tileset *characters = resource_manager.load_resource<engine::tilemap::Tileset>("characters", "content/characters/characters.tsj");
         const engine::Texture2D &characters_texture = characters->texture();
+        const engine::Texture2D &characters_texture_luminosity = characters->luminosity_texture();
 
         const engine::graphics::Sprite &player1_sprite = (*characters)["man"];
 
@@ -48,7 +49,7 @@ namespace tilegame::systems
 
         const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite["down_walking"].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
-        _registry.emplace<components::Sprite>(_player1_entity, &characters_texture, player1_animation_component.get_current_frame().source_rect);
+        _registry.emplace<components::Sprite>(_player1_entity, engine::Texture2DContainer<2>{&characters_texture, &characters_texture_luminosity}, player1_animation_component.get_current_frame().source_rect);
 
         const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
         if (current_animation_tile->collision_shape)

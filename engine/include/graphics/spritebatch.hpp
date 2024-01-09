@@ -74,7 +74,7 @@ namespace engine::graphics
         {
             if (_num_active_sprites >= _sprite_data.size())
             {
-                _sprite_data.push_back(SpriteData());
+                _sprite_data.push_back(SpriteData<T>());
             }
             auto &data = _sprite_data[_num_active_sprites];
             data.set(texture_data, destination_rectangle, source_rectangle, color, z);

@@ -14,7 +14,7 @@ namespace tilegame::systems
     {
     private:
         bool _needs_sorting;
-        engine::graphics::SpriteBatch<engine::Texture2D> &_spritebatch;
+        engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> &_spritebatch;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
         void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer) const;
@@ -23,11 +23,11 @@ namespace tilegame::systems
         void sort_renderables() const;
         void needs_sorting(entt::registry &, entt::entity) { _needs_sorting = true; }
 
-        engine::Texture2D *_rect_tex;
-        engine::Texture2D *_circle_tex;
+        engine::Texture2DContainer<2> _rect_tex;
+        engine::Texture2DContainer<2> _circle_tex;
 
     public:
-        Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch<engine::Texture2D> &spritebatch);
+        Render(tilegame::Scene &scene, entt::registry &registry, engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> &spritebatch);
 
         void initialize();
         void load_content();

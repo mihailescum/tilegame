@@ -25,7 +25,7 @@ namespace engine::graphics
             const Color &color,
             float z)
         {
-            native_data = texture_data.native();
+            native_data = texture_data;
 
             top_left.position.x = destination_rectangle.position.x;
             top_left.position.y = destination_rectangle.position.y;
