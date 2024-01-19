@@ -25,7 +25,7 @@ namespace tilegame::systems
             camera_entity,
             1.0,
             glm::mat4(1.0),
-            _scene.game().graphics_device().viewport());
+            _scene.game().graphicsdevice().viewport());
         _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0));
 
         entt::entity player1_entity = entt::null;

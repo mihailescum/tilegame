@@ -33,6 +33,7 @@ namespace tilegame::worldscene
     {
     private:
         entt::registry _registry;
+        engine::graphics::PostProcessor _postprocessor;
 
         systems::Render _system_render;
         systems::Map _system_map;
@@ -57,6 +58,8 @@ namespace tilegame::worldscene
         virtual void unload_content() override;
         virtual void update(const engine::GameTime &update_time) override;
         virtual void end_update() override;
+        virtual void begin_draw() override;
         virtual void draw(const engine::GameTime &draw_time) override;
+        virtual void end_draw(const engine::GameTime &draw_time) override;
     };
 } // namespace tilegame::worldscene

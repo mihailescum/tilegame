@@ -168,7 +168,7 @@ namespace tilegame::systems
         _registry.patch<components::Sprite>(new_particle,
                                             [&particles_texture, &source_rect](auto &sprite)
                                             {
-                                                sprite.textures = {&particles_texture, nullptr};
+                                                sprite.textures = {&particles_texture, &particles_texture};
                                                 sprite.source_rect = source_rect;
                                             });
         _registry.patch<components::Transform>(new_particle, [&position](auto &transform)

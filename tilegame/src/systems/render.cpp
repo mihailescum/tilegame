@@ -1,5 +1,7 @@
 #include "render.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/camera.hpp"
@@ -24,6 +26,14 @@ namespace tilegame::systems
 
     void Render::load_content()
     {
+        _spritebatch_luminosity_shader = _scene.game().resource_manager().load_resource<engine::Shader>(
+            "spritebatch_luminosity_shader",
+            "content/shaders/spritebatch_luminosity",
+            "content/shaders/spritebatch_luminosity.vert", "", "content/shaders/spritebatch_luminosity.frag");
+        _spritebatch_luminosity_shader->use();
+        _spritebatch_luminosity_shader->set("Texture", 0);
+        _spritebatch_luminosity_shader->set("TextureLuminosity", 1);
+
         const engine::Texture2D *rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
         const engine::Texture2D *circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
 
@@ -33,6 +43,8 @@ namespace tilegame::systems
 
     void Render::draw(const engine::GameTime &draw_time)
     {
+        glClearBufferfv(GL_COLOR, 0, glm::value_ptr(static_cast<glm::vec4>(engine::Color::CORNFLOWER_BLUE)));
+
         if (_needs_sorting)
         {
             sort_renderables();
@@ -48,7 +60,7 @@ namespace tilegame::systems
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {
-            _spritebatch.begin(camera.transform, true);
+            _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader);
 
             // Since Renderable2D is only a tag, it does not show up in the view
             for (const auto &&[render_entity, transform] : view_renderable.each())

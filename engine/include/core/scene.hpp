@@ -32,6 +32,6 @@ namespace engine
         virtual void end_update(){};
         virtual void draw(const engine::GameTime &draw_time){};
         virtual void begin_draw(){};
-        virtual void end_draw(){};
+        virtual void end_draw(const engine::GameTime &draw_time){};
     };
 }

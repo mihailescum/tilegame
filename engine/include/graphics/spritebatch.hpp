@@ -36,7 +36,8 @@ namespace engine::graphics
         GLuint _vao;
         GLuint _ebo;
 
-        Shader _shader;
+        Shader _default_shader;
+        Shader *_active_shader;
 
         glm::mat4 _wvp;
         glm::mat4 _projection;
@@ -53,10 +54,10 @@ namespace engine::graphics
             typename T::native_type active_texture_data;
             std::size_t batch_size = update_vbo(active_texture_data);
 
-            _shader.use();
+            _active_shader->use();
 
             T::use(active_texture_data, 0);
-            _shader.set("WVP", _wvp);
+            _active_shader->set("WVP", _wvp);
 
             glBindVertexArray(_vao);
             glCheckError();
@@ -226,10 +227,10 @@ namespace engine::graphics
             create_ebo();
             create_vao();
 
-            _shader.compile(SpriteBatch<T>::VERTEX_SHADER_SOURCE, "", SpriteBatch<T>::FRAGMENT_SHADER_SOURCE);
+            _default_shader.compile(SpriteBatch<T>::VERTEX_SHADER_SOURCE, "", SpriteBatch<T>::FRAGMENT_SHADER_SOURCE);
 
-            _shader.use();
-            _shader.set("Texture", 0);
+            _default_shader.use();
+            _default_shader.set("Texture", 0);
 
             const Viewport &viewport = _graphicsdevice.viewport();
             _projection = glm::ortho(
@@ -246,13 +247,15 @@ namespace engine::graphics
             begin(transform, alpha_blending_enabled);
         }
 
-        void begin(const glm::mat4 &transform, const bool alpha_blending_enabled)
+        void begin(const glm::mat4 &transform, const bool alpha_blending_enabled, Shader *shader = nullptr)
         {
             if (_has_begun)
             {
                 throw "'begin()' was already called. Call 'end()' first.";
             }
             _has_begun = true;
+
+            _active_shader = (shader) ? shader : &_default_shader;
 
             _wvp = _projection * transform;
 

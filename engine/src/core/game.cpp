@@ -86,13 +86,6 @@ namespace engine
             _shouldRun = false;
             return;
         }
-
-        int postprocessor_result = _postprocessor.initialize();
-        if (!postprocessor_result)
-        {
-            _shouldRun = false;
-            return;
-        }
     }
 
     void Game::load_content()
@@ -110,19 +103,10 @@ namespace engine
 
     void Game::begin_draw()
     {
-        if (_postprocessing_enabled)
-        {
-            _postprocessor.begin();
-        }
     }
 
     void Game::end_draw(const engine::GameTime &draw_time)
     {
-        if (_postprocessing_enabled)
-        {
-            _postprocessor.end();
-            _postprocessor.draw(draw_time);
-        }
     }
 
     void Game::resize(int width, int height)

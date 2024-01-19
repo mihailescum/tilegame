@@ -22,12 +22,9 @@ namespace engine
         GameTime _update_time;
         GameTime _draw_time;
 
-        bool _postprocessing_enabled;
-
     protected:
         Window _window;
         graphics::GraphicsDevice _graphicsdevice;
-        graphics::PostProcessor _postprocessor;
         ResourceManager _resource_manager;
         float _time_step;
 
@@ -45,9 +42,7 @@ namespace engine
     public:
         Game(int window_width = DEFAULT_WINDOW_WIDTH, int window_height = DEFAULT_WINDOW_HEIGHT)
             : _window(window_width, window_height),
-              _graphicsdevice(_window),
-              _postprocessor(_graphicsdevice),
-              _postprocessing_enabled(false)
+              _graphicsdevice(_window)
         {
         }
 
@@ -55,17 +50,12 @@ namespace engine
         virtual ~Game();
 
         const Window &window() const { return _window; }
-        const graphics::GraphicsDevice &graphics_device() const { return _graphicsdevice; }
-        graphics::GraphicsDevice &graphics_device() { return _graphicsdevice; }
+        const graphics::GraphicsDevice &graphicsdevice() const { return _graphicsdevice; }
+        graphics::GraphicsDevice &graphicsdevice() { return _graphicsdevice; }
 
         ResourceManager &resource_manager() { return _resource_manager; }
         const ResourceManager &resource_manager() const { return _resource_manager; }
 
-        graphics::PostProcessor &postprocessor() { return _postprocessor; }
-        const graphics::PostProcessor &postprocessor() const { return _postprocessor; }
-
         void run();
-
-        bool &postprocessing_enabled() { return _postprocessing_enabled; }
     };
 } // namespace engine

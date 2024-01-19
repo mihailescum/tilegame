@@ -77,10 +77,14 @@ namespace tilegame
     void Tilegame::begin_draw()
     {
         Game::begin_draw();
+
+        _worldscene.begin_draw();
     }
 
     void Tilegame::end_draw(const engine::GameTime &draw_time)
     {
+        _worldscene.end_draw(draw_time);
+
         Game::end_draw(draw_time);
     }
 } // namespace tilegame

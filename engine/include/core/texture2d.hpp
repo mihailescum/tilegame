@@ -16,18 +16,20 @@ namespace engine
     private:
         typedef GLuint _native_type;
         _native_type _gl_texture;
-        GLint _internalFormat;
-        GLint _imageFormat;
-        GLint _wrapS;
-        GLint _wrapT;
-        GLint _filterMin;
-        GLint _filterMax;
+        GLint _internal_format;
+        GLenum _image_format;
+        GLenum _image_type;
+        GLint _wrap_s;
+        GLint _wrap_t;
+        GLint _filter_min;
+        GLint _filter_max;
         glm::ivec2 _dimensions;
 
     public:
         typedef _native_type native_type;
 
         Texture2D();
+        Texture2D(GLint internal_format, GLenum image_format, GLenum image_type, GLint wrap_s, GLint wrap_t, GLint filter_min, GLint filter_max);
 
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;

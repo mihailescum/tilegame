@@ -8,7 +8,7 @@ namespace tilegame::systems
 
     void Daytime::initialize()
     {
-        _times_of_day.push_back(TimeOfDayMark(0, engine::Color(0.3, 0.3, 0.3, 1.0)));           // midnight
+        _times_of_day.push_back(TimeOfDayMark(0, engine::Color(0.1, 0.1, 0.1, 1.0)));           // midnight
         _times_of_day.push_back(TimeOfDayMark(5 * 3600, engine::Color(0.5, 0.5, 0.5, 1.0)));    // dusk
         _times_of_day.push_back(TimeOfDayMark(7 * 3600, engine::Color(1.0, 0.902, 0.8, 1.0)));  // early morning
         _times_of_day.push_back(TimeOfDayMark(9 * 3600, engine::Color(1.0, 1.0, 1.0, 1.0)));    // morning
@@ -32,12 +32,18 @@ namespace tilegame::systems
         _daytime_shader = _scene.game().resource_manager().load_resource<engine::Shader>(
             "daytime_shader",
             "content/shaders/daytime",
-            "content/shaders/daytime.vert", "", "content/shaders/daytime.frag");
+            "content/shaders/quad.vert", "", "content/shaders/daytime.frag");
+        _daytime_shader->use();
+        _daytime_shader->set("scene", 0);
 
-        engine::graphics::PostProcessingEffect daytime_effect(_scene.game().graphics_device(), *_daytime_shader);
-        daytime_effect.add_color_attachments(1);
-        daytime_effect.input_textures().push_back(std::ref(daytime_effect.color_attachment_at(0)));
-        _scene.game().postprocessor().effects().push_back(std::move(daytime_effect));
+        auto blend_shader = _scene.game().resource_manager().load_resource<engine::Shader>(
+            "blend_shader",
+            "content/shaders/additive_blend",
+            "content/shaders/quad.vert", "", "content/shaders/additive_blend.frag");
+        blend_shader->use();
+        blend_shader->set("scene", 0);
+        blend_shader->set("bloomBlur", 1);
+        blend_shader->set("exposure", 1.0f);
     }
 
     void Daytime::update(const engine::GameTime &update_time)

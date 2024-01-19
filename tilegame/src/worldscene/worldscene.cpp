@@ -11,6 +11,7 @@ namespace tilegame::worldscene
 {
     WorldScene::WorldScene(Tilegame &game)
         : tilegame::Scene(game),
+          _postprocessor(game.graphicsdevice()),
           _system_render(*this, _registry, game.spritebatch()),
           _system_map(*this, _registry),
           _system_camera(*this, _registry),
@@ -29,7 +30,6 @@ namespace tilegame::worldscene
 
     void WorldScene::initialize()
     {
-        _game.postprocessing_enabled() = true;
         _system_daytime.initialize();
 
         _system_pin.initialize();
@@ -44,6 +44,12 @@ namespace tilegame::worldscene
         _system_movement_controller.initialize();
 
         _system_collision_detection.initialize();
+
+        int postprocessor_result = _postprocessor.initialize();
+        if (!postprocessor_result)
+        {
+            throw "Failed to initilize PostProcessor";
+        }
     }
 
     void WorldScene::load_content()
@@ -57,6 +63,23 @@ namespace tilegame::worldscene
         _system_camera.load_content();
 
         _system_render.load_content();
+
+        // Setup PostProcessor
+        _postprocessor.add_color_attachments(2);
+
+        auto &daytime_shader = _game.resource_manager().get<engine::Shader>("daytime_shader");
+        engine::graphics::PostProcessingEffect daytime_effect(_game.graphicsdevice(), daytime_shader);
+        daytime_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(0)));
+        daytime_effect.add_color_attachments(1);
+
+        auto &blend_shader = _game.resource_manager().get<engine::Shader>("blend_shader");
+        engine::graphics::PostProcessingEffect blend_effect(_game.graphicsdevice(), blend_shader);
+        blend_effect.input_textures().push_back(std::ref(daytime_effect.color_attachment_at(0)));
+        blend_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(1)));
+        blend_effect.add_color_attachments(1);
+
+        _postprocessor.effects().push_back(std::move(daytime_effect));
+        _postprocessor.effects().push_back(std::move(blend_effect));
     }
 
     void WorldScene::unload_content()
@@ -90,8 +113,22 @@ namespace tilegame::worldscene
         _system_movement.end_update();
     }
 
+    void WorldScene::begin_draw()
+    {
+    }
+
     void WorldScene::draw(const engine::GameTime &draw_time)
     {
+        _postprocessor.begin_scene();
+
+        // Draw the scene
         _system_render.draw(draw_time);
+
+        _postprocessor.end_scene();
+        _postprocessor.apply_effects(draw_time);
+    }
+
+    void WorldScene::end_draw(const engine::GameTime &draw_time)
+    {
     }
 } // namespace tilegame::worldscene

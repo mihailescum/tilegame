@@ -15,6 +15,7 @@ namespace tilegame::systems
     private:
         bool _needs_sorting;
         engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> &_spritebatch;
+        engine::Shader *_spritebatch_luminosity_shader;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite) const;
         void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer) const;

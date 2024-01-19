@@ -10,13 +10,20 @@
 
 namespace engine
 {
-    Texture2D::Texture2D() : _gl_texture(0),
-                             _internalFormat(GL_RGB),
-                             _imageFormat(GL_RGB),
-                             _wrapS(GL_REPEAT),
-                             _wrapT(GL_REPEAT),
-                             _filterMin(GL_LINEAR),
-                             _filterMax(GL_LINEAR)
+    Texture2D::Texture2D() : Texture2D(GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR)
+    {
+    }
+
+    Texture2D::Texture2D(GLint internal_format, GLenum image_format, GLenum image_type, GLint wrap_s, GLint wrap_t, GLint filter_min, GLint filter_max)
+        : _gl_texture(0),
+          _internal_format(internal_format),
+          _image_format(image_format),
+          _image_type(image_type),
+          _wrap_s(wrap_s),
+          _wrap_t(wrap_t),
+          _filter_min(filter_min),
+          _filter_max(filter_max)
+
     {
     }
 
@@ -62,11 +69,11 @@ namespace engine
 
         glGenTextures(1, &_gl_texture);
         glBindTexture(GL_TEXTURE_2D, _gl_texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, width, height, 0, _imageFormat, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrapS);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrapT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filterMin);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filterMax);
+        glTexImage2D(GL_TEXTURE_2D, 0, _internal_format, width, height, 0, _image_format, _image_type, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrap_s);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrap_t);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter_min);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter_max);
 
         // unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -83,6 +90,6 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, gl_texture);
     }
 
-    void Texture2D::internal_format(GLint internalFormat) { _internalFormat = internalFormat; }
-    void Texture2D::image_format(GLint imageFormat) { _imageFormat = imageFormat; }
+    void Texture2D::internal_format(GLint internalFormat) { _internal_format = internalFormat; }
+    void Texture2D::image_format(GLint imageFormat) { _image_format = imageFormat; }
 } // namespace engine
