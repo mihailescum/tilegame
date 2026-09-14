@@ -44,6 +44,9 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/s
 # Include Tileson Header Files
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tileson)
 
+# Include EnTT Header Files
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/entt)
+
 # Link with Glad
 target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 
@@ -51,8 +54,5 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
 target_link_libraries(${LIBRARY_NAME} PUBLIC stdc++fs)
 
 # GLFW
-find_package(glfw3 3.3 REQUIRED)
+find_package(glfw3 REQUIRED)
 target_link_libraries(${LIBRARY_NAME} PUBLIC glfw)
-
-# pugixml
-target_link_libraries(${LIBRARY_NAME} PUBLIC glad)
