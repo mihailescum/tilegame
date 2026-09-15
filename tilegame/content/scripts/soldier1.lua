@@ -1,20 +1,20 @@
 local soldier1 = ...
 
-local function handle_timer_event(type, event, source) 
+local function handle_timer_event(event_type, event, source) 
     local count = 1
     while true do
         print("Soldier! Count:", count)
         count = count + 1
-        event, source = coroutine.yield()
+        event_type, event, source = coroutine.yield()
     end
 end
 
-local function handle_map_entered_event(type, event, source)
+local function handle_map_entered_event(event_type, event, source)
     map_name = _registry:get(source, _MapEnteredEvent).map_name
     print("Map entered: " .. map_name)
 end
 
-local function handle_map_left_event(type, event, source) 
+local function handle_map_left_event(event_type, event, source) 
     map_name = event.map_name
     print("Map left: " .. map_name)
 end

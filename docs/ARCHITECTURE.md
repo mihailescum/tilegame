@@ -95,7 +95,8 @@ an optional source-entity filter. Event components are cleared again at
 This publish/subscribe pattern is the primary mechanism by which Lua scripts
 react to engine happenings (a timer elapsing, a target being reached, and
 future event types) without the engine needing to know anything about story
-logic.
+logic. See [EVENTS.md](EVENTS.md) for the full frame-by-frame walkthrough,
+the Lua-side `coroutine.wrap` idiom, and known sharp edges.
 
 ## Rendering pipeline
 

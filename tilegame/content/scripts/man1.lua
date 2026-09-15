@@ -3,7 +3,7 @@ local inspect = require("inspect")
 
 local man1 = ...
 
-local function handle_timer_event(type, event, source) 
+local function handle_timer_event(event_type, event, source) 
     while true do
         print("Hello man!")
         coroutine.yield()
@@ -22,7 +22,7 @@ local speed_component = _Speed(300)
 _registry:emplace(man1.entity, target_component)
 _registry:emplace(man1.entity, speed_component)
 
-local function handle_target_reached_event(type, event, source)
+local function handle_target_reached_event(event_type, event, source)
     local current_index = 1
     while true do
         current_index = current_index + 1
