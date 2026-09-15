@@ -35,12 +35,14 @@ namespace tilegame::systems
 
         const engine::graphics::Sprite &player1_sprite = (*characters)["man"];
 
+        const auto &world = resource_manager.get<engine::tilemap::World>("world1");
+
         _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
-        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(80, 80));
+        _registry.emplace<components::Transform>(_player1_entity, world.to_global("map1", glm::vec2(80, 80)));
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
         _registry.emplace<components::Direction>(_player1_entity);
-        _registry.emplace<components::Movement>(_player1_entity);
+        _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);
 
         // const tilegame::SceneGraphData player1_scenedata(_player1_entity);

@@ -39,3 +39,4 @@
 #include "tilemap/tilelayer.hpp"
 #include "tilemap/tileobject.hpp"
 #include "tilemap/tileset.hpp"
+#include "tilemap/world.hpp"

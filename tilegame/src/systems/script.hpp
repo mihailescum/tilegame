@@ -36,7 +36,13 @@ namespace tilegame::systems
         void register_api();
         // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
         // _event_types and, if registered, creates the corresponding listener entity.
+        bool add_event_listener(const sol::table &event, sol::function callback);
+        // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
+        // _event_types and, if registered, creates the corresponding listener entity.
         bool add_event_listener(const sol::table &event, sol::function callback, entt::entity source);
+        // Exposed to Lua as `_to_global`; converts coordinates relative to the named
+        // map's origin into world-space coordinates via the loaded World resource.
+        glm::vec2 to_global(const std::string &map_name, const glm::vec2 &relative_position) const;
 
         // Registers EventType in _event_types so Lua scripts can listen for it via
         // add_event_listener; instantiated once per native event type in register_api().

@@ -23,7 +23,7 @@ namespace tilegame::systems
     void MovementController::add_target_component(entt::registry &registry, entt::entity entity)
     {
         const auto &[target, transform] = registry.get<const components::Target, const components::Transform>(entity);
-        registry.emplace_or_replace<components::Movement>(entity);
+        registry.emplace_or_replace<components::Movement>(entity, glm::vec2(), true);
         registry.emplace_or_replace<components::Direction>(entity);
 
         if (!target.start)

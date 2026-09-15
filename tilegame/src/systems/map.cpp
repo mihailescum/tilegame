@@ -4,6 +4,7 @@
 #include "components/ordering.hpp"
 #include "components/transform.hpp"
 #include "components/tilemap.hpp"
+#include "components/world.hpp"
 #include "components/tilelayer.hpp"
 #include "components/tileset.hpp"
 #include "components/scenenode.hpp"
@@ -21,15 +22,22 @@ namespace tilegame::systems
     void Map::load_content()
     {
         auto &resource_manager = _scene.game().resource_manager();
-        const engine::tilemap::TileMap &map = *resource_manager.load_resource<engine::tilemap::TileMap>("map1", "content/maps/map1.tmj");
-        create_map_entity(map);
+        const auto &world = *resource_manager.load_resource<engine::tilemap::World>("world1", "content/worlds/world1.world");
+
+        const auto world_entity = _registry.create();
+        _registry.emplace<components::World>(world_entity, std::ref(world));
+
+        for (const auto &[map_name, map_entry] : world.maps())
+        {
+            create_map_entity(*map_entry.map, map_entry.position);
+        }
     }
 
-    const entt::entity Map::create_map_entity(const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_map_entity(const engine::tilemap::TileMap &map, const glm::vec2 &position)
     {
         const auto entity = _registry.create();
         _registry.emplace<components::TileMap>(entity, std::ref(map));
-        _registry.emplace<components::Transform>(entity, glm::vec2(0.0));
+        _registry.emplace<components::Transform>(entity, position);
 
         // const tilegame::SceneGraphData map_scenedata(entity);
         // tilegame::SceneGraphNode &map_scenenode = _scene.scene_graph_root().add_child(map_scenedata);
@@ -44,7 +52,7 @@ namespace tilegame::systems
 
         for (const auto &layer : map.layers())
         {
-            const auto layer_entity = create_layer_entity(*layer, map);
+            const auto layer_entity = create_layer_entity(*layer, map, position);
 
             // const tilegame::SceneGraphData layer_scenedata(layer_entity);
             // tilegame::SceneGraphNode &layer_scenenode = map_scenenode.add_child(layer_scenedata);
@@ -56,7 +64,7 @@ namespace tilegame::systems
             const auto &data = object->data;
             if (data.getGid() > 0) // parse a sprite
             {
-                const auto sprite_entity = create_sprite_entity(*object, map);
+                const auto sprite_entity = create_sprite_entity(*object, map, position);
 
                 // const tilegame::SceneGraphData sprite_scenedata(sprite_entity);
                 // tilegame::SceneGraphNode &sprite_scenenode = map_scenenode.add_child(sprite_scenedata);
@@ -71,11 +79,11 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity Map::create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_layer_entity(const engine::tilemap::TileLayer &layer, const engine::tilemap::TileMap &map, const glm::vec2 &position)
     {
         const auto entity = _registry.create();
 
-        _registry.emplace<components::Transform>(entity, glm::vec2(0.0, 0.0));
+        _registry.emplace<components::Transform>(entity, position);
         _registry.emplace<components::Ordering>(entity, layer.z_index());
         _registry.emplace<components::Renderable2D>(entity);
 
@@ -133,11 +141,11 @@ namespace tilegame::systems
         return entity;
     }
 
-    const entt::entity Map::create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map)
+    const entt::entity Map::create_sprite_entity(const engine::tilemap::TileObject &object, const engine::tilemap::TileMap &map, const glm::vec2 &position)
     {
         const auto &data = object.data;
 
-        const glm::vec2 sprite_position(data.getPosition().x, data.getPosition().y);
+        const glm::vec2 sprite_position = position + glm::vec2(data.getPosition().x, data.getPosition().y);
 
         int tile_gid = data.getGid();
         const engine::tilemap::Tile *tile = map.get(tile_gid);

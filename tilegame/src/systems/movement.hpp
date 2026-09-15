@@ -16,13 +16,17 @@ namespace tilegame::systems
      * and CollisionDetection have produced/adjusted that velocity. Also
      * detects entities with a Target that have (almost) arrived, snapping
      * them to the target, dropping their Target/Movement/Speed components,
-     * and raising a TargetReachedEvent for any Lua event listeners.
+     * and raising a TargetReachedEvent for any Lua event listeners. Also
+     * tracks which map each movable entity (one with a Movement component)
+     * is currently on (CurrentMap), raising MapLeftEvent/MapEnteredEvent
+     * when it changes.
      */
     class Movement : public System
     {
     private:
         void apply_movement(const engine::GameTime &update_time) const;
         void check_target_reached() const;
+        void update_current_map() const;
 
     public:
         Movement(tilegame::Scene &scene, entt::registry &registry);

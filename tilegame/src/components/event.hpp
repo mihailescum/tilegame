@@ -17,15 +17,15 @@ namespace tilegame::components
     {
         std::function<void(const std::string, const T &, entt::entity)> callback;
         /// Entity to filter events by; entt::null means listen to events from any entity.
-        entt::entity source;
+        entt::entity target_entity;
 
-        EventListener() : source(entt::null) {}
-        EventListener(std::function<void(const std::string, const T &, entt::entity)> callback) : callback(callback), source(entt::null) {}
-        EventListener(std::function<void(const std::string, const T &, entt::entity)> callback, entt::entity source) : callback(callback), source(source) {}
+        EventListener() : target_entity(entt::null) {}
+        EventListener(std::function<void(const std::string, const T &, entt::entity)> callback) : callback(callback), target_entity(entt::null) {}
+        EventListener(std::function<void(const std::string, const T &, entt::entity)> callback, entt::entity source) : callback(callback), target_entity(source) {}
 
         void operator()(const std::string type, const T &event, entt::entity source) const
         {
-            if (source == entt::null || source == this->source)
+            if (this->target_entity == entt::null || source == this->target_entity)
             {
                 callback(type, event, source);
             }

@@ -11,6 +11,7 @@
 #include "components/transform.hpp"
 #include "components/pin.hpp"
 #include "components/direction.hpp"
+#include "components/currentmap.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -54,6 +55,8 @@ namespace tilegame::systems
         components::Direction::register_component(_lua());
         components::Inactive::register_component(_lua());
         components::LuaTable::register_component(_lua());
+        components::MapEnteredEvent::register_component(_lua());
+        components::MapLeftEvent::register_component(_lua());
         components::Pin::register_component(_lua());
         components::ScriptLoader::register_component(_lua());
         components::Target::register_component(_lua());
@@ -63,9 +66,17 @@ namespace tilegame::systems
         components::Transform::register_component(_lua());
         components::Speed::register_component(_lua());
 
-        _lua().set_function("_add_event_listener", sol::resolve<bool(const sol::table &, sol::function, entt::entity)>(&Script::add_event_listener), this);
+        _lua().set_function("_add_event_listener",
+                            sol::overload(
+                                [this](const sol::table &event, sol::function callback)
+                                { return Script::add_event_listener(event, callback, entt::null); },
+                                [this](const sol::table &event, sol::function callback, entt::entity source)
+                                { return Script::add_event_listener(event, callback, source); }));
+        _lua().set_function("_to_global", sol::resolve<glm::vec2(const std::string &, const glm::vec2 &) const>(&Script::to_global), this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
         register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
+        register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
+        register_event_type<components::MapLeftEvent, components::EventListener<components::MapLeftEvent>>();
     }
 
     bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
@@ -79,6 +90,12 @@ namespace tilegame::systems
         {
             return false;
         }
+    }
+
+    glm::vec2 Script::to_global(const std::string &map_name, const glm::vec2 &relative_position) const
+    {
+        const auto &world = _scene.game().resource_manager().get<engine::tilemap::World>("world1");
+        return world.to_global(map_name, relative_position);
     }
 
     void Script::update(const engine::GameTime &update_time)

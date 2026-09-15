@@ -13,5 +13,6 @@ namespace tilegame::components
     {
         /// Displacement for the current frame, already scaled by elapsed time (not a per-second rate).
         glm::vec2 velocity;
+        bool track_current_map;
     };
 } // namespace tilegame

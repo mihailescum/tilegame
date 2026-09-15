@@ -203,7 +203,7 @@ namespace tilegame::systems
 
                 _registry.emplace<components::Inactive>(new_particle);
                 _registry.emplace<components::Direction>(new_particle);
-                _registry.emplace<components::Movement>(new_particle);
+                _registry.emplace<components::Movement>(new_particle, glm::vec2(), false);
                 _registry.emplace<components::Speed>(new_particle);
                 _registry.emplace<components::Particle>(new_particle);
                 _registry.emplace<components::Sprite>(new_particle);
