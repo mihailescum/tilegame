@@ -20,8 +20,9 @@ namespace tilegame::systems
      * entity. Draw order follows the Ordering component, re-sorted lazily
      * whenever it changes. Also draws debug overlays for Collider/TileLayer
      * collision shapes. Owns the PostProcessor (day/night tint + blend effect
-     * chain), which wraps that whole scene; the dialog box for an active
-     * components::MessageBox is drawn last, screen-space, straight onto the
+     * chain), which wraps that whole scene; the dialog box, read from the
+     * registry's components::MessageBoxState ctx() value (owned by
+     * systems::MessageBox), is drawn last, screen-space, straight onto the
      * default framebuffer, so it's unaffected by both the camera and the
      * post-processing effects.
      */
@@ -40,16 +41,16 @@ namespace tilegame::systems
         engine::graphics::SpriteBatch<engine::Texture2D> _text_spritebatch;
         engine::Shader *_spritebatch_luminosity_shader;
         // Day/night tint + blend effect chain; wraps everything drawn in draw() except the
-        // components::MessageBox dialog box, which is drawn after apply_effects().
+        // dialog box, which is drawn after apply_effects().
         engine::graphics::PostProcessor _postprocessor;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite);
         void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer);
         void draw_particles(const components::ParticlePool &pool);
         // Draws the screen-space dialog box (background + up to messagebox_layout::VISIBLE_LINES
-        // lines of glyphs) for an active components::MessageBox; called with its own spritebatch
-        // begin/end so it isn't affected by any camera transform.
-        void draw_message_box(const components::MessageBox &box);
+        // lines of glyphs) for a non-empty components::MessageBoxState; called with its own
+        // spritebatch begin/end so it isn't affected by any camera transform.
+        void draw_message_box(const components::MessageBoxState &state);
 
         void sort_renderables();
         // Registered on construct/update/destroy of Ordering components so draw order is

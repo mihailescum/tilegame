@@ -17,22 +17,36 @@ namespace tilegame::messagebox_layout
 namespace tilegame::components
 {
     /**
-     * @brief Request/state for a dialog message. Created (with `text` set) by the `_show_message`
-     * Lua binding; systems::MessageBox word-wraps `text` into `lines` the first time it sees the
-     * component, then pops a line off the front each time the player presses Enter, destroying the
-     * entity once `lines` is empty. systems::Render draws `lines[0]`/`lines[1]` (if present) as the
-     * two visible lines of the on-screen box while this component exists. Not exposed to Lua as a
-     * usertype, since scripts only ever create one via `_show_message`.
+     * @brief Raised on a fresh entity by the `_show_message` Lua binding; consumed and
+     * destroyed by systems::MessageBox the next time it updates, which word-wraps `text` and
+     * either appends the result to the currently displayed message or replaces it, depending
+     * on `append`. systems::MessageBox is this event's only subscriber, so it skips the
+     * generic EventListener<T>/raise_events() broadcast machinery. Not exposed to Lua as a
+     * usertype: scripts only ever raise one via `_show_message`.
      */
-    struct MessageBox
+    struct ShowMessageEvent
     {
-        /// Raw message text, set once at creation; may contain '\n' for explicit line breaks.
+        /// Raw message text; may contain '\n' for explicit line breaks.
         std::string text;
-        /// Remaining word-wrapped lines still to be shown; populated by systems::MessageBox from `text`.
-        std::deque<std::string> lines;
+        /// If true and a message is currently displayed, `text`'s wrapped lines are appended to
+        /// it instead of replacing it.
+        bool append = false;
+    };
 
-        MessageBox() = default;
-        MessageBox(const std::string &text) : text(text) {}
+    /**
+     * @brief The currently displayed dialog message. Not an entity/component - a single value
+     * held in the entt::registry's ctx() storage (see entt::basic_registry::ctx()), which every
+     * system already has access to through the registry reference it's constructed with, so no
+     * system needs a direct reference to another one to reach it. Created once, in
+     * systems::MessageBox::initialize(), and is the only state that system mutates in place as
+     * it consumes ShowMessageEvents and Enter key presses. `lines` empty means no message is
+     * currently displayed. systems::Render reads it (_registry.ctx().get<MessageBoxState>())
+     * each draw() to know whether/what to draw; it never writes it.
+     */
+    struct MessageBoxState
+    {
+        /// Remaining word-wrapped lines still to be shown; empty means nothing is displayed.
+        std::deque<std::string> lines;
     };
 
     /**

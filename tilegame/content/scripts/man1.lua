@@ -52,6 +52,6 @@ print("Man loaded")
 _add_event_listener(_MessageClosedEvent, function(event_type, event, source)
     print("Message closed")
 end)
-_show_message("Hello! This is a longer test message that should wrap across more than two lines when the dialog box is on screen.")
+_show_message("Hello! This is a longer test message that should wrap across more than two lines when the dialog box is on screen.", false)
 
 return man1

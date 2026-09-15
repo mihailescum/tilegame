@@ -70,59 +70,71 @@ namespace tilegame::systems
     }
 
     MessageBox::MessageBox(tilegame::Scene &scene, entt::registry &registry)
-        : System(scene, registry), _active_entity(entt::null), _enter_was_down(false)
+        : System(scene, registry), _enter_was_down(false)
     {
+    }
+
+    void MessageBox::initialize()
+    {
+        _registry.ctx().emplace<components::MessageBoxState>();
+    }
+
+    std::size_t MessageBox::max_line_chars() const
+    {
+        const auto &font = _scene.game().resource_manager().get<engine::graphics::SpriteFont>("font_default");
+        const auto &viewport = _scene.game().graphicsdevice().viewport();
+        const int usable_width = viewport.dimensions.x - static_cast<int>(2 * messagebox_layout::BOX_PADDING);
+        return std::max(1, usable_width / font.cell_width());
+    }
+
+    void MessageBox::apply_pending_events()
+    {
+        for (auto &&[entity, event] : _registry.view<components::ShowMessageEvent>().each())
+        {
+            auto &state = _registry.ctx().get<components::MessageBoxState>();
+            const auto lines = wrap_text(event.text, max_line_chars());
+
+            if (event.append && !state.lines.empty())
+            {
+                state.lines.insert(state.lines.end(), lines.begin(), lines.end());
+            }
+            else
+            {
+                state.lines = lines;
+                const auto opened_entity = _registry.create();
+                _registry.emplace<components::MessageOpenedEvent>(opened_entity);
+                raise_events<components::MessageOpenedEvent>();
+                _registry.destroy(opened_entity);
+            }
+
+            _registry.destroy(entity);
+        }
     }
 
     void MessageBox::update(const engine::GameTime &update_time)
     {
-        if (_active_entity == entt::null)
-        {
-            const auto pending = _registry.view<components::MessageBox>();
-            if (!pending.empty())
-            {
-                const auto entity = *pending.begin();
-                auto &box = pending.get<components::MessageBox>(entity);
-
-                const auto &font = _scene.game().resource_manager().get<engine::graphics::SpriteFont>("font_default");
-                const auto &viewport = _scene.game().graphicsdevice().viewport();
-                const int usable_width = viewport.dimensions.x - static_cast<int>(2 * messagebox_layout::BOX_PADDING);
-                const std::size_t max_line_chars = std::max(1, usable_width / font.cell_width());
-
-                box.lines = wrap_text(box.text, max_line_chars);
-                _active_entity = entity;
-
-                _registry.emplace<components::MessageOpenedEvent>(_active_entity);
-                raise_events<components::MessageOpenedEvent>();
-            }
-        }
+        apply_pending_events();
 
         const auto &window = _scene.game().window();
         const bool enter_is_down = window.is_key_pressed(GLFW_KEY_ENTER);
         const bool enter_pressed = enter_is_down && !_enter_was_down;
         _enter_was_down = enter_is_down;
 
-        if (_active_entity != entt::null && enter_pressed)
+        if (enter_pressed)
         {
-            auto &box = _registry.get<components::MessageBox>(_active_entity);
-            if (!box.lines.empty())
+            auto &state = _registry.ctx().get<components::MessageBoxState>();
+            if (!state.lines.empty())
             {
-                box.lines.pop_front();
-            }
+                state.lines.pop_front();
 
-            if (box.lines.empty())
-            {
-                _registry.emplace<components::MessageClosedEvent>(_active_entity);
-                raise_events<components::MessageClosedEvent>();
-
-                _registry.destroy(_active_entity);
-                _active_entity = entt::null;
+                if (state.lines.empty())
+                {
+                    const auto closed_entity = _registry.create();
+                    _registry.emplace<components::MessageClosedEvent>(closed_entity);
+                    raise_events<components::MessageClosedEvent>();
+                    _registry.destroy(closed_entity);
+                }
             }
         }
-    }
-
-    void MessageBox::end_update()
-    {
-        _registry.clear<components::MessageClosedEvent>();
     }
 } // namespace tilegame::systems

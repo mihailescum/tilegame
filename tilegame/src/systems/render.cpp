@@ -181,13 +181,10 @@ namespace tilegame::systems
         // above - drawn straight onto the default framebuffer)
         //
 
-        const auto message_boxes = _registry.view<const components::MessageBox>();
-        if (!message_boxes.empty())
+        const auto &message_box_state = _registry.ctx().get<const components::MessageBoxState>();
+        if (!message_box_state.lines.empty())
         {
-            const auto entity = *message_boxes.begin();
-            const auto &box = message_boxes.get<const components::MessageBox>(entity);
-
-            draw_message_box(box);
+            draw_message_box(message_box_state);
         }
     }
 
@@ -238,7 +235,7 @@ namespace tilegame::systems
         }
     }
 
-    void Render::draw_message_box(const components::MessageBox &box)
+    void Render::draw_message_box(const components::MessageBoxState &state)
     {
         using namespace tilegame::messagebox_layout;
 
@@ -256,7 +253,7 @@ namespace tilegame::systems
 
         _text_spritebatch.begin(true);
         int line_index = 0;
-        for (const auto &line : box.lines)
+        for (const auto &line : state.lines)
         {
             if (line_index >= VISIBLE_LINES)
             {

@@ -30,8 +30,6 @@ namespace tilegame::worldscene
 
     void WorldScene::initialize()
     {
-        _system_daytime.initialize();
-
         _system_pin.initialize();
         _system_render.initialize();
         _system_animation.initialize();
@@ -44,6 +42,7 @@ namespace tilegame::worldscene
         _system_movement_controller.initialize();
 
         _system_collision_detection.initialize();
+        _system_messagebox.initialize();
     }
 
     void WorldScene::load_content()
@@ -89,7 +88,6 @@ namespace tilegame::worldscene
         _system_timer.end_update();
         _system_movement_controller.end_update();
         _system_movement.end_update();
-        _system_messagebox.end_update();
     }
 
     void WorldScene::begin_draw()

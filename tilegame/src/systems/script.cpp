@@ -1,5 +1,7 @@
 #include "script.hpp"
 
+#include <algorithm>
+
 #include "entt_sol/bond.hpp"
 
 #include "components/scriptloader.hpp"
@@ -32,6 +34,22 @@ namespace tilegame::systems
     {
         _lua.open_libraries();
         register_api();
+
+        // Global configuration scripts, run once at startup.
+        run_script("content/scripts/daytime.lua");
+    }
+
+    void Script::run_script(const std::string &path)
+    {
+        sol::load_result load_result = _lua().load_file(path);
+        if (load_result.valid())
+        {
+            load_result();
+        }
+        else
+        {
+            throw "Error loading file";
+        }
     }
 
     void Script::register_api()
@@ -52,6 +70,18 @@ namespace tilegame::systems
             "y", &glm::vec2::y);
         _lua().new_usertype<entt::entity>(
             "_entity", sol::no_constructor);
+        _lua().new_usertype<engine::Color>(
+            "_Color",
+            sol::call_constructor,
+            sol::factories(
+                []()
+                { return engine::Color(); },
+                [](float r, float g, float b, float a)
+                { return engine::Color(r, g, b, a); }),
+            "r", sol::property(sol::resolve<float() const>(&engine::Color::r), sol::resolve<void(float)>(&engine::Color::r)),
+            "g", sol::property(sol::resolve<float() const>(&engine::Color::g), sol::resolve<void(float)>(&engine::Color::g)),
+            "b", sol::property(sol::resolve<float() const>(&engine::Color::b), sol::resolve<void(float)>(&engine::Color::b)),
+            "a", sol::property(sol::resolve<float() const>(&engine::Color::a), sol::resolve<void(float)>(&engine::Color::a)));
 
         components::Direction::register_component(_lua());
         components::Inactive::register_component(_lua());
@@ -76,7 +106,16 @@ namespace tilegame::systems
                                 [this](const sol::table &event, sol::function callback, entt::entity source)
                                 { return Script::add_event_listener(event, callback, source); }));
         _lua().set_function("_to_global", sol::resolve<glm::vec2(const std::string &, const glm::vec2 &) const>(&Script::to_global), this);
-        _lua().set_function("_show_message", &Script::show_message, this);
+        _lua().set_function("_show_message",
+                            sol::overload(
+                                [this](const std::string &text)
+                                { Script::show_message(text, false); },
+                                [this](const std::string &text, bool append)
+                                { Script::show_message(text, append); }));
+        _lua().set_function("_set_daytime_marks", &Script::set_daytime_marks, this);
+        _lua().set_function("_set_daytime_time", &Script::set_daytime_time, this);
+        _lua().set_function("_set_daytime_speedup", &Script::set_daytime_speedup, this);
+        _lua().set_function("_set_daytime_day_duration", &Script::set_daytime_day_duration, this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
         register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
         register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
@@ -104,11 +143,43 @@ namespace tilegame::systems
         return world.to_global(map_name, relative_position);
     }
 
-    entt::entity Script::show_message(const std::string &text)
+    void Script::show_message(const std::string &text, bool append)
     {
         const auto entity = _registry.create();
-        _registry.emplace<components::MessageBox>(entity, text);
-        return entity;
+        _registry.emplace<components::ShowMessageEvent>(entity, text, append);
+    }
+
+    void Script::set_daytime_marks(const sol::table &marks)
+    {
+        std::vector<components::TimeOfDayMark> parsed;
+        for (const auto &entry : marks)
+        {
+            const sol::table mark = entry.second.as<sol::table>();
+            parsed.emplace_back(mark["start"].get<int>(), mark["color"].get<engine::Color>());
+        }
+        std::sort(parsed.begin(), parsed.end(), [](const components::TimeOfDayMark &a, const components::TimeOfDayMark &b)
+                  { return a.start < b.start; });
+
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetDaytimeMarksEvent>(entity, std::move(parsed));
+    }
+
+    void Script::set_daytime_time(int seconds_since_midnight)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetDaytimeTimeEvent>(entity, seconds_since_midnight);
+    }
+
+    void Script::set_daytime_speedup(double ingame_seconds_per_real_second)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetDaytimeSpeedupEvent>(entity, ingame_seconds_per_real_second);
+    }
+
+    void Script::set_daytime_day_duration(int seconds)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetDaytimeDayDurationEvent>(entity, seconds);
     }
 
     void Script::update(const engine::GameTime &update_time)
