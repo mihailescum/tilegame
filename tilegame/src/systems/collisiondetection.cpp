@@ -354,8 +354,6 @@ namespace tilegame::systems
             contact_time = t_near;
             contact_normal = glm::normalize(a.origin + contact_time * a_vel - b.origin);
 
-            engine::Log::d(contact_time, contact_normal.x, contact_normal.y);
-
             return true;
         }
         return false;
@@ -372,7 +370,11 @@ namespace tilegame::systems
         float contact_time;
         if (circle_circle_detection(a, b, a_vel, contact_normal, contact_time))
         {
-            a_vel = glm::vec2(0.0);
+            float vel_along_normal = glm::dot(a_vel, contact_normal);
+            if (vel_along_normal < 0.0f)
+            {
+                a_vel -= contact_normal * vel_along_normal * (1 - contact_time);
+            }
         }
     }
 } // namespace tilegame::systems

@@ -61,8 +61,8 @@ namespace engine
             }
         }
 
-        /// Binds each texture in @p data to consecutive GL texture units 0..N-1 (the @p unit parameter is currently unused).
-        static void use(const native_type &data, GLenum unit)
+        /// Binds each texture in @p data to consecutive GL texture units 0..N-1.
+        static void use(const native_type &data)
         {
             for (unsigned int i = 0; i < N; i++)
             {

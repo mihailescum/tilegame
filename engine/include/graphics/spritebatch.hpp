@@ -64,7 +64,7 @@ namespace engine::graphics
 
             _active_shader->use();
 
-            T::use(active_texture_data, 0);
+            T::use(active_texture_data);
             _active_shader->set("WVP", _wvp);
 
             glBindVertexArray(_vao);

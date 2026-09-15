@@ -45,7 +45,8 @@ namespace tilegame::systems
 
         // Continuous circle-vs-circle test solving for the time of impact along a_vel.
         bool circle_circle_detection(const engine::Circle &a, const engine::Circle &b, const glm::vec2 &a_vel, glm::vec2 &contact_normal, float &contact_time) const;
-        // Fully stops the entity's velocity on collision (no sliding/deflection).
+        // Cancels only the velocity component along the contact normal, preserving the
+        // tangential component so the entity slides along the other circle's surface.
         void circle_circle_resolution(const engine::Circle &a, const engine::Circle &b, glm::vec2 &a_vel) const;
 
     public:
