@@ -1,6 +1,6 @@
 #include "inactive.hpp"
 
-#include <entt/core/type_info.hpp>
+#include "entt/entt.hpp"
 
 #include "entt_sol/bond.hpp"
 

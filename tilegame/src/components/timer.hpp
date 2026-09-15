@@ -2,12 +2,17 @@
 
 #include <string>
 
-#include <entt/entity/registry.hpp>
+#include "entt/entt.hpp"
 
 #include "sol/sol.hpp"
 
 namespace tilegame::components
 {
+    /**
+     * @brief Countdown that raises a TimerEvent when it expires. The Timer system decrements
+     * `time_left` each frame; if `repeat` is set it resets to `time_total` and keeps counting down,
+     * otherwise the component is removed after firing. Exposed to Lua as `_Timer`.
+     */
     struct Timer
     {
         float time_total;
@@ -22,10 +27,17 @@ namespace tilegame::components
         static void register_component(sol::state &lua);
     };
 
+    /**
+     * @brief Entt event component raised for one frame by the Timer system when a Timer expires,
+     * and delivered to `EventListener<TimerEvent>` components via the engine's event-listener
+     * mechanism before being cleared. Exposed to Lua as `_TimerEvent`.
+     */
     struct TimerEvent
     {
         inline static const std::string EVENT_TYPE = "TIMER_EVENT";
+        /// Copy of the Timer's total duration at the time it fired.
         float duration;
+        /// Whether the Timer that raised this event is set to repeat.
         bool repeated;
 
         TimerEvent() = default;

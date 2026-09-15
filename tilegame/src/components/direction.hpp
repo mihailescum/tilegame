@@ -9,6 +9,10 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief Normalized facing/movement direction of an entity, combined with Speed by the
+     * MovementController system to compute per-frame Movement velocity. Exposed to Lua as `_Direction`.
+     */
     struct Direction
     {
         glm::vec2 direction;

@@ -6,6 +6,11 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief Requests that a Lua script at `path` be loaded and run for this entity. The Script
+     * system executes it on the next update, attaches the returned table as a LuaTable component,
+     * and removes this component. Exposed to Lua as `_ScriptLoader`.
+     */
     struct ScriptLoader
     {
         std::string path;

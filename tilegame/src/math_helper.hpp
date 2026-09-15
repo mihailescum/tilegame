@@ -7,6 +7,8 @@
 
 namespace tilegame
 {
+    // Returns a point uniformly distributed within rect, sampling x and y independently
+    // (used e.g. to place newly emitted particles within an emitter's shape).
     inline glm::vec2 random_point_in_rectangle(const engine::Rectangle &rect)
     {
         float x = get_random(rect.position.x, rect.position.x + rect.dimensions.x);

@@ -15,12 +15,20 @@
 
 namespace engine::graphics
 {
+    /**
+     * @brief Batches 2D sprite draw calls sharing the same texture into as few
+     * `glDrawElements` calls as possible. The `T` template parameter is a texture
+     * container type (e.g. a plain Texture2D, or a struct bundling several textures
+     * to be bound simultaneously such as a base color + luminosity map); it must
+     * provide a `native_type` alias and a static `use(native_type, unit)` to bind it.
+     * Usage is begin() / draw() (any number of times) / end().
+     */
     template <typename T = engine::Texture2D>
     class SpriteBatch
     {
     private:
         using ebo_type = GLushort;
-        static const ebo_type MAX_BATCH_SIZE = 65535U / 6;
+        static const ebo_type MAX_BATCH_SIZE = 65535U / 6; ///< Max sprites (quads) per draw call, bounded by the 16-bit element index type (65535 indices / 6 indices per quad).
         static const int ELEMENT_SIZE = sizeof(ebo_type);
 
         const std::string VERTEX_SHADER_SOURCE{
@@ -221,6 +229,7 @@ namespace engine::graphics
                 glDeleteVertexArrays(1, &_vao);
         }
 
+        /** @brief Creates the GL buffers/shader and computes the projection matrix from the current viewport. Must be called once before use. */
         void create()
         {
             create_vbo();
@@ -247,6 +256,7 @@ namespace engine::graphics
             begin(transform, alpha_blending_enabled);
         }
 
+        /** @brief Begins a batch. `shader`, if given, overrides the default sprite shader for this batch (e.g. for a custom effect); otherwise the built-in shader is used. */
         void begin(const glm::mat4 &transform, const bool alpha_blending_enabled, Shader *shader = nullptr)
         {
             if (_has_begun)

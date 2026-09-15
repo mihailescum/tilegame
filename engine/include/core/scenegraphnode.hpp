@@ -5,6 +5,13 @@
 
 namespace engine
 {
+    /**
+     * @brief Node of a tree holding a value of type T, used to build hierarchical scene graphs (Scene owns the root node).
+     *
+     * Each node owns its children and keeps a non-owning pointer to its
+     * parent; T must be default-constructible since child nodes are created
+     * with a default value and populated afterwards.
+     */
     template <typename T, typename = std::is_default_constructible<T>>
     class SceneGraphNode
     {
@@ -18,6 +25,7 @@ namespace engine
         SceneGraphNode() : SceneGraphNode<T>(nullptr, T()) {}
         SceneGraphNode(SceneGraphNode<T> *parent, const T &data) : _parent(parent), _data(data), _is_dirty(true), _children() {}
 
+        /// Replaces the node's value and marks the node dirty.
         void data(const T &data)
         {
             _data = data;
@@ -39,6 +47,7 @@ namespace engine
             return child;
         }
 
+        /// Creates and appends a new child node (owned by this node) and returns a reference to it.
         SceneGraphNode &add_child()
         {
             this->_children.push_back(std::make_unique<SceneGraphNode>(this, T()));

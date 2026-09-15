@@ -8,6 +8,12 @@
 
 namespace engine::graphics
 {
+    /**
+     * @brief Per-sprite vertex data for one quad in a SpriteBatch<T>: the bound
+     * texture (or texture set) plus the four corner vertices, computed from a
+     * destination rectangle, optional source rectangle (UVs), color and depth.
+     * Internal to SpriteBatch, not used directly by callers.
+     */
     template <class T = engine::Texture2D>
     struct SpriteData
     {
@@ -18,6 +24,7 @@ namespace engine::graphics
         VertexPositionTextureColor bottom_right;
 
         SpriteData() {}
+        /** @brief Fills in the four corner vertices for a quad at `destination_rectangle`. If `source_rectangle` is null, the whole texture (UVs 0..1) is used. */
         void set(
             const T &texture_data,
             const Rectangle &destination_rectangle,

@@ -14,15 +14,32 @@
 
 namespace tilegame::systems
 {
+    /**
+     * @brief Bridges the ECS/game to sandboxed per-entity Lua scripts.
+     *
+     * Owns the SecureLuaState, registers ECS components as Lua usertypes and
+     * the native event types (TargetReachedEvent, TimerEvent) scripts can
+     * subscribe to. Each frame, operates on entities with a ScriptLoader
+     * component: loads and runs their Lua file once (passing the owning
+     * entity), attaches the returned table as a LuaTable component, and
+     * removes the ScriptLoader so the script isn't re-run.
+     */
     class Script : public System
     {
     private:
         tilegame::SecureLuaState _lua;
+        // Maps a Lua-visible EVENT_TYPE name to a function that creates the matching native
+        // EventListener<EventType> entity, so add_event_listener can dispatch generically
+        // without knowing the concrete event type at the call site.
         std::unordered_map<std::string, std::function<bool(sol::function, entt::entity)>> _event_types;
 
         void register_api();
+        // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
+        // _event_types and, if registered, creates the corresponding listener entity.
         bool add_event_listener(const sol::table &event, sol::function callback, entt::entity source);
 
+        // Registers EventType in _event_types so Lua scripts can listen for it via
+        // add_event_listener; instantiated once per native event type in register_api().
         template <class EventType, class EventListener = components::EventListener<EventType>>
         void register_event_type()
         {

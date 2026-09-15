@@ -8,6 +8,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Circular geometric primitive defined by an origin and a radius.
+     *
+     * Implements the Shape interface so it can be used interchangeably with
+     * other primitives (e.g. for hit-testing or collision purposes).
+     */
     struct Circle : public Shape
     {
     public:

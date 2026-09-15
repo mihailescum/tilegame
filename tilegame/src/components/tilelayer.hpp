@@ -7,6 +7,11 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief Renders and collides against one layer of a loaded tilemap. Wraps the engine's
+     * `tilemap::TileLayer` asset with a per-tile `tile_data` array giving each cell's draw rects and
+     * optional collision shape, which the Render and CollisionDetection systems iterate directly.
+     */
     struct TileLayer
     {
         struct TileData
@@ -16,6 +21,7 @@ namespace tilegame::components
             engine::Texture2DContainer<2> textures;
             engine::Rectangle destination_rect;
             engine::Rectangle source_rect;
+            /// Non-owning; null when the tile has no collision geometry.
             const engine::Shape *collision_shape;
 
             TileData() : TileData(engine::Texture2DContainer<2>(), engine::Rectangle::EMPTY, engine::Rectangle::EMPTY) {}

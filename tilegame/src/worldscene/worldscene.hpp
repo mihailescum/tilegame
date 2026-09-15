@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <entt/entity/registry.hpp>
+#include "entt/entt.hpp"
 
 #include "engine.hpp"
 
@@ -29,6 +29,15 @@ namespace tilegame
 
 namespace tilegame::worldscene
 {
+    /**
+     * @brief Top-level orchestrator for the currently loaded game scene.
+     *
+     * Owns the entt::registry, the PostProcessor (and its daytime/luminosity
+     * blend effect chain), and one instance of every systems::* system, and
+     * drives them through their lifecycle each frame in the fixed order
+     * required for correct behavior (e.g. input/scripts before movement,
+     * collision before movement is applied, animation/camera after).
+     */
     class WorldScene : public tilegame::Scene
     {
     private:

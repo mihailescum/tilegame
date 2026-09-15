@@ -11,6 +11,12 @@ namespace engine::graphics
 {
     class SpriteSheet;
 
+    /**
+     * @brief A named, animated entity within a SpriteSheet, made up of one or more
+     * named SpriteStates (e.g. "walk_down", "idle_up"), each holding its own frame
+     * sequence. Parsed from the custom "state" tile property and animation data of
+     * a Tiled tileset tile.
+     */
     class Sprite
     {
     private:
@@ -24,6 +30,7 @@ namespace engine::graphics
         Sprite() : Sprite("", nullptr) {}
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
+        /** @brief Parses one Tiled tile's animation into the SpriteState named by its "state" custom property, appending a SpriteFrame per animation frame. */
         void parse(const tson::Tile &data);
 
         // TODO review if this is necessarys

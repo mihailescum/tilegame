@@ -6,10 +6,16 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief Configures how the Particle system spawns particles into an associated ParticlePool:
+     * spawn rate, spread cone, and the randomized ranges particles draw their speed, lifetime and
+     * scale from. Requires a Shape component on the same entity, which particles spawn within.
+     */
     struct ParticleEmitter
     {
         // Particles per second
         int rate;
+        /// Accumulator tracking fractional particles owed since the last spawn, in seconds.
         float rate_clock;
 
         // Direction of spread
@@ -31,6 +37,7 @@ namespace tilegame::components
         engine::Color color;
 
         ParticleEmitter() = default;
+        /// speed/lifetime/scale ranges are given as separate min/max pairs, packed into the vec2 fields above.
         ParticleEmitter(int rate,
                         glm::vec2 spread_direction,
                         float spread_angle,

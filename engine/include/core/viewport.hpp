@@ -8,6 +8,9 @@
 
 namespace engine
 {
+    /**
+     * @brief Screen-space rectangle (position and dimensions) that OpenGL rendering output is mapped to.
+     */
     struct Viewport
     {
     public:

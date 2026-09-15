@@ -11,6 +11,9 @@
 
 namespace engine
 {
+    /**
+     * @brief 2D OpenGL texture, loaded as a Resource with configurable format, wrap and filter parameters.
+     */
     class Texture2D : public Resource
     {
     private:
@@ -34,6 +37,7 @@ namespace engine
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
+        /// Uploads raw pixel data as a new GL texture, replacing any previously created texture and updating dimensions().
         void create_texture_from_raw_data(int width, int height, unsigned char *data);
 
         /*

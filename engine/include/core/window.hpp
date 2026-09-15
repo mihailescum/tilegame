@@ -8,6 +8,9 @@
 
 namespace engine
 {
+    /**
+     * @brief Wraps a GLFW window and its OpenGL context, exposing creation, sizing and input-polling.
+     */
     class Window
     {
     private:

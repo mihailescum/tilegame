@@ -9,6 +9,11 @@
 
 namespace engine::tilemap
 {
+    /**
+     * @brief A single grid layer of a TileMap: a flat array of global tile ids
+     * (gids) over `dimensions()` tiles, rendered at `z_index()`. A gid of 0 means no
+     * tile is placed at that cell.
+     */
     class TileLayer
     {
     private:
@@ -29,6 +34,7 @@ namespace engine::tilemap
         void data(std::vector<int> data) { _tiles = data; }
         const std::vector<int> &tiles() const { return _tiles; }
 
+        /** @brief Flat index into tiles() for grid cell (x, y), or -1 if the coordinates are outside `dimensions()`. */
         int index(int x, int y) const;
     };
 }

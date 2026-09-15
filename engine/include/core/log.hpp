@@ -5,6 +5,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Static console logging utility with severity-tagged output (debug/warning/error/log).
+     *
+     * Not instantiable; each level method accepts an arbitrary list of
+     * streamable arguments, printed space-separated followed by a newline.
+     */
     class Log
     {
     private:

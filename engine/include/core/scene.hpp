@@ -7,6 +7,12 @@ namespace engine
 {
     class Entity;
 
+    /**
+     * @brief Base class for a game screen/level: owns a SceneGraphNode<T> hierarchy and mirrors Game's lifecycle hooks (initialize/update/draw/...).
+     *
+     * Concrete scenes derive from Scene and override the hooks they need;
+     * most are optional no-ops except initialize().
+     */
     template <typename T, typename = std::is_default_constructible<T>>
     class Scene
     {

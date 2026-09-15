@@ -4,6 +4,9 @@
 
 namespace engine
 {
+    /**
+     * @brief RGBA color value, stored internally as a glm::vec4 with components in the [0, 1] range.
+     */
     struct Color
     {
     public:
@@ -25,6 +28,7 @@ namespace engine
 
         operator glm::vec4() const { return _native; }
 
+        /// Linearly interpolates between two colors; @p amount is clamped to [0, 1] usage but not clamped internally.
         static Color lerp(const Color &a, const Color &b, float amount);
 
         static const Color WHITE;

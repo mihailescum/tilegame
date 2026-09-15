@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * @brief Umbrella header that pulls in the entire engine public API (core, graphics and tilemap modules).
+ */
+
 #include "core/circle.hpp"
 #include "core/color.hpp"
 #include "core/game.hpp"

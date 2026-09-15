@@ -12,6 +12,13 @@
 
 namespace engine
 {
+    /**
+     * @brief Owns and caches all loaded Resource instances (shaders, textures, ...) keyed by name.
+     *
+     * Resources are loaded on demand and kept alive for the lifetime of the
+     * manager (or until unload_resources() is called), so repeated requests
+     * for the same name return the cached instance instead of reloading.
+     */
     class ResourceManager
     {
     private:
@@ -27,6 +34,15 @@ namespace engine
         // properly de-allocates all loaded resources
         void unload_resources();
 
+        /**
+         * @brief Loads (or returns the already-cached) resource of type T for the given name/path.
+         *
+         * If no resource is cached under @p name (defaulting to the path's
+         * filename when empty), a new T is constructed and
+         * Resource::load_resource() is invoked with the trailing variadic
+         * arguments; the instance is only cached if loading succeeds.
+         * @return Pointer to the cached resource, or nullptr if loading failed.
+         */
         template <class T>
         T *load_resource(std::string name, const std::filesystem::path &path, ...)
         {
@@ -63,6 +79,7 @@ namespace engine
             }
         }
 
+        /// Returns the cached resource of type T registered under @p name; throws if none exists.
         template <typename T>
         T &get(const std::string name)
         {
@@ -76,6 +93,7 @@ namespace engine
             }
         }
 
+        /// Takes ownership of an already-constructed resource and registers it under @p name, bypassing the load_resource() path.
         template <typename T>
         T &emplace_resource(const std::string name, std::unique_ptr<T> &res)
         {

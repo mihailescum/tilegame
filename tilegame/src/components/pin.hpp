@@ -2,12 +2,16 @@
 
 #include <string>
 
-#include <entt/entity/registry.hpp>
+#include "entt/entt.hpp"
 
 #include "sol/sol.hpp"
 
 namespace tilegame::components
 {
+    /**
+     * @brief Locks this entity's Transform position to that of `parent` each frame, updated by the
+     * Pin system. Used e.g. to attach the Camera to the player entity. Exposed to Lua as `_Pin`.
+     */
     struct Pin
     {
         entt::entity parent;

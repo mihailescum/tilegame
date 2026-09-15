@@ -9,6 +9,9 @@
 
 namespace engine
 {
+    /**
+     * @brief Compiled OpenGL shader program (vertex + optional geometry + fragment stages), loaded as a Resource.
+     */
     class Shader : public Resource
     {
     private:
@@ -34,6 +37,7 @@ namespace engine
         void set(const std::string &name, glm::vec4 value) const;
         void set(const std::string &name, glm::mat4 value) const;
 
+        /// Compiles and links the given GLSL sources into the program; pass an empty @p geometry_source to skip the geometry stage.
         bool compile(const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source);
         void use() const;
 

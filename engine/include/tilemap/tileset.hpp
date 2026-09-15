@@ -14,6 +14,12 @@
 
 namespace engine::tilemap
 {
+    /**
+     * @brief Extends SpriteSheet with per-tile gameplay metadata parsed from Tiled:
+     * custom class/properties and an optional collision shape per tile, plus an
+     * optional luminosity texture (used for day/night lighting blending) alongside
+     * the sheet's base color texture.
+     */
     class Tileset : public engine::graphics::SpriteSheet
     {
     private:
@@ -31,6 +37,7 @@ namespace engine::tilemap
         virtual void unload_resource() override;
 
         void parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager);
+        /** @brief Looks up a Tile by its id local to this tileset (not a map-wide gid), or nullptr if out of range. */
         const Tile *get(int id) const;
 
         const Texture2D &luminosity_texture() const;

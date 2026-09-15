@@ -7,6 +7,10 @@
 
 namespace engine::graphics
 {
+    /**
+     * @brief A named animation state of a Sprite (e.g. "walk_down"), consisting of an
+     * ordered sequence of frames to be played back.
+     */
     struct SpriteState
     {
         std::string name;

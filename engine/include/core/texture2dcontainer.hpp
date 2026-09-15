@@ -10,6 +10,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Fixed-size collection of N Texture2D pointers, used to bind multiple textures together (e.g. for multi-texture shader passes).
+     *
+     * Holds non-owning pointers to externally-managed textures alongside
+     * their raw GL handles for fast binding via use().
+     */
     template <unsigned int N>
     class Texture2DContainer
     {
@@ -35,6 +41,7 @@ namespace engine
             set(l);
         }
 
+        /// Replaces the stored textures; @p l must contain exactly N elements (entries may be nullptr, which binds as GL texture 0).
         void set(std::initializer_list<const Texture2D *> l)
         {
             assert(l.size() == N);
@@ -54,6 +61,7 @@ namespace engine
             }
         }
 
+        /// Binds each texture in @p data to consecutive GL texture units 0..N-1 (the @p unit parameter is currently unused).
         static void use(const native_type &data, GLenum unit)
         {
             for (unsigned int i = 0; i < N; i++)

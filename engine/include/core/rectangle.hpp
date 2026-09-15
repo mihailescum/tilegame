@@ -11,6 +11,9 @@
 
 namespace engine
 {
+    /**
+     * @brief Axis-aligned bounding box defined by a position and dimensions, used for layout, collision and ray-casting checks.
+     */
     struct Rectangle : public Shape
     {
     public:
@@ -26,6 +29,13 @@ namespace engine
 
         bool intersects(const Rectangle &other) const;
         bool intersects(const Point &other) const;
+        /**
+         * @brief Performs a ray-AABB intersection test.
+         * @param[out] contact_point Point where the ray hits the rectangle, if any.
+         * @param[out] contact_normal Surface normal at the contact point, if any.
+         * @param[out] t_hit_near Ray parameter (distance along direction) at the near hit, if any.
+         * @return true if the ray intersects this rectangle.
+         */
         bool intersects(const Ray &other, glm::vec2 &contact_point, glm::vec2 &contact_normal, float &t_hit_near) const;
 
         inline Rectangle operator+(const glm::vec2 &other) const

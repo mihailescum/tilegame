@@ -6,6 +6,10 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief References the loaded tileset asset (source texture and tile definitions) used to
+     * render a map's tile layers.
+     */
     struct Tileset
     {
         std::reference_wrapper<const engine::tilemap::Tileset> tileset;

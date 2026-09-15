@@ -13,6 +13,12 @@
 
 namespace engine::tilemap
 {
+    /**
+     * @brief A Resource that loads a Tiled map (.tmj, via tileson) into its tile
+     * layers, object layers and the set of tilesets it references. Tile layers store
+     * only global tile ids (gids); get() resolves a gid across the map's tilesets
+     * back to the underlying Tile definition.
+     */
     class TileMap : public engine::Resource
     {
     private:
@@ -34,6 +40,7 @@ namespace engine::tilemap
         virtual bool load_resource(ResourceManager &resource_manager, va_list args) override;
         virtual void unload_resource() override;
 
+        /** @brief Resolves a global tile id to its Tile definition in whichever tileset's gid range contains it, or nullptr if no tileset covers it. */
         const Tile *get(int gid) const;
 
         // TODO return iterators instead
@@ -41,6 +48,7 @@ namespace engine::tilemap
         const std::vector<std::unique_ptr<TileObject>> &objects() const { return _objects; }
 
         // TODO return only the tilesets, without gids
+        /** @brief The map's tilesets as (first_gid, last_gid, tileset) tuples describing the gid range each tileset owns. */
         const auto &tilesets() const { return _tilesets; }
     };
 }

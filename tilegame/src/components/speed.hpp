@@ -8,6 +8,10 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief Scalar movement speed of an entity, combined with Direction by the MovementController
+     * system to compute Movement velocity. Exposed to Lua as `_Speed`.
+     */
     struct Speed
     {
         float speed;

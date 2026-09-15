@@ -6,6 +6,10 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief References the loaded tilemap asset a map entity is built from (dimensions, tile size,
+     * associated layers/tilesets).
+     */
     struct TileMap
     {
         std::reference_wrapper<const engine::tilemap::TileMap> map;

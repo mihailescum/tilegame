@@ -6,6 +6,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Geometric primitive representing a line cast from an origin along a direction vector.
+     *
+     * Implements the Shape interface; primarily used together with
+     * Rectangle::intersects() for ray casting against axis-aligned boxes.
+     */
     struct Ray : public Shape
     {
     public:

@@ -5,6 +5,13 @@
 
 namespace tilegame
 {
+    /**
+     * @brief Top-level engine::Game implementation for the tilegame executable.
+     *
+     * Owns the SpriteBatch used for all rendering and the single WorldScene,
+     * forwarding the engine's game loop lifecycle callbacks to it, and
+     * updates the window title with the current FPS/UPS once per second.
+     */
     class Tilegame : public engine::Game
     {
     private:

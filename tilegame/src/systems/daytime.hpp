@@ -9,6 +9,8 @@
 
 namespace tilegame::systems
 {
+    // A keyframe of the day/night cycle: the tint color the scene should have starting at
+    // `start` seconds after midnight, interpolated towards the next mark's color over time.
     struct TimeOfDayMark
     {
         int start;
@@ -17,6 +19,14 @@ namespace tilegame::systems
         TimeOfDayMark(int start, const engine::Color &tint_color) : start(start), tint_color(tint_color) {}
     };
 
+    /**
+     * @brief Drives the day/night cycle and its screen tint.
+     *
+     * Owns no entities/components; instead advances an in-game clock each
+     * frame and, based on a fixed sequence of TimeOfDayMark keyframes (e.g.
+     * midnight, dawn, morning, dusk), interpolates the current tint color and
+     * uploads it to the daytime post-processing shader.
+     */
     class Daytime : public System
     {
     private:

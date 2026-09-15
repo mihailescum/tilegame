@@ -12,6 +12,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Base class for the game application: owns the window, graphics device and resource manager, and drives the fixed-timestep update/variable-rate draw loop.
+     *
+     * Concrete games derive from Game and override the lifecycle hooks
+     * (initialize/load_content/update/draw/...) rather than reimplementing run().
+     */
     class Game
     {
     private:
@@ -56,6 +62,7 @@ namespace engine
         ResourceManager &resource_manager() { return _resource_manager; }
         const ResourceManager &resource_manager() const { return _resource_manager; }
 
+        /// Initializes the window/graphics device and runs the main loop (fixed-timestep update, uncapped draw) until the window is closed.
         void run();
     };
 } // namespace engine

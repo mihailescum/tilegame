@@ -7,6 +7,9 @@
 
 namespace tilegame
 {
+    // Returns a uniformly distributed float in [0, 1) from a function-local, unseeded
+    // engine shared across all calls (so output is deterministic across runs but not
+    // safe to call concurrently from multiple threads).
     inline float get_random()
     {
         static std::default_random_engine e;

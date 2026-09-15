@@ -16,6 +16,12 @@
 
 namespace engine::graphics
 {
+    /**
+     * @brief A Resource wrapping a texture divided into a fixed-size tile grid, along
+     * with the named, animated Sprites parsed from a Tiled tileset (only tiles that
+     * carry Tiled animation data become Sprites). Tileset extends this with per-tile
+     * gameplay metadata such as collision shapes.
+     */
     class SpriteSheet : public Resource
     {
     protected:
@@ -32,6 +38,7 @@ namespace engine::graphics
         virtual void unload_resource() override;
 
         void parse(const tson::Tileset &tson_tileset, ResourceManager &resource_manager);
+        /** @brief Computes the pixel-space source rectangle of tile `id` within the sheet texture, based on the tile grid layout implied by `tile_dimensions()` and the texture's width. */
         engine::Rectangle source_rect(int id) const;
 
         const Sprite &operator[](std::string name) const { return _sprites.at(name); }

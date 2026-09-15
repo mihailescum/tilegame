@@ -11,6 +11,15 @@ namespace tilegame
 {
     // See https://blog.rubenwardy.com/2020/07/26/sol3-script-sandbox/ for the setup of our sandbox
     // Here http://lua-users.org/wiki/SandBoxes for a reference of safe functions
+    /**
+     * @brief Sandboxed sol3 Lua state used to run untrusted-by-design game/story scripts.
+     *
+     * Wraps a plain sol::state with a restricted global environment: only
+     * whitelisted base functions, stdlib modules and os functions are
+     * exposed, `require`/`load` are replaced with safe versions (source-only,
+     * no bytecode loading), so scripts loaded by systems::Script cannot
+     * escape the sandbox to access unsafe host APIs.
+     */
     class SecureLuaState
     {
     private:
@@ -57,9 +66,15 @@ namespace tilegame
             "exit",
         };
 
+        // Sandbox replacement for `require`: only allows a fixed set of known-safe scripts
+        // (currently "debugger" and "inspect"), loaded from embedded sources rather than
+        // the filesystem.
         sol::object safe_require(const std::string &name);
         void safe_write(const std::string &prompt);
         std::string safe_read(const std::string &prompt);
+        // Sandbox replacement for `load`: rejects precompiled bytecode (identified by Lua's
+        // signature byte) so scripts can only load plain Lua source, then binds the
+        // sandboxed environment onto the resulting function.
         std::tuple<sol::object, sol::object> safe_load(const std::string &str, const std::string &chunkname);
 
     public:

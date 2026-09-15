@@ -8,6 +8,9 @@
 
 namespace tilegame::components
 {
+    /**
+     * @brief World-space position of an entity. Exposed to Lua as `_Transform`.
+     */
     struct Transform
     {
         glm::vec2 position;

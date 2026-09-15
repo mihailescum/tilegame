@@ -8,6 +8,12 @@
 
 namespace engine
 {
+    /**
+     * @brief Zero-dimensional geometric primitive representing a single 2D position.
+     *
+     * Implements the Shape interface so it can be used interchangeably with
+     * other primitives (e.g. for hit-testing or collision purposes).
+     */
     struct Point : public Shape
     {
     public:
