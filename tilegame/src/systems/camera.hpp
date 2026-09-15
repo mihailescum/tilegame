@@ -14,7 +14,8 @@ namespace tilegame::systems
      * Creates the camera entity (Camera + Transform components) on
      * load_content, pinning it to player 1 via a Pin component so it follows
      * the player, and each frame recomputes the camera's translate/scale
-     * transform matrix from its Transform position and viewport.
+     * transform matrix (and derived world-space visible_bounds) from its
+     * Transform position and viewport.
      */
     class Camera : public System
     {

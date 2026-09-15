@@ -45,8 +45,11 @@ namespace tilegame::systems
         engine::graphics::PostProcessor _postprocessor;
 
         void draw_sprite(const components::Transform &transform, const components::Sprite &sprite);
-        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer);
-        void draw_particles(const components::ParticlePool &pool);
+        // `visible_bounds` is the camera's world-space view rectangle (components::Camera::visible_bounds,
+        // recomputed each frame by systems::Camera); tiles/particles whose destination rect doesn't
+        // intersect it are skipped.
+        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const engine::Rectangle &visible_bounds);
+        void draw_particles(const components::ParticlePool &pool, const engine::Rectangle &visible_bounds);
         // Draws the screen-space dialog box (background + up to messagebox_layout::VISIBLE_LINES
         // lines of glyphs) for a non-empty components::MessageBoxState; called with its own
         // spritebatch begin/end so it isn't affected by any camera transform.

@@ -68,6 +68,18 @@ namespace tilegame::systems
             // TODO use patch
             camera.transform = glm::translate(glm::mat4(1.0), translate);
             camera.transform = glm::scale(camera.transform, glm::vec3(scale));
+
+            // World-space rect visible through this camera, derived by mapping the viewport's
+            // screen-space corners back through the inverse of the transform just computed above -
+            // kept in sync with it rather than re-derived from position/scale/viewport directly, so
+            // it can't drift if the transform math above ever changes.
+            const glm::mat4 inverse_transform = glm::inverse(camera.transform);
+            const glm::vec2 top_left = glm::vec2(inverse_transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            const glm::vec2 bottom_right = glm::vec2(inverse_transform * glm::vec4(
+                                                                              static_cast<float>(camera.viewport.dimensions.x),
+                                                                              static_cast<float>(camera.viewport.dimensions.y),
+                                                                              0.0f, 1.0f));
+            camera.visible_bounds = engine::Rectangle(top_left, bottom_right - top_left);
         }
     }
 } // namespace tilegame::systems

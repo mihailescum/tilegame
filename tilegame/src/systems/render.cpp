@@ -90,6 +90,8 @@ namespace tilegame::systems
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {
+            const engine::Rectangle &visible_bounds = camera.visible_bounds;
+
             _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader);
 
             // Since Renderable2D is only a tag, it does not show up in the view
@@ -103,12 +105,12 @@ namespace tilegame::systems
                 else if (view_tilelayers.contains(render_entity))
                 {
                     auto &tilelayer_component = view_tilelayers.get<const components::TileLayer>(render_entity);
-                    draw_tilelayer(transform, tilelayer_component);
+                    draw_tilelayer(transform, tilelayer_component, visible_bounds);
                 }
                 else if (view_particle_pools.contains(render_entity))
                 {
                     auto &pool_component = view_particle_pools.get<const components::ParticlePool>(render_entity);
-                    draw_particles(pool_component);
+                    draw_particles(pool_component, visible_bounds);
                 }
             }
             _spritebatch.end();
@@ -123,6 +125,8 @@ namespace tilegame::systems
 
         for (const auto &&[camera_entity, camera] : cameras.each())
         {
+            const engine::Rectangle &visible_bounds = camera.visible_bounds;
+
             _spritebatch.begin(camera.transform, true);
 
             engine::Color shape_color(0.4, 0.16, 0.93, 0.7);
@@ -151,6 +155,11 @@ namespace tilegame::systems
                 for (const auto &data : tilelayer.tile_data)
                 {
                     if (!data.textures)
+                    {
+                        continue;
+                    }
+
+                    if (!(data.destination_rect + position).intersects(visible_bounds))
                     {
                         continue;
                     }
@@ -206,7 +215,7 @@ namespace tilegame::systems
         _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE);
     }
 
-    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer)
+    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const engine::Rectangle &visible_bounds)
     {
         for (const auto &data : tilelayer.tile_data)
         {
@@ -215,11 +224,17 @@ namespace tilegame::systems
                 continue;
             }
 
-            _spritebatch.draw(data.textures, data.destination_rect + transform.position, &data.source_rect, engine::Color::WHITE);
+            const engine::Rectangle dest_rect = data.destination_rect + transform.position;
+            if (!dest_rect.intersects(visible_bounds))
+            {
+                continue;
+            }
+
+            _spritebatch.draw(data.textures, dest_rect, &data.source_rect, engine::Color::WHITE);
         }
     }
 
-    void Render::draw_particles(const components::ParticlePool &pool)
+    void Render::draw_particles(const components::ParticlePool &pool, const engine::Rectangle &visible_bounds)
     {
         // TODO this should be outside of the loop to avoid refeching for every emitter
         const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
@@ -231,6 +246,11 @@ namespace tilegame::systems
             const auto &position = transform.position;
             const auto &source_rect = sprite.source_rect;
             const engine::Rectangle dest_rect(position, source_rect.dimensions);
+            if (!dest_rect.intersects(visible_bounds))
+            {
+                continue;
+            }
+
             _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color);
         }
     }
