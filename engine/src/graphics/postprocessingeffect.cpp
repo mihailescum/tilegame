@@ -81,7 +81,7 @@ namespace engine::graphics
     {
         for (unsigned int i = 0; i < _input_textures.size(); ++i)
         {
-            _input_textures[i].get().use(i);
+            Texture2D::use(_input_textures[i].get(), i);
         }
     }
 } // namespace engine::graphics

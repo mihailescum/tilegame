@@ -43,6 +43,10 @@ namespace tilegame::systems
         // Exposed to Lua as `_to_global`; converts coordinates relative to the named
         // map's origin into world-space coordinates via the loaded World resource.
         glm::vec2 to_global(const std::string &map_name, const glm::vec2 &relative_position) const;
+        // Exposed to Lua as `_show_message`; creates a components::MessageBox request entity that
+        // systems::MessageBox picks up next frame, returning it so scripts can filter
+        // `_MessageClosedEvent` by source if they want.
+        entt::entity show_message(const std::string &text);
 
         // Registers EventType in _event_types so Lua scripts can listen for it via
         // add_event_listener; instantiated once per native event type in register_api().

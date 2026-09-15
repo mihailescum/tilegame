@@ -14,8 +14,6 @@ namespace tilegame
     {
         Game::initialize();
 
-        _spritebatch.create();
-
         // glfwSetInputMode(window.native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // window->position(700, 400);
 

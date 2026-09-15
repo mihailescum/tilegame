@@ -20,7 +20,7 @@ local function handle_map_left_event(event_type, event, source)
 end
 
 local timer1 = _registry:create()
-local timer_component = _Timer(1, true)
+local timer_component = _Timer(10, true)
 _registry:emplace(timer1, timer_component)
 
 _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)

@@ -3,6 +3,8 @@
 #include <vector>
 #include <optional>
 #include <memory>
+#include <string>
+#include <type_traits>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -11,6 +13,7 @@
 #include "core/glerror.hpp"
 #include "graphics/graphicsdevice.hpp"
 #include "graphics/spritedata.hpp"
+#include "graphics/spritefont.hpp"
 #include "graphics/vertexpositiontexturecolor.hpp"
 
 namespace engine::graphics
@@ -20,8 +23,11 @@ namespace engine::graphics
      * `glDrawElements` calls as possible. The `T` template parameter is a texture
      * container type (e.g. a plain Texture2D, or a struct bundling several textures
      * to be bound simultaneously such as a base color + luminosity map); it must
-     * provide a `native_type` alias and a static `use(native_type, unit)` to bind it.
-     * Usage is begin() / draw() (any number of times) / end().
+     * provide a `native_type` alias and a static `use(native_type)` binding it.
+     * draw_text() only exists for `SpriteBatch<Texture2D>`, since it binds a
+     * SpriteFont's single Texture2D directly rather than through T - drawing text
+     * through a SpriteBatch<SomeOtherContainer> needs its own such instance.
+     * Usage is begin() / draw()/draw_text() (any number of times) / end().
      */
     template <typename T = engine::Texture2D>
     class SpriteBatch
@@ -288,6 +294,28 @@ namespace engine::graphics
 
             add_sprite_data(texture_data, destination_rectangle, source_rectangle, color, z);
             _num_active_sprites++;
+        }
+
+        /**
+         * @brief Draws a single line of `text` in `font`, one glyph quad per character, with `pos`
+         * as the text's lower-left corner. Only participates in overload resolution for
+         * `SpriteBatch<Texture2D>` (SFINAE on `U`), since it binds font.texture() directly as T.
+         */
+        template <typename U = T, typename = std::enable_if_t<std::is_same_v<U, engine::Texture2D>>>
+        void draw_text(const std::string &text, const SpriteFont &font, const glm::vec2 &pos, const Color &color = Color::WHITE, float z = 0.0)
+        {
+            const float cell_width = static_cast<float>(font.cell_width());
+            const float cell_height = static_cast<float>(font.cell_height());
+            const float top = pos.y - cell_height;
+
+            float x = pos.x;
+            for (const char c : text)
+            {
+                const Rectangle source_rect = font.glyph_source_rect(c);
+                const Rectangle dest_rect(glm::vec2(x, top), glm::vec2(cell_width, cell_height));
+                draw(font.texture(), dest_rect, &source_rect, color, z);
+                x += cell_width;
+            }
         }
 
         void end()

@@ -1,0 +1,7 @@
+{
+    "texture": "..\/textures\/font.png",
+    "first_char": 32,
+    "columns": 16,
+    "cell_width": 21,
+    "cell_height": 37
+}

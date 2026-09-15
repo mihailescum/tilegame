@@ -79,10 +79,10 @@ namespace engine
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void Texture2D::use(GLenum unit) const
-    {
-        use(_gl_texture, unit);
-    }
+    // void Texture2D::use(GLenum unit) const
+    // {
+    //     use(_gl_texture, unit);
+    // }
 
     void Texture2D::use(native_type gl_texture, GLenum unit)
     {

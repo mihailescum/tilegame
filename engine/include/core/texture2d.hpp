@@ -40,11 +40,7 @@ namespace engine
         /// Uploads raw pixel data as a new GL texture, replacing any previously created texture and updating dimensions().
         void create_texture_from_raw_data(int width, int height, unsigned char *data);
 
-        /*
-            Activate the texture in openGL at the specified unit
-        */
-        void use(GLenum unit = 0) const;
-        static void use(native_type gl_texture, GLenum unit);
+        static void use(native_type gl_texture, GLenum unit = 0);
         const glm::ivec2 &dimensions() const { return _dimensions; }
         void internal_format(GLint interal_format);
         void image_format(GLint image_format);

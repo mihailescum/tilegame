@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "entt/entt.hpp"
 
 #include "engine.hpp"
@@ -30,16 +32,29 @@ namespace tilegame::systems
         // TimerEvent) to every entity carrying a matching EventListener<Event> component,
         // by invoking the listener with the event's EVENT_TYPE, data and source entity. Used
         // to notify Lua scripts (via systems::Script) of native engine events.
+        //
+        // Event types with no data fields (e.g. MessageClosedEvent) are treated by entt as
+        // empty/tag types, so their view's each() yields just the entity rather than
+        // (entity, event) - handled below via is_empty_v instead of relying on each()'s shape.
         template <class Event, class EventListener = components::EventListener<Event>>
         void raise_events() const
         {
             const auto event_entities = _registry.view<const Event>(entt::exclude<components::Inactive>);
             const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
-            for (const auto &&[source, event] : event_entities.each())
+            for (const auto source : event_entities)
             {
-                for (auto &&[listener, listener_component] : listener_entities.each())
+                for (const auto listener : listener_entities)
                 {
-                    listener_component(Event::EVENT_TYPE, event, source);
+                    const auto &listener_component = listener_entities.template get<const EventListener>(listener);
+                    if constexpr (std::is_empty_v<Event>)
+                    {
+                        listener_component(Event::EVENT_TYPE, Event{}, source);
+                    }
+                    else
+                    {
+                        const auto &event = event_entities.template get<const Event>(source);
+                        listener_component(Event::EVENT_TYPE, event, source);
+                    }
                 }
             }
         }

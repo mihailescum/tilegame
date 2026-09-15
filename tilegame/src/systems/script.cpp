@@ -12,6 +12,7 @@
 #include "components/pin.hpp"
 #include "components/direction.hpp"
 #include "components/currentmap.hpp"
+#include "components/messagebox.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -57,6 +58,8 @@ namespace tilegame::systems
         components::LuaTable::register_component(_lua());
         components::MapEnteredEvent::register_component(_lua());
         components::MapLeftEvent::register_component(_lua());
+        components::MessageOpenedEvent::register_component(_lua());
+        components::MessageClosedEvent::register_component(_lua());
         components::Pin::register_component(_lua());
         components::ScriptLoader::register_component(_lua());
         components::Target::register_component(_lua());
@@ -73,10 +76,13 @@ namespace tilegame::systems
                                 [this](const sol::table &event, sol::function callback, entt::entity source)
                                 { return Script::add_event_listener(event, callback, source); }));
         _lua().set_function("_to_global", sol::resolve<glm::vec2(const std::string &, const glm::vec2 &) const>(&Script::to_global), this);
+        _lua().set_function("_show_message", &Script::show_message, this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
         register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
         register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
         register_event_type<components::MapLeftEvent, components::EventListener<components::MapLeftEvent>>();
+        register_event_type<components::MessageClosedEvent, components::EventListener<components::MessageClosedEvent>>();
+        register_event_type<components::MessageOpenedEvent, components::EventListener<components::MessageOpenedEvent>>();
     }
 
     bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
@@ -96,6 +102,13 @@ namespace tilegame::systems
     {
         const auto &world = _scene.game().resource_manager().get<engine::tilemap::World>("world1");
         return world.to_global(map_name, relative_position);
+    }
+
+    entt::entity Script::show_message(const std::string &text)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::MessageBox>(entity, text);
+        return entity;
     }
 
     void Script::update(const engine::GameTime &update_time)

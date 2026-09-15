@@ -22,6 +22,7 @@ namespace tilegame::systems
     {
     private:
         entt::entity _player1_entity;
+        bool _player1_input_active;
         // Reads the arrow keys for player 1 and returns a normalized direction vector (zero
         // if no keys are pressed).
         glm::vec2 handle_input_1();

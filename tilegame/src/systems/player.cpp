@@ -15,10 +15,11 @@
 #include "components/inactive.hpp"
 #include "components/speed.hpp"
 #include "components/collider.hpp"
+#include "components/messagebox.hpp"
 
 namespace tilegame::systems
 {
-    Player::Player(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Player::Player(tilegame::Scene &scene, entt::registry &registry) : _player1_input_active(true), System(scene, registry)
     {
     }
 
@@ -44,6 +45,14 @@ namespace tilegame::systems
         _registry.emplace<components::Direction>(_player1_entity);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);
+        _registry.emplace<components::EventListener<components::MessageOpenedEvent>>(
+            _player1_entity, components::EventListener<components::MessageOpenedEvent>([this](const std::string event_type, const components::MessageOpenedEvent &event, entt::entity source)
+                                                                                       { this->_player1_input_active = false; }),
+            entt::null);
+        _registry.emplace<components::EventListener<components::MessageClosedEvent>>(
+            _player1_entity, components::EventListener<components::MessageClosedEvent>([this](const std::string event_type, const components::MessageClosedEvent &event, entt::entity source)
+                                                                                       { this->_player1_input_active = true; }),
+            entt::null);
 
         // const tilegame::SceneGraphData player1_scenedata(_player1_entity);
         // tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
@@ -91,6 +100,9 @@ namespace tilegame::systems
         const auto &window = _scene.game().window();
 
         auto result = glm::vec2(0.0);
+        if (!_player1_input_active)
+            return result;
+
         if (window.is_key_pressed(GLFW_KEY_LEFT))
         {
             result.x -= 1.0;

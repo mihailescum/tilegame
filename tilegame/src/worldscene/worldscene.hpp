@@ -21,6 +21,7 @@
 #include "systems/particle.hpp"
 #include "systems/daytime.hpp"
 #include "systems/collisiondetection.hpp"
+#include "systems/messagebox.hpp"
 
 namespace tilegame
 {
@@ -32,8 +33,7 @@ namespace tilegame::worldscene
     /**
      * @brief Top-level orchestrator for the currently loaded game scene.
      *
-     * Owns the entt::registry, the PostProcessor (and its daytime/luminosity
-     * blend effect chain), and one instance of every systems::* system, and
+     * Owns the entt::registry and one instance of every systems::* system, and
      * drives them through their lifecycle each frame in the fixed order
      * required for correct behavior (e.g. input/scripts before movement,
      * collision before movement is applied, animation/camera after).
@@ -42,7 +42,6 @@ namespace tilegame::worldscene
     {
     private:
         entt::registry _registry;
-        engine::graphics::PostProcessor _postprocessor;
 
         systems::Render _system_render;
         systems::Map _system_map;
@@ -57,6 +56,7 @@ namespace tilegame::worldscene
         systems::Particle _system_particle;
         systems::Daytime _system_daytime;
         systems::CollisionDetection _system_collision_detection;
+        systems::MessageBox _system_messagebox;
 
     public:
         WorldScene(Tilegame &game);

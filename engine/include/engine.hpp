@@ -29,6 +29,7 @@
 #include "graphics/postprocessor.hpp"
 #include "graphics/sprite.hpp"
 #include "graphics/spriteframe.hpp"
+#include "graphics/spritefont.hpp"
 #include "graphics/spritesheet.hpp"
 #include "graphics/spritestate.hpp"
 #include "graphics/spritebatch.hpp"

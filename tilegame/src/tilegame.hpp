@@ -8,9 +8,9 @@ namespace tilegame
     /**
      * @brief Top-level engine::Game implementation for the tilegame executable.
      *
-     * Owns the SpriteBatch used for all rendering and the single WorldScene,
-     * forwarding the engine's game loop lifecycle callbacks to it, and
-     * updates the window title with the current FPS/UPS once per second.
+     * Owns the single WorldScene (which owns the SpriteBatch(es) used for all
+     * rendering), forwarding the engine's game loop lifecycle callbacks to it,
+     * and updates the window title with the current FPS/UPS once per second.
      */
     class Tilegame : public engine::Game
     {
@@ -19,7 +19,6 @@ namespace tilegame
         int _updates = 0;
         float _timer = 0;
 
-        engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> _spritebatch;
         worldscene::WorldScene _worldscene;
 
     protected:
@@ -34,10 +33,8 @@ namespace tilegame
         virtual void end_draw(const engine::GameTime &draw_time) override;
 
     public:
-        Tilegame(int window_width, int window_height) : Game(window_width, window_height), _spritebatch(_graphicsdevice), _worldscene(*this) {}
+        Tilegame(int window_width, int window_height) : Game(window_width, window_height), _worldscene(*this) {}
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
-
-        auto &spritebatch() { return _spritebatch; }
     };
 } // namespace tilegame
