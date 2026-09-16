@@ -19,24 +19,31 @@ namespace tilegame::components
         float flash_duration;
     };
 
-    // ---- Command: emplaced on a fresh entity by the _set_lightning Lua binding (see
-    // Script::set_lightning()), consumed and destroyed by systems::Lightning the next time it
-    // updates. (Re)starts recurring lightning strikes, each waiting a fresh random interval
-    // within [min_interval, max_interval) seconds after the previous one and, once struck,
-    // brightening the scene for flash_duration seconds.
+    // ---- Raised via System::raise() by the _set_lightning Lua binding (see
+    // Script::set_lightning()), immediately delivered to systems::Lightning's
+    // EventListener<SetLightningEvent> (registered in Lightning::load_content()). (Re)starts
+    // recurring lightning strikes, each waiting a fresh random interval within [min_interval,
+    // max_interval) seconds after the previous one and, once struck, brightening the scene for
+    // flash_duration seconds. Not exposed to Lua as a usertype - nothing outside
+    // systems::Lightning subscribes to it today - but carries EVENT_TYPE like any other event
+    // since System::raise_event() needs it regardless.
     struct SetLightningEvent
     {
+        inline static const std::string EVENT_TYPE = "SET_LIGHTNING_EVENT";
+
         float min_interval;
         float max_interval;
         float flash_duration;
     };
 
-    // ---- Command: emplaced on a fresh entity by the _clear_lightning Lua binding (see
-    // Script::clear_lightning()), consumed and destroyed by systems::Lightning the next time it
-    // updates. Stops the recurring schedule; an in-progress screen flash still finishes playing
-    // out, since that's driven by its own independent decay, not the Timer.
+    // ---- Raised via System::raise() by the _clear_lightning Lua binding (see
+    // Script::clear_lightning()), immediately delivered to systems::Lightning's
+    // EventListener<ClearLightningEvent>. Stops the recurring schedule; an in-progress screen
+    // flash still finishes playing out, since that's driven by its own independent decay, not
+    // the Timer.
     struct ClearLightningEvent
     {
+        inline static const std::string EVENT_TYPE = "CLEAR_LIGHTNING_EVENT";
     };
 
     /**

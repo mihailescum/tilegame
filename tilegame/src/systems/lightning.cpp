@@ -11,15 +11,6 @@
 
 namespace tilegame::systems
 {
-    namespace
-    {
-        using namespace entt::literals;
-        // Registry context id (registry.ctx()) under which the single lightning entity's
-        // handle is stored, for the entire program's life once load_content() has run. Private
-        // to this file; nothing outside systems::Lightning needs to find it.
-        constexpr auto LIGHTNING_ENTITY_ID = "lightning_entity"_hs;
-    }
-
     Lightning::Lightning(tilegame::Scene &scene, entt::registry &registry)
         : System(scene, registry), _flash_intensity(0.0f), _flash_duration(0.0f)
     {
@@ -45,7 +36,24 @@ namespace tilegame::systems
             { strike(entity); },
             entity);
 
-        _registry.ctx().emplace_as<entt::entity>(LIGHTNING_ENTITY_ID, entity);
+        // On a *separate* entity - never tagged Inactive - since `entity` starts Inactive and
+        // raise_event()'s listener view excludes Inactive entities: attaching these to `entity`
+        // itself would mean the very event whose job is to remove Inactive could never reach it.
+        const auto control_entity = _registry.create();
+        _registry.emplace<components::EventListener<components::SetLightningEvent>>(
+            control_entity,
+            [this, entity](const std::string &, const components::SetLightningEvent &event, entt::entity)
+            {
+                _registry.replace<components::Lightning>(entity, event.min_interval, event.max_interval, event.flash_duration);
+                _registry.emplace_or_replace<components::Timer>(entity, get_random(event.min_interval, event.max_interval), false);
+                _registry.remove<components::Inactive>(entity);
+            },
+            entt::null);
+        _registry.emplace<components::EventListener<components::ClearLightningEvent>>(
+            control_entity,
+            [this, entity](const std::string &, const components::ClearLightningEvent &, entt::entity)
+            { _registry.emplace_or_replace<components::Inactive>(entity); },
+            entt::null);
     }
 
     void Lightning::strike(entt::entity lightning_entity)
@@ -55,40 +63,16 @@ namespace tilegame::systems
         _flash_intensity = 1.0f;
         _flash_duration = lightning.flash_duration;
 
-        const auto event_entity = _registry.create();
-        _registry.emplace<components::LightningEvent>(event_entity);
-        raise_events<components::LightningEvent>();
-        _registry.destroy(event_entity);
+        raise_event<components::LightningEvent>();
 
         _registry.emplace_or_replace<components::Timer>(lightning_entity, get_random(lightning.min_interval, lightning.max_interval), false);
     }
 
-    void Lightning::apply_pending_commands()
-    {
-        const auto lightning_entity = _registry.ctx().get<entt::entity>(LIGHTNING_ENTITY_ID);
-
-        for (auto &&[entity, event] : _registry.view<components::SetLightningEvent>().each())
-        {
-            _registry.replace<components::Lightning>(lightning_entity, event.min_interval, event.max_interval, event.flash_duration);
-            _registry.emplace_or_replace<components::Timer>(lightning_entity, get_random(event.min_interval, event.max_interval), false);
-            _registry.remove<components::Inactive>(lightning_entity);
-            _registry.destroy(entity);
-        }
-
-        for (const auto entity : _registry.view<components::ClearLightningEvent>())
-        {
-            _registry.emplace_or_replace<components::Inactive>(lightning_entity);
-            _registry.destroy(entity);
-        }
-    }
-
     void Lightning::update(const engine::GameTime &update_time)
     {
-        apply_pending_commands();
-
         _flash_intensity = _flash_duration > 0.0f
-                                ? std::max(0.0f, _flash_intensity - update_time.elapsed_time / _flash_duration)
-                                : 0.0f;
+                               ? std::max(0.0f, _flash_intensity - update_time.elapsed_time / _flash_duration)
+                               : 0.0f;
 
         _daytime_shader->use();
         _daytime_shader->set("flash_intensity", _flash_intensity);

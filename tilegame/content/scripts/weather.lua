@@ -72,5 +72,5 @@ SNOW_AREA = _Rectangle(vec2(-800.0, -550.0), vec2(1600.0, 1000.0))
 --       RAIN.scale.x, RAIN.scale.y, RAIN.color, RAIN.source_rect)
 
 _set_weather_precipitation(SNOW, SNOW_AREA)
-_shake_camera_horizontal(100, 5, 1) -- chase within +-5 units at up to 100 units/sec, for 1 second
+_shake_camera_horizontal(500, 20, 5) -- chase within +-20 units at up to 500 units/sec, for 5 seconds
 _set_lightning(1, 2, 0.2)

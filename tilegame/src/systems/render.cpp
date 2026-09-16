@@ -225,6 +225,12 @@ namespace tilegame::systems
         {
             draw_message_box(message_box_state);
         }
+        // Only once systems::MessageBox has revealed the options box (an Enter press while the
+        // message's last line was already on screen) does it get drawn.
+        if (message_box_state.showing_options)
+        {
+            draw_options_box(message_box_state);
+        }
     }
 
     void Render::sort_renderables()
@@ -318,6 +324,36 @@ namespace tilegame::systems
             _text_spritebatch.draw_text(line, *_font, glm::vec2(BOX_PADDING, line_bottom), engine::Color::WHITE);
 
             line_index++;
+        }
+        _text_spritebatch.end();
+    }
+
+    void Render::draw_options_box(const components::MessageBoxState &state)
+    {
+        using namespace tilegame::messagebox_layout;
+
+        const auto &viewport = _scene.game().graphicsdevice().viewport();
+        const int cell_height = _font->cell_height();
+
+        const float message_box_height = BOX_PADDING * 2 + cell_height * VISIBLE_LINES;
+        const float message_box_y = viewport.dimensions.y - BOX_MARGIN_BOTTOM - message_box_height;
+
+        const float box_width = viewport.dimensions.x * OPTIONS_BOX_WIDTH_RATIO;
+        const float box_height = BOX_PADDING * 2 + cell_height * static_cast<float>(state.options.size());
+        const float box_x = viewport.dimensions.x - box_width;
+        const float box_y = message_box_y - OPTIONS_BOX_MARGIN_BOTTOM - box_height;
+
+        _spritebatch.begin(true);
+        const engine::Rectangle box_rect(glm::vec2(box_x, box_y), glm::vec2(box_width, box_height));
+        _spritebatch.draw(_rect_tex, box_rect, nullptr, engine::Color(0.0f, 0.0f, 0.0f, 0.75f));
+        _spritebatch.end();
+
+        _text_spritebatch.begin(true);
+        for (std::size_t option_index = 0; option_index < state.options.size(); option_index++)
+        {
+            const float line_bottom = box_y + BOX_PADDING + (option_index + 1) * cell_height;
+            const std::string prefix = option_index == state.selected_option ? "> " : "  ";
+            _text_spritebatch.draw_text(prefix + state.options[option_index], *_font, glm::vec2(box_x + BOX_PADDING, line_bottom), engine::Color::WHITE);
         }
         _text_spritebatch.end();
     }

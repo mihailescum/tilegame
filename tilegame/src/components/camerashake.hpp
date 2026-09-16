@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace tilegame::components
 {
     // Per-axis screen shake state, owned by systems::Camera on its two dedicated shake entities
@@ -23,23 +25,32 @@ namespace tilegame::components
         bool settling;
     };
 
-    // ---- Command: emplaced on a fresh entity by the _shake_camera_horizontal Lua binding (see
-    // Script::shake_camera_horizontal()), consumed and destroyed by systems::Camera the next
-    // time it updates. Restarts the horizontal shake axis, jittering within [-offset, +offset]
-    // at up to `displacement_speed` units/second, for `duration` seconds.
+    // ---- Raised via System::raise() by the _shake_camera_horizontal Lua binding (see
+    // Script::shake_camera_horizontal()), immediately delivered to systems::Camera's
+    // EventListener<ShakeCameraHorizontalEvent> (registered on the horizontal shake axis entity
+    // in Camera::load_content()). Restarts the horizontal shake axis, jittering within
+    // [-offset, +offset] at up to `displacement_speed` units/second, for `duration` seconds.
+    // Not exposed to Lua as a usertype - nothing outside systems::Camera subscribes to it today
+    // - but carries EVENT_TYPE like any other event since System::raise_event() needs it
+    // regardless.
     struct ShakeCameraHorizontalEvent
     {
+        inline static const std::string EVENT_TYPE = "SHAKE_CAMERA_HORIZONTAL_EVENT";
+
         float displacement_speed;
         float offset;
         float duration;
     };
 
-    // ---- Command: emplaced on a fresh entity by the _shake_camera_vertical Lua binding (see
-    // Script::shake_camera_vertical()), consumed and destroyed by systems::Camera the next time
-    // it updates. Restarts the vertical shake axis, jittering within [-offset, +offset] at up
-    // to `displacement_speed` units/second, for `duration` seconds.
+    // ---- Raised via System::raise() by the _shake_camera_vertical Lua binding (see
+    // Script::shake_camera_vertical()), immediately delivered to systems::Camera's
+    // EventListener<ShakeCameraVerticalEvent>. Restarts the vertical shake axis, jittering
+    // within [-offset, +offset] at up to `displacement_speed` units/second, for `duration`
+    // seconds.
     struct ShakeCameraVerticalEvent
     {
+        inline static const std::string EVENT_TYPE = "SHAKE_CAMERA_VERTICAL_EVENT";
+
         float displacement_speed;
         float offset;
         float duration;

@@ -54,12 +54,19 @@ namespace tilegame::worldscene
 
         _system_map.load_content();
         _system_player.load_content();
-        _system_weather.load_content(); // Pins its precipitation entity to player 1, so must run after Player::load_content()
         _system_particle.load_content();
 
         _system_camera.load_content();
+        _system_weather.load_content(); // Pins its precipitation entity to the camera, so must run after Camera::load_content()
 
         _system_render.load_content();
+
+        // Runs the global Lua scripts (content/scripts/daytime.lua, weather.lua), which
+        // immediately raise events like SetWeatherPrecipitationEvent/ShakeCameraHorizontalEvent/
+        // SetLightningEvent (see systems::Script::load_content()) - must run last, once every
+        // system above has already created whatever entities/listeners those events are
+        // delivered to.
+        _system_script.load_content();
     }
 
     void WorldScene::unload_content()
@@ -91,9 +98,7 @@ namespace tilegame::worldscene
 
     void WorldScene::end_update()
     {
-        _system_timer.end_update();
         _system_movement_controller.end_update();
-        _system_movement.end_update();
     }
 
     void WorldScene::begin_draw()

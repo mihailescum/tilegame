@@ -10,7 +10,7 @@ local function handle_timer_event(event_type, event, source)
 end
 
 local function handle_map_entered_event(event_type, event, source)
-    map_name = _registry:get(source, _MapEnteredEvent).map_name
+    map_name = event.map_name
     print("Map entered: " .. map_name)
 end
 

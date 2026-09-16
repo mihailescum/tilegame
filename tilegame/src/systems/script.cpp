@@ -15,6 +15,7 @@
 #include "components/direction.hpp"
 #include "components/currentmap.hpp"
 #include "components/messagebox.hpp"
+#include "components/player.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -34,8 +35,12 @@ namespace tilegame::systems
     {
         _lua.open_libraries();
         register_api();
+    }
 
-        // Global configuration scripts, run once at startup.
+    void Script::load_content()
+    {
+        // Global configuration scripts, run once at startup - deliberately here rather than in
+        // initialize(), see the declaration in script.hpp for why.
         run_script("content/scripts/daytime.lua");
         run_script("content/scripts/weather.lua");
     }
@@ -118,13 +123,23 @@ namespace tilegame::systems
                                 { return Script::add_event_listener(event, callback, entt::null); },
                                 [this](const sol::table &event, sol::function callback, entt::entity source)
                                 { return Script::add_event_listener(event, callback, source); }));
+        _lua().set_function("_remove_event_listener", &Script::remove_event_listener, this);
         _lua().set_function("_to_global", sol::resolve<glm::vec2(const std::string &, const glm::vec2 &) const>(&Script::to_global), this);
         _lua().set_function("_show_message",
                             sol::overload(
                                 [this](const std::string &text)
-                                { Script::show_message(text, false); },
+                                { Script::show_message(text, false, {}); },
                                 [this](const std::string &text, bool append)
-                                { Script::show_message(text, append); }));
+                                { Script::show_message(text, append, {}); },
+                                [this](const std::string &text, bool append, const sol::table &options)
+                                {
+                                    std::vector<std::string> parsed_options;
+                                    for (const auto &option : options)
+                                    {
+                                        parsed_options.push_back(option.second.as<std::string>());
+                                    }
+                                    Script::show_message(text, append, parsed_options);
+                                }));
         _lua().set_function("_set_daytime_marks", &Script::set_daytime_marks, this);
         _lua().set_function("_set_daytime_time", &Script::set_daytime_time, this);
         _lua().set_function("_set_daytime_speedup", &Script::set_daytime_speedup, this);
@@ -139,6 +154,8 @@ namespace tilegame::systems
         _lua().set_function("_shake_camera_vertical", &Script::shake_camera_vertical, this);
         _lua().set_function("_set_lightning", &Script::set_lightning, this);
         _lua().set_function("_clear_lightning", &Script::clear_lightning, this);
+        _lua().set_function("_stop_player_input", &Script::stop_player_input, this);
+        _lua().set_function("_resume_player_input", &Script::resume_player_input, this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
         register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
         register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
@@ -148,7 +165,7 @@ namespace tilegame::systems
         register_event_type<components::LightningEvent, components::EventListener<components::LightningEvent>>();
     }
 
-    bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
+    entt::entity Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
     {
         auto event_type = event["EVENT_TYPE"];
         if (event_type.valid() && _event_types.find(event_type) != _event_types.end())
@@ -157,7 +174,15 @@ namespace tilegame::systems
         }
         else
         {
-            return false;
+            return entt::null;
+        }
+    }
+
+    void Script::remove_event_listener(entt::entity listener)
+    {
+        if (_registry.valid(listener))
+        {
+            _registry.destroy(listener);
         }
     }
 
@@ -167,10 +192,9 @@ namespace tilegame::systems
         return world.to_global(map_name, relative_position);
     }
 
-    void Script::show_message(const std::string &text, bool append)
+    void Script::show_message(const std::string &text, bool append, const std::vector<std::string> &options)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::ShowMessageEvent>(entity, text, append);
+        raise_event<components::ShowMessageEvent>(entt::null, text, append, options);
     }
 
     void Script::set_daytime_marks(const sol::table &marks)
@@ -184,68 +208,67 @@ namespace tilegame::systems
         std::sort(parsed.begin(), parsed.end(), [](const components::TimeOfDayMark &a, const components::TimeOfDayMark &b)
                   { return a.start < b.start; });
 
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetDaytimeMarksEvent>(entity, std::move(parsed));
+        raise_event<components::SetDaytimeMarksEvent>(entt::null, std::move(parsed));
     }
 
     void Script::set_daytime_time(int seconds_since_midnight)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetDaytimeTimeEvent>(entity, seconds_since_midnight);
+        raise_event<components::SetDaytimeTimeEvent>(entt::null, seconds_since_midnight);
     }
 
     void Script::set_daytime_speedup(double ingame_seconds_per_real_second)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetDaytimeSpeedupEvent>(entity, ingame_seconds_per_real_second);
+        raise_event<components::SetDaytimeSpeedupEvent>(entt::null, ingame_seconds_per_real_second);
     }
 
     void Script::set_daytime_day_duration(int seconds)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetDaytimeDayDurationEvent>(entity, seconds);
+        raise_event<components::SetDaytimeDayDurationEvent>(entt::null, seconds);
     }
 
     void Script::set_weather_tint(const engine::Color &target_tint, float fade_duration)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetWeatherTintEvent>(entity, target_tint, fade_duration);
+        raise_event<components::SetWeatherTintEvent>(entt::null, target_tint, fade_duration);
     }
 
     void Script::set_weather_precipitation(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetWeatherPrecipitationEvent>(entity, emitter, spawn_area);
+        raise_event<components::SetWeatherPrecipitationEvent>(entt::null, emitter, spawn_area);
     }
 
     void Script::set_weather_precipitation()
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::ClearWeatherPrecipitationEvent>(entity);
+        raise_event<components::ClearWeatherPrecipitationEvent>();
     }
 
     void Script::shake_camera_horizontal(float displacement_speed, float offset, float duration)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::ShakeCameraHorizontalEvent>(entity, displacement_speed, offset, duration);
+        raise_event<components::ShakeCameraHorizontalEvent>(entt::null, displacement_speed, offset, duration);
     }
 
     void Script::shake_camera_vertical(float displacement_speed, float offset, float duration)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::ShakeCameraVerticalEvent>(entity, displacement_speed, offset, duration);
+        raise_event<components::ShakeCameraVerticalEvent>(entt::null, displacement_speed, offset, duration);
     }
 
     void Script::set_lightning(float min_interval, float max_interval, float flash_duration)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::SetLightningEvent>(entity, min_interval, max_interval, flash_duration);
+        raise_event<components::SetLightningEvent>(entt::null, min_interval, max_interval, flash_duration);
     }
 
     void Script::clear_lightning()
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::ClearLightningEvent>(entity);
+        raise_event<components::ClearLightningEvent>();
+    }
+
+    void Script::stop_player_input(int player_id)
+    {
+        raise_event<components::StopPlayerInputEvent>(entt::null, player_id);
+    }
+
+    void Script::resume_player_input(int player_id)
+    {
+        raise_event<components::ResumePlayerInputEvent>(entt::null, player_id);
     }
 
     void Script::update(const engine::GameTime &update_time)

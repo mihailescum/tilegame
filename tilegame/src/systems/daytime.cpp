@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "components/event.hpp"
+
 namespace tilegame::systems
 {
     Daytime::Daytime(tilegame::Scene &scene, entt::registry &registry)
@@ -28,36 +30,32 @@ namespace tilegame::systems
         blend_shader->set("scene", 0);
         blend_shader->set("bloomBlur", 1);
         blend_shader->set("exposure", 1.0f);
-    }
 
-    void Daytime::apply_pending_commands()
-    {
-        for (auto &&[entity, event] : _registry.view<components::SetDaytimeMarksEvent>().each())
-        {
-            _times_of_day = std::move(event.marks);
-            _registry.destroy(entity);
-        }
-        for (auto &&[entity, event] : _registry.view<components::SetDaytimeTimeEvent>().each())
-        {
-            _now = event.seconds_since_midnight;
-            _registry.destroy(entity);
-        }
-        for (auto &&[entity, event] : _registry.view<components::SetDaytimeSpeedupEvent>().each())
-        {
-            _speedup = event.speedup;
-            _registry.destroy(entity);
-        }
-        for (auto &&[entity, event] : _registry.view<components::SetDaytimeDayDurationEvent>().each())
-        {
-            _day_duration = event.seconds;
-            _registry.destroy(entity);
-        }
+        const auto entity = _registry.create();
+        _registry.emplace<components::EventListener<components::SetDaytimeMarksEvent>>(
+            entity,
+            [this](const std::string &, const components::SetDaytimeMarksEvent &event, entt::entity)
+            { _times_of_day = event.marks; },
+            entt::null);
+        _registry.emplace<components::EventListener<components::SetDaytimeTimeEvent>>(
+            entity,
+            [this](const std::string &, const components::SetDaytimeTimeEvent &event, entt::entity)
+            { _now = event.seconds_since_midnight; },
+            entt::null);
+        _registry.emplace<components::EventListener<components::SetDaytimeSpeedupEvent>>(
+            entity,
+            [this](const std::string &, const components::SetDaytimeSpeedupEvent &event, entt::entity)
+            { _speedup = event.speedup; },
+            entt::null);
+        _registry.emplace<components::EventListener<components::SetDaytimeDayDurationEvent>>(
+            entity,
+            [this](const std::string &, const components::SetDaytimeDayDurationEvent &event, entt::entity)
+            { _day_duration = event.seconds; },
+            entt::null);
     }
 
     void Daytime::update(const engine::GameTime &update_time)
     {
-        apply_pending_commands();
-
         _now += static_cast<int>(_speedup * update_time.elapsed_time);
         if (_day_duration > 0)
         {
@@ -96,8 +94,8 @@ namespace tilegame::systems
             }
 
             float lerp_amount = next_start > now_mark->start
-                                     ? static_cast<float>(_now - now_mark->start) / (next_start - now_mark->start)
-                                     : 0.0f;
+                                    ? static_cast<float>(_now - now_mark->start) / (next_start - now_mark->start)
+                                    : 0.0f;
 
             const engine::Color tint = engine::Color::lerp(now_mark->tint_color, next_mark->tint_color, lerp_amount);
             _daytime_shader->use();

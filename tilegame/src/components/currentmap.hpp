@@ -20,9 +20,10 @@ namespace tilegame::components
     };
 
     /**
-     * @brief Entt event component raised for one frame on an entity whose CurrentMap
-     * just changed to `map_name`, delivered to EventListener<MapEnteredEvent> via the
-     * engine's event-listener mechanism before being cleared. Exposed to Lua as `_MapEnteredEvent`.
+     * @brief Raised immediately by the Movement system (via System::raise_event()) when an
+     * entity's CurrentMap changes to `map_name`, and delivered synchronously to every
+     * EventListener<MapEnteredEvent>. A plain value type - never stored as an entt component -
+     * that only exists for the duration of that call. Exposed to Lua as `_MapEnteredEvent`.
      */
     struct MapEnteredEvent
     {
@@ -37,9 +38,10 @@ namespace tilegame::components
     };
 
     /**
-     * @brief Entt event component raised for one frame on an entity whose CurrentMap
-     * just changed away from `map_name`, delivered to EventListener<MapLeftEvent> via the
-     * engine's event-listener mechanism before being cleared. Exposed to Lua as `_MapLeftEvent`.
+     * @brief Raised immediately by the Movement system (via System::raise_event()) when an
+     * entity's CurrentMap changes away from `map_name`, and delivered synchronously to every
+     * EventListener<MapLeftEvent>. A plain value type - never stored as an entt component -
+     * that only exists for the duration of that call. Exposed to Lua as `_MapLeftEvent`.
      */
     struct MapLeftEvent
     {

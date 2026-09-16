@@ -28,9 +28,10 @@ namespace tilegame::components
     };
 
     /**
-     * @brief Entt event component raised for one frame by the Timer system when a Timer expires,
-     * and delivered to `EventListener<TimerEvent>` components via the engine's event-listener
-     * mechanism before being cleared. Exposed to Lua as `_TimerEvent`.
+     * @brief Raised immediately by the Timer system (via System::raise_event()) when a Timer
+     * expires, and delivered synchronously to every `EventListener<TimerEvent>`. A plain value
+     * type - never stored as an entt component - that only exists for the duration of that
+     * call. Exposed to Lua as `_TimerEvent`.
      */
     struct TimerEvent
     {

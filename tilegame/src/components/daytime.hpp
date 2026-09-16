@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "entt/entt.hpp"
@@ -26,29 +27,37 @@ namespace tilegame::components
         TimeOfDayMark(int start, const engine::Color &tint_color) : start(start), tint_color(tint_color) {}
     };
 
-    // ---- Commands: emplaced on a fresh entity by the _set_daytime_* Lua bindings (see
-    // Script::set_daytime_marks() etc.), consumed and destroyed by systems::Daytime the next
-    // time it updates. systems::Daytime is their only subscriber, so they skip the generic
-    // EventListener<T>/raise_events() broadcast machinery (that's for notifying arbitrary Lua
-    // listeners of native events) and are just picked up directly.
+    // ---- Raised via System::raise() by the _set_daytime_* Lua bindings (see
+    // Script::set_daytime_marks() etc.), immediately delivered to systems::Daytime's matching
+    // EventListener<T> (registered in Daytime::load_content()). Not exposed to Lua as
+    // usertypes - nothing outside systems::Daytime subscribes to them today - but each carries
+    // EVENT_TYPE like any other event since System::raise_event() needs it regardless.
 
     struct SetDaytimeMarksEvent
     {
+        inline static const std::string EVENT_TYPE = "SET_DAYTIME_MARKS_EVENT";
+
         std::vector<TimeOfDayMark> marks;
     };
 
     struct SetDaytimeTimeEvent
     {
+        inline static const std::string EVENT_TYPE = "SET_DAYTIME_TIME_EVENT";
+
         int seconds_since_midnight;
     };
 
     struct SetDaytimeSpeedupEvent
     {
+        inline static const std::string EVENT_TYPE = "SET_DAYTIME_SPEEDUP_EVENT";
+
         double speedup;
     };
 
     struct SetDaytimeDayDurationEvent
     {
+        inline static const std::string EVENT_TYPE = "SET_DAYTIME_DAY_DURATION_EVENT";
+
         int seconds;
     };
 } // namespace tilegame::components

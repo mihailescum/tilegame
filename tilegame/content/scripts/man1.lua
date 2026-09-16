@@ -49,9 +49,13 @@ print("Man loaded")
 -- Manual test for show_message: prints a message that should wrap across more
 -- than two lines, blocking movement until the player has pressed Enter through
 -- all of them.
+
+_show_message("Hello! This is a longer test message that should wrap across more than two lines when the dialog box is on screen.", false, {"yes", "no"})
+_stop_player_input(1)
 _add_event_listener(_MessageClosedEvent, function(event_type, event, source)
-    print("Message closed")
+    print("Selected option: " .. event.selected_option)
+    _resume_player_input(1)
 end)
-_show_message("Hello! This is a longer test message that should wrap across more than two lines when the dialog box is on screen.", false)
+
 
 return man1

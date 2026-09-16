@@ -16,7 +16,11 @@ namespace tilegame::systems
      * Movement, Animation, Sprite, Collider) on load_content, and each frame
      * reads keyboard input for entities with a Player + Speed component and
      * writes the resulting Direction, which MovementController later turns
-     * into velocity.
+     * into velocity. Also registers, on `_player1_entity` in load_content(),
+     * EventListener<StopPlayerInputEvent>/EventListener<ResumePlayerInputEvent> that toggle
+     * input the instant Lua's `_stop_player_input`/`_resume_player_input` raises them via the
+     * inherited System::raise(), for whichever player entity's id matches the event's
+     * player_id.
      */
     class Player : public System
     {

@@ -11,7 +11,7 @@ namespace tilegame::components
     std::string MessageClosedEvent::to_string() const
     {
         std::stringstream ss;
-        ss << "MessageClosedEvent";
+        ss << "MessageClosedEvent(selected_option=" << selected_option << ")";
         return ss.str();
     }
 
@@ -25,7 +25,10 @@ namespace tilegame::components
             sol::call_constructor,
             sol::factories(
                 []()
-                { return MessageClosedEvent(); }),
+                { return MessageClosedEvent(); },
+                [](const std::string &selected_option)
+                { return MessageClosedEvent(selected_option); }),
+            "selected_option", &MessageClosedEvent::selected_option,
             "EVENT_TYPE", sol::var(MessageClosedEvent::EVENT_TYPE.c_str()),
             sol::meta_function::to_string, &MessageClosedEvent::to_string);
     }

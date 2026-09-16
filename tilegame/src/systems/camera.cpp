@@ -79,8 +79,35 @@ namespace tilegame::systems
 
         _registry.ctx().emplace_as<entt::entity>(components::CAMERA_ENTITY_ID, camera_entity);
 
-        _registry.ctx().emplace_as<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID, create_shake_axis_entity());
-        _registry.ctx().emplace_as<entt::entity>(VERTICAL_SHAKE_ENTITY_ID, create_shake_axis_entity());
+        const auto horizontal_axis_entity = create_shake_axis_entity();
+        _registry.ctx().emplace_as<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID, horizontal_axis_entity);
+
+        const auto vertical_axis_entity = create_shake_axis_entity();
+        _registry.ctx().emplace_as<entt::entity>(VERTICAL_SHAKE_ENTITY_ID, vertical_axis_entity);
+
+        // On a *separate* entity - never tagged Inactive - since both axis entities start
+        // Inactive and raise_event()'s listener view excludes Inactive entities: attaching
+        // these to the axis entities themselves would mean the very event whose job is to
+        // remove Inactive could never reach them.
+        const auto control_entity = _registry.create();
+        _registry.emplace<components::EventListener<components::ShakeCameraHorizontalEvent>>(
+            control_entity,
+            [this, horizontal_axis_entity](const std::string &, const components::ShakeCameraHorizontalEvent &event, entt::entity)
+            {
+                _registry.replace<components::CameraShakeAxis>(horizontal_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
+                _registry.emplace_or_replace<components::Timer>(horizontal_axis_entity, event.duration, false);
+                _registry.remove<components::Inactive>(horizontal_axis_entity);
+            },
+            entt::null);
+        _registry.emplace<components::EventListener<components::ShakeCameraVerticalEvent>>(
+            control_entity,
+            [this, vertical_axis_entity](const std::string &, const components::ShakeCameraVerticalEvent &event, entt::entity)
+            {
+                _registry.replace<components::CameraShakeAxis>(vertical_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
+                _registry.emplace_or_replace<components::Timer>(vertical_axis_entity, event.duration, false);
+                _registry.remove<components::Inactive>(vertical_axis_entity);
+            },
+            entt::null);
     }
 
     entt::entity Camera::create_shake_axis_entity()
@@ -90,8 +117,8 @@ namespace tilegame::systems
         _registry.emplace<components::Inactive>(entity);
 
         // Source-filtered to itself, so it only reacts to the TimerEvent its own Timer raises
-        // (see apply_pending_commands()) and not some unrelated Timer elsewhere in the game -
-        // the same native-event mechanism Lua subscribes to via _add_event_listener.
+        // and not some unrelated Timer elsewhere in the game - the same native-event mechanism
+        // Lua subscribes to via _add_event_listener.
         _registry.emplace<components::EventListener<components::TimerEvent>>(
             entity,
             [this, entity](const std::string &, const components::TimerEvent &, entt::entity)
@@ -99,27 +126,6 @@ namespace tilegame::systems
             entity);
 
         return entity;
-    }
-
-    void Camera::apply_pending_commands()
-    {
-        for (auto &&[entity, event] : _registry.view<components::ShakeCameraHorizontalEvent>().each())
-        {
-            const auto axis_entity = _registry.ctx().get<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID);
-            _registry.replace<components::CameraShakeAxis>(axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
-            _registry.emplace_or_replace<components::Timer>(axis_entity, event.duration, false);
-            _registry.remove<components::Inactive>(axis_entity);
-            _registry.destroy(entity);
-        }
-
-        for (auto &&[entity, event] : _registry.view<components::ShakeCameraVerticalEvent>().each())
-        {
-            const auto axis_entity = _registry.ctx().get<entt::entity>(VERTICAL_SHAKE_ENTITY_ID);
-            _registry.replace<components::CameraShakeAxis>(axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
-            _registry.emplace_or_replace<components::Timer>(axis_entity, event.duration, false);
-            _registry.remove<components::Inactive>(axis_entity);
-            _registry.destroy(entity);
-        }
     }
 
     float Camera::update_shake_axis(entt::entity axis_entity, float elapsed_time)
@@ -163,8 +169,6 @@ namespace tilegame::systems
 
     void Camera::update(const engine::GameTime &update_time)
     {
-        apply_pending_commands();
-
         const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
         auto &camera = _registry.get<components::Camera>(camera_entity);
         const auto &transform = _registry.get<const components::Transform>(camera_entity);

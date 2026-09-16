@@ -8,9 +8,16 @@ namespace tilegame::components
 {
     /**
      * @brief Wraps a callback (typically a Lua function bound via Script::add_event_listener) that is
-     * invoked by System::raise_events for every entity carrying an event component of type `T` (e.g.
-     * TimerEvent, TargetReachedEvent). If `source` is set, the callback only fires for events raised
-     * on that specific entity; otherwise it fires for events from any entity.
+     * invoked by System::raise_event for event type `T` (e.g. TimerEvent, TargetReachedEvent).
+     * If `source` is set, the callback only fires for events raised with that specific entity as
+     * their source; otherwise it fires for events from any source.
+     *
+     * Caution: `System::raise_event()`'s listener lookup excludes entities tagged Inactive.
+     * Don't put an `EventListener<T>` meant to *remove* an entity's Inactive tag (e.g. "start"
+     * events like SetLightningEvent/ShakeCameraHorizontalEvent) on that same entity - it would
+     * never fire, since the entity is exactly the thing being excluded. Put it on a separate,
+     * always-active entity instead (see systems::Lightning/Weather/Camera's `control_entity`/
+     * `weather_entity` for the pattern).
      */
     template <class T>
     struct EventListener

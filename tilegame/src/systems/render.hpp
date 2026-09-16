@@ -26,10 +26,11 @@ namespace tilegame::systems
      * - gated by components::NIGHT_AMOUNT_ID, set by systems::Daytime, so
      * light sources only bloom once it's actually dark - additively blended
      * back onto the tinted scene), which wraps that whole scene; the dialog
-     * box, read from the registry's components::MessageBoxState ctx() value
-     * (owned by systems::MessageBox), is drawn last, screen-space, straight
-     * onto the default framebuffer, so it's unaffected by both the camera
-     * and the post-processing effects.
+     * box and, when present, the options box above it - both read from the
+     * registry's components::MessageBoxState ctx() value (owned by
+     * systems::MessageBox) - are drawn last, screen-space, straight onto the
+     * default framebuffer, so they're unaffected by both the camera and the
+     * post-processing effects.
      */
     class Render : public System
     {
@@ -59,6 +60,12 @@ namespace tilegame::systems
         // lines of glyphs) for a non-empty components::MessageBoxState; called with its own
         // spritebatch begin/end so it isn't affected by any camera transform.
         void draw_message_box(const components::MessageBoxState &state);
+        // Draws the screen-space options box (background + one line of glyphs per option,
+        // prefixing the currently selected one) for a components::MessageBoxState with a
+        // non-empty `options` list; positioned to the right, above the dialog box drawn by
+        // draw_message_box(). Called with its own spritebatch begin/end so it isn't affected by
+        // any camera transform.
+        void draw_options_box(const components::MessageBoxState &state);
 
         void sort_renderables();
         // Registered on construct/update/destroy of Ordering components so draw order is

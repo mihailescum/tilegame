@@ -34,9 +34,11 @@ namespace tilegame::components
     };
 
     /**
-     * @brief Entt event component raised for one frame by the Movement system when an entity's
-     * Target is reached, and delivered to `EventListener<TargetReachedEvent>` components via the
-     * engine's event-listener mechanism before being cleared. Exposed to Lua as `_TargetReachedEvent`.
+     * @brief Raised immediately by the Movement system (via System::raise_event()) when an
+     * entity's Target is reached, and delivered synchronously to every
+     * `EventListener<TargetReachedEvent>`. A plain value type - never stored as an entt
+     * component - that only exists for the duration of that call. Exposed to Lua as
+     * `_TargetReachedEvent`.
      */
     struct TargetReachedEvent
     {

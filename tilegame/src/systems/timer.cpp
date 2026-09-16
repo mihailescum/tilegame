@@ -19,8 +19,10 @@ namespace tilegame::systems
             timer.time_left -= update_time.elapsed_time;
             if (timer.time_left <= 0)
             {
-                // Add an event
-                _registry.emplace<components::TimerEvent>(entity, timer.time_total, timer.repeat);
+                // Raised immediately: none of today's TimerEvent listeners add/remove a Timer
+                // component (see System::raise_event()'s caution), only reschedule/mutate their
+                // own via patch()/emplace_or_replace(), which is safe mid-iteration.
+                raise_event<components::TimerEvent>(entity, timer.time_total, timer.repeat);
 
                 if (timer.repeat)
                 {
@@ -40,12 +42,5 @@ namespace tilegame::systems
                 _registry.patch<components::Timer>(entity);
             }
         }
-
-        raise_events<components::TimerEvent>();
-    }
-
-    void Timer::end_update()
-    {
-        _registry.clear<components::TimerEvent>();
     }
 } // namespace tilegame::systems

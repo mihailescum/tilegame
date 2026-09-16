@@ -85,7 +85,7 @@ Some components are **event components**: short-lived, one-frame markers such
 as `TimerEvent` or `TargetReachedEvent`
 (`tilegame/src/components/timer.hpp`, `tilegame/src/components/target.hpp`).
 A system creates one of these as a component on the *source* entity for the
-frame in which the event fires. `System::raise_events<EventType>()`
+frame in which the event fires. `System::raise_event<EventType>()`
 (`tilegame/src/systems/system.hpp`) then delivers each event to every
 `EventListener<EventType>` component in the registry — a listener wraps a
 callback (C++ `std::function`, or in practice a Lua function, see below) and

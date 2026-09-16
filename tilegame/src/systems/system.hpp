@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "entt/entt.hpp"
 
 #include "engine.hpp"
@@ -16,7 +14,7 @@ namespace tilegame::systems
      * @brief Common base class for all per-frame ECS game-behavior systems.
      *
      * Gives derived systems access to the owning Scene and the shared
-     * entt::registry, plus the raise_events() dispatch helper. WorldScene
+     * entt::registry, plus the raise_event()/raise() dispatch helpers. WorldScene
      * owns one instance of each System subclass and calls their lifecycle
      * methods (initialize/load_content/update/end_update/draw, as
      * implemented) in a fixed order each frame; this base class does not
@@ -28,34 +26,32 @@ namespace tilegame::systems
         tilegame::Scene &_scene;
         entt::registry &_registry;
 
-        // Delivers every entity carrying an Event-tag component (e.g. TargetReachedEvent,
-        // TimerEvent) to every entity carrying a matching EventListener<Event> component,
-        // by invoking the listener with the event's EVENT_TYPE, data and source entity. Used
-        // to notify Lua scripts (via systems::Script) of native engine events.
+        // Builds an Event from `args` and immediately delivers it to every entity carrying a
+        // matching EventListener<Event>, passing (EVENT_TYPE, event, source). `event` is a
+        // plain local value here - never an entt component - so raising is always synchronous
+        // and there is nothing for anyone to clean up afterwards: subscribers only ever see it
+        // via their EventListener<Event> callback's `event` parameter, for the duration of this
+        // call. `source`, if given, is whichever entity the event is conceptually about (e.g.
+        // the entity whose Timer just rang); pass entt::null (or use raise(), below) if it
+        // isn't about any particular entity.
         //
-        // Event types with no data fields (e.g. MessageClosedEvent) are treated by entt as
-        // empty/tag types, so their view's each() yields just the entity rather than
-        // (entity, event) - handled below via is_empty_v instead of relying on each()'s shape.
-        template <class Event, class EventListener = components::EventListener<Event>>
-        void raise_events() const
+        // Requires `Event::EVENT_TYPE` to exist (see components::EventListener<T>), even for
+        // events with no Lua usertype of their own - delivery needs it regardless of who's
+        // listening.
+        //
+        // Caution: since this calls arbitrary listener callbacks synchronously, calling it from
+        // inside a view/each() loop over component types a listener might structurally add or
+        // remove (as opposed to just modifying values of) can invalidate that iteration. Safe
+        // for today's listeners; a new one that does this would need the raising loop to finish
+        // first.
+        template <class Event, class EventListener = components::EventListener<Event>, class... Args>
+        void raise_event(entt::entity source = entt::null, Args &&...args) const
         {
-            const auto event_entities = _registry.view<const Event>(entt::exclude<components::Inactive>);
+            const Event event{std::forward<Args>(args)...};
             const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
-            for (const auto source : event_entities)
+            for (const auto listener : listener_entities)
             {
-                for (const auto listener : listener_entities)
-                {
-                    const auto &listener_component = listener_entities.template get<const EventListener>(listener);
-                    if constexpr (std::is_empty_v<Event>)
-                    {
-                        listener_component(Event::EVENT_TYPE, Event{}, source);
-                    }
-                    else
-                    {
-                        const auto &event = event_entities.template get<const Event>(source);
-                        listener_component(Event::EVENT_TYPE, event, source);
-                    }
-                }
+                listener_entities.template get<const EventListener>(listener)(Event::EVENT_TYPE, event, source);
             }
         }
 

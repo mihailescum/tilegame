@@ -23,21 +23,21 @@ namespace tilegame::systems
      * screen shake.
      *
      * Screen shake has its own two dedicated entities (horizontal/vertical - a Timer can't be
-     * shared between axes), also tracked via private registry context ids rather than system
-     * members. Each carries a components::Timer (decremented by the shared systems::Timer, so
-     * this system never rolls its own elapsed-time bookkeeping), a components::CameraShakeAxis
-     * holding the jitter state, and its own components::EventListener<TimerEvent> (source-filtered
-     * to itself) that flips CameraShakeAxis::settling once its Timer rings - the same
-     * native-event mechanism Lua uses via _add_event_listener, just consumed directly in C++
-     * instead of forwarding into a Lua callback. See camera.cpp for the per-axis update. Lua
-     * triggers/restarts a shake via components::ShakeCameraHorizontalEvent/ShakeCameraVerticalEvent
-     * (raised by Script::shake_camera_horizontal()/shake_camera_vertical(), on their own
-     * throwaway entities), consumed the same way systems::Weather consumes its Set*Event commands.
+     * shared between axes), tracked via private registry context ids rather than system
+     * members, each starting Inactive (not currently shaking) and carrying a components::Timer
+     * (decremented by the shared systems::Timer), a components::CameraShakeAxis holding the
+     * jitter state, and its own components::EventListener<TimerEvent> (source-filtered to
+     * itself, registered in create_shake_axis_entity()) that flips CameraShakeAxis::settling
+     * once its Timer rings. A third, separate control entity (created in load_content(), never
+     * tagged Inactive - see the comment there for why) carries
+     * EventListener<ShakeCameraHorizontalEvent>/EventListener<ShakeCameraVerticalEvent>, which
+     * (re)start the matching axis the instant Script::shake_camera_horizontal()/
+     * shake_camera_vertical() raises it via the inherited System::raise(). See camera.cpp for
+     * the per-axis update.
      */
     class Camera : public System
     {
     private:
-        void apply_pending_commands();
         entt::entity create_shake_axis_entity();
         // Advances one shake axis by `elapsed_time` and returns its current offset (0 if
         // Inactive, i.e. not currently shaking or settling). See components::CameraShakeAxis.

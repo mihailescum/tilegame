@@ -27,13 +27,6 @@ namespace tilegame::systems
         check_target_reached();
     }
 
-    void Movement::end_update()
-    {
-        _registry.clear<components::TargetReachedEvent>();
-        _registry.clear<components::MapLeftEvent>();
-        _registry.clear<components::MapEnteredEvent>();
-    }
-
     void Movement::apply_movement(const engine::GameTime &update_time) const
     {
         auto view = _registry.view<const components::Movement>(entt::exclude<components::Inactive>);
@@ -57,14 +50,20 @@ namespace tilegame::systems
             // If we almost hit the target, we clamp the position to the target
             if (glm::length2(transform.position - target()) < 1e-8)
             {
-                transform.position = target();
+                // Copied before erase() below, since `target` is a reference into the Target
+                // component's storage and would dangle once it's erased.
+                const glm::vec2 reached_target = target();
+
+                transform.position = reached_target;
                 _registry.patch<components::Transform>(entity);
                 _registry.erase<components::Target, components::Movement, components::Speed>(entity);
-                _registry.emplace<components::TargetReachedEvent>(entity);
+
+                // Raised immediately: no current TargetReachedEvent listener adds/removes a
+                // Target/Transform (see System::raise_event()'s caution), so this is safe
+                // mid-iteration.
+                raise_event<components::TargetReachedEvent>(entity, reached_target);
             }
         }
-
-        raise_events<components::TargetReachedEvent>();
     }
 
     void Movement::update_current_map() const
@@ -82,9 +81,12 @@ namespace tilegame::systems
 
             if (new_map != old_map)
             {
+                // Raised immediately: no current MapLeftEvent/MapEnteredEvent listener
+                // adds/removes a Movement/Transform (see System::raise_event()'s caution), so
+                // this is safe mid-iteration.
                 if (!old_map.empty())
                 {
-                    _registry.emplace<components::MapLeftEvent>(entity, old_map);
+                    raise_event<components::MapLeftEvent>(entity, old_map);
                 }
 
                 if (new_map.empty())
@@ -93,13 +95,10 @@ namespace tilegame::systems
                 }
                 else
                 {
-                    _registry.emplace<components::MapEnteredEvent>(entity, new_map);
+                    raise_event<components::MapEnteredEvent>(entity, new_map);
                     _registry.emplace_or_replace<components::CurrentMap>(entity, new_map);
                 }
             }
         }
-
-        raise_events<components::MapLeftEvent>();
-        raise_events<components::MapEnteredEvent>();
     }
 } // namespace tilegame::systems
