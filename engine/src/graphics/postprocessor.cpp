@@ -154,9 +154,15 @@ namespace engine::graphics
         // Setup MSFBO
 
         // Set attachment on MSFBO
-        GLint max_samples;
-        glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-        glCheckError();
+        // Every sprite quad drawn into these buffers (this main scene target, and each
+        // PostProcessingEffect's own MS+resolve pair) is an unrotated axis-aligned rectangle,
+        // and the post-process passes (blur/tint/blend) only ever sample an already-rasterized
+        // texture rather than raster new geometry edges - so multisampling has no visible effect
+        // here. Requesting the hardware's max sample count (as high as 32 on some GPUs) across
+        // every one of these buffers, every frame, bought zero image quality for real fill-rate/
+        // bandwidth cost. 1 sample keeps this code path (and its resolve blit) unchanged while
+        // eliminating that cost.
+        constexpr GLint max_samples = 1;
 
         glBindFramebuffer(GL_FRAMEBUFFER, msfbo);
         glCheckError();

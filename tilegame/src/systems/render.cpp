@@ -225,9 +225,9 @@ namespace tilegame::systems
         {
             draw_message_box(message_box_state);
         }
-        // Only once systems::MessageBox has revealed the options box (an Enter press while the
-        // message's last line was already on screen) does it get drawn.
-        if (message_box_state.showing_options)
+        // Only once the message's last line is on screen - i.e. no more pages left to page
+        // through via Enter - does the options box (if any) appear.
+        if (!message_box_state.options.empty() && message_box_state.lines.size() <= static_cast<std::size_t>(tilegame::messagebox_layout::VISIBLE_LINES))
         {
             draw_options_box(message_box_state);
         }

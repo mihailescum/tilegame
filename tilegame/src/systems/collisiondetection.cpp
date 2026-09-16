@@ -1,5 +1,8 @@
 #include "collisiondetection.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 #include <glm/glm.hpp>
 
 #include "math_helper.hpp"
@@ -31,16 +34,42 @@ namespace tilegame::systems
 
     void CollisionDetection::entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform) const
     {
-        // Broad phase detection
-
         // Near phase detection
         std::vector<std::pair<int, float>> found_collisions;
 
         const auto entity_circle = dynamic_cast<const engine::Circle *>(entity_collider.shape.get());
         auto entity_rectangle = dynamic_cast<const engine::Rectangle *>(entity_collider.shape.get());
-        for (int x = 0; x < tilelayer().dimensions().x; x++)
+
+        // Broad phase detection: only visit tiles the entity's shape could possibly reach this
+        // frame - its current extent unioned with that same extent shifted by its full velocity
+        // - padded by one tile so an edge-touching tile is never missed. Scanning every tile of
+        // every layer for every moving entity, every frame, does not scale with map size.
+        glm::vec2 shape_min, shape_max;
+        if (entity_rectangle)
         {
-            for (int y = 0; y < tilelayer().dimensions().y; y++)
+            shape_min = entity_transform.position + entity_rectangle->position;
+            shape_max = shape_min + entity_rectangle->dimensions;
+        }
+        else // entity_circle
+        {
+            shape_min = entity_transform.position + entity_circle->origin - glm::vec2(entity_circle->radius);
+            shape_max = entity_transform.position + entity_circle->origin + glm::vec2(entity_circle->radius);
+        }
+        const glm::vec2 swept_min = glm::min(shape_min, shape_min + entity_movement.velocity);
+        const glm::vec2 swept_max = glm::max(shape_max, shape_max + entity_movement.velocity);
+
+        const glm::vec2 local_min = swept_min - tilelayer_transform.position;
+        const glm::vec2 local_max = swept_max - tilelayer_transform.position;
+        const glm::ivec2 &tile_dimensions = tilelayer().tile_dimensions();
+
+        const int x_start = std::max(0, static_cast<int>(std::floor(local_min.x / tile_dimensions.x)) - 1);
+        const int y_start = std::max(0, static_cast<int>(std::floor(local_min.y / tile_dimensions.y)) - 1);
+        const int x_end = std::min(tilelayer().dimensions().x - 1, static_cast<int>(std::ceil(local_max.x / tile_dimensions.x)) + 1);
+        const int y_end = std::min(tilelayer().dimensions().y - 1, static_cast<int>(std::ceil(local_max.y / tile_dimensions.y)) + 1);
+
+        for (int x = x_start; x <= x_end; x++)
+        {
+            for (int y = y_start; y <= y_end; y++)
             {
                 const auto &tile = tilelayer.tile_data[tilelayer().index(x, y)];
                 if (!tile.collision_shape)
