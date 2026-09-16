@@ -34,28 +34,6 @@ namespace tilegame::systems
     void Particle::load_content()
     {
         const auto &particles_texture = *_scene.game().resource_manager().load_resource<engine::Texture2D>("particles", "content/textures/particles.png");
-
-        auto emitter1 = _registry.create();
-        _registry.emplace<components::Transform>(emitter1, glm::vec2(150, 150));
-        _registry.emplace<components::Shape>(emitter1,
-                                             components::Shape(
-                                                 std::make_unique<engine::Rectangle>(glm::vec2(-200, -50), glm::vec2(400, 100))));
-        _registry.emplace<components::ParticleEmitter>(emitter1,
-                                                       components::ParticleEmitter(
-                                                           20,
-                                                           glm::vec2(0.0, 1.0),
-                                                           glm::pi<float>() / 8.0,
-                                                           10.0, 20.0,
-                                                           5.0, 10.0,
-                                                           0.9, 1.1,
-                                                           engine::Color(1.0, 0.0, 1.0, 1.0)));
-        _registry.emplace<components::ParticlePool>(emitter1, components::ParticlePool());
-        _registry.emplace<components::Renderable2D>(emitter1);
-        _registry.emplace<components::Ordering>(emitter1, 100.0);
-
-        // const tilegame::SceneGraphData emitter1_scenedata(emitter1);
-        // tilegame::SceneGraphNode &emitter1_scenenode = _scene.scene_graph_root().add_child(emitter1_scenedata);
-        // _registry.emplace<components::SceneNode>(emitter1, &emitter1_scenenode);
     }
 
     void Particle::update(const engine::GameTime &update_time)
@@ -137,12 +115,14 @@ namespace tilegame::systems
 
         const float speed = get_random(emitter.speed.x, emitter.speed.y);
         const float angle = get_random(-emitter.spread_angle, emitter.spread_angle);
-        const glm::vec2 direction = speed * glm::rotate(emitter.spread_direction, angle);
+        // Unit vector: MovementController::update_movement() multiplies Direction by Speed
+        // itself (movement.velocity = direction() * speed() * dt), so baking `speed` in here
+        // too would square it.
+        const glm::vec2 direction = glm::rotate(emitter.spread_direction, angle);
 
         const glm::vec2 position = generate_random_position(emitter_shape) + emmiter_transform.position;
 
         const auto &particles_texture = _scene.game().resource_manager().get<engine::Texture2D>("particles");
-        const engine::Rectangle source_rect(glm::vec2(0.0, 0.0), glm::vec2(64.0, 64.0));
 
         // Get entity and update components
         const auto new_particle = pool.container[pool.first_dead_particle++];
@@ -166,10 +146,10 @@ namespace tilegame::systems
                                                   particle.color = color;
                                               });
         _registry.patch<components::Sprite>(new_particle,
-                                            [&particles_texture, &source_rect](auto &sprite)
+                                            [&particles_texture, &emitter](auto &sprite)
                                             {
                                                 sprite.textures = {&particles_texture, &particles_texture};
-                                                sprite.source_rect = source_rect;
+                                                sprite.source_rect = emitter.source_rect;
                                             });
         _registry.patch<components::Transform>(new_particle, [&position](auto &transform)
                                                { transform.position = position; });

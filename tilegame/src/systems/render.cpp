@@ -5,6 +5,7 @@
 #include "components/renderable2d.hpp"
 #include "components/ordering.hpp"
 #include "components/camera.hpp"
+#include "components/daytime.hpp"
 #include "components/inactive.hpp"
 #include "components/particle.hpp"
 #include "components/collider.hpp"
@@ -51,7 +52,9 @@ namespace tilegame::systems
         _rect_tex = {rect_tex, rect_tex};
         _circle_tex = {circle_tex, circle_tex};
 
-        // Setup PostProcessor: day/night tint, then additive blend with the luminosity pass
+        // Setup PostProcessor: day/night tint, then a two-pass (horizontal+vertical) Gaussian
+        // blur of the luminosity pass to turn it into actual bloom, then additive blend it back
+        // onto the tinted scene.
         _postprocessor.add_color_attachments(2);
 
         auto &daytime_shader = _scene.game().resource_manager().get<engine::Shader>("daytime_shader");
@@ -59,13 +62,45 @@ namespace tilegame::systems
         daytime_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(0)));
         daytime_effect.add_color_attachments(1);
 
+        // Two independent Shader resources (not shared with each other) compiled from the same
+        // gaussian_blur.frag source, so each can hold its own fixed `direction` uniform - if
+        // both passes shared one GL program, setting `direction` for the second pass would
+        // overwrite the first's before either ever actually draws with it.
+        const glm::vec2 texel_size(1.0f / _scene.game().graphicsdevice().viewport().dimensions.x, 1.0f / _scene.game().graphicsdevice().viewport().dimensions.y);
+
+        auto &blur_h_shader = *_scene.game().resource_manager().load_resource<engine::Shader>(
+            "bloom_blur_h_shader",
+            "content/shaders/gaussian_blur",
+            "content/shaders/quad.vert", "", "content/shaders/gaussian_blur.frag");
+        blur_h_shader.use();
+        blur_h_shader.set("scene", 0);
+        blur_h_shader.set("direction", glm::vec2(1.0f, 0.0f));
+        blur_h_shader.set("texel_size", texel_size);
+        engine::graphics::PostProcessingEffect blur_h_effect(_scene.game().graphicsdevice(), blur_h_shader);
+        blur_h_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(1)));
+        blur_h_effect.add_color_attachments(1);
+
+        auto &blur_v_shader = *_scene.game().resource_manager().load_resource<engine::Shader>(
+            "bloom_blur_v_shader",
+            "content/shaders/gaussian_blur",
+            "content/shaders/quad.vert", "", "content/shaders/gaussian_blur.frag");
+        blur_v_shader.use();
+        blur_v_shader.set("scene", 0);
+        blur_v_shader.set("direction", glm::vec2(0.0f, 1.0f));
+        blur_v_shader.set("texel_size", texel_size);
+        engine::graphics::PostProcessingEffect blur_v_effect(_scene.game().graphicsdevice(), blur_v_shader);
+        blur_v_effect.input_textures().push_back(std::ref(blur_h_effect.color_attachment_at(0)));
+        blur_v_effect.add_color_attachments(1);
+
         auto &blend_shader = _scene.game().resource_manager().get<engine::Shader>("blend_shader");
         engine::graphics::PostProcessingEffect blend_effect(_scene.game().graphicsdevice(), blend_shader);
         blend_effect.input_textures().push_back(std::ref(daytime_effect.color_attachment_at(0)));
-        blend_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(1)));
+        blend_effect.input_textures().push_back(std::ref(blur_v_effect.color_attachment_at(0)));
         blend_effect.add_color_attachments(1);
 
         _postprocessor.effects().push_back(std::move(daytime_effect));
+        _postprocessor.effects().push_back(std::move(blur_h_effect));
+        _postprocessor.effects().push_back(std::move(blur_v_effect));
         _postprocessor.effects().push_back(std::move(blend_effect));
     }
 
@@ -86,35 +121,35 @@ namespace tilegame::systems
         const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<components::Inactive>);
         const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool>(entt::exclude<components::Inactive>);
 
-        const auto cameras = _registry.view<const components::Camera>(entt::exclude<components::Inactive>);
+        const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
+        const auto &camera = _registry.get<const components::Camera>(camera_entity);
+        const engine::Rectangle &visible_bounds = camera.visible_bounds;
 
-        for (const auto &&[camera_entity, camera] : cameras.each())
+        _spritebatch_luminosity_shader->use();
+        _spritebatch_luminosity_shader->set("night_amount", _registry.ctx().get<float>(components::NIGHT_AMOUNT_ID));
+
+        _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader);
+
+        // Since Renderable2D is only a tag, it does not show up in the view
+        for (const auto &&[render_entity, transform] : view_renderable.each())
         {
-            const engine::Rectangle &visible_bounds = camera.visible_bounds;
-
-            _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader);
-
-            // Since Renderable2D is only a tag, it does not show up in the view
-            for (const auto &&[render_entity, transform] : view_renderable.each())
+            if (view_sprites.contains(render_entity))
             {
-                if (view_sprites.contains(render_entity))
-                {
-                    auto &sprite_component = view_sprites.get<const components::Sprite>(render_entity);
-                    draw_sprite(transform, sprite_component);
-                }
-                else if (view_tilelayers.contains(render_entity))
-                {
-                    auto &tilelayer_component = view_tilelayers.get<const components::TileLayer>(render_entity);
-                    draw_tilelayer(transform, tilelayer_component, visible_bounds);
-                }
-                else if (view_particle_pools.contains(render_entity))
-                {
-                    auto &pool_component = view_particle_pools.get<const components::ParticlePool>(render_entity);
-                    draw_particles(pool_component, visible_bounds);
-                }
+                auto &sprite_component = view_sprites.get<const components::Sprite>(render_entity);
+                draw_sprite(transform, sprite_component);
             }
-            _spritebatch.end();
+            else if (view_tilelayers.contains(render_entity))
+            {
+                auto &tilelayer_component = view_tilelayers.get<const components::TileLayer>(render_entity);
+                draw_tilelayer(transform, tilelayer_component, visible_bounds);
+            }
+            else if (view_particle_pools.contains(render_entity))
+            {
+                auto &pool_component = view_particle_pools.get<const components::ParticlePool>(render_entity);
+                draw_particles(pool_component, visible_bounds);
+            }
         }
+        _spritebatch.end();
 
         //
         // Debug drawing of collision shapes
@@ -123,64 +158,59 @@ namespace tilegame::systems
         const auto view_collision_shapes = _registry.view<const components::Transform, const components::Collider, const components::Renderable2D>(entt::exclude<components::Inactive>);
         const auto view_tilelayer_shapes = _registry.view<const components::Transform, const components::TileLayer, const components::Renderable2D>(entt::exclude<components::Inactive>);
 
-        for (const auto &&[camera_entity, camera] : cameras.each())
+        _spritebatch.begin(camera.transform, true);
+
+        engine::Color shape_color(0.4, 0.16, 0.93, 0.7);
+        for (const auto &&[render_entity, transform, collider] : view_collision_shapes.each())
         {
-            const engine::Rectangle &visible_bounds = camera.visible_bounds;
+            const auto &position = transform.position;
 
-            _spritebatch.begin(camera.transform, true);
-
-            engine::Color shape_color(0.4, 0.16, 0.93, 0.7);
-            for (const auto &&[render_entity, transform, collider] : view_collision_shapes.each())
+            if (const auto shape_circle = dynamic_cast<engine::Circle *>(collider.shape.get()))
             {
-                const auto &position = transform.position;
-
-                if (const auto shape_circle = dynamic_cast<engine::Circle *>(collider.shape.get()))
-                {
-                    glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
-                    engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                    _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
-                }
-                else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
-                {
-                    glm::vec2 pos = position + shape_rect->position;
-                    engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                    _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color);
-                }
+                glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
+                engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
+                _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
             }
-            engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
-            for (const auto &&[render_entity, transform, tilelayer] : view_tilelayer_shapes.each())
+            else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
             {
-                const auto &position = transform.position;
-
-                for (const auto &data : tilelayer.tile_data)
-                {
-                    if (!data.textures)
-                    {
-                        continue;
-                    }
-
-                    if (!(data.destination_rect + position).intersects(visible_bounds))
-                    {
-                        continue;
-                    }
-
-                    if (const auto shape_circle = dynamic_cast<const engine::Circle *>(data.collision_shape))
-                    {
-                        glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
-                        engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                        _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
-                    }
-                    else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
-                    {
-                        glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
-                        engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                        _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
-                    }
-                }
+                glm::vec2 pos = position + shape_rect->position;
+                engine::Rectangle dest_rect(pos, shape_rect->dimensions);
+                _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color);
             }
-
-            _spritebatch.end();
         }
+        engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
+        for (const auto &&[render_entity, transform, tilelayer] : view_tilelayer_shapes.each())
+        {
+            const auto &position = transform.position;
+
+            for (const auto &data : tilelayer.tile_data)
+            {
+                if (!data.textures)
+                {
+                    continue;
+                }
+
+                if (!(data.destination_rect + position).intersects(visible_bounds))
+                {
+                    continue;
+                }
+
+                if (const auto shape_circle = dynamic_cast<const engine::Circle *>(data.collision_shape))
+                {
+                    glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
+                    engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
+                    _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
+                }
+                else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
+                {
+                    glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
+                    engine::Rectangle dest_rect(pos, shape_rect->dimensions);
+                    _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                }
+            }
+        }
+
+        _spritebatch.end();
 
         _postprocessor.end_scene();
         _postprocessor.apply_effects(draw_time);
@@ -245,7 +275,11 @@ namespace tilegame::systems
 
             const auto &position = transform.position;
             const auto &source_rect = sprite.source_rect;
-            const engine::Rectangle dest_rect(position, source_rect.dimensions);
+            // Scaled around the sprite's center rather than its top-left corner, so shrinking a
+            // particle doesn't also visibly drift it towards `position`.
+            const glm::vec2 scaled_dimensions = source_rect.dimensions * particle.scale;
+            const glm::vec2 scaled_position = position - (scaled_dimensions - source_rect.dimensions) * 0.5f;
+            const engine::Rectangle dest_rect(scaled_position, scaled_dimensions);
             if (!dest_rect.intersects(visible_bounds))
             {
                 continue;

@@ -12,7 +12,8 @@
 local HOUR = 3600
 
 _set_daytime_day_duration(24 * HOUR)
-
+_set_daytime_time(12 * HOUR)  -- start at noon
+_set_daytime_speedup(HOUR)    -- 1 real second = 1 in-game hour
 _set_daytime_marks({
     { start = 0,         color = _Color(0.1, 0.1, 0.1, 1.0) },   -- midnight
     { start = 5 * HOUR,  color = _Color(0.5, 0.5, 0.5, 1.0) },   -- pre-dawn
@@ -22,6 +23,3 @@ _set_daytime_marks({
     { start = 20 * HOUR, color = _Color(1.0, 0.518, 0.0, 1.0) }, -- sunset
     { start = 22 * HOUR, color = _Color(0.6, 0.6, 0.6, 1.0) },   -- night
 })
-
-_set_daytime_time(12 * HOUR)  -- start at noon
-_set_daytime_speedup(HOUR)    -- 1 real second = 1 in-game hour

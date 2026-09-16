@@ -16,9 +16,12 @@ namespace tilegame::systems
      * it first applies any pending components::SetDaytime*Event commands - raised by Lua via
      * Script, on their own throwaway entities - which is the only way this state ever
      * changes, then advances the clock, finds the surrounding keyframes and interpolates
-     * between them, uploading the result to the daytime post-processing shader. This system
-     * has no knowledge of systems::Script or Lua at all; there is currently no way to read
-     * the cycle's state back from Lua (only to set it).
+     * between them, uploading the result to the daytime post-processing shader, and also
+     * derives a perceptual brightness from it, stored as components::NIGHT_AMOUNT_ID in the
+     * registry context for systems::Render to read (see spritebatch_luminosity.frag) so light
+     * sources only bloom once it's actually dark. This system has no knowledge of
+     * systems::Script or Lua at all; there is currently no way to read the cycle's state back
+     * from Lua (only to set it).
      */
     class Daytime : public System
     {

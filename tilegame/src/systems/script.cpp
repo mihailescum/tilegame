@@ -37,6 +37,7 @@ namespace tilegame::systems
 
         // Global configuration scripts, run once at startup.
         run_script("content/scripts/daytime.lua");
+        run_script("content/scripts/weather.lua");
     }
 
     void Script::run_script(const std::string &path)
@@ -82,6 +83,16 @@ namespace tilegame::systems
             "g", sol::property(sol::resolve<float() const>(&engine::Color::g), sol::resolve<void(float)>(&engine::Color::g)),
             "b", sol::property(sol::resolve<float() const>(&engine::Color::b), sol::resolve<void(float)>(&engine::Color::b)),
             "a", sol::property(sol::resolve<float() const>(&engine::Color::a), sol::resolve<void(float)>(&engine::Color::a)));
+        _lua().new_usertype<engine::Rectangle>(
+            "_Rectangle",
+            sol::call_constructor,
+            sol::factories(
+                []()
+                { return engine::Rectangle(); },
+                [](const glm::vec2 &position, const glm::vec2 &dimensions)
+                { return engine::Rectangle(position, dimensions); }),
+            "position", &engine::Rectangle::position,
+            "dimensions", &engine::Rectangle::dimensions);
 
         components::Direction::register_component(_lua());
         components::Inactive::register_component(_lua());
@@ -90,6 +101,8 @@ namespace tilegame::systems
         components::MapLeftEvent::register_component(_lua());
         components::MessageOpenedEvent::register_component(_lua());
         components::MessageClosedEvent::register_component(_lua());
+        components::LightningEvent::register_component(_lua());
+        components::ParticleEmitter::register_component(_lua());
         components::Pin::register_component(_lua());
         components::ScriptLoader::register_component(_lua());
         components::Target::register_component(_lua());
@@ -116,12 +129,23 @@ namespace tilegame::systems
         _lua().set_function("_set_daytime_time", &Script::set_daytime_time, this);
         _lua().set_function("_set_daytime_speedup", &Script::set_daytime_speedup, this);
         _lua().set_function("_set_daytime_day_duration", &Script::set_daytime_day_duration, this);
+        _lua().set_function("_set_weather_tint", &Script::set_weather_tint, this);
+        _lua().set_function("_set_weather_precipitation",
+                            sol::overload([this]()
+                                          { Script::set_weather_precipitation(); },
+                                          [this](const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
+                                          { Script::set_weather_precipitation(emitter, spawn_area); }));
+        _lua().set_function("_shake_camera_horizontal", &Script::shake_camera_horizontal, this);
+        _lua().set_function("_shake_camera_vertical", &Script::shake_camera_vertical, this);
+        _lua().set_function("_set_lightning", &Script::set_lightning, this);
+        _lua().set_function("_clear_lightning", &Script::clear_lightning, this);
         register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
         register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
         register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
         register_event_type<components::MapLeftEvent, components::EventListener<components::MapLeftEvent>>();
         register_event_type<components::MessageClosedEvent, components::EventListener<components::MessageClosedEvent>>();
         register_event_type<components::MessageOpenedEvent, components::EventListener<components::MessageOpenedEvent>>();
+        register_event_type<components::LightningEvent, components::EventListener<components::LightningEvent>>();
     }
 
     bool Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
@@ -180,6 +204,48 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
         _registry.emplace<components::SetDaytimeDayDurationEvent>(entity, seconds);
+    }
+
+    void Script::set_weather_tint(const engine::Color &target_tint, float fade_duration)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetWeatherTintEvent>(entity, target_tint, fade_duration);
+    }
+
+    void Script::set_weather_precipitation(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetWeatherPrecipitationEvent>(entity, emitter, spawn_area);
+    }
+
+    void Script::set_weather_precipitation()
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::ClearWeatherPrecipitationEvent>(entity);
+    }
+
+    void Script::shake_camera_horizontal(float displacement_speed, float offset, float duration)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::ShakeCameraHorizontalEvent>(entity, displacement_speed, offset, duration);
+    }
+
+    void Script::shake_camera_vertical(float displacement_speed, float offset, float duration)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::ShakeCameraVerticalEvent>(entity, displacement_speed, offset, duration);
+    }
+
+    void Script::set_lightning(float min_interval, float max_interval, float flash_duration)
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::SetLightningEvent>(entity, min_interval, max_interval, flash_duration);
+    }
+
+    void Script::clear_lightning()
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::ClearLightningEvent>(entity);
     }
 
     void Script::update(const engine::GameTime &update_time)

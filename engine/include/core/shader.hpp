@@ -34,6 +34,7 @@ namespace engine
         void set(const std::string &name, GLboolean value) const;
         void set(const std::string &name, GLint value) const;
         void set(const std::string &name, GLfloat value) const;
+        void set(const std::string &name, glm::vec2 value) const;
         void set(const std::string &name, glm::vec4 value) const;
         void set(const std::string &name, glm::mat4 value) const;
 

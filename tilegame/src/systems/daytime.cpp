@@ -1,5 +1,7 @@
 #include "daytime.hpp"
 
+#include <algorithm>
+
 namespace tilegame::systems
 {
     Daytime::Daytime(tilegame::Scene &scene, entt::registry &registry)
@@ -16,6 +18,7 @@ namespace tilegame::systems
         _daytime_shader->use();
         _daytime_shader->set("scene", 0);
         _daytime_shader->set("tint_color", static_cast<glm::vec4>(engine::Color::WHITE));
+        _registry.ctx().insert_or_assign<float>(components::NIGHT_AMOUNT_ID, 0.0f);
 
         auto blend_shader = _scene.game().resource_manager().load_resource<engine::Shader>(
             "blend_shader",
@@ -96,8 +99,15 @@ namespace tilegame::systems
                                      ? static_cast<float>(_now - now_mark->start) / (next_start - now_mark->start)
                                      : 0.0f;
 
+            const engine::Color tint = engine::Color::lerp(now_mark->tint_color, next_mark->tint_color, lerp_amount);
             _daytime_shader->use();
-            _daytime_shader->set("tint_color", static_cast<glm::vec4>(engine::Color::lerp(now_mark->tint_color, next_mark->tint_color, lerp_amount)));
+            _daytime_shader->set("tint_color", static_cast<glm::vec4>(tint));
+
+            // Perceptual brightness of the current tint, used as an inverse proxy for "how dark
+            // is it right now" - see components::NIGHT_AMOUNT_ID.
+            const float luminance = 0.2126f * tint.r() + 0.7152f * tint.g() + 0.0722f * tint.b();
+            float night_amount = std::clamp(1.0f - luminance, 0.0f, 1.0f);
+            _registry.ctx().insert_or_assign<float>(components::NIGHT_AMOUNT_ID, std::move(night_amount));
         }
     }
 } // namespace tilegame::systems

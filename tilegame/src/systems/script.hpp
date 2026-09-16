@@ -12,6 +12,10 @@
 #include "system.hpp"
 #include "components/event.hpp"
 #include "components/daytime.hpp"
+#include "components/weather.hpp"
+#include "components/particleemitter.hpp"
+#include "components/camerashake.hpp"
+#include "components/lightning.hpp"
 
 namespace tilegame::systems
 {
@@ -55,6 +59,41 @@ namespace tilegame::systems
         // Exposed to Lua as `_set_daytime_day_duration`; the length of a full day/night
         // cycle, in seconds. Raises a SetDaytimeDayDurationEvent.
         void set_daytime_day_duration(int seconds);
+        // Exposed to Lua as `_set_weather_tint`; fades the weather overlay tint (multiplied with
+        // the day/night tint in content/shaders/daytime.frag) from whatever it currently is
+        // towards `target_tint` over `fade_duration` seconds. Raises a SetWeatherTintEvent.
+        void set_weather_tint(const engine::Color &target_tint, float fade_duration);
+        // Exposed to Lua as `_set_weather_precipitation`; `emitter` is a fully-configured
+        // _ParticleEmitter (rate, spread, speed, lifetime, scale, color, source_rect) and
+        // `spawn_area` a _Rectangle particles spawn within, relative to the precipitation
+        // entity's Transform (which tracks player 1 - see
+        // systems::Weather::create_precipitation_entity()), both built entirely by the calling
+        // script - see content/scripts/weather.lua for the rain/snow presets. Raises a
+        // SetWeatherPrecipitationEvent, which systems::Weather uses to create or reconfigure the
+        // active precipitation effect.
+        void set_weather_precipitation(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area);
+        // Exposed to Lua as `_set_weather_precipitation` without parameter; stops and removes whatever
+        // precipitation effect is currently active, if any. Raises a
+        // ClearWeatherPrecipitationEvent.
+        void set_weather_precipitation();
+        // Exposed to Lua as `_shake_camera_horizontal`; (re)starts the camera's horizontal
+        // screen shake axis, jittering within [-offset, +offset] world units at up to
+        // `displacement_speed` units/second, for `duration` seconds, after which
+        // systems::Camera smoothly settles it back to center at the same speed. Raises a
+        // ShakeCameraHorizontalEvent.
+        void shake_camera_horizontal(float displacement_speed, float offset, float duration);
+        // Exposed to Lua as `_shake_camera_vertical`; same as shake_camera_horizontal() but for
+        // the vertical axis. Raises a ShakeCameraVerticalEvent.
+        void shake_camera_vertical(float displacement_speed, float offset, float duration);
+        // Exposed to Lua as `_set_lightning`; (re)starts recurring lightning strikes, each
+        // waiting a fresh random interval within [min_interval, max_interval) seconds after the
+        // previous one. Each strike raises a _LightningEvent (subscribable via
+        // _add_event_listener) and brightens the scene, decaying back to normal over
+        // `flash_duration` seconds. Raises a SetLightningEvent.
+        void set_lightning(float min_interval, float max_interval, float flash_duration);
+        // Exposed to Lua as `_clear_lightning`; stops the recurring schedule, if any. Raises a
+        // ClearLightningEvent.
+        void clear_lightning();
         // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
         // _event_types and, if registered, creates the corresponding listener entity.
         bool add_event_listener(const sol::table &event, sol::function callback);

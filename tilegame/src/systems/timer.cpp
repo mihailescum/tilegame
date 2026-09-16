@@ -25,15 +25,20 @@ namespace tilegame::systems
                 if (timer.repeat)
                 {
                     timer.time_left += timer.time_total;
+                    // Trigger on_update()
+                    _registry.patch<components::Timer>(entity);
                 }
                 else
                 {
+                    // No Timer left on `entity` to patch once erased.
                     _registry.erase<components::Timer>(entity);
                 }
             }
-
-            // Trigger on_update()
-            _registry.patch<components::Timer>(entity);
+            else
+            {
+                // Trigger on_update()
+                _registry.patch<components::Timer>(entity);
+            }
         }
 
         raise_events<components::TimerEvent>();

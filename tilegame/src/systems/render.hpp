@@ -12,19 +12,24 @@
 namespace tilegame::systems
 {
     /**
-     * @brief Draws all renderable entities for every active camera.
+     * @brief Draws all renderable entities through the game's single camera.
      *
      * Operates on entities with Transform + Renderable2D, dispatching each to
      * the right draw path based on whether it also has a Sprite, TileLayer,
-     * or ParticlePool component, batched into the SpriteBatch once per Camera
-     * entity. Draw order follows the Ordering component, re-sorted lazily
-     * whenever it changes. Also draws debug overlays for Collider/TileLayer
-     * collision shapes. Owns the PostProcessor (day/night tint + blend effect
-     * chain), which wraps that whole scene; the dialog box, read from the
-     * registry's components::MessageBoxState ctx() value (owned by
-     * systems::MessageBox), is drawn last, screen-space, straight onto the
-     * default framebuffer, so it's unaffected by both the camera and the
-     * post-processing effects.
+     * or ParticlePool component, batched into the SpriteBatch. The camera
+     * itself is looked up from the registry context (components::CAMERA_ENTITY_ID,
+     * set by systems::Camera) rather than iterated as a view, since there is
+     * only ever one. Draw order follows the Ordering component, re-sorted
+     * lazily whenever it changes. Also draws debug overlays for
+     * Collider/TileLayer collision shapes. Owns the PostProcessor (day/night
+     * tint, then a two-pass Gaussian blur of the per-sprite luminosity output
+     * - gated by components::NIGHT_AMOUNT_ID, set by systems::Daytime, so
+     * light sources only bloom once it's actually dark - additively blended
+     * back onto the tinted scene), which wraps that whole scene; the dialog
+     * box, read from the registry's components::MessageBoxState ctx() value
+     * (owned by systems::MessageBox), is drawn last, screen-space, straight
+     * onto the default framebuffer, so it's unaffected by both the camera
+     * and the post-processing effects.
      */
     class Render : public System
     {

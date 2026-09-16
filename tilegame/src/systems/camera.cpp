@@ -1,15 +1,42 @@
 #include "camera.hpp"
 
+#include <cmath>
+#include <algorithm>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "helper.hpp"
+
 #include "components/camera.hpp"
+#include "components/camerashake.hpp"
 #include "components/player.hpp"
 #include "components/pin.hpp"
+#include "components/timer.hpp"
+#include "components/event.hpp"
 #include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
+    namespace
+    {
+        using namespace entt::literals;
+        // Registry context ids (registry.ctx()) under which the two shake axis entities' handles
+        // are stored, for the entire program's life once load_content() has run. Private to this
+        // file - unlike components::CAMERA_ENTITY_ID, nothing outside systems::Camera needs to
+        // find these.
+        constexpr auto HORIZONTAL_SHAKE_ENTITY_ID = "camera_shake_horizontal_entity"_hs;
+        constexpr auto VERTICAL_SHAKE_ENTITY_ID = "camera_shake_vertical_entity"_hs;
+
+        // How often a shake axis picks a new random jitter target while its Timer is still
+        // running. Purely a timing knob - the jitter's strength is components::CameraShakeAxis::offset,
+        // given by the caller, not derived from this.
+        constexpr float SHAKE_RETARGET_INTERVAL = 0.05f;
+        // Once a shake axis is settling (its Timer has rung), how close to 0 `current_offset`
+        // must get before the axis is considered fully at rest again and tagged Inactive.
+        constexpr float SHAKE_SETTLE_EPSILON = 0.1f;
+    }
+
     Camera::Camera(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
@@ -49,37 +76,125 @@ namespace tilegame::systems
 
             _registry.emplace<components::Pin>(camera_entity, player1_entity);
         }
+
+        _registry.ctx().emplace_as<entt::entity>(components::CAMERA_ENTITY_ID, camera_entity);
+
+        _registry.ctx().emplace_as<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID, create_shake_axis_entity());
+        _registry.ctx().emplace_as<entt::entity>(VERTICAL_SHAKE_ENTITY_ID, create_shake_axis_entity());
+    }
+
+    entt::entity Camera::create_shake_axis_entity()
+    {
+        const auto entity = _registry.create();
+        _registry.emplace<components::CameraShakeAxis>(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false);
+        _registry.emplace<components::Inactive>(entity);
+
+        // Source-filtered to itself, so it only reacts to the TimerEvent its own Timer raises
+        // (see apply_pending_commands()) and not some unrelated Timer elsewhere in the game -
+        // the same native-event mechanism Lua subscribes to via _add_event_listener.
+        _registry.emplace<components::EventListener<components::TimerEvent>>(
+            entity,
+            [this, entity](const std::string &, const components::TimerEvent &, entt::entity)
+            { _registry.get<components::CameraShakeAxis>(entity).settling = true; },
+            entity);
+
+        return entity;
+    }
+
+    void Camera::apply_pending_commands()
+    {
+        for (auto &&[entity, event] : _registry.view<components::ShakeCameraHorizontalEvent>().each())
+        {
+            const auto axis_entity = _registry.ctx().get<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID);
+            _registry.replace<components::CameraShakeAxis>(axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
+            _registry.emplace_or_replace<components::Timer>(axis_entity, event.duration, false);
+            _registry.remove<components::Inactive>(axis_entity);
+            _registry.destroy(entity);
+        }
+
+        for (auto &&[entity, event] : _registry.view<components::ShakeCameraVerticalEvent>().each())
+        {
+            const auto axis_entity = _registry.ctx().get<entt::entity>(VERTICAL_SHAKE_ENTITY_ID);
+            _registry.replace<components::CameraShakeAxis>(axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
+            _registry.emplace_or_replace<components::Timer>(axis_entity, event.duration, false);
+            _registry.remove<components::Inactive>(axis_entity);
+            _registry.destroy(entity);
+        }
+    }
+
+    float Camera::update_shake_axis(entt::entity axis_entity, float elapsed_time)
+    {
+        if (_registry.all_of<components::Inactive>(axis_entity))
+        {
+            return 0.0f;
+        }
+
+        auto &shake = _registry.get<components::CameraShakeAxis>(axis_entity);
+
+        if (!shake.settling)
+        {
+            shake.retarget_clock -= elapsed_time;
+            if (shake.retarget_clock <= 0.0f)
+            {
+                shake.target_offset = get_random(-shake.offset, shake.offset);
+                shake.retarget_clock += SHAKE_RETARGET_INTERVAL;
+            }
+        }
+        else
+        {
+            // Its EventListener<TimerEvent> already fired this frame (see
+            // create_shake_axis_entity()): head smoothly back to center instead of jittering
+            // further.
+            shake.target_offset = 0.0f;
+        }
+
+        const float delta = shake.target_offset - shake.current_offset;
+        const float max_step = shake.displacement_speed * elapsed_time;
+        shake.current_offset += std::clamp(delta, -max_step, max_step);
+
+        if (shake.settling && std::abs(shake.current_offset) < SHAKE_SETTLE_EPSILON)
+        {
+            shake.current_offset = 0.0f;
+            _registry.emplace<components::Inactive>(axis_entity);
+        }
+
+        return shake.current_offset;
     }
 
     void Camera::update(const engine::GameTime &update_time)
     {
-        const auto cameras = _registry.view<components::Camera, const components::Transform>(entt::exclude<components::Inactive>);
+        apply_pending_commands();
 
-        for (auto &&[entity, camera, transform] : cameras.each())
-        {
-            glm::vec2 position = transform.position;
-            float scale = camera.scale;
+        const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
+        auto &camera = _registry.get<components::Camera>(camera_entity);
+        const auto &transform = _registry.get<const components::Transform>(camera_entity);
 
-            glm::vec3 translate(
-                floor(-(position.x - camera.viewport.dimensions.x / 2) * scale) / scale,
-                floor(-(position.y - camera.viewport.dimensions.y / 2) * scale) / scale,
-                0.0);
+        const glm::vec2 shake_offset(
+            update_shake_axis(_registry.ctx().get<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID), update_time.elapsed_time),
+            update_shake_axis(_registry.ctx().get<entt::entity>(VERTICAL_SHAKE_ENTITY_ID), update_time.elapsed_time));
 
-            // TODO use patch
-            camera.transform = glm::translate(glm::mat4(1.0), translate);
-            camera.transform = glm::scale(camera.transform, glm::vec3(scale));
+        glm::vec2 position = transform.position + shake_offset;
+        float scale = camera.scale;
 
-            // World-space rect visible through this camera, derived by mapping the viewport's
-            // screen-space corners back through the inverse of the transform just computed above -
-            // kept in sync with it rather than re-derived from position/scale/viewport directly, so
-            // it can't drift if the transform math above ever changes.
-            const glm::mat4 inverse_transform = glm::inverse(camera.transform);
-            const glm::vec2 top_left = glm::vec2(inverse_transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            const glm::vec2 bottom_right = glm::vec2(inverse_transform * glm::vec4(
-                                                                              static_cast<float>(camera.viewport.dimensions.x),
-                                                                              static_cast<float>(camera.viewport.dimensions.y),
-                                                                              0.0f, 1.0f));
-            camera.visible_bounds = engine::Rectangle(top_left, bottom_right - top_left);
-        }
+        glm::vec3 translate(
+            floor(-(position.x - camera.viewport.dimensions.x / 2) * scale) / scale,
+            floor(-(position.y - camera.viewport.dimensions.y / 2) * scale) / scale,
+            0.0);
+
+        // TODO use patch
+        camera.transform = glm::translate(glm::mat4(1.0), translate);
+        camera.transform = glm::scale(camera.transform, glm::vec3(scale));
+
+        // World-space rect visible through this camera, derived by mapping the viewport's
+        // screen-space corners back through the inverse of the transform just computed above -
+        // kept in sync with it rather than re-derived from position/scale/viewport directly, so
+        // it can't drift if the transform math above ever changes.
+        const glm::mat4 inverse_transform = glm::inverse(camera.transform);
+        const glm::vec2 top_left = glm::vec2(inverse_transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        const glm::vec2 bottom_right = glm::vec2(inverse_transform * glm::vec4(
+                                                                         static_cast<float>(camera.viewport.dimensions.x),
+                                                                         static_cast<float>(camera.viewport.dimensions.y),
+                                                                         0.0f, 1.0f));
+        camera.visible_bounds = engine::Rectangle(top_left, bottom_right - top_left);
     }
 } // namespace tilegame::systems

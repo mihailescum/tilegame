@@ -8,6 +8,9 @@ in vec4 VertexColor;
 
 uniform sampler2D Texture;
 uniform sampler2D TextureLuminosity;
+// 0 in full daylight, 1 at full night (see systems::Daytime); gates how strongly light
+// sources bloom, so they only visibly glow once it's actually dark.
+uniform float night_amount;
 
 void main()
 {
@@ -15,5 +18,5 @@ void main()
     FragColor = color;
 
     vec4 luminosity = texture(TextureLuminosity, TexCoord) * VertexColor;
-    FragLuminosity = luminosity;
+    FragLuminosity = luminosity * night_amount;
 }

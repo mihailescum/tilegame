@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "entt/entt.hpp"
 
 #include "engine.hpp"
 
@@ -22,4 +23,12 @@ namespace tilegame::components
         /// `transform`. Used by Render to cull tiles/particles that fall outside the view.
         engine::Rectangle visible_bounds;
     };
+
+    // Registry context id (registry.ctx()) under which the single camera entity's handle is
+    // stored - created once by systems::Camera::load_content(), and read by systems::Render to
+    // know what to draw through. There is only ever one camera (see systems::Camera), so this
+    // is a named ctx() entry rather than a view, the same way systems::Weather tracks its
+    // precipitation entity - shared between two systems here, unlike Weather's, hence living in
+    // this header rather than privately in either .cpp.
+    inline constexpr entt::id_type CAMERA_ENTITY_ID = entt::hashed_string("camera_entity").value();
 } // namespace tilegame

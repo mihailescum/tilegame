@@ -23,6 +23,8 @@ namespace tilegame::worldscene
           _system_timer(*this, _registry),
           _system_particle(*this, _registry),
           _system_daytime(*this, _registry),
+          _system_weather(*this, _registry),
+          _system_lightning(*this, _registry),
           _system_collision_detection(*this, _registry),
           _system_messagebox(*this, _registry)
     {
@@ -48,9 +50,11 @@ namespace tilegame::worldscene
     void WorldScene::load_content()
     {
         _system_daytime.load_content();
+        _system_lightning.load_content(); // Shares Daytime's shader, so must run after Daytime::load_content()
 
         _system_map.load_content();
         _system_player.load_content();
+        _system_weather.load_content(); // Pins its precipitation entity to player 1, so must run after Player::load_content()
         _system_particle.load_content();
 
         _system_camera.load_content();
@@ -64,15 +68,13 @@ namespace tilegame::worldscene
 
     void WorldScene::update(const engine::GameTime &update_time)
     {
-        _system_daytime.update(update_time);
-
         _system_timer.update(update_time);
         _system_particle.update(update_time);
 
-        _system_player.update(update_time);               // Can generate direction of a colliding entity
-        _system_script.update(update_time);               // Can generate direction of a colliding
-        _system_messagebox.update(update_time);           // Can tag the player Inactive, blocking movement below
-        _system_movement_controller.update(update_time);  // Transforms directions to movement instruction
+        _system_player.update(update_time);              // Can generate direction of a colliding entity
+        _system_script.update(update_time);              // Can generate direction of a colliding
+        _system_messagebox.update(update_time);          // Can tag the player Inactive, blocking movement below
+        _system_movement_controller.update(update_time); // Transforms directions to movement instruction
 
         _system_collision_detection.update(update_time); // Resolves all collisions on movement direction level
         _system_movement.update(update_time);            // Actually updated the positions
@@ -81,6 +83,10 @@ namespace tilegame::worldscene
         _system_pin.update(update_time);
 
         _system_camera.update(update_time);
+
+        _system_daytime.update(update_time);
+        _system_weather.update(update_time);
+        _system_lightning.update(update_time);
     }
 
     void WorldScene::end_update()

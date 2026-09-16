@@ -20,6 +20,8 @@
 #include "systems/timer.hpp"
 #include "systems/particle.hpp"
 #include "systems/daytime.hpp"
+#include "systems/weather.hpp"
+#include "systems/lightning.hpp"
 #include "systems/collisiondetection.hpp"
 #include "systems/messagebox.hpp"
 
@@ -55,6 +57,8 @@ namespace tilegame::worldscene
         systems::Timer _system_timer;
         systems::Particle _system_particle;
         systems::Daytime _system_daytime;
+        systems::Weather _system_weather;
+        systems::Lightning _system_lightning;
         systems::CollisionDetection _system_collision_detection;
         systems::MessageBox _system_messagebox;
 
