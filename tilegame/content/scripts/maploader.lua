@@ -3,11 +3,11 @@
 -- entities the former systems::Map used to build in C++: one TileLayer entity per tile layer,
 -- and one sprite entity per tile object (NPCs etc.), offset by each map's position in the world.
 --
--- Animation-frame parsing is the one piece not done here: `_parse_sprite_animations` hands a
--- tileset's raw JSON to the engine (mirroring what it already does for tson-loaded tilesets -
--- see engine::graphics::Sprite::parse()), which is also what `_get_or_create_sprite_class` reads
--- back from afterwards. Everything else about interpreting a tileset (texture, atlas math, gid
--- resolution, collision shapes) is done right here.
+-- Texture/animation loading is the one piece not done here: `_load_spritesheet` loads a
+-- tileset's SpriteSheet resource through the engine's regular ResourceManager path (the same one
+-- systems::Player uses for its Tileset), which owns the per-class Sprite animation data, read
+-- back via `_SpriteSheet:get_sprite()`. Everything else about interpreting a tileset (atlas math,
+-- gid resolution, collision shapes, custom properties) is done right here.
 
 local function resolve_path(base_dir, relative_path)
     local parts = {}
@@ -57,6 +57,15 @@ local function tile_collision_shape(tile_def)
     return nil
 end
 
+local function read_property(properties, name)
+    for _, property in ipairs(properties) do
+        if property.name == name then
+            return property.value
+        end
+    end
+    return nil
+end
+
 -- Mirrors engine::graphics::SpriteSheet::source_rect(): the atlas cell for a tileset-local tile id.
 local function calculate_source_rect(tileset, local_id)
     local column = local_id % tileset.columns
@@ -69,10 +78,9 @@ local function load_tileset(tileset_ref, map_dir)
     local dir = dirname(path)
     local data = _load_json(path)
 
-    -- Hands the raw tileset file to the engine, which parses every animated tile's frames into
-    -- that class's persistent Sprite (a no-op if this tileset was already parsed for an earlier map).
-    _parse_sprite_animations(path)
-
+    -- Loads the tileset's SpriteSheet resource through the engine (a no-op if this tileset was
+    -- already loaded for an earlier map) - it owns the texture and per-class animation data.
+    local spritesheet = _load_spritesheet(path)
     local tiles_by_id = {}
     for _, tile in ipairs(data.tiles or {}) do
         tiles_by_id[tile.id] = tile
@@ -84,10 +92,11 @@ local function load_tileset(tileset_ref, map_dir)
         firstgid = tileset_ref.firstgid,
         tilecount = data.tilecount,
         columns = data.columns,
-        tile_dimensions = vec2(data.tilewidth, data.tileheight),
-        texture = _load_texture(resolve_path(dir, data.image)),
+        tile_dimensions = spritesheet.tile_dimensions,
+        texture = spritesheet.texture,
         luminosity = luminosity_path and _load_texture(resolve_path(dir, luminosity_path)) or nil,
         tiles_by_id = tiles_by_id,
+        spritesheet = spritesheet,
     }
 end
 
@@ -124,6 +133,7 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
             local tileset, local_id = resolve_gid(tilesets, layer.data[index + 1])
             -- Always assigned (even for an empty cell, as `false`) so `cells` has no holes and
             -- its length reliably reflects the layer's tile count - see TileLayer::register_component().
+
             cells[index + 1] = tileset and {
                 texture = tileset.texture,
                 luminosity = tileset.luminosity,
@@ -154,7 +164,7 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     end
 
     local state_name = tile_def.properties.state
-    --local sprite_class = _get_or_create_sprite_class(tile_def.type)
+    local sprite_class = tileset.spritesheet:get_sprite(tile_def.type)
     local source_rect = calculate_source_rect(tileset, local_id)
 
     local position = vec2(map_position.x + object.x, map_position.y + object.y)
@@ -176,9 +186,9 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
         _registry:emplace(entity, _Collider(collision_shape))
     end
     print("Hello")
-    local script_path = object.properties.script
+    local script_path = read_property(object.properties, "script")
     if script_path then
-        _registry:emplace(entity, _ScriptLoader(resolve_path(map_dir, script_path)))
+        _run_script(resolve_path(map_dir, script_path), entity)
         _registry:emplace(entity, _Interactable())
     end
 end

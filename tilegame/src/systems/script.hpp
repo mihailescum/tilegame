@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <unordered_map>
-#include <unordered_set>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include "sol/sol.hpp"
@@ -33,9 +32,11 @@ namespace tilegame::systems
      * returns - so nothing is queued or polled for. In load_content(), once every other
      * system has finished creating the entities/listeners those events target, runs the
      * global (non-entity) configuration scripts such as content/scripts/daytime.lua once.
-     * Each frame, also operates on entities with a ScriptLoader component: loads and runs
-     * their Lua file once (passing the owning entity), attaches the returned table as a
-     * LuaTable component, and removes the ScriptLoader so the script isn't re-run.
+     * Also exposes `_run_script` to Lua, which raises a RunScriptEvent carrying a file path and
+     * an arbitrary (possibly zero) number of further arguments; this system's own
+     * EventListener<RunScriptEvent>, registered on a dedicated control entity in initialize(),
+     * loads and runs that file immediately, passing those arguments on to it as varargs (`...`).
+     * Its return value, if any, is discarded.
      */
     class Script : public System
     {
@@ -45,19 +46,20 @@ namespace tilegame::systems
         // EventListener<EventType> entity and returns it, so add_event_listener can dispatch
         // generically without knowing the concrete event type at the call site.
         std::unordered_map<std::string, std::function<entt::entity(sol::function, entt::entity)>> _event_types;
-        // Per-class engine::graphics::Sprite (state name -> frames), populated by
-        // parse_sprite_animations(). Kept alive for the whole session (an unordered_map never
-        // invalidates references on insertion) so components::SpriteOrientation's raw Sprite*
-        // pointers - set via `_make_orientable_if_directional` - stay valid.
-        std::unordered_map<std::string, engine::graphics::Sprite> _sprite_classes;
-        // Tileset paths already parse_sprite_animations()'d, so a tileset shared by multiple
-        // maps (e.g. tileset1.tsj) doesn't get its animation frames registered twice.
-        std::unordered_set<std::string> _parsed_animation_paths;
 
         void register_api();
-        // Loads and immediately runs a Lua file with no entity argument, for global
-        // (non-entity) configuration scripts such as content/scripts/daytime.lua.
-        void run_script(const std::string &path);
+        // Loads and immediately runs a Lua file, forwarding `arguments` (possibly empty) to it
+        // as varargs (`...`); its return value, if any, is discarded. Used directly for the
+        // global (non-entity) configuration scripts run once in load_content()
+        // (content/scripts/maploader.lua, daytime.lua, weather.lua) - with no arguments - and by
+        // this system's own EventListener<RunScriptEvent> to run whichever script `_run_script`
+        // was called with, forwarding whatever arguments it was given.
+        void execute_script(const std::string &path, const std::vector<sol::object> &arguments = {});
+        // Exposed to Lua as `_run_script`; raises a RunScriptEvent carrying `path` and whatever
+        // further arguments the Lua call was given (possibly none), immediately delivered to
+        // this system's own EventListener<RunScriptEvent>, which calls
+        // execute_script(path, arguments).
+        void run_script(const std::string &path, sol::variadic_args arguments);
 
         // Reads `path` and parses it as JSON (json11, bundled in tileson.hpp, used purely as a
         // generic JSON parser here - not tileson's map/tileset object model). Used by load_json().
@@ -70,18 +72,15 @@ namespace tilegame::systems
         static sol::object json_to_lua(sol::state_view lua, const json11::Json &json);
         // Exposed to Lua as `_load_texture`; thin wrapper over ResourceManager::load_resource<Texture2D>.
         const engine::Texture2D *load_texture(const std::string &path);
-        // Exposed to Lua as `_get_or_create_sprite_class`; returns the persistent, session-lived
-        // Sprite for `class_name` (creating it empty on first use).
-        engine::graphics::Sprite &get_or_create_sprite_class(const std::string &class_name);
-        // Exposed to Lua as `_parse_sprite_animations`; the first time it's called for a given
-        // tileset `path`, reads its raw JSON itself and parses every animated tile's frames into
-        // that tile's class's persistent Sprite (see get_or_create_sprite_class()) - i.e. Lua
-        // hands over "here's a tileset that might have animation data", and the engine
-        // (Sprite::parse()) does the actual interpretation of Tiled's animation/properties
-        // schema. A no-op on later calls for the same path (e.g. a tileset shared by multiple
-        // maps). Lua still reads the tileset's JSON itself for everything else (texture, atlas
-        // layout, collision shapes) via `_load_json`/`_load_texture`.
-        void parse_sprite_animations(const std::string &path);
+        // Exposed to Lua as `_load_spritesheet`; thin wrapper over
+        // ResourceManager::load_resource<SpriteSheet>() - the same tson-based loading path
+        // systems::Player already uses for the Tileset it loads (a SpriteSheet subclass), so
+        // there's exactly one mechanism that ever parses a tileset's animation frames. The
+        // returned SpriteSheet owns the per-class Sprite animation data (exposed to Lua as
+        // `_SpriteSheet`, with a `get_sprite(name)` accessor) - Lua still reads the tileset's
+        // JSON itself for everything SpriteSheet doesn't carry (firstgid, tilecount, luminosity,
+        // per-tile custom properties/collision shapes) via `_load_json`.
+        engine::graphics::SpriteSheet *load_spritesheet(const std::string &path);
         // Exposed to Lua as `_make_orientable_if_directional`; thin wrapper over
         // components::SpriteOrientation::make_orientable_if_directional().
         void make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name);
@@ -197,6 +196,5 @@ namespace tilegame::systems
         // entities/listeners those events reach - load_content() is called last in
         // WorldScene::load_content(), after every other system's own load_content().
         void load_content();
-        void update(const engine::GameTime &update_time);
     };
 } // namespace tilegame::systems

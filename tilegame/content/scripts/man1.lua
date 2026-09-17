@@ -1,9 +1,9 @@
 local dbg = require("debugger")
 local inspect = require("inspect")
 
-local man1 = ...
+local entity = ...
 
-local function handle_timer_event(event_type, event, source) 
+local function handle_timer_event(event_type, event, source)
     while true do
         print("Hello man!")
         coroutine.yield()
@@ -23,8 +23,9 @@ local positions = {
 local target = positions[1]
 local target_component = _Target(target)
 local speed_component = _Speed(300)
-_registry:emplace(man1.entity, target_component)
-_registry:emplace(man1.entity, speed_component)
+
+_registry:emplace(entity, target_component)
+_registry:emplace(entity, speed_component)
 
 local function handle_target_reached_event(event_type, event, source)
     local current_index = 1
@@ -34,8 +35,8 @@ local function handle_target_reached_event(event_type, event, source)
 
         local new_target = positions[current_index]
         local target_component = _Target(new_target)
-        _registry:emplace(man1.entity, target_component)
-        _registry:emplace(man1.entity, speed_component)
+        _registry:emplace(source, target_component)
+        _registry:emplace(source, speed_component)
 
         coroutine.yield()
     end
@@ -46,7 +47,7 @@ local timer_component = _Timer(20, true)
 _registry:emplace(timer1, timer_component)
 
 _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
-_add_event_listener(_TargetReachedEvent, coroutine.wrap(handle_target_reached_event), man1.entity)
+_add_event_listener(_TargetReachedEvent, coroutine.wrap(handle_target_reached_event), entity)
 
 print("Man loaded")
 
@@ -60,6 +61,3 @@ _add_event_listener(_MessageClosedEvent, function(event_type, event, source)
     print("Selected option: " .. event.selected_option)
     _resume_player_input(1)
 end)
-
-
-return man1

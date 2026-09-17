@@ -1,6 +1,6 @@
-local soldier1 = ...
+local entity = ...
 
-local function handle_timer_event(event_type, event, source) 
+local function handle_timer_event(event_type, event, source)
     local count = 1
     while true do
         print("Soldier! Count:", count)
@@ -28,6 +28,4 @@ _registry:emplace(timer1, timer_component)
 _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
 _add_event_listener(_MapEnteredEvent, handle_map_entered_event)
 _add_event_listener(_MapLeftEvent, handle_map_left_event)
-_add_event_listener(_InteractEvent, handle_interact_event, soldier1.entity)
-
-return soldier1
+_add_event_listener(_InteractEvent, handle_interact_event, entity)

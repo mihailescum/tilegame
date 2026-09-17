@@ -8,7 +8,7 @@
 
 #include "entt_sol/bond.hpp"
 
-#include "components/scriptloader.hpp"
+#include "components/runscriptevent.hpp"
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
 #include "components/inactive.hpp"
@@ -51,28 +51,57 @@ namespace tilegame::systems
     {
         _lua.open_libraries();
         register_api();
+
+        // Dedicated always-active control entity for RunScriptEvent, following the same
+        // pattern as systems::Weather/Lightning/Camera's own control entities - see
+        // components::EventListener's doc comment for why this can't just live on some
+        // Inactive-taggable entity.
+        const auto control_entity = _registry.create();
+        _registry.emplace<components::EventListener<components::RunScriptEvent>>(
+            control_entity,
+            [this](const std::string &, const components::RunScriptEvent &event, entt::entity)
+            {
+                execute_script(event.path, event.arguments);
+            },
+            entt::null);
     }
 
     void Script::load_content()
     {
         // Global configuration scripts, run once at startup - deliberately here rather than in
         // initialize(), see the declaration in script.hpp for why.
-        run_script("content/scripts/maploader.lua");
-        run_script("content/scripts/daytime.lua");
-        run_script("content/scripts/weather.lua");
+        execute_script("content/scripts/maploader.lua");
+        execute_script("content/scripts/daytime.lua");
+        execute_script("content/scripts/weather.lua");
     }
 
-    void Script::run_script(const std::string &path)
+    void Script::execute_script(const std::string &path, const std::vector<sol::object> &arguments)
     {
         sol::load_result load_result = _lua().load_file(path);
-        if (load_result.valid())
+        if (!load_result.valid())
         {
-            load_result();
+            const sol::error error = load_result;
+            throw std::runtime_error("Error loading file '" + path + "': " + error.what());
         }
-        else
+
+        const sol::protected_function_result call_result = load_result(sol::as_args(arguments));
+        if (!call_result.valid())
         {
-            throw std::runtime_error("Error loading file");
+            const sol::error error = call_result;
+            throw std::runtime_error("Error running file '" + path + "': " + error.what());
         }
+    }
+
+    void Script::run_script(const std::string &path, sol::variadic_args arguments)
+    {
+        std::vector<sol::object> parsed_arguments;
+        parsed_arguments.reserve(arguments.size());
+        for (const auto &argument : arguments)
+        {
+            parsed_arguments.push_back(argument.as<sol::object>());
+        }
+
+        raise_event<components::RunScriptEvent>(entt::null, path, std::move(parsed_arguments));
     }
 
     json11::Json Script::read_json_file(const std::string &path) const
@@ -142,30 +171,10 @@ namespace tilegame::systems
         return _scene.game().resource_manager().load_resource<engine::Texture2D>(fs_path.filename().string(), fs_path);
     }
 
-    engine::graphics::Sprite &Script::get_or_create_sprite_class(const std::string &class_name)
+    engine::graphics::SpriteSheet *Script::load_spritesheet(const std::string &path)
     {
-        return _sprite_classes.try_emplace(class_name, class_name, nullptr).first->second;
-    }
-
-    void Script::parse_sprite_animations(const std::string &path)
-    {
-        if (!_parsed_animation_paths.insert(path).second)
-        {
-            return;
-        }
-
-        const json11::Json json = read_json_file(path);
-        const int columns = json["columns"].int_value();
-        const glm::ivec2 tile_dimensions(json["tilewidth"].int_value(), json["tileheight"].int_value());
-
-        for (const auto &tile_json : json["tiles"].array_items())
-        {
-            if (!tile_json["animation"].array_items().empty())
-            {
-                const std::string class_name = tile_json["type"].string_value();
-                get_or_create_sprite_class(class_name).parse(tile_json, columns, tile_dimensions);
-            }
-        }
+        const std::filesystem::path fs_path(path);
+        return _scene.game().resource_manager().load_resource<engine::graphics::SpriteSheet>(fs_path.filename().string(), fs_path);
     }
 
     void Script::make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name)
@@ -188,7 +197,16 @@ namespace tilegame::systems
                 [](float x, float y)
                 { return glm::vec2(x, y); }),
             "x", &glm::vec2::x,
-            "y", &glm::vec2::y);
+            "y", &glm::vec2::y,
+            sol::meta_function::addition, [](const glm::vec2 &a, const glm::vec2 &b)
+            { return a + b; },
+            sol::meta_function::subtraction, [](const glm::vec2 &a, const glm::vec2 &b)
+            { return a - b; },
+            sol::meta_function::multiplication, sol::overload(
+                                                     [](const glm::vec2 &a, float b)
+                                                     { return a * b; },
+                                                     [](float a, const glm::vec2 &b)
+                                                     { return a * b; }));
         _lua().new_usertype<engine::Color>(
             "_Color",
             sol::call_constructor,
@@ -224,11 +242,21 @@ namespace tilegame::systems
         // constructors - not directly constructible or readable from Lua.
         _lua().new_usertype<engine::Texture2D>(
             "_Texture", sol::no_constructor);
-        // Opaque handle returned by `_get_or_create_sprite_class` (a tileset's per-class
-        // animation data, parsed by `_parse_sprite_animations`), passed on to
-        // `_Animation`/`_make_orientable_if_directional`.
+        // Opaque handle returned by `_SpriteSheet:get_sprite()` (a tileset's per-class animation
+        // data), passed on to `_Animation`/`_make_orientable_if_directional`.
         _lua().new_usertype<engine::graphics::Sprite>(
             "_SpriteClass", sol::no_constructor);
+        // Opaque handle returned by `_load_spritesheet`, exposing only what Lua needs from the
+        // tileset's SpriteSheet resource - everything else about interpreting a raw-JSON tileset
+        // is still done by Lua itself (see content/scripts/maploader.lua).
+        _lua().new_usertype<engine::graphics::SpriteSheet>(
+            "_SpriteSheet",
+            sol::no_constructor,
+            "get_sprite", sol::resolve<engine::graphics::Sprite &(std::string)>(&engine::graphics::SpriteSheet::operator[]),
+            "texture", sol::property([](engine::graphics::SpriteSheet &sheet)
+                                      { return &sheet.texture(); }),
+            "tile_dimensions", sol::property([](const engine::graphics::SpriteSheet &sheet)
+                                              { const auto &dim = sheet.tile_dimensions(); return glm::vec2(dim.x, dim.y); }));
 
         components::Direction::register_component(_lua());
         components::Facing::register_component(_lua());
@@ -243,7 +271,6 @@ namespace tilegame::systems
         components::LightningEvent::register_component(_lua());
         components::ParticleEmitter::register_component(_lua());
         components::Pin::register_component(_lua());
-        components::ScriptLoader::register_component(_lua());
         components::Target::register_component(_lua());
         components::TargetReachedEvent::register_component(_lua());
         components::Timer::register_component(_lua());
@@ -259,10 +286,10 @@ namespace tilegame::systems
         components::TileLayer::register_component(_lua());
         components::Collider::register_component(_lua());
 
+        _lua().set_function("_run_script", &Script::run_script, this);
         _lua().set_function("_load_json", &Script::load_json, this);
         _lua().set_function("_load_texture", &Script::load_texture, this);
-        _lua().set_function("_get_or_create_sprite_class", &Script::get_or_create_sprite_class, this);
-        _lua().set_function("_parse_sprite_animations", &Script::parse_sprite_animations, this);
+        _lua().set_function("_load_spritesheet", &Script::load_spritesheet, this);
         _lua().set_function("_make_orientable_if_directional", &Script::make_orientable_if_directional, this);
 
         _lua().set_function("_add_event_listener",
@@ -417,29 +444,5 @@ namespace tilegame::systems
     void Script::resume_player_input(int player_id)
     {
         raise_event<components::ResumePlayerInputEvent>(entt::null, player_id);
-    }
-
-    void Script::update(const engine::GameTime &update_time)
-    {
-        // TODO loading scripts should happen somewhere else, not on update
-
-        const auto script_entities = _registry.view<const components::ScriptLoader>(entt::exclude<components::Inactive>);
-        for (const auto &&[entity, script_loader] : script_entities.each())
-        {
-            const auto &script_path = script_loader.path;
-            sol::load_result load_result = _lua().load_file(script_path);
-            if (load_result.valid())
-            {
-                sol::table arg = _lua().create_table_with("entity", entity);
-                sol::table result = load_result(arg);
-                _registry.emplace<components::LuaTable>(entity, result);
-            }
-            else
-            {
-                throw std::runtime_error("Error loading file");
-            }
-
-            _registry.erase<components::ScriptLoader>(entity);
-        }
     }
 } // namespace tilegame::systems

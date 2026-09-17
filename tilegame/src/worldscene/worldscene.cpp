@@ -80,7 +80,6 @@ namespace tilegame::worldscene
         _system_particle.update(update_time);
 
         _system_player.update(update_time);              // Can generate direction of a colliding entity
-        _system_script.update(update_time);              // Can generate direction of a colliding
         _system_messagebox.update(update_time);          // Can tag the player Inactive, blocking movement below
         _system_movement_controller.update(update_time); // Transforms directions to movement instruction; also writes NPC Direction from Target
         _system_facing.update(update_time);              // Persists latest non-zero Direction (player + NPCs) - must run after both Direction writers above
