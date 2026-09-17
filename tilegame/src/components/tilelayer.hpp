@@ -13,10 +13,10 @@ namespace tilegame::components
 {
     /**
      * @brief Renders and collides against one grid layer of a loaded map. Fully self-contained
-     * (built once by content/scripts/maploader.lua from the map's raw JSON, via `_load_json` and
-     * systems::Script's `_emplace_tilelayer` binding - see build()): `tile_data` gives each
-     * cell's draw rects, textures and optional collision shape, which the Render and
-     * CollisionDetection systems iterate directly.
+     * (built once by content/scripts/maploader.lua from the map's raw JSON via `_load_json`,
+     * then constructed directly as a `_TileLayer`): `tile_data` gives each cell's draw rects,
+     * textures and optional collision shape, which the Render and CollisionDetection systems
+     * iterate directly.
      */
     struct TileLayer
     {
@@ -34,27 +34,27 @@ namespace tilegame::components
             TileData(const engine::Texture2DContainer<2> &textures, const engine::Rectangle &destination_rect, const engine::Rectangle &source_rect) : textures(textures), destination_rect(destination_rect), source_rect(source_rect) {}
         };
 
-        glm::ivec2 dimensions;
         glm::ivec2 tile_dimensions;
         std::vector<TileData> tile_data;
 
-        /** @brief Flat index into tile_data for grid cell (x, y), or -1 if the coordinates are outside `dimensions`. */
-        int index(int x, int y) const
-        {
-            if (x >= 0 && x < dimensions.x && y >= 0 && y < dimensions.y)
-            {
-                return x + dimensions.x * y;
-            }
-            else
-            {
-                return -1;
-            }
-        }
+        // /** @brief Flat index into tile_data for grid cell (x, y), or -1 if the coordinates are outside `dimensions`. */
+        // int index(int x, int y) const
+        // {
+        //     if (x >= 0 && x < dimensions.x && y >= 0 && y < dimensions.y)
+        //     {
+        //         return x + dimensions.x * y;
+        //     }
+        //     else
+        //     {
+        //         return -1;
+        //     }
+        // }
 
-        /// Builds a TileLayer from Lua-supplied dimensions and a 1-based array `cells` of
+        /// Registers `_TileLayer`, constructible from Lua as `_TileLayer(tile_dimensions,
+        /// cells)`: `tile_dimensions` is a vec2, and `cells` a 1-based array, with no holes, of
         /// per-cell tables ({texture, luminosity, destination, source, shape?} - `shape`, if
-        /// present, is a descriptor as accepted by Collider::make_shape()), or a nil entry for
-        /// an empty cell.
-        static TileLayer build(const glm::ivec2 &dimensions, const glm::ivec2 &tile_dimensions, const sol::table &cells);
+        /// present, is a descriptor as accepted by Collider::make_shape()) or `false` for an
+        /// empty cell. `cells`' length gives the layer's tile count.
+        static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

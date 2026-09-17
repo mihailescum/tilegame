@@ -85,15 +85,6 @@ namespace tilegame::systems
         // Exposed to Lua as `_make_orientable_if_directional`; thin wrapper over
         // components::SpriteOrientation::make_orientable_if_directional().
         void make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name);
-        // Exposed to Lua as `_emplace_collider`; builds a components::Collider from a shape
-        // descriptor table (see components::Collider::make_shape()) and emplaces it directly -
-        // components::Collider is move-only (an owning unique_ptr<Shape>), so it's attached this
-        // way instead of through a generic Lua-constructible usertype.
-        void emplace_collider(entt::entity entity, const sol::table &shape_descriptor);
-        // Exposed to Lua as `_emplace_tilelayer`; builds a components::TileLayer (see
-        // components::TileLayer::build()) and emplaces it directly, for the same move-only
-        // reason as emplace_collider().
-        void emplace_tilelayer(entt::entity entity, const glm::vec2 &dimensions, const glm::vec2 &tile_dimensions, const sol::table &cells);
 
         // Exposed to Lua as `_set_daytime_marks`; raises a SetDaytimeMarksEvent, immediately
         // delivered to systems::Daytime, wholesale-replacing the day/night cycle's keyframes

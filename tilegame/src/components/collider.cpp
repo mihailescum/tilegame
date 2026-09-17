@@ -2,8 +2,25 @@
 
 #include <stdexcept>
 
+#include "entt/entt.hpp"
+
+#include "entt_sol/bond.hpp"
+
 namespace tilegame::components
 {
+    void Collider::register_component(sol::state &lua)
+    {
+        entt_sol::register_meta_component<Collider>();
+
+        lua.new_usertype<Collider>(
+            "_Collider",
+            "type_id", &entt::type_hash<Collider>::value,
+            sol::call_constructor,
+            sol::factories(
+                [](const sol::table &descriptor)
+                { return Collider(make_shape(descriptor)); }));
+    }
+
     engine::ShapeVariant Collider::make_shape(const sol::table &descriptor)
     {
         const std::string kind = descriptor["kind"];

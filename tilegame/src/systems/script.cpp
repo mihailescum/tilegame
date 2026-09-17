@@ -173,16 +173,6 @@ namespace tilegame::systems
         components::SpriteOrientation::make_orientable_if_directional(_registry, entity, sprite, initial_state_name);
     }
 
-    void Script::emplace_collider(entt::entity entity, const sol::table &shape_descriptor)
-    {
-        _registry.emplace<components::Collider>(entity, components::Collider::make_shape(shape_descriptor));
-    }
-
-    void Script::emplace_tilelayer(entt::entity entity, const glm::vec2 &dimensions, const glm::vec2 &tile_dimensions, const sol::table &cells)
-    {
-        _registry.emplace<components::TileLayer>(entity, components::TileLayer::build(glm::ivec2(dimensions), glm::ivec2(tile_dimensions), cells));
-    }
-
     void Script::register_api()
     {
         _lua().require("_registry", sol::c_call<AUTO_ARG(&entt_sol::open_registry)>, false);
@@ -221,6 +211,15 @@ namespace tilegame::systems
                 { return engine::Rectangle(position, dimensions); }),
             "position", &engine::Rectangle::position,
             "dimensions", &engine::Rectangle::dimensions);
+        _lua().new_usertype<engine::Point>(
+            "_Point",
+            sol::call_constructor,
+            sol::factories(
+                []()
+                { return engine::Point(); },
+                [](const glm::vec2 &position)
+                { return engine::Point(position); }),
+            "position", &engine::Point::position);
         // Opaque handle returned by `_load_texture`, passed on to `_Sprite`/`_TileLayer`
         // constructors - not directly constructible or readable from Lua.
         _lua().new_usertype<engine::Texture2D>(
@@ -257,14 +256,14 @@ namespace tilegame::systems
         components::Animation::register_component(_lua());
         components::Map::register_component(_lua());
         components::Shape::register_component(_lua());
+        components::TileLayer::register_component(_lua());
+        components::Collider::register_component(_lua());
 
         _lua().set_function("_load_json", &Script::load_json, this);
         _lua().set_function("_load_texture", &Script::load_texture, this);
         _lua().set_function("_get_or_create_sprite_class", &Script::get_or_create_sprite_class, this);
         _lua().set_function("_parse_sprite_animations", &Script::parse_sprite_animations, this);
         _lua().set_function("_make_orientable_if_directional", &Script::make_orientable_if_directional, this);
-        _lua().set_function("_emplace_collider", &Script::emplace_collider, this);
-        _lua().set_function("_emplace_tilelayer", &Script::emplace_tilelayer, this);
 
         _lua().set_function("_add_event_listener",
                             sol::overload(

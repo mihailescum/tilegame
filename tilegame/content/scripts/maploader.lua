@@ -28,18 +28,6 @@ local function dirname(path)
     return path:match("(.*)/[^/]+$") or "."
 end
 
-local function find_property(properties, name)
-    if not properties then
-        return nil
-    end
-    for _, property in ipairs(properties) do
-        if property.name == name then
-            return property.value
-        end
-    end
-    return nil
-end
-
 -- Mirrors engine::tilemap::Tileset::parse_shape(): a Tiled object is a point, a circular
 -- ellipse (true ellipses are unsupported), or otherwise a rectangle.
 local function shape_descriptor(object)
@@ -70,7 +58,7 @@ local function tile_collision_shape(tile_def)
 end
 
 -- Mirrors engine::graphics::SpriteSheet::source_rect(): the atlas cell for a tileset-local tile id.
-local function source_rect_for(tileset, local_id)
+local function calculate_source_rect(tileset, local_id)
     local column = local_id % tileset.columns
     local row = math.floor(local_id / tileset.columns)
     return _Rectangle(vec2(column * tileset.tile_dimensions.x, row * tileset.tile_dimensions.x), tileset.tile_dimensions)
@@ -90,7 +78,7 @@ local function load_tileset(tileset_ref, map_dir)
         tiles_by_id[tile.id] = tile
     end
 
-    local luminosity_path = find_property(data.properties, "image_luminosity")
+    local luminosity_path = data.properties.image_luminosity
 
     return {
         firstgid = tileset_ref.firstgid,
@@ -110,22 +98,22 @@ local function resolve_gid(tilesets, gid)
         return nil
     end
 
-    local best = nil
-    for _, tileset in ipairs(tilesets) do
-        if gid >= tileset.firstgid and (not best or tileset.firstgid > best.firstgid) then
-            best = tileset
+    local tileset = nil
+    for _, t in ipairs(tilesets) do
+        if gid >= t.firstgid and (not tileset or t.firstgid > tileset.firstgid) then
+            tileset = t
         end
     end
-    if not best then
+    if not tileset then
         return nil
     end
 
-    local local_id = gid - best.firstgid
-    if local_id < 0 or local_id >= best.tilecount then
+    local local_id = gid - tileset.firstgid
+    if local_id < 0 or local_id >= tileset.tilecount then
         return nil
     end
 
-    return best, local_id
+    return tileset, local_id
 end
 
 local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_position)
@@ -134,15 +122,15 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
         for x = 0, layer.width - 1 do
             local index = x + layer.width * y
             local tileset, local_id = resolve_gid(tilesets, layer.data[index + 1])
-            if tileset then
-                cells[index + 1] = {
-                    texture = tileset.texture,
-                    luminosity = tileset.luminosity,
-                    destination = _Rectangle(vec2(x * tileset.tile_dimensions.x, y * tileset.tile_dimensions.y), tileset.tile_dimensions),
-                    source = source_rect_for(tileset, local_id),
-                    shape = tile_collision_shape(tileset.tiles_by_id[local_id]),
-                }
-            end
+            -- Always assigned (even for an empty cell, as `false`) so `cells` has no holes and
+            -- its length reliably reflects the layer's tile count - see TileLayer::register_component().
+            cells[index + 1] = tileset and {
+                texture = tileset.texture,
+                luminosity = tileset.luminosity,
+                destination = _Rectangle(vec2(x * tileset.tile_dimensions.x, y * tileset.tile_dimensions.y), tileset.tile_dimensions),
+                source = calculate_source_rect(tileset, local_id),
+                shape = tile_collision_shape(tileset.tiles_by_id[local_id]),
+            } or false
         end
     end
 
@@ -150,7 +138,8 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
     _registry:emplace(entity, _Transform(map_position))
     _registry:emplace(entity, _Ordering(z_index))
     _registry:emplace(entity, _Renderable2D())
-    _emplace_tilelayer(entity, vec2(layer.width, layer.height), vec2(map_data.tilewidth, map_data.tileheight), cells)
+    _registry:emplace(entity, _Shape(_Point(vec2(layer.width, layer.height))))
+    _registry:emplace(entity, _TileLayer(vec2(map_data.tilewidth, map_data.tileheight), cells))
 end
 
 local function create_sprite_entity(tilesets, object, map_position, map_dir)
@@ -164,9 +153,9 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
         error("Tile not found")
     end
 
-    local state_name = find_property(tile_def.properties, "state")
-    local sprite_class = _get_or_create_sprite_class(tile_def.type)
-    local source_rect = source_rect_for(tileset, local_id)
+    local state_name = tile_def.properties.state
+    --local sprite_class = _get_or_create_sprite_class(tile_def.type)
+    local source_rect = calculate_source_rect(tileset, local_id)
 
     local position = vec2(map_position.x + object.x, map_position.y + object.y)
 
@@ -174,19 +163,20 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     _registry:emplace(entity, _Transform(position))
     _registry:emplace(entity, _Ordering(3.0))
     _registry:emplace(entity, _Renderable2D())
-    _registry:emplace(entity, _Animation(sprite_class, state_name))
+
+    --_registry:emplace(entity, _Animation(sprite_class, state_name))
     _registry:emplace(entity, _Sprite(tileset.texture, tileset.luminosity, source_rect))
 
     -- If the tile's state follows the "<direction>_<action>" convention and the class defines
     -- all four directions of that action, this sprite can be reoriented at runtime.
-    _make_orientable_if_directional(entity, sprite_class, state_name)
-
+    
+    --_make_orientable_if_directional(entity, sprite_class, state_name)
     local collision_shape = tile_collision_shape(tile_def)
     if collision_shape then
-        _emplace_collider(entity, collision_shape)
+        _registry:emplace(entity, _Collider(collision_shape))
     end
-
-    local script_path = find_property(object.properties, "script")
+    print("Hello")
+    local script_path = object.properties.script
     if script_path then
         _registry:emplace(entity, _ScriptLoader(resolve_path(map_dir, script_path)))
         _registry:emplace(entity, _Interactable())
@@ -200,13 +190,14 @@ local function create_map(map_entry)
     local map_position = vec2(map_entry.x, map_entry.y)
 
     -- One entity per map, tagged _Map with a Transform (world position) and a Shape (pixel
-    -- bounds) - the ECS-native replacement for the former engine::tilemap::World resource (see
+    -- dimensions, as a Point) - together they give the map's world-space bounds rectangle - the
+    -- ECS-native replacement for the former engine::tilemap::World resource (see
     -- systems::World::to_global()/map_at()).
     local map_dimensions = vec2(map_data.width * map_data.tilewidth, map_data.height * map_data.tileheight)
     local map_entity = _registry:create()
     _registry:emplace(map_entity, _Map())
     _registry:emplace(map_entity, _Transform(map_position))
-    _registry:emplace(map_entity, _Shape(_Rectangle(vec2(0, 0), map_dimensions)))
+    _registry:emplace(map_entity, _Shape(_Point(map_dimensions)))
 
     local tilesets = {}
     for _, tileset_ref in ipairs(map_data.tilesets) do
@@ -217,11 +208,10 @@ local function create_map(map_entry)
     for _, layer in ipairs(map_data.layers) do
         if layer.type == "tilelayer" then
             create_tile_layer_entity(map_data, tilesets, layer, z_index, map_position)
-            print("Hello")
         elseif layer.type == "objectgroup" then
             for _, object in ipairs(layer.objects or {}) do
                 if object.gid and object.gid > 0 then
-                    -- create_sprite_entity(tilesets, object, map_position, map_dir)
+                    create_sprite_entity(tilesets, object, map_position, map_dir)
                 end
             end
         end

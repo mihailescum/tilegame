@@ -16,6 +16,8 @@ namespace tilegame::components
             sol::call_constructor,
             sol::factories(
                 [](const engine::Rectangle &rectangle)
-                { return Shape(rectangle); }));
+                { return Shape(rectangle); },
+                [](const engine::Point &point)
+                { return Shape(point); }));
     }
 } // namespace tilegame::components

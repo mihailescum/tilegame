@@ -20,8 +20,12 @@ namespace tilegame::components
 
         /// Builds a ShapeVariant from a Lua-supplied descriptor table: {kind = "rectangle",
         /// position = vec2, dimensions = vec2}, {kind = "circle", position = vec2, radius =
-        /// number}, or {kind = "point", position = vec2}. Shared with TileLayer::build(), which
-        /// parses per-tile collision shapes from the same descriptor shape.
+        /// number}, or {kind = "point", position = vec2}. Shared with TileLayer's `_TileLayer`
+        /// factory, which parses per-tile collision shapes from the same descriptor shape.
         static engine::ShapeVariant make_shape(const sol::table &descriptor);
+
+        /// Registers `_Collider`, constructible from Lua as `_Collider(descriptor)` from the
+        /// same descriptor table make_shape() accepts.
+        static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

@@ -8,8 +8,9 @@ namespace tilegame::components
 {
     /**
      * @brief Geometric bounds attached to an entity for non-collision purposes, e.g. the spawn
-     * region a ParticleEmitter draws random positions from, or a map entity's pixel-space extent
-     * (see systems::World). Distinct from Collider, which drives physical collision resolution.
+     * region a ParticleEmitter draws random positions from, or a map entity's pixel dimensions as
+     * a Point, combined with its Transform to give the map's bounds (see systems::World).
+     * Distinct from Collider, which drives physical collision resolution.
      * A plain value (engine::ShapeVariant) - components own nothing, so this is never a pointer.
      * Exposed to Lua as `_Shape`.
      */

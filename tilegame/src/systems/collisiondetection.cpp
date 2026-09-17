@@ -22,18 +22,18 @@ namespace tilegame::systems
     void CollisionDetection::update(const engine::GameTime &update_time)
     {
         const auto moving_entities = _registry.view<const components::Transform, const components::Collider, components::Movement>(entt::exclude<components::Inactive>);
-        const auto tilelayer_entities = _registry.view<const components::Transform, const components::TileLayer>(entt::exclude<components::Inactive>);
+        const auto tilelayer_entities = _registry.view<const components::Transform, const components::TileLayer, const components::Shape>(entt::exclude<components::Inactive>);
 
         for (auto &&[entity, transform, collider, movement] : moving_entities.each())
         {
-            for (auto &&[tilelayer_entity, tilelayer_transform, tilelayer_data] : tilelayer_entities.each())
+            for (auto &&[tilelayer_entity, tilelayer_transform, tilelayer_data, tilelayer_shape] : tilelayer_entities.each())
             {
-                entity_tilelayer_detection(transform, collider, movement, tilelayer_data, tilelayer_transform);
+                entity_tilelayer_detection(transform, collider, movement, tilelayer_data, tilelayer_transform, tilelayer_shape);
             }
         }
     }
 
-    void CollisionDetection::entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform) const
+    void CollisionDetection::entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform, const components::Shape &tilelayer_shape) const
     {
         // Near phase detection
         std::vector<std::pair<int, float>> found_collisions;
@@ -63,16 +63,20 @@ namespace tilegame::systems
         const glm::vec2 local_max = swept_max - tilelayer_transform.position;
         const glm::ivec2 &tile_dimensions = tilelayer.tile_dimensions;
 
+        const auto shape = std::get_if<engine::Point>(&tilelayer_shape.shape);
+        const int tilelayer_width = (int)shape->position.x;
+        const int tilelayer_height = (int)shape->position.y;
+
         const int x_start = std::max(0, static_cast<int>(std::floor(local_min.x / tile_dimensions.x)) - 1);
         const int y_start = std::max(0, static_cast<int>(std::floor(local_min.y / tile_dimensions.y)) - 1);
-        const int x_end = std::min(tilelayer.dimensions.x - 1, static_cast<int>(std::ceil(local_max.x / tile_dimensions.x)) + 1);
-        const int y_end = std::min(tilelayer.dimensions.y - 1, static_cast<int>(std::ceil(local_max.y / tile_dimensions.y)) + 1);
+        const int x_end = std::min(tilelayer_width - 1, static_cast<int>(std::ceil(local_max.x / tile_dimensions.x)) + 1);
+        const int y_end = std::min(tilelayer_height - 1, static_cast<int>(std::ceil(local_max.y / tile_dimensions.y)) + 1);
 
         for (int x = x_start; x <= x_end; x++)
         {
             for (int y = y_start; y <= y_end; y++)
             {
-                const auto &tile = tilelayer.tile_data[tilelayer.index(x, y)];
+                const auto &tile = tilelayer.tile_data[x + tilelayer_width * y];
                 if (!tile.collision_shape)
                 {
                     continue;
@@ -90,7 +94,7 @@ namespace tilegame::systems
                     float contact_time;
                     if (aabb_aabb_detection(a, b, entity_movement.velocity, contact_normal, contact_time))
                     {
-                        found_collisions.push_back({tilelayer.index(x, y), contact_time});
+                        found_collisions.push_back({x + tilelayer_width * y, contact_time});
                     }
                 }
                 else if (entity_circle && tile_rectangle)
@@ -102,7 +106,7 @@ namespace tilegame::systems
                     float contact_time;
                     if (circle_aabb_detection(a, b, entity_movement.velocity, contact_normal, contact_time))
                     {
-                        found_collisions.push_back({tilelayer.index(x, y), contact_time});
+                        found_collisions.push_back({x + tilelayer_width * y, contact_time});
                     }
                 }
                 else if (entity_rectangle && tile_circle)
@@ -117,7 +121,7 @@ namespace tilegame::systems
                     float contact_time;
                     if (circle_circle_detection(a, b, entity_movement.velocity, contact_normal, contact_time))
                     {
-                        found_collisions.push_back({tilelayer.index(x, y), contact_time});
+                        found_collisions.push_back({x + tilelayer_width * y, contact_time});
                     }
                 }
                 else

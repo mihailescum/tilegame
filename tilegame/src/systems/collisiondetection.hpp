@@ -9,6 +9,7 @@
 #include "components/transform.hpp"
 #include "components/movement.hpp"
 #include "components/tilelayer.hpp"
+#include "components/shape.hpp"
 #include "components/collider.hpp"
 
 namespace tilegame::systems
@@ -30,7 +31,7 @@ namespace tilegame::systems
         // Sweeps the entity's shape against every colliding tile in the layer, sorts the
         // hits by time of impact and resolves them (adjusting entity_movement.velocity)
         // in that order.
-        void entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform) const;
+        void entity_tilelayer_detection(const components::Transform &entity_transform, const components::Collider &entity_collider, components::Movement &entity_movement, const components::TileLayer &tilelayer, const components::Transform &tilelayer_transform, const components::Shape &tilelayer_shape) const;
 
         // Continuous (swept) circle-vs-AABB test along a_vel; on hit, returns the surface
         // normal and normalized time of impact in [0,1). Not truly continuous: reduces to

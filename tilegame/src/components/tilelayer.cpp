@@ -1,40 +1,54 @@
 #include "tilelayer.hpp"
 
+#include "entt/entt.hpp"
+
+#include "entt_sol/bond.hpp"
+
 #include "collider.hpp"
 
 namespace tilegame::components
 {
-    TileLayer TileLayer::build(const glm::ivec2 &dimensions, const glm::ivec2 &tile_dimensions, const sol::table &cells)
+    void TileLayer::register_component(sol::state &lua)
     {
-        TileLayer layer;
-        layer.dimensions = dimensions;
-        layer.tile_dimensions = tile_dimensions;
-        layer.tile_data.resize(static_cast<std::size_t>(dimensions.x) * dimensions.y);
+        entt_sol::register_meta_component<TileLayer>();
 
-        for (std::size_t i = 0; i < layer.tile_data.size(); ++i)
-        {
-            const sol::optional<sol::table> cell = cells[i + 1];
-            if (!cell)
-            {
-                continue;
-            }
+        lua.new_usertype<TileLayer>(
+            "_TileLayer",
+            "type_id", &entt::type_hash<TileLayer>::value,
+            sol::call_constructor,
+            sol::factories(
+                [](const glm::vec2 &tile_dimensions, const sol::table &cells)
+                {
+                    TileLayer layer;
+                    layer.tile_dimensions = glm::ivec2(tile_dimensions.x, tile_dimensions.y);
+                    layer.tile_data.resize(cells.size());
 
-            const engine::Texture2D *texture = (*cell)["texture"];
-            const engine::Texture2D *luminosity = (*cell)["luminosity"];
-            const engine::Rectangle destination_rect = (*cell)["destination"];
-            const engine::Rectangle source_rect = (*cell)["source"];
+                    for (const auto &[key, value] : cells)
+                    {
+                        if (!value.is<sol::table>())
+                        {
+                            continue;
+                        }
+                        const sol::table cell = value.as<sol::table>();
 
-            TileData data(engine::Texture2DContainer<2>{texture, luminosity}, destination_rect, source_rect);
+                        const engine::Texture2D *texture = cell["texture"];
+                        const engine::Texture2D *luminosity = cell["luminosity"];
+                        const engine::Rectangle destination_rect = cell["destination"];
+                        const engine::Rectangle source_rect = cell["source"];
 
-            const sol::optional<sol::table> shape = (*cell)["shape"];
-            if (shape)
-            {
-                data.collision_shape = Collider::make_shape(*shape);
-            }
+                        TileData data(engine::Texture2DContainer<2>{texture, luminosity}, destination_rect, source_rect);
 
-            layer.tile_data[i] = std::move(data);
-        }
+                        const sol::optional<sol::table> shape = cell["shape"];
+                        if (shape)
+                        {
+                            data.collision_shape = Collider::make_shape(*shape);
+                        }
 
-        return layer;
+                        const std::size_t index = key.as<std::size_t>() - 1;
+                        layer.tile_data[index] = std::move(data);
+                    }
+
+                    return layer;
+                }));
     }
 } // namespace tilegame::components

@@ -6,8 +6,9 @@ namespace tilegame::components
 {
     /**
      * @brief Empty tag marking an entity as a map, together with a Transform (its position in
-     * world space) and a Shape (its pixel-space bounds, relative to that Transform) - see
-     * systems::World::to_global()/map_at(). Created once per map by
+     * world space) and a Shape holding a Point of its pixel dimensions - the two together give
+     * the map's world-space bounds rectangle, see systems::World::to_global()/map_at(). Created
+     * once per map by
      * content/scripts/maploader.lua, the ECS-native replacement for the former
      * engine::tilemap::World resource. Exposed to Lua as `_Map`.
      */
