@@ -14,9 +14,13 @@ local function handle_map_entered_event(event_type, event, source)
     print("Map entered: " .. map_name)
 end
 
-local function handle_map_left_event(event_type, event, source) 
+local function handle_map_left_event(event_type, event, source)
     map_name = event.map_name
     print("Map left: " .. map_name)
+end
+
+local function handle_interact_event(event_type, event, source)
+    print("Hello")
 end
 
 local timer1 = _registry:create()
@@ -26,5 +30,6 @@ _registry:emplace(timer1, timer_component)
 _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
 _add_event_listener(_MapEnteredEvent, handle_map_entered_event)
 _add_event_listener(_MapLeftEvent, handle_map_left_event)
+_add_event_listener(_InteractEvent, handle_interact_event, soldier1.entity)
 
 return soldier1
