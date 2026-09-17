@@ -1,5 +1,6 @@
 #include "graphics/spritesheet.hpp"
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@ namespace engine::graphics
             if (data.parse(parser, nullptr))
             {
                 parse(data, resource_manager);
+                return true;
             }
         }
 
@@ -35,7 +37,14 @@ namespace engine::graphics
         _tile_dimensions.x = tson_tileset.getTileSize().x;
         _tile_dimensions.y = tson_tileset.getTileSize().y;
 
-        const auto texture_path = tson_tileset.getFullImagePath();
+        // Not tson_tileset.getFullImagePath(): tson only resolves that correctly when the
+        // tileset was parsed indirectly (referenced by a map's "source" field, which lets tson
+        // infer the tileset's own directory) - when parsed directly as its own resource (e.g.
+        // via ResourceManager::load_resource<Tileset>()), tson never sets that up, and
+        // getFullImagePath() silently falls back to the raw, un-prefixed "image" string. Our own
+        // _resource_path (inherited from Resource, always set correctly by the caller before
+        // parse() runs) is the reliable source of the tileset's directory in both cases.
+        const auto texture_path = _resource_path.parent_path() / tson_tileset.getImagePath();
         const auto texture_name = texture_path.filename();
         _texture = resource_manager.load_resource<Texture2D>(texture_name, texture_path);
 
@@ -75,7 +84,7 @@ namespace engine::graphics
         }
         else
         {
-            throw "No texture";
+            throw std::runtime_error("No texture");
         }
     }
 

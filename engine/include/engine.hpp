@@ -19,6 +19,7 @@
 #include "core/scenegraphnode.hpp"
 #include "core/shader.hpp"
 #include "core/shape.hpp"
+#include "core/shapevariant.hpp"
 #include "core/texture2d.hpp"
 #include "core/texture2dcontainer.hpp"
 #include "core/viewport.hpp"

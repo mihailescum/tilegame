@@ -3,6 +3,7 @@
 #include <vector>
 #include <optional>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
@@ -267,7 +268,7 @@ namespace engine::graphics
         {
             if (_has_begun)
             {
-                throw "'begin()' was already called. Call 'end()' first.";
+                throw std::runtime_error("'begin()' was already called. Call 'end()' first.");
             }
             _has_begun = true;
 
@@ -289,7 +290,7 @@ namespace engine::graphics
         {
             if (!_has_begun)
             {
-                throw "You have to call 'begin()' on a SpriteBatch<T> first.";
+                throw std::runtime_error("You have to call 'begin()' on a SpriteBatch<T> first.");
             }
 
             add_sprite_data(texture_data, destination_rectangle, source_rectangle, color, z);
@@ -322,7 +323,7 @@ namespace engine::graphics
         {
             if (!_has_begun)
             {
-                throw "You have to call 'begin()' on a SpriteBatch<T> first.";
+                throw std::runtime_error("You have to call 'begin()' on a SpriteBatch<T> first.");
             }
             _current_batch_start = 0;
             while (_current_batch_start < _num_active_sprites)

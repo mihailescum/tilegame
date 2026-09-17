@@ -1,5 +1,7 @@
 #include "render.hpp"
 
+#include <stdexcept>
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include "components/renderable2d.hpp"
@@ -31,7 +33,7 @@ namespace tilegame::systems
         int postprocessor_result = _postprocessor.initialize();
         if (!postprocessor_result)
         {
-            throw "Failed to initilize PostProcessor";
+            throw std::runtime_error("Failed to initilize PostProcessor");
         }
     }
 
@@ -165,13 +167,13 @@ namespace tilegame::systems
         {
             const auto &position = transform.position;
 
-            if (const auto shape_circle = dynamic_cast<engine::Circle *>(collider.shape.get()))
+            if (const auto shape_circle = std::get_if<engine::Circle>(&collider.shape))
             {
                 glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
                 engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
                 _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
             }
-            else if (const auto shape_rect = dynamic_cast<engine::Rectangle *>(collider.shape.get()))
+            else if (const auto shape_rect = std::get_if<engine::Rectangle>(&collider.shape))
             {
                 glm::vec2 pos = position + shape_rect->position;
                 engine::Rectangle dest_rect(pos, shape_rect->dimensions);
@@ -195,17 +197,20 @@ namespace tilegame::systems
                     continue;
                 }
 
-                if (const auto shape_circle = dynamic_cast<const engine::Circle *>(data.collision_shape))
+                if (data.collision_shape)
                 {
-                    glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
-                    engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                    _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
-                }
-                else if (const auto shape_rect = dynamic_cast<const engine::Rectangle *>(data.collision_shape))
-                {
-                    glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
-                    engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                    _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                    if (const auto shape_circle = std::get_if<engine::Circle>(&(*data.collision_shape)))
+                    {
+                        glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
+                        engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
+                        _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
+                    }
+                    else if (const auto shape_rect = std::get_if<engine::Rectangle>(&(*data.collision_shape)))
+                    {
+                        glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
+                        engine::Rectangle dest_rect(pos, shape_rect->dimensions);
+                        _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                    }
                 }
             }
         }

@@ -46,7 +46,7 @@ namespace tilegame::systems
             [this, precipitation_entity](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity)
             {
                 _registry.replace<components::ParticleEmitter>(precipitation_entity, event.emitter);
-                _registry.replace<components::Shape>(precipitation_entity, std::make_unique<engine::Rectangle>(event.spawn_area));
+                _registry.replace<components::Shape>(precipitation_entity, engine::ShapeVariant(event.spawn_area));
                 _registry.remove<components::Inactive>(precipitation_entity);
             },
             entt::null);
@@ -75,7 +75,7 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
         _registry.emplace<components::Transform>(entity, glm::vec2(0.0f, 0.0f));
-        _registry.emplace<components::Shape>(entity, std::make_unique<engine::Rectangle>(glm::vec2(0.0f), glm::vec2(0.0f)));
+        _registry.emplace<components::Shape>(entity, engine::ShapeVariant(engine::Rectangle(glm::vec2(0.0f), glm::vec2(0.0f))));
         _registry.emplace<components::ParticleEmitter>(entity);
         _registry.emplace<components::ParticlePool>(entity);
         _registry.emplace<components::Renderable2D>(entity);

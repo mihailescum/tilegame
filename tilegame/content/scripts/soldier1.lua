@@ -10,13 +10,11 @@ local function handle_timer_event(event_type, event, source)
 end
 
 local function handle_map_entered_event(event_type, event, source)
-    map_name = event.map_name
-    print("Map entered: " .. map_name)
+    print("Map entered:", event.map)
 end
 
 local function handle_map_left_event(event_type, event, source)
-    map_name = event.map_name
-    print("Map left: " .. map_name)
+    print("Map left:", event.map)
 end
 
 local function handle_interact_event(event_type, event, source)

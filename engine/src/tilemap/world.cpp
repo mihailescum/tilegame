@@ -1,5 +1,7 @@
 #include "tilemap/world.hpp"
 
+#include <stdexcept>
+
 #include "tileson/tileson.hpp"
 
 #include "core/log.hpp"
@@ -45,7 +47,7 @@ namespace engine::tilemap
         const auto it = _maps.find(map_name);
         if (it == _maps.end())
         {
-            throw "Map not found";
+            throw std::runtime_error("Map not found");
         }
 
         return it->second.position + relative_position;

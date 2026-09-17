@@ -1,6 +1,7 @@
 #include "secureluastate.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 #include "debugger_lua/debugger_lua.hpp"
 #include "inspect.lua/inspect.lua.hpp"
@@ -24,7 +25,7 @@ namespace tilegame
         }
         else
         {
-            throw "Unsupported module: " + name + "!";
+            throw std::runtime_error("Unsupported module: " + name + "!");
         }
 
         return result;

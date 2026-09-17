@@ -12,7 +12,6 @@ namespace tilegame::worldscene
     WorldScene::WorldScene(Tilegame &game)
         : tilegame::Scene(game),
           _system_render(*this, _registry),
-          _system_map(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
           _system_movement(*this, _registry),
@@ -26,7 +25,10 @@ namespace tilegame::worldscene
           _system_weather(*this, _registry),
           _system_lightning(*this, _registry),
           _system_collision_detection(*this, _registry),
-          _system_messagebox(*this, _registry)
+          _system_messagebox(*this, _registry),
+          _system_interaction(*this, _registry),
+          _system_facing(*this, _registry),
+          _system_sprite_orientation(*this, _registry)
     {
     }
 
@@ -52,7 +54,6 @@ namespace tilegame::worldscene
         _system_daytime.load_content();
         _system_lightning.load_content(); // Shares Daytime's shader, so must run after Daytime::load_content()
 
-        _system_map.load_content();
         _system_player.load_content();
         _system_particle.load_content();
 
@@ -81,7 +82,10 @@ namespace tilegame::worldscene
         _system_player.update(update_time);              // Can generate direction of a colliding entity
         _system_script.update(update_time);              // Can generate direction of a colliding
         _system_messagebox.update(update_time);          // Can tag the player Inactive, blocking movement below
-        _system_movement_controller.update(update_time); // Transforms directions to movement instruction
+        _system_movement_controller.update(update_time); // Transforms directions to movement instruction; also writes NPC Direction from Target
+        _system_facing.update(update_time);              // Persists latest non-zero Direction (player + NPCs) - must run after both Direction writers above
+        _system_interaction.update(update_time);         // Reads Facing - must run after Facing, and after MessageBox (see systems::Interaction's doc comment)
+        _system_sprite_orientation.update(update_time);  // Reads Facing, swaps Animation/Sprite to match - must run after Facing
 
         _system_collision_detection.update(update_time); // Resolves all collisions on movement direction level
         _system_movement.update(update_time);            // Actually updated the positions

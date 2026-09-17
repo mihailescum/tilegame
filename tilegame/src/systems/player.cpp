@@ -1,11 +1,14 @@
 #include "player.hpp"
 
+#include <stdexcept>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 
 #include "components/player.hpp"
 #include "components/movement.hpp"
 #include "components/direction.hpp"
+#include "components/spriteorientation.hpp"
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
 #include "components/renderable2d.hpp"
@@ -36,11 +39,9 @@ namespace tilegame::systems
 
         const engine::graphics::Sprite &player1_sprite = (*characters)["man"];
 
-        const auto &world = resource_manager.get<engine::tilemap::World>("world1");
-
         _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
-        _registry.emplace<components::Transform>(_player1_entity, world.to_global("map1", glm::vec2(80, 80)));
+        _registry.emplace<components::Transform>(_player1_entity);
         _registry.emplace<components::Ordering>(_player1_entity, 2.0);
         _registry.emplace<components::Direction>(_player1_entity);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
@@ -50,14 +51,32 @@ namespace tilegame::systems
         // tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
         //_registry.emplace<components::SceneNode>(_player1_entity, &player1_scenenode);
 
-        const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite["down_walking"].frames);
+        const std::string player1_initial_state = "down_walking";
+        const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite[player1_initial_state].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
         _registry.emplace<components::Sprite>(_player1_entity, engine::Texture2DContainer<2>{&characters_texture, &characters_texture_luminosity}, player1_animation_component.get_current_frame().source_rect);
+
+        // "man" defines all four directions of "walking" (see characters.tsj), so this gives the
+        // player Facing + SpriteOrientation just like any qualifying map-loaded sprite, letting
+        // systems::SpriteOrientation reorient it at runtime too.
+        components::SpriteOrientation::make_orientable_if_directional(_registry, _player1_entity, player1_sprite, player1_initial_state);
 
         const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
         if (current_animation_tile->collision_shape)
         {
-            _registry.emplace<components::Collider>(_player1_entity, std::unique_ptr<engine::Shape>(current_animation_tile->collision_shape->clone()));
+            const engine::Shape *shape = current_animation_tile->collision_shape.get();
+            if (const auto *circle = dynamic_cast<const engine::Circle *>(shape))
+            {
+                _registry.emplace<components::Collider>(_player1_entity, engine::ShapeVariant(*circle));
+            }
+            else if (const auto *rectangle = dynamic_cast<const engine::Rectangle *>(shape))
+            {
+                _registry.emplace<components::Collider>(_player1_entity, engine::ShapeVariant(*rectangle));
+            }
+            else if (const auto *point = dynamic_cast<const engine::Point *>(shape))
+            {
+                _registry.emplace<components::Collider>(_player1_entity, engine::ShapeVariant(*point));
+            }
         }
 
         _registry.emplace<components::EventListener<components::StopPlayerInputEvent>>(
@@ -102,7 +121,7 @@ namespace tilegame::systems
             break;
 
             default:
-                throw "Unknown player ID";
+                throw std::runtime_error("Unknown player ID");
                 break;
             }
         }

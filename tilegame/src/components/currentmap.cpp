@@ -24,9 +24,9 @@ namespace tilegame::components
             sol::factories(
                 []()
                 { return MapEnteredEvent(); },
-                [](const std::string &map_name)
-                { return MapEnteredEvent(map_name); }),
-            "map_name", &MapEnteredEvent::map_name,
+                [](entt::entity map)
+                { return MapEnteredEvent(map); }),
+            "map", &MapEnteredEvent::map,
             "EVENT_TYPE", sol::var(MapEnteredEvent::EVENT_TYPE.c_str()),
             sol::meta_function::to_string, &MapEnteredEvent::to_string);
     }
@@ -49,9 +49,9 @@ namespace tilegame::components
             sol::factories(
                 []()
                 { return MapLeftEvent(); },
-                [](const std::string &map_name)
-                { return MapLeftEvent(map_name); }),
-            "map_name", &MapLeftEvent::map_name,
+                [](entt::entity map)
+                { return MapLeftEvent(map); }),
+            "map", &MapLeftEvent::map,
             "EVENT_TYPE", sol::var(MapLeftEvent::EVENT_TYPE.c_str()),
             sol::meta_function::to_string, &MapLeftEvent::to_string);
     }

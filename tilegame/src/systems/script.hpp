@@ -2,9 +2,12 @@
 
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include "sol/sol.hpp"
+
+#include "tileson/tileson.hpp"
 
 #include "engine.hpp"
 
@@ -42,11 +45,55 @@ namespace tilegame::systems
         // EventListener<EventType> entity and returns it, so add_event_listener can dispatch
         // generically without knowing the concrete event type at the call site.
         std::unordered_map<std::string, std::function<entt::entity(sol::function, entt::entity)>> _event_types;
+        // Per-class engine::graphics::Sprite (state name -> frames), populated by
+        // parse_sprite_animations(). Kept alive for the whole session (an unordered_map never
+        // invalidates references on insertion) so components::SpriteOrientation's raw Sprite*
+        // pointers - set via `_make_orientable_if_directional` - stay valid.
+        std::unordered_map<std::string, engine::graphics::Sprite> _sprite_classes;
+        // Tileset paths already parse_sprite_animations()'d, so a tileset shared by multiple
+        // maps (e.g. tileset1.tsj) doesn't get its animation frames registered twice.
+        std::unordered_set<std::string> _parsed_animation_paths;
 
         void register_api();
         // Loads and immediately runs a Lua file with no entity argument, for global
         // (non-entity) configuration scripts such as content/scripts/daytime.lua.
         void run_script(const std::string &path);
+
+        // Reads `path` and parses it as JSON (json11, bundled in tileson.hpp, used purely as a
+        // generic JSON parser here - not tileson's map/tileset object model). Used by load_json().
+        json11::Json read_json_file(const std::string &path) const;
+        // Exposed to Lua as `_load_json`; deep-copies `path`'s parsed JSON into a fresh Lua table
+        // (objects -> string-keyed tables, arrays -> 1-based integer-keyed tables), since the
+        // sandboxed Lua state cannot read files itself.
+        sol::table load_json(const std::string &path);
+        // Recursive deep-copy from a parsed json11::Json value to a new Lua value/table.
+        static sol::object json_to_lua(sol::state_view lua, const json11::Json &json);
+        // Exposed to Lua as `_load_texture`; thin wrapper over ResourceManager::load_resource<Texture2D>.
+        const engine::Texture2D *load_texture(const std::string &path);
+        // Exposed to Lua as `_get_or_create_sprite_class`; returns the persistent, session-lived
+        // Sprite for `class_name` (creating it empty on first use).
+        engine::graphics::Sprite &get_or_create_sprite_class(const std::string &class_name);
+        // Exposed to Lua as `_parse_sprite_animations`; the first time it's called for a given
+        // tileset `path`, reads its raw JSON itself and parses every animated tile's frames into
+        // that tile's class's persistent Sprite (see get_or_create_sprite_class()) - i.e. Lua
+        // hands over "here's a tileset that might have animation data", and the engine
+        // (Sprite::parse()) does the actual interpretation of Tiled's animation/properties
+        // schema. A no-op on later calls for the same path (e.g. a tileset shared by multiple
+        // maps). Lua still reads the tileset's JSON itself for everything else (texture, atlas
+        // layout, collision shapes) via `_load_json`/`_load_texture`.
+        void parse_sprite_animations(const std::string &path);
+        // Exposed to Lua as `_make_orientable_if_directional`; thin wrapper over
+        // components::SpriteOrientation::make_orientable_if_directional().
+        void make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name);
+        // Exposed to Lua as `_emplace_collider`; builds a components::Collider from a shape
+        // descriptor table (see components::Collider::make_shape()) and emplaces it directly -
+        // components::Collider is move-only (an owning unique_ptr<Shape>), so it's attached this
+        // way instead of through a generic Lua-constructible usertype.
+        void emplace_collider(entt::entity entity, const sol::table &shape_descriptor);
+        // Exposed to Lua as `_emplace_tilelayer`; builds a components::TileLayer (see
+        // components::TileLayer::build()) and emplaces it directly, for the same move-only
+        // reason as emplace_collider().
+        void emplace_tilelayer(entt::entity entity, const glm::vec2 &dimensions, const glm::vec2 &tile_dimensions, const sol::table &cells);
 
         // Exposed to Lua as `_set_daytime_marks`; raises a SetDaytimeMarksEvent, immediately
         // delivered to systems::Daytime, wholesale-replacing the day/night cycle's keyframes
@@ -114,9 +161,9 @@ namespace tilegame::systems
         // an earlier `_add_event_listener` call, unsubscribing that callback. A no-op if
         // `listener` is already invalid (e.g. entt::null, or removed twice).
         void remove_event_listener(entt::entity listener);
-        // Exposed to Lua as `_to_global`; converts coordinates relative to the named
-        // map's origin into world-space coordinates via the loaded World resource.
-        glm::vec2 to_global(const std::string &map_name, const glm::vec2 &relative_position) const;
+        // Exposed to Lua as `_to_global`; converts coordinates relative to `map`'s own
+        // Transform into world-space coordinates - see systems::World::to_global().
+        glm::vec2 to_global(entt::entity map, const glm::vec2 &relative_position) const;
         // Exposed to Lua as `_show_message`; raises a components::ShowMessageEvent, immediately
         // delivered to systems::MessageBox, which word-wraps `text` and, per `append`, either
         // adding it to the currently displayed message or replacing it. `options`, if

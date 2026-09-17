@@ -9,6 +9,7 @@
 #include "components/transform.hpp"
 #include "components/inactive.hpp"
 #include "components/currentmap.hpp"
+#include "systems/world.hpp"
 
 namespace tilegame::systems
 {
@@ -68,28 +69,26 @@ namespace tilegame::systems
 
     void Movement::update_current_map() const
     {
-        const auto &world = _scene.game().resource_manager().get<engine::tilemap::World>("world1");
-
         const auto view = _registry.view<const components::Movement, const components::Transform>(entt::exclude<components::Inactive>);
         for (auto &&[entity, movement, transform] : view.each())
         {
             if (!movement.track_current_map)
                 continue;
 
-            const std::string new_map = world.map_at(transform.position);
-            const std::string old_map = _registry.all_of<components::CurrentMap>(entity) ? _registry.get<components::CurrentMap>(entity).map_name : "";
+            const entt::entity new_map = systems::World::map_at(_registry, transform.position);
+            const entt::entity old_map = _registry.all_of<components::CurrentMap>(entity) ? _registry.get<components::CurrentMap>(entity).map : entt::null;
 
             if (new_map != old_map)
             {
                 // Raised immediately: no current MapLeftEvent/MapEnteredEvent listener
                 // adds/removes a Movement/Transform (see System::raise_event()'s caution), so
                 // this is safe mid-iteration.
-                if (!old_map.empty())
+                if (old_map != entt::null)
                 {
                     raise_event<components::MapLeftEvent>(entity, old_map);
                 }
 
-                if (new_map.empty())
+                if (new_map == entt::null)
                 {
                     _registry.erase<components::CurrentMap>(entity);
                 }

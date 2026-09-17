@@ -1,5 +1,7 @@
 #include "tilemap/tileset.hpp"
 
+#include <stdexcept>
+
 #include "core/circle.hpp"
 #include "core/point.hpp"
 #include "core/rectangle.hpp"
@@ -16,10 +18,9 @@ namespace engine::tilemap
         if (parser.parse(_resource_path))
         {
             tson::Tileset data;
-            if (data.parse(parser, nullptr))
-            {
-                parse(data, resource_manager);
-            }
+            data.parse(parser, nullptr);
+            parse(data, resource_manager);
+            return true;
         }
 
         return false;
@@ -107,7 +108,7 @@ namespace engine::tilemap
         {
             if (std::abs(dimensions.x - dimensions.y) > 1e-4) // We have a true ellipse in this case
             {
-                throw "Ellipses are not supported";
+                throw std::runtime_error("Ellipses are not supported");
             }
             else
             {
@@ -144,7 +145,7 @@ namespace engine::tilemap
         }
         else
         {
-            throw "No luminosity texture";
+            throw std::runtime_error("No luminosity texture");
         }
     }
 

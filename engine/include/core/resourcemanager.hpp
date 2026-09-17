@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <cstdarg>
 #include <filesystem>
@@ -89,7 +90,7 @@ namespace engine
             }
             else
             {
-                throw "Resource not found";
+                throw std::runtime_error("Resource not found: " + name);
             }
         }
 

@@ -10,11 +10,15 @@ local function handle_timer_event(event_type, event, source)
     end
 end
 
+-- map1's world position is (480, 320) per content/worlds/world1.world. _to_global now takes the
+-- map's entity rather than its name (see systems::World), and this script has no way to look
+-- that entity up by name, so its offset is baked in here for now instead.
+local map1_position = vec2(480, 320)
 local positions = {
-    _to_global("map1", vec2(320, 288)),
-    _to_global("map1", vec2(354.0, 514)),
-    _to_global("map1", vec2(546.0, 546.0)),
-    _to_global("map1", vec2(512.0, 320.0)),
+    map1_position + vec2(320, 288),
+    map1_position + vec2(354.0, 514),
+    map1_position + vec2(546.0, 546.0),
+    map1_position + vec2(512.0, 320.0),
 }
 local target = positions[1]
 local target_component = _Target(target)

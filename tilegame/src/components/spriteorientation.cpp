@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 #include "facing.hpp"
 
@@ -20,7 +21,7 @@ namespace tilegame::components
         case Direction::Right:
             return "right";
         default:
-            throw "Unknown Direction";
+            throw std::runtime_error("Unknown Direction");
         }
     }
 
@@ -59,7 +60,7 @@ namespace tilegame::components
         case Direction::Right:
             return glm::vec2(1.0f, 0.0f);
         default:
-            throw "Unknown Direction";
+            throw std::runtime_error("Unknown Direction");
         }
     }
 

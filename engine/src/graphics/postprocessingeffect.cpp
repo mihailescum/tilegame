@@ -1,5 +1,7 @@
 #include "graphics/postprocessingeffect.hpp"
 
+#include <stdexcept>
+
 #include "core/glerror.hpp"
 #include "graphics/postprocessor.hpp"
 
@@ -72,7 +74,7 @@ namespace engine::graphics
     {
         if (index >= _color_attachments.size())
         {
-            throw "Index out of range";
+            throw std::runtime_error("Index out of range");
         }
         return *_color_attachments.at(index);
     }

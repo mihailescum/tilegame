@@ -97,7 +97,7 @@ namespace tilegame::systems
 
     glm::vec2 Particle::generate_random_position(const components::Shape &shape)
     {
-        if (const auto *rect_ptr = dynamic_cast<const engine::Rectangle *>(shape()))
+        if (const auto *rect_ptr = std::get_if<engine::Rectangle>(&shape.shape))
         {
             return tilegame::random_point_in_rectangle(*rect_ptr);
         }

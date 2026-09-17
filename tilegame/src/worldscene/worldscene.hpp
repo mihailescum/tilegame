@@ -9,7 +9,6 @@
 
 #include "scenegraphdata.hpp"
 #include "systems/render.hpp"
-#include "systems/map.hpp"
 #include "systems/camera.hpp"
 #include "systems/player.hpp"
 #include "systems/movement.hpp"
@@ -24,6 +23,9 @@
 #include "systems/lightning.hpp"
 #include "systems/collisiondetection.hpp"
 #include "systems/messagebox.hpp"
+#include "systems/interaction.hpp"
+#include "systems/facing.hpp"
+#include "systems/spriteorientation.hpp"
 
 namespace tilegame
 {
@@ -46,7 +48,6 @@ namespace tilegame::worldscene
         entt::registry _registry;
 
         systems::Render _system_render;
-        systems::Map _system_map;
         systems::Camera _system_camera;
         systems::Player _system_player;
         systems::Movement _system_movement;
@@ -61,6 +62,9 @@ namespace tilegame::worldscene
         systems::Lightning _system_lightning;
         systems::CollisionDetection _system_collision_detection;
         systems::MessageBox _system_messagebox;
+        systems::Interaction _system_interaction;
+        systems::Facing _system_facing;
+        systems::SpriteOrientation _system_sprite_orientation;
 
     public:
         WorldScene(Tilegame &game);
