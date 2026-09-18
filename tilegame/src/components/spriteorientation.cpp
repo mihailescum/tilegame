@@ -4,6 +4,10 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "entt/entt.hpp"
+
+#include "entt_sol/bond.hpp"
+
 #include "facing.hpp"
 
 namespace tilegame::components
@@ -23,19 +27,6 @@ namespace tilegame::components
         default:
             throw std::runtime_error("Unknown Direction");
         }
-    }
-
-    std::optional<std::pair<SpriteOrientation::Direction, std::string>> SpriteOrientation::split_state_name(const std::string &state_name)
-    {
-        for (const Direction direction : DIRECTIONS)
-        {
-            const std::string prefix = direction_prefix(direction) + "_";
-            if (state_name.compare(0, prefix.size(), prefix) == 0)
-            {
-                return std::make_pair(direction, state_name.substr(prefix.size()));
-            }
-        }
-        return std::nullopt;
     }
 
     SpriteOrientation::Direction SpriteOrientation::direction_from_heading(const glm::vec2 &heading)
@@ -64,13 +55,8 @@ namespace tilegame::components
         }
     }
 
-    void SpriteOrientation::make_orientable_if_directional(entt::registry &registry, entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name)
+    void SpriteOrientation::make_orientable_if_directional(entt::registry &registry, entt::entity entity, const engine::graphics::Sprite &sprite, Direction initial_direction, const std::string &action)
     {
-        const auto parsed_state = split_state_name(initial_state_name);
-        if (!parsed_state)
-            return;
-
-        const auto &[initial_direction, action] = *parsed_state;
         const bool has_all_directions = std::all_of(
             DIRECTIONS.begin(), DIRECTIONS.end(),
             [&](Direction direction)
@@ -81,5 +67,18 @@ namespace tilegame::components
 
         registry.emplace<components::Facing>(entity, direction_vector(initial_direction));
         registry.emplace<components::SpriteOrientation>(entity, &sprite, action, initial_direction);
+    }
+
+    void SpriteOrientation::register_component(sol::state &lua)
+    {
+        entt_sol::register_meta_component<SpriteOrientation>();
+
+        lua.new_usertype<SpriteOrientation>(
+            "_SpriteOrientation",
+            "type_id", &entt::type_hash<SpriteOrientation>::value,
+            sol::call_constructor,
+            sol::factories(
+                [](const engine::graphics::Sprite &sprite, const std::string &action, const glm::vec2 &heading)
+                { return SpriteOrientation{&sprite, action, direction_from_heading(heading)}; }));
     }
 } // namespace tilegame::components

@@ -10,14 +10,18 @@ namespace engine::graphics
 
         if (_sprite_sheet)
         {
-            // 'const_cast' is okay, because tson::Tile::get<> should have been declared 'const'
-            const std::string state_name = const_cast<tson::Tile &>(data).get<std::string>(Sprite::NAME_SPRITE_STATE);
+            // 'const_cast' is okay, because tson::Tile::get<>/getProp() should have been declared 'const'
+            tson::Tile &mutable_data = const_cast<tson::Tile &>(data);
+            const std::string action = mutable_data.get<std::string>(Sprite::NAME_SPRITE_STATE);
+            const std::string state_name = mutable_data.getProp(Sprite::NAME_SPRITE_DIRECTION)
+                                                ? mutable_data.get<std::string>(Sprite::NAME_SPRITE_DIRECTION) + "_" + action
+                                                : action;
 
             auto &state = _states[state_name];
             state.name = state_name;
 
             // 'const_cast' is okay, because tson::Tile::getAnimation should have been declared 'const'
-            const auto &animation = const_cast<tson::Tile &>(data).getAnimation();
+            const auto &animation = mutable_data.getAnimation();
             if (animation.size() > 0)
             {
                 const auto &tson_frames = animation.getFrames();

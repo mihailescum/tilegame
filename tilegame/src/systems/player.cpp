@@ -51,7 +51,9 @@ namespace tilegame::systems
         // tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
         //_registry.emplace<components::SceneNode>(_player1_entity, &player1_scenenode);
 
-        const std::string player1_initial_state = "down_walking";
+        constexpr auto player1_initial_direction = components::SpriteOrientation::Direction::Down;
+        const std::string player1_initial_action = "walking";
+        const std::string player1_initial_state = components::SpriteOrientation::direction_prefix(player1_initial_direction) + "_" + player1_initial_action;
         const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite[player1_initial_state].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
         _registry.emplace<components::Sprite>(_player1_entity, engine::Texture2DContainer<2>{&characters_texture, &characters_texture_luminosity}, player1_animation_component.get_current_frame().source_rect);
@@ -59,7 +61,7 @@ namespace tilegame::systems
         // "man" defines all four directions of "walking" (see characters.tsj), so this gives the
         // player Facing + SpriteOrientation just like any qualifying map-loaded sprite, letting
         // systems::SpriteOrientation reorient it at runtime too.
-        components::SpriteOrientation::make_orientable_if_directional(_registry, _player1_entity, player1_sprite, player1_initial_state);
+        components::SpriteOrientation::make_orientable_if_directional(_registry, _player1_entity, player1_sprite, player1_initial_direction, player1_initial_action);
 
         const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
         if (current_animation_tile->collision_shape)

@@ -15,14 +15,17 @@ namespace engine::graphics
 
     /**
      * @brief A named, animated entity within a SpriteSheet, made up of one or more
-     * named SpriteStates (e.g. "walk_down", "idle_up"), each holding its own frame
-     * sequence. Parsed from the custom "state" tile property and animation data of
-     * a Tiled tileset tile.
+     * named SpriteStates, each holding its own frame sequence. Parsed from a Tiled tileset
+     * tile's animation data and its custom "state" property (e.g. "walking", "standing") plus,
+     * for tiles that vary by facing, its custom "direction" property (one of "up"/"down"/
+     * "left"/"right") - when present, the two are combined into the SpriteState's lookup key
+     * as "<direction>_<state>" (e.g. "down_walking"), otherwise the key is just "state" as-is.
      */
     class Sprite
     {
     private:
         inline static const std::string NAME_SPRITE_STATE = "state";
+        inline static const std::string NAME_SPRITE_DIRECTION = "direction";
 
         std::string _name;
         SpriteSheet *_sprite_sheet;
@@ -32,7 +35,7 @@ namespace engine::graphics
         Sprite() : Sprite("", nullptr) {}
         Sprite(std::string name, SpriteSheet *sprite_sheet) : _name(name), _sprite_sheet(sprite_sheet) {}
 
-        /** @brief Parses one Tiled tile's animation into the SpriteState named by its "state" custom property, appending a SpriteFrame per animation frame. */
+        /** @brief Parses one Tiled tile's animation into the SpriteState named by its "state" (and, if present, "direction") custom properties, appending a SpriteFrame per animation frame. */
         void parse(const tson::Tile &data);
 
         // TODO review if this is necessarys

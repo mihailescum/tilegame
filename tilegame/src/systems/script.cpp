@@ -177,11 +177,6 @@ namespace tilegame::systems
         return _scene.game().resource_manager().load_resource<engine::graphics::SpriteSheet>(fs_path.filename().string(), fs_path);
     }
 
-    void Script::make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name)
-    {
-        components::SpriteOrientation::make_orientable_if_directional(_registry, entity, sprite, initial_state_name);
-    }
-
     void Script::register_api()
     {
         _lua().require("_registry", sol::c_call<AUTO_ARG(&entt_sol::open_registry)>, false);
@@ -243,9 +238,12 @@ namespace tilegame::systems
         _lua().new_usertype<engine::Texture2D>(
             "_Texture", sol::no_constructor);
         // Opaque handle returned by `_SpriteSheet:get_sprite()` (a tileset's per-class animation
-        // data), passed on to `_Animation`/`_make_orientable_if_directional`.
+        // data), passed on to `_Animation`/`_SpriteOrientation`. `has_state` lets Lua-native code
+        // (see maploader.lua's `make_orientable_if_directional`) check which directional states a
+        // class defines.
         _lua().new_usertype<engine::graphics::Sprite>(
-            "_SpriteClass", sol::no_constructor);
+            "_SpriteClass", sol::no_constructor,
+            "has_state", &engine::graphics::Sprite::has_state);
         // Opaque handle returned by `_load_spritesheet`, exposing only what Lua needs from the
         // tileset's SpriteSheet resource - everything else about interpreting a raw-JSON tileset
         // is still done by Lua itself (see content/scripts/maploader.lua).
@@ -285,12 +283,12 @@ namespace tilegame::systems
         components::Shape::register_component(_lua());
         components::TileLayer::register_component(_lua());
         components::Collider::register_component(_lua());
+        components::SpriteOrientation::register_component(_lua());
 
         _lua().set_function("_run_script", &Script::run_script, this);
         _lua().set_function("_load_json", &Script::load_json, this);
         _lua().set_function("_load_texture", &Script::load_texture, this);
         _lua().set_function("_load_spritesheet", &Script::load_spritesheet, this);
-        _lua().set_function("_make_orientable_if_directional", &Script::make_orientable_if_directional, this);
 
         _lua().set_function("_add_event_listener",
                             sol::overload(

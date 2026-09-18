@@ -66,6 +66,33 @@ local function read_property(properties, name)
     return nil
 end
 
+-- Mirrors components::SpriteOrientation::direction_vector(): the heading each cardinal
+-- direction's Facing/SpriteOrientation is initialized to.
+local DIRECTION_HEADINGS = {
+    up = vec2(0, -1),
+    down = vec2(0, 1),
+    left = vec2(-1, 0),
+    right = vec2(1, 0),
+}
+
+-- If `sprite_class` defines `action` in all four directions, emplaces Facing (initialized to
+-- `initial_direction`) and SpriteOrientation on `entity`, so systems::SpriteOrientation can
+-- reorient it at runtime as its Facing changes. Otherwise a no-op - e.g. for a sprite class that
+-- doesn't define all four directions of `action`. Lua-native counterpart of
+-- components::SpriteOrientation::make_orientable_if_directional(), which systems::Player still
+-- calls directly in C++ for the keyboard-controlled player - duplicated here only until player
+-- loading moves to Lua too.
+local function make_orientable_if_directional(entity, sprite_class, initial_direction, action)
+    for direction in pairs(DIRECTION_HEADINGS) do
+        if not sprite_class:has_state(direction .. "_" .. action) then
+            return
+        end
+    end
+
+    _registry:emplace(entity, _Facing(DIRECTION_HEADINGS[initial_direction]))
+    _registry:emplace(entity, _SpriteOrientation(sprite_class, action, DIRECTION_HEADINGS[initial_direction]))
+end
+
 -- Mirrors engine::graphics::SpriteSheet::source_rect(): the atlas cell for a tileset-local tile id.
 local function calculate_source_rect(tileset, local_id)
     local column = local_id % tileset.columns
@@ -163,7 +190,12 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
         error("Tile not found")
     end
 
-    local state_name = read_property(tile_def.properties, "state")
+    -- Mirrors engine::graphics::Sprite::parse(): the SpriteState lookup key is "<direction>_
+    -- <action>" when the tile has a "direction" property (see characters.tsj), otherwise just
+    -- "<action>" as-is.
+    local action = read_property(tile_def.properties, "state")
+    local direction = read_property(tile_def.properties, "direction")
+    local state_name = direction and (direction .. "_" .. action) or action
     local sprite_class = tileset.spritesheet:get_sprite(tile_def.type)
     local source_rect = calculate_source_rect(tileset, local_id)
 
@@ -177,10 +209,11 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     _registry:emplace(entity, _Animation(sprite_class, state_name))
     _registry:emplace(entity, _Sprite(tileset.texture, tileset.luminosity, source_rect))
 
-    -- If the tile's state follows the "<direction>_<action>" convention and the class defines
-    -- all four directions of that action, this sprite can be reoriented at runtime.
-    
-    _make_orientable_if_directional(entity, sprite_class, state_name)
+    -- If the tile has a direction and the class defines all four directions of its action, this
+    -- sprite can be reoriented at runtime.
+    if direction then
+        make_orientable_if_directional(entity, sprite_class, direction, action)
+    end
     local collision_shape = tile_collision_shape(tile_def)
     if collision_shape then
         _registry:emplace(entity, _Collider(collision_shape))

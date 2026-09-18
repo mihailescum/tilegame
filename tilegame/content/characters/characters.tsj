@@ -47,9 +47,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_standing"
+                 "value":"standing"
                 }],
          "type":"man"
         }, 
@@ -62,9 +67,14 @@
          "id":1,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_standing"
+                 "value":"standing"
                 }],
          "type":"man"
         }, 
@@ -77,9 +87,14 @@
          "id":2,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_standing"
+                 "value":"standing"
                 }],
          "type":"man"
         }, 
@@ -92,9 +107,14 @@
          "id":3,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_standing"
+                 "value":"standing"
                 }],
          "type":"man"
         }, 
@@ -107,9 +127,14 @@
          "id":4,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_standing"
+                 "value":"standing"
                 }],
          "type":"old_man"
         }, 
@@ -122,9 +147,14 @@
          "id":5,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_standing"
+                 "value":"standing"
                 }],
          "type":"old_man"
         }, 
@@ -137,9 +167,14 @@
          "id":6,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_standing"
+                 "value":"standing"
                 }],
          "type":"old_man"
         }, 
@@ -152,9 +187,14 @@
          "id":7,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_standing"
+                 "value":"standing"
                 }],
          "type":"old_man"
         }, 
@@ -194,9 +234,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_walking"
+                 "value":"walking"
                 }],
          "type":"man"
         }, 
@@ -217,9 +262,14 @@
          "id":12,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_walking"
+                 "value":"walking"
                 }],
          "type":"old_man"
         }, 
@@ -263,9 +313,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_walking"
+                 "value":"walking"
                 }],
          "type":"man"
         }, 
@@ -309,9 +364,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_walking"
+                 "value":"walking"
                 }],
          "type":"old_man"
         }, 
@@ -355,9 +415,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_walking"
+                 "value":"walking"
                 }],
          "type":"man"
         }, 
@@ -378,9 +443,14 @@
          "id":28,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_walking"
+                 "value":"walking"
                 }],
          "type":"old_man"
         }, 
@@ -424,9 +494,14 @@
             },
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_walking"
+                 "value":"walking"
                 }],
          "type":"man"
         }, 
@@ -447,9 +522,14 @@
          "id":36,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_walking"
+                 "value":"walking"
                 }],
          "type":"old_man"
         }, 
@@ -466,9 +546,14 @@
          "id":40,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_standing"
+                 "value":"standing"
                 }],
          "type":"soldier"
         }, 
@@ -481,9 +566,14 @@
          "id":41,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_standing"
+                 "value":"standing"
                 }],
          "type":"soldier"
         }, 
@@ -496,9 +586,14 @@
          "id":42,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_standing"
+                 "value":"standing"
                 }],
          "type":"soldier"
         }, 
@@ -511,9 +606,14 @@
          "id":43,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_standing"
+                 "value":"standing"
                 }],
          "type":"soldier"
         }, 
@@ -530,9 +630,14 @@
          "id":48,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -540,9 +645,14 @@
          "id":49,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"up"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"up_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -559,9 +669,14 @@
          "id":56,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -569,9 +684,14 @@
          "id":57,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"right"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"right_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -588,9 +708,14 @@
          "id":64,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -598,9 +723,14 @@
          "id":65,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"down"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"down_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -617,9 +747,14 @@
          "id":72,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }, 
@@ -627,9 +762,14 @@
          "id":73,
          "properties":[
                 {
+                 "name":"direction",
+                 "type":"string",
+                 "value":"left"
+                }, 
+                {
                  "name":"state",
                  "type":"string",
-                 "value":"left_walking"
+                 "value":"walking"
                 }],
          "type":"soldier"
         }],

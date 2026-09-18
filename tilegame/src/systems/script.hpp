@@ -81,9 +81,6 @@ namespace tilegame::systems
         // JSON itself for everything SpriteSheet doesn't carry (firstgid, tilecount, luminosity,
         // per-tile custom properties/collision shapes) via `_load_json`.
         engine::graphics::SpriteSheet *load_spritesheet(const std::string &path);
-        // Exposed to Lua as `_make_orientable_if_directional`; thin wrapper over
-        // components::SpriteOrientation::make_orientable_if_directional().
-        void make_orientable_if_directional(entt::entity entity, const engine::graphics::Sprite &sprite, const std::string &initial_state_name);
 
         // Exposed to Lua as `_set_daytime_marks`; raises a SetDaytimeMarksEvent, immediately
         // delivered to systems::Daytime, wholesale-replacing the day/night cycle's keyframes
