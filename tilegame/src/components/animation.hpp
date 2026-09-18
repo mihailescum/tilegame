@@ -12,7 +12,7 @@ namespace tilegame::components
      * @brief Drives frame-by-frame sprite animation. The Animation system advances `clock` by
      * elapsed time and steps `current_frame_idx` through `frames`, looping back to the start once
      * the last frame's duration is exceeded, then updates any attached Sprite's source rect to match.
-     * Exposed to Lua as `_Animation`, built from a sprite class handle (see `_get_or_create_sprite_class`)
+     * Exposed to Lua as `_Animation`, built from a sprite class handle (see `_SpriteSheet:get_sprite()`)
      * and the name of the state to start on.
      */
     struct Animation

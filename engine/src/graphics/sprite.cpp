@@ -34,34 +34,4 @@ namespace engine::graphics
             }
         }
     }
-
-    void Sprite::parse(const json11::Json &tile_json, int columns, const glm::ivec2 &tile_dimensions)
-    {
-        _name = tile_json["type"].string_value();
-
-        std::string state_name;
-        for (const auto &property : tile_json["properties"].array_items())
-        {
-            if (property["name"].string_value() == Sprite::NAME_SPRITE_STATE)
-            {
-                state_name = property["value"].string_value();
-            }
-        }
-
-        auto &state = _states[state_name];
-        state.name = state_name;
-
-        for (const auto &frame_json : tile_json["animation"].array_items())
-        {
-            int frame_id = frame_json["tileid"].int_value();
-            float frame_duration = static_cast<float>(frame_json["duration"].number_value()) / 1000.0f;
-
-            int column = frame_id % columns;
-            int row = frame_id / columns;
-            engine::Rectangle source_rect(glm::vec2(column * tile_dimensions.x, row * tile_dimensions.x), tile_dimensions);
-
-            SpriteFrame frame(frame_id, frame_duration, source_rect);
-            state.frames.push_back(frame);
-        }
-    }
 } // namespace engine::graphics

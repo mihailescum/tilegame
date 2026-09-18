@@ -20,8 +20,9 @@ namespace tilegame::components
      * directional variants of one action (see Direction), so systems::SpriteOrientation can swap
      * their Animation/Sprite to match Facing whenever it crosses into a new cardinal direction.
      * `sprite` is the per-class engine::graphics::Sprite (map of state name -> SpriteState),
-     * resolved once at spawn and stable for the rest of the session (see systems::Script's
-     * `_sprite_classes` cache); `action` is the fixed `<action>` suffix (e.g. "walking") this
+     * resolved once at spawn and stable for the rest of the session (it points into the owning
+     * tileset's SpriteSheet, a ResourceManager-owned resource kept alive for the session like any
+     * other); `action` is the fixed `<action>` suffix (e.g. "walking") this
      * entity was spawned with - this only ever
      * swaps direction, never action.
      */

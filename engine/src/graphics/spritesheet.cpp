@@ -18,11 +18,9 @@ namespace engine::graphics
         if (parser.parse(_resource_path))
         {
             tson::Tileset data;
-            if (data.parse(parser, nullptr))
-            {
-                parse(data, resource_manager);
-                return true;
-            }
+            data.parse(parser, nullptr);
+            parse(data, resource_manager);
+            return true;
         }
 
         return false;

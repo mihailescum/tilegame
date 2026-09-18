@@ -163,7 +163,7 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
         error("Tile not found")
     end
 
-    local state_name = tile_def.properties.state
+    local state_name = read_property(tile_def.properties, "state")
     local sprite_class = tileset.spritesheet:get_sprite(tile_def.type)
     local source_rect = calculate_source_rect(tileset, local_id)
 
@@ -174,13 +174,13 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     _registry:emplace(entity, _Ordering(3.0))
     _registry:emplace(entity, _Renderable2D())
 
-    --_registry:emplace(entity, _Animation(sprite_class, state_name))
+    _registry:emplace(entity, _Animation(sprite_class, state_name))
     _registry:emplace(entity, _Sprite(tileset.texture, tileset.luminosity, source_rect))
 
     -- If the tile's state follows the "<direction>_<action>" convention and the class defines
     -- all four directions of that action, this sprite can be reoriented at runtime.
     
-    --_make_orientable_if_directional(entity, sprite_class, state_name)
+    _make_orientable_if_directional(entity, sprite_class, state_name)
     local collision_shape = tile_collision_shape(tile_def)
     if collision_shape then
         _registry:emplace(entity, _Collider(collision_shape))
@@ -189,7 +189,6 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     local script_path = read_property(object.properties, "script")
     if script_path then
         _run_script(resolve_path(map_dir, script_path), entity)
-        _registry:emplace(entity, _Interactable())
     end
 end
 
