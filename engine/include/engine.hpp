@@ -37,8 +37,4 @@
 #include "graphics/vertexpositiontexturecolor.hpp"
 
 #include "tilemap/tile.hpp"
-#include "tilemap/tilemap.hpp"
-#include "tilemap/tilelayer.hpp"
-#include "tilemap/tileobject.hpp"
 #include "tilemap/tileset.hpp"
-#include "tilemap/world.hpp"
