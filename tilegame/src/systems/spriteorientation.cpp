@@ -19,11 +19,12 @@ namespace tilegame::systems
 
         for (auto &&[entity, facing, orientation, animation] : view.each())
         {
-            const auto direction = components::SpriteOrientation::direction_from_heading(facing());
+            const auto direction = components::SpriteOrientation::direction_from_heading(facing.direction);
             if (direction == orientation.current_direction)
                 continue;
 
-            const auto &state = (*orientation.sprite)[components::SpriteOrientation::direction_prefix(direction) + "_" + orientation.action];
+            const auto state_string = components::SpriteOrientation::direction_prefix(direction) + "_" + orientation.action;
+            const auto &state = orientation.sprite->has_state(state_string) ? (*orientation.sprite)[state_string] : (*orientation.sprite)["down_walking"];
 
             orientation.current_direction = direction;
             animation.frames = state.frames;

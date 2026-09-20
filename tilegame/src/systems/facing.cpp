@@ -20,7 +20,7 @@ namespace tilegame::systems
         {
             if (glm::length2(direction()) > 1e-10)
             {
-                facing() = direction();
+                facing.direction = direction();
             }
         }
     }

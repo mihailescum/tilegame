@@ -41,8 +41,6 @@ namespace tilegame::components
             Right
         };
 
-        static constexpr std::array<Direction, 4> DIRECTIONS = {Direction::Up, Direction::Down, Direction::Left, Direction::Right};
-
         /// The `<direction>_` prefix a Direction corresponds to (e.g. Direction::Down -> "down"),
         /// needed only to build the (string-keyed) SpriteState lookup name.
         static std::string direction_prefix(Direction direction);
@@ -53,18 +51,6 @@ namespace tilegame::components
         /// Inverse of direction_from_heading(), for initializing Facing to the one direction a
         /// SpriteOrientation entity is spawned already showing.
         static glm::vec2 direction_vector(Direction direction);
-
-        /// If `sprite` defines `action` in all four Directions, emplaces Facing (initialized to
-        /// `initial_direction`) and SpriteOrientation on `entity`, so systems::SpriteOrientation
-        /// can reorient it at runtime as its Facing changes. Otherwise a no-op - e.g. for a
-        /// sprite class that doesn't define all four directions of `action`.
-        /// Used by systems::Player (for the keyboard-controlled player, which follows the same
-        /// "man" class/state convention). Map-loaded sprite entities get the same treatment from
-        /// Lua-native code instead (see content/scripts/maploader.lua's
-        /// `make_orientable_if_directional`, built from the `_Facing`/`_SpriteOrientation`
-        /// constructors and `_SpriteClass:has_state()`) - this duplicates the has-all-directions
-        /// check here in Lua, but only until player loading moves to Lua too.
-        static void make_orientable_if_directional(entt::registry &registry, entt::entity entity, const engine::graphics::Sprite &sprite, Direction initial_direction, const std::string &action);
 
         /// Registers `_SpriteOrientation`, constructible from Lua as
         /// `_SpriteOrientation(sprite_class, action, heading)` - `heading` (a non-zero vec2) is

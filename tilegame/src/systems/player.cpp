@@ -8,6 +8,7 @@
 #include "components/player.hpp"
 #include "components/movement.hpp"
 #include "components/direction.hpp"
+#include "components/facing.hpp"
 #include "components/spriteorientation.hpp"
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
@@ -57,11 +58,8 @@ namespace tilegame::systems
         const auto &player1_animation_component = _registry.emplace<components::Animation>(_player1_entity, 0.0, 0, player1_sprite[player1_initial_state].frames);
         _registry.emplace<components::Renderable2D>(_player1_entity);
         _registry.emplace<components::Sprite>(_player1_entity, engine::Texture2DContainer<2>{&characters_texture, &characters_texture_luminosity}, player1_animation_component.get_current_frame().source_rect);
-
-        // "man" defines all four directions of "walking" (see characters.tsj), so this gives the
-        // player Facing + SpriteOrientation just like any qualifying map-loaded sprite, letting
-        // systems::SpriteOrientation reorient it at runtime too.
-        components::SpriteOrientation::make_orientable_if_directional(_registry, _player1_entity, player1_sprite, player1_initial_direction, player1_initial_action);
+        _registry.emplace<components::Facing>(_player1_entity);
+        _registry.emplace<components::SpriteOrientation>(_player1_entity, &player1_sprite, "down_walking", components::SpriteOrientation::Direction::Down);
 
         const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
         if (current_animation_tile->collision_shape)

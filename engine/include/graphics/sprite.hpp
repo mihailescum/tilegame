@@ -45,6 +45,6 @@ namespace engine::graphics
         SpriteState &operator[](std::string name) { return _states.at(name); }
 
         /** @brief Whether this sprite defines a state named `name`, without throwing if it doesn't. */
-        bool has_state(const std::string &name) const { return _states.count(name) > 0; }
+        bool has_state(const std::string &name) const { return _states.contains(name); }
     };
 } // namespace engine::graphics

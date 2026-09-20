@@ -55,20 +55,6 @@ namespace tilegame::components
         }
     }
 
-    void SpriteOrientation::make_orientable_if_directional(entt::registry &registry, entt::entity entity, const engine::graphics::Sprite &sprite, Direction initial_direction, const std::string &action)
-    {
-        const bool has_all_directions = std::all_of(
-            DIRECTIONS.begin(), DIRECTIONS.end(),
-            [&](Direction direction)
-            { return sprite.has_state(direction_prefix(direction) + "_" + action); });
-
-        if (!has_all_directions)
-            return;
-
-        registry.emplace<components::Facing>(entity, direction_vector(initial_direction));
-        registry.emplace<components::SpriteOrientation>(entity, &sprite, action, initial_direction);
-    }
-
     void SpriteOrientation::register_component(sol::state &lua)
     {
         entt_sol::register_meta_component<SpriteOrientation>();
