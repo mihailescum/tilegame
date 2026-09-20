@@ -218,7 +218,7 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     if collision_shape then
         _registry:emplace(entity, _Collider(collision_shape))
     end
-    print("Hello")
+    
     local script_path = read_property(object.properties, "script")
     if script_path then
         _run_script(resolve_path(map_dir, script_path), entity)
@@ -240,6 +240,11 @@ local function create_map(map_entry)
     _registry:emplace(map_entity, _Map())
     _registry:emplace(map_entity, _Transform(map_position))
     _registry:emplace(map_entity, _Shape(_Point(map_dimensions)))
+
+    local script_path = read_property(map_data.properties, "script")
+    if script_path then
+        _run_script(resolve_path(map_dir, script_path), map_entity)
+    end
 
     local tilesets = {}
     for _, tileset_ref in ipairs(map_data.tilesets) do
