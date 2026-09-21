@@ -1,34 +1,71 @@
 #include "secureluastate.hpp"
 
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
 #include <iostream>
 #include <stdexcept>
+#include <string_view>
 
 #include "debugger_lua/debugger_lua.hpp"
 #include "inspect.lua/inspect.lua.hpp"
+
+namespace
+{
+    constexpr std::string_view content_scripts_directory = "content/scripts/";
+
+    // Content scripts are required by bare module name (e.g. require("man1")), turned into a
+    // filesystem path via `content/scripts/<name>.lua`. Restricting names to this character set
+    // means the resulting path can never contain a path separator or a ".." segment, so there is
+    // no way to escape content/scripts/ this way - the safety comes from what characters are
+    // allowed into the path in the first place, not from validating the path afterwards.
+    bool is_valid_content_module_name(const std::string &name)
+    {
+        if (name.empty())
+        {
+            return false;
+        }
+
+        return std::all_of(name.begin(), name.end(), [](unsigned char c)
+                           { return std::isalnum(c) || c == '_' || c == '-'; });
+    }
+} // namespace
 
 namespace tilegame
 {
     sol::object SecureLuaState::safe_require(const std::string &name)
     {
-        sol::table result;
         if (name == "debugger")
         {
             // TODO: something is not quite right with the debugger. 'e' or 'p' cannot access the local variables for some reason
-            result = _lua.require_script(name, debugger_lua::debugger_src);
+            sol::table result = _lua.require_script(name, debugger_lua::debugger_src);
             result.set_function("write", &SecureLuaState::safe_write, this);
             result.set_function("read", &SecureLuaState::safe_read, this);
+            return result;
         }
         else if (name == "inspect")
         {
             // TODO: something is not quite right with the debugger. 'e' or 'p' cannot access the local variables for some reason
-            result = _lua.require_script(name, inspect_lua::src);
+            return _lua.require_script(name, inspect_lua::src);
+        }
+        else if (is_valid_content_module_name(name))
+        {
+            const std::string path = std::string(content_scripts_directory) + name + ".lua";
+            if (!std::filesystem::is_regular_file(path))
+            {
+                throw std::runtime_error("Unsupported module: " + name + "!");
+            }
+
+            // Content scripts aren't necessarily authored as modules that `return` a table (e.g.
+            // NPC behavior scripts run for side effects), so this returns whatever require_file
+            // produces directly rather than funneling it through the `sol::table result` below,
+            // which only fits the two embedded table-returning modules above.
+            return _lua.require_file(name, path, true, sol::load_mode::text);
         }
         else
         {
             throw std::runtime_error("Unsupported module: " + name + "!");
         }
-
-        return result;
     }
 
     void SecureLuaState::safe_write(const std::string &prompt)

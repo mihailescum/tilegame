@@ -66,9 +66,14 @@ namespace tilegame
             "exit",
         };
 
-        // Sandbox replacement for `require`: only allows a fixed set of known-safe scripts
-        // (currently "debugger" and "inspect"), loaded from embedded sources rather than
-        // the filesystem.
+        // Sandbox replacement for `require`: allows two fixed known-safe modules
+        // ("debugger", "inspect") loaded from embedded sources, plus any script under
+        // content/scripts/<name>.lua. <name> is restricted to [A-Za-z0-9_-], so the
+        // resulting path can never contain a path separator or a ".." segment - there is
+        // no way to escape content/scripts/ this way, by construction rather than by
+        // canonicalizing/allowlisting the resolved path afterwards. Content scripts are
+        // loaded in text-only mode (see safe_load), so a ".lua" file containing
+        // precompiled bytecode is rejected the same way.
         sol::object safe_require(const std::string &name);
         void safe_write(const std::string &prompt);
         std::string safe_read(const std::string &prompt);
