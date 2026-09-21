@@ -6,6 +6,7 @@
 
 #include "components/renderable2d.hpp"
 #include "components/camera.hpp"
+#include "components/depthorigin.hpp"
 #include "components/daytime.hpp"
 #include "components/inactive.hpp"
 #include "components/particle.hpp"
@@ -105,14 +106,18 @@ namespace tilegame::systems
 
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(static_cast<glm::vec4>(engine::Color::CORNFLOWER_BLUE)));
 
-        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D, const components::Depth>(entt::exclude<components::Inactive>);
-        const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite>(entt::exclude<components::Inactive>);
+        // Depth (unlike Transform/Renderable2D) isn't a filter here - TileLayer entities carry
+        // no Depth of their own any more (see draw_tilelayer()), only Sprite/ParticlePool ones
+        // do, fetched below via view_sprites/view_particle_pools instead.
+        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite, const components::Depth>(entt::exclude<components::Inactive>);
         const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<components::Inactive>);
-        const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool>(entt::exclude<components::Inactive>);
+        const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool, const components::Depth>(entt::exclude<components::Inactive>);
 
         const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
         const auto &camera = _registry.get<const components::Camera>(camera_entity);
         const engine::Rectangle &visible_bounds = camera.visible_bounds;
+        const float depth_origin_y = _registry.get<const components::DepthOrigin>(camera_entity).y;
 
         _spritebatch_luminosity_shader->use();
         _spritebatch_luminosity_shader->set("night_amount", _registry.ctx().get<float>(components::NIGHT_AMOUNT_ID));
@@ -122,15 +127,15 @@ namespace tilegame::systems
         // draws per pixel regardless of which order this loop happens to visit entities in.
         _spritebatch_luminosity_shader->set("discard_transparent", true);
         _spritebatch.begin(camera.transform, false, _spritebatch_luminosity_shader, engine::graphics::DepthMode::TestAndWrite);
-        for (const auto &&[render_entity, transform, depth] : view_renderable.each())
+        for (const auto &&[render_entity, transform] : view_renderable.each())
         {
             if (view_sprites.contains(render_entity))
             {
-                draw_sprite(transform, view_sprites.get<const components::Sprite>(render_entity), depth);
+                draw_sprite(transform, view_sprites.get<const components::Sprite>(render_entity), view_sprites.get<const components::Depth>(render_entity), depth_origin_y);
             }
             else if (view_tilelayers.contains(render_entity))
             {
-                draw_tilelayer(transform, view_tilelayers.get<const components::TileLayer>(render_entity), depth, visible_bounds);
+                draw_tilelayer(transform, view_tilelayers.get<const components::TileLayer>(render_entity), visible_bounds, depth_origin_y);
             }
         }
         _spritebatch.end();
@@ -139,11 +144,11 @@ namespace tilegame::systems
         // behind (DepthMode::TestOnly - no depth write), real alpha blending, always last.
         _spritebatch_luminosity_shader->set("discard_transparent", false);
         _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader, engine::graphics::DepthMode::TestOnly);
-        for (const auto &&[render_entity, transform, depth] : view_renderable.each())
+        for (const auto &&[render_entity, transform] : view_renderable.each())
         {
             if (view_particle_pools.contains(render_entity))
             {
-                draw_particles(view_particle_pools.get<const components::ParticlePool>(render_entity), depth, visible_bounds);
+                draw_particles(transform, view_particle_pools.get<const components::ParticlePool>(render_entity), view_particle_pools.get<const components::Depth>(render_entity), visible_bounds, depth_origin_y);
             }
         }
         _spritebatch.end();
@@ -225,23 +230,27 @@ namespace tilegame::systems
         {
             draw_message_box(message_box_state);
         }
-        // Only once the message's last line is on screen - i.e. no more pages left to page
-        // through via Enter - does the options box (if any) appear.
-        if (!message_box_state.options.empty() && message_box_state.lines.size() <= static_cast<std::size_t>(tilegame::messagebox_layout::VISIBLE_LINES))
+        // Only once systems::MessageBox has actually revealed the options (one Enter press
+        // after the message's last line first appears on screen) does the box get drawn -
+        // matching that system's own gate on when Up/Down/Enter start controlling it, rather
+        // than just when it's next in line to appear.
+        if (message_box_state.showing_options)
         {
             draw_options_box(message_box_state);
         }
     }
 
-    void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth)
+    void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth, float depth_origin_y)
     {
         const auto &position = transform.position;
         const auto &source_rect = sprite.source_rect;
         const engine::Rectangle dest_rect(position, source_rect.dimensions);
-        _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE, depth.z);
+        // Ground-contact row (a character's feet).
+        const float z = compute_z(depth.z, position.y + source_rect.dimensions.y, depth_origin_y);
+        _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE, z);
     }
 
-    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const components::Depth &depth, const engine::Rectangle &visible_bounds)
+    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const engine::Rectangle &visible_bounds, float depth_origin_y)
     {
         for (const auto &data : tilelayer.tile_data)
         {
@@ -256,14 +265,18 @@ namespace tilegame::systems
                 continue;
             }
 
-            _spritebatch.draw(data.textures, dest_rect, &data.source_rect, engine::Color::WHITE, depth.z);
+            const float z = compute_z(data.depth, data.reference_y, depth_origin_y);
+            _spritebatch.draw(data.textures, dest_rect, &data.source_rect, engine::Color::WHITE, z);
         }
     }
 
-    void Render::draw_particles(const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds)
+    void Render::draw_particles(const components::Transform &emitter_transform, const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds, float depth_origin_y)
     {
         // TODO this should be outside of the loop to avoid refeching for every emitter
         const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
+
+        // A single depth value per emitter, not one per particle - see the class comment.
+        const float z = compute_z(depth.z, emitter_transform.position.y, depth_origin_y);
 
         for (size_t i = 0; i < pool.first_dead_particle; i++)
         {
@@ -281,8 +294,13 @@ namespace tilegame::systems
                 continue;
             }
 
-            _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color, depth.z);
+            _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color, z);
         }
+    }
+
+    float Render::compute_z(float depth_base, float world_y, float depth_origin_y) const
+    {
+        return depth_base + (world_y - depth_origin_y) * DEPTH_FINE_SCALE;
     }
 
     void Render::draw_message_box(const components::MessageBoxState &state)

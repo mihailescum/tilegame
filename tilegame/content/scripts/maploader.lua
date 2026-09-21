@@ -68,12 +68,37 @@ local function layer_z(z_index)
 end
 
 local function read_property(properties, name)
+    -- A Tiled tile/object with no custom properties at all omits the "properties" key entirely
+    -- (e.g. a tile with only an objectgroup for collision) rather than giving an empty array.
+    if not properties then
+        return nil
+    end
     for _, property in ipairs(properties) do
         if property.name == name then
             return property.value
         end
     end
     return nil
+end
+
+-- The shared bucket characters sort in - see player.cpp's and create_sprite_entity's own
+-- _Depth(0.5); kept in sync with those by hand, since there's no single shared constant for it
+-- on the Lua side.
+local DYNAMIC_DEPTH = 0.5
+
+-- A tile's depth anchor is its custom property `depth_anchor`, if present - marks it as needing
+-- to sort against characters using its own row (see systems::Render's draw_tilelayer) instead of
+-- sitting in its layer's static bucket, e.g. a tree that should occlude/be occluded by the player
+-- depending on position. 0 anchors to the tile's own bottom pixel row; negative values push the
+-- reference row further down past that edge, positive values pull it up (useful for e.g.
+-- transparent padding under the actual ground-contact pixel). A tall object spanning several
+-- grid cells (canopy above trunk) marks each tile definition independently, each with its own
+-- anchor - no linking needed, since each cell already sorts by its own row regardless.
+local function tile_depth_anchor(tile_def)
+    if not tile_def then
+        return nil
+    end
+    return read_property(tile_def.properties, "depth_anchor")
 end
 
 -- Mirrors components::SpriteOrientation::direction_vector(): the heading each cardinal
@@ -163,6 +188,11 @@ local function resolve_gid(tilesets, gid)
 end
 
 local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_position)
+    -- Baked into each cell at load time (see TileLayer::TileData::depth) - this layer's own
+    -- static bucket, unless that specific tile has a depth_anchor (see tile_depth_anchor), in
+    -- which case it joins DYNAMIC_DEPTH's bucket instead.
+    local layer_depth = layer_z(z_index)
+
     local cells = {}
     for y = 0, layer.height - 1 do
         for x = 0, layer.width - 1 do
@@ -172,20 +202,30 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
             -- its length reliably reflects the layer's tile count - see TileLayer::register_component().
 
             local tile_def = tileset and tileset.tiles_by_id[local_id]
+            local anchor = tile_depth_anchor(tile_def)
+            local depth = anchor and DYNAMIC_DEPTH or layer_depth
+            -- The tile's own bottom pixel row when there's no anchor (anchor defaults to 0) -
+            -- see systems::Render, which reads this directly rather than deriving it from the
+            -- cell's own destination rect. nil (unused) for an empty cell, same as everything
+            -- else computed from `tileset` below.
+            local reference_y = tileset and (map_position.y + (y + 1) * tileset.tile_dimensions.y - (anchor or 0))
 
             cells[index + 1] = tileset and {
                 texture = tileset.texture,
                 luminosity = tileset.luminosity,
                 destination = _Rectangle(vec2(x * tileset.tile_dimensions.x, y * tileset.tile_dimensions.y), tileset.tile_dimensions),
                 source = calculate_source_rect(tileset, local_id),
+                depth = depth,
+                reference_y = reference_y,
                 shape = tile_collision_shape(tile_def),
             } or false
         end
     end
 
+    -- No _Depth on the layer entity itself - only individual cells carry a baked depth (above),
+    -- which is all systems::Render reads for tile layers now.
     local entity = _registry:create()
     _registry:emplace(entity, _Transform(map_position))
-    _registry:emplace(entity, _Depth(layer_z(z_index)))
     _registry:emplace(entity, _Renderable2D())
     _registry:emplace(entity, _Shape(_Point(vec2(layer.width, layer.height))))
     _registry:emplace(entity, _TileLayer(vec2(map_data.tilewidth, map_data.tileheight), cells))

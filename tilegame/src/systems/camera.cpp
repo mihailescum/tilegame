@@ -9,6 +9,7 @@
 #include "helper.hpp"
 
 #include "components/camera.hpp"
+#include "components/depthorigin.hpp"
 #include "components/camerashake.hpp"
 #include "components/player.hpp"
 #include "components/pin.hpp"
@@ -54,6 +55,7 @@ namespace tilegame::systems
             glm::mat4(1.0),
             _scene.game().graphicsdevice().viewport());
         _registry.emplace<components::Transform>(camera_entity, glm::vec2(0.0, 0.0));
+        _registry.emplace<components::DepthOrigin>(camera_entity, 0.0f);
 
         entt::entity player1_entity = entt::null;
         auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
@@ -200,5 +202,11 @@ namespace tilegame::systems
                                                                          static_cast<float>(camera.viewport.dimensions.y),
                                                                          0.0f, 1.0f));
         camera.visible_bounds = engine::Rectangle(top_left, bottom_right - top_left);
+
+        // See components::DepthOrigin - snapped to a coarse grid (not just set to `position.y`
+        // directly) so it only actually changes when the camera crosses a chunk boundary, rather
+        // than drifting by a tiny amount every frame the camera moves at all.
+        auto &depth_origin = _registry.get<components::DepthOrigin>(camera_entity);
+        depth_origin.y = std::floor(position.y / components::DepthOrigin::CHUNK_SIZE) * components::DepthOrigin::CHUNK_SIZE;
     }
 } // namespace tilegame::systems

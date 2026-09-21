@@ -68,6 +68,14 @@ namespace tilegame
         }
     }
 
+    int SecureLuaState::location_prefixed_exception_handler(lua_State *L, sol::optional<const std::exception &>, sol::string_view what)
+    {
+        luaL_where(L, 1);
+        lua_pushlstring(L, what.data(), what.size());
+        lua_concat(L, 2);
+        return 1;
+    }
+
     void SecureLuaState::open_libraries()
     {
         // Create new blank _environment
@@ -132,5 +140,23 @@ namespace tilegame
         };
         lua_pop(lua, 1); // Pop thread
 #endif
+
+        // Must come after the globals swap above, not before: set_exception_handler() stores
+        // the handler via lua_setglobal(), which writes into whatever table LUA_RIDX_GLOBALS
+        // currently points to - setting it any earlier would register it on the original globals
+        // table this function is about to replace, leaving it unreachable once _env takes over.
+        _lua.set_exception_handler(&SecureLuaState::location_prefixed_exception_handler);
+
+        // sol2 installs its own protected-call message handler (default_traceback_error_handler,
+        // which uses luaL_traceback() to walk the whole call stack, not just the current frame -
+        // the only way to get a call site for an error raised inside a Lua stdlib C function like
+        // ipairs/pairs, which have no Lua source line of their own to report) the moment a
+        // sol::state is constructed - i.e. before this method ever runs, let alone the globals
+        // swap above, via the exact same lua_setglobal()-based mechanism as the exception handler
+        // just above. So it's been just as unreachable as that was - reinstall it here too, now
+        // that it'll actually land on the table _run_script/execute_script's protected calls read.
+        sol::protected_function::set_default_handler(
+            sol::object(_lua.lua_state(), sol::in_place,
+                        sol::c_call<decltype(&sol::default_traceback_error_handler), &sol::default_traceback_error_handler>));
     }
 } // namespace tilegame

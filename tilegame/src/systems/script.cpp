@@ -32,6 +32,7 @@
 #include "components/collider.hpp"
 #include "components/tilelayer.hpp"
 #include "components/spriteorientation.hpp"
+#include "components/camera.hpp"
 
 #define AUTO_ARG(x) decltype(x), x
 
@@ -284,6 +285,7 @@ namespace tilegame::systems
         components::TileLayer::register_component(_lua());
         components::Collider::register_component(_lua());
         components::SpriteOrientation::register_component(_lua());
+        components::Camera::register_component(_lua());
 
         _lua().set_function("_run_script", &Script::run_script, this);
         _lua().set_function("_load_json", &Script::load_json, this);

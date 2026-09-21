@@ -77,6 +77,15 @@ namespace tilegame
         // sandboxed environment onto the resulting function.
         std::tuple<sol::object, sol::object> safe_load(const std::string &str, const std::string &chunkname);
 
+        // Registered with sol::state::set_exception_handler() in open_libraries(): sol2's own
+        // default handler just pushes the raw C++ exception message with no location, unlike a
+        // native Lua runtime error (which luaG_addinfo() always prefixes with "chunkname:line: ").
+        // luaL_where() is the same call luaL_error() uses internally to get that prefix, so this
+        // makes a C++ exception thrown from a Lua-bound function (e.g. _load_json failing) read
+        // the same way a plain Lua error already does. Must be a plain function (not a member
+        // function bound to `this`) since sol2 stores it as a raw function pointer.
+        static int location_prefixed_exception_handler(lua_State *L, sol::optional<const std::exception &> maybe_exception, sol::string_view what);
+
     public:
         sol::state &
         operator()() { return _lua; }

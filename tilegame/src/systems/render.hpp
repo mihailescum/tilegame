@@ -35,6 +35,14 @@ namespace tilegame::systems
     class Render : public System
     {
     private:
+        // How much of a components::Depth bucket's headroom one world-space unit of distance
+        // from components::DepthOrigin.y consumes. Chosen so that even the worst case (an entity
+        // up to ~2x components::DepthOrigin::CHUNK_SIZE away from the origin, which can happen
+        // right at a chunk boundary) stays comfortably within one bucket's gap to the next -
+        // 2 * 65536 * 0.000002 =~ 0.26, well inside e.g. the 0.49 gap between the dynamic bucket
+        // (0.5) and weather's (0.99).
+        static constexpr float DEPTH_FINE_SCALE = 0.000002f;
+
         // Owned here rather than by Tilegame/Game: nothing outside of Render draws anything, so
         // there's no reason for the SpriteBatch(es)/PostProcessor to live any higher up (unless/until
         // the game grows more scenes than just WorldScene and switching between them needs to reuse
@@ -49,14 +57,24 @@ namespace tilegame::systems
         // dialog box, which is drawn after apply_effects().
         engine::graphics::PostProcessor _postprocessor;
 
-        void draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth);
+        // `depth_origin_y` is this frame's components::DepthOrigin.y (read once in draw() off the
+        // camera entity) - see compute_z().
+        void draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth, float depth_origin_y);
         // `visible_bounds` is the camera's world-space view rectangle (components::Camera::visible_bounds,
         // recomputed each frame by systems::Camera); tiles/particles whose destination rect doesn't
-        // intersect it are skipped. Every cell in the layer draws at `depth`'s own Z.
-        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const components::Depth &depth, const engine::Rectangle &visible_bounds);
-        // `depth`'s Z is used as-is for every particle in the pool - "a single depth value per
-        // emitter", not one per particle.
-        void draw_particles(const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds);
+        // intersect it are skipped. Each cell draws at its own baked TileData::depth/reference_y
+        // (see those fields) - the layer entity itself carries no components::Depth of its own.
+        void draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const engine::Rectangle &visible_bounds, float depth_origin_y);
+        // `depth`/`emitter_transform` (the pool entity's own, not any one particle's) are used
+        // once to compute a single Z for the whole pool - "a single depth value per emitter",
+        // not one per particle.
+        void draw_particles(const components::Transform &emitter_transform, const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds, float depth_origin_y);
+        // The Z a draw call is actually issued with: `depth_base` (a components::Depth.z or
+        // TileData.depth - which bucket this belongs in) plus a small contribution from
+        // `world_y`'s distance to this frame's components::DepthOrigin.y, which keeps that
+        // distance - and the float precision it needs - small no matter how far into the map
+        // `world_y` actually is. See components::DepthOrigin for the full reasoning.
+        float compute_z(float depth_base, float world_y, float depth_origin_y) const;
         // Draws the screen-space dialog box (background + up to messagebox_layout::VISIBLE_LINES
         // lines of glyphs) for a non-empty components::MessageBoxState; called with its own
         // spritebatch begin/end so it isn't affected by any camera transform.

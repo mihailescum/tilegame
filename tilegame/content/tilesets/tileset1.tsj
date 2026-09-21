@@ -17,130 +17,57 @@
  "tiles":[
         {
          "id":1,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "id":2,
-             "name":"",
-             "objects":[
-                    {
-                     "height":0,
-                     "id":1,
-                     "name":"depth",
-                     "point":true,
-                     "rotation":0,
-                     "type":"type",
-                     "visible":true,
-                     "width":0,
-                     "x":6.875,
-                     "y":30.5
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            }
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-96
+                }]
+        }, 
+        {
+         "id":2,
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-96
+                }]
         }, 
         {
          "id":120,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "name":"",
-             "objects":[
-                    {
-                     "height":12,
-                     "id":1,
-                     "name":"",
-                     "rotation":0,
-                     "type":"collision",
-                     "visible":true,
-                     "width":6,
-                     "x":26,
-                     "y":20
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            }
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-64
+                }]
         }, 
         {
          "id":121,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "name":"",
-             "objects":[
-                    {
-                     "height":32,
-                     "id":1,
-                     "name":"",
-                     "rotation":0,
-                     "type":"collision",
-                     "visible":true,
-                     "width":32,
-                     "x":0,
-                     "y":0
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            }
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-64
+                }]
         }, 
         {
          "id":122,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "name":"",
-             "objects":[
-                    {
-                     "height":32,
-                     "id":1,
-                     "name":"",
-                     "rotation":0,
-                     "type":"collision",
-                     "visible":true,
-                     "width":32,
-                     "x":0,
-                     "y":0
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            }
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-64
+                }]
         }, 
         {
          "id":123,
-         "objectgroup":
-            {
-             "draworder":"index",
-             "name":"",
-             "objects":[
-                    {
-                     "height":12,
-                     "id":1,
-                     "name":"",
-                     "rotation":0,
-                     "type":"collision",
-                     "visible":true,
-                     "width":6,
-                     "x":0,
-                     "y":20
-                    }],
-             "opacity":1,
-             "type":"objectgroup",
-             "visible":true,
-             "x":0,
-             "y":0
-            }
+         "properties":[
+                {
+                 "name":"depth_anchor",
+                 "type":"float",
+                 "value":-64
+                }]
         }, 
         {
          "id":240,

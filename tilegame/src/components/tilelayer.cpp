@@ -37,6 +37,8 @@ namespace tilegame::components
                         const engine::Rectangle source_rect = cell["source"];
 
                         TileData data(engine::Texture2DContainer<2>{texture, luminosity}, destination_rect, source_rect);
+                        data.depth = cell["depth"];
+                        data.reference_y = cell["reference_y"];
 
                         const sol::optional<sol::table> shape = cell["shape"];
                         if (shape)

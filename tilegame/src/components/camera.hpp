@@ -1,7 +1,11 @@
 #pragma once
 
+#include <string>
+
 #include <glm/glm.hpp>
 #include "entt/entt.hpp"
+
+#include "sol/sol.hpp"
 
 #include "engine.hpp"
 
@@ -11,7 +15,9 @@ namespace tilegame::components
      * @brief Defines a view into the world. The Camera system derives `transform` and
      * `visible_bounds` each frame from this entity's Transform position, `scale`, and `viewport` so
      * it can be handed to the spritebatch for rendering; it is typically pinned to the player entity
-     * via a Pin component.
+     * via a Pin component. Exposed to Lua as `_Camera` (`scale` and `visible_bounds` only -
+     * `transform`/`viewport` have no Lua bindings of their own, and components::DepthOrigin,
+     * which also lives on this entity, is intentionally not exposed at all).
      */
     struct Camera
     {
@@ -22,6 +28,10 @@ namespace tilegame::components
         /// World-space rectangle currently visible through this camera, recomputed alongside
         /// `transform`. Used by Render to cull tiles/particles that fall outside the view.
         engine::Rectangle visible_bounds;
+
+        [[nodiscard]] std::string to_string() const;
+
+        static void register_component(sol::state &lua);
     };
 
     // Registry context id (registry.ctx()) under which the single camera entity's handle is

@@ -29,6 +29,16 @@ namespace tilegame::components
             engine::Rectangle source_rect;
             /// Absent when the tile has no collision geometry.
             std::optional<engine::ShapeVariant> collision_shape;
+            /// This cell's authored components::Depth bucket - baked in once at load time
+            /// (content/scripts/maploader.lua copies it from the owning layer's own Depth), never
+            /// touched again. Not the final Z systems::Render draws with - see that system for
+            /// how a components::DepthOrigin-relative term gets added on top at draw time.
+            float depth = 0.0f;
+            /// Absolute world-space Y systems::Render uses as this cell's own "row" for that
+            /// DepthOrigin-relative term - baked in once at load time from the tile's authored
+            /// depth_anchor custom property, or the cell's own bottom pixel row if it has none
+            /// (see content/scripts/maploader.lua's tile_depth_anchor()).
+            float reference_y = 0.0f;
 
             TileData() : TileData(engine::Texture2DContainer<2>(), engine::Rectangle::EMPTY, engine::Rectangle::EMPTY) {}
             TileData(const engine::Texture2DContainer<2> &textures, const engine::Rectangle &destination_rect, const engine::Rectangle &source_rect) : textures(textures), destination_rect(destination_rect), source_rect(source_rect) {}
@@ -52,9 +62,9 @@ namespace tilegame::components
 
         /// Registers `_TileLayer`, constructible from Lua as `_TileLayer(tile_dimensions,
         /// cells)`: `tile_dimensions` is a vec2, and `cells` a 1-based array, with no holes, of
-        /// per-cell tables ({texture, luminosity, destination, source, shape?} - `shape`, if
-        /// present, is a descriptor as accepted by Collider::make_shape()) or `false` for an
-        /// empty cell. `cells`' length gives the layer's tile count.
+        /// per-cell tables ({texture, luminosity, destination, source, depth, reference_y,
+        /// shape?} - `shape`, if present, is a descriptor as accepted by Collider::make_shape())
+        /// or `false` for an empty cell. `cells`' length gives the layer's tile count.
         static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components
