@@ -25,7 +25,7 @@
 #include "systems/world.hpp"
 #include "components/messagebox.hpp"
 #include "components/player.hpp"
-#include "components/ordering.hpp"
+#include "components/depth.hpp"
 #include "components/renderable2d.hpp"
 #include "components/sprite.hpp"
 #include "components/animation.hpp"
@@ -275,7 +275,7 @@ namespace tilegame::systems
         components::TimerEvent::register_component(_lua());
         components::Transform::register_component(_lua());
         components::Speed::register_component(_lua());
-        components::Ordering::register_component(_lua());
+        components::Depth::register_component(_lua());
         components::Renderable2D::register_component(_lua());
         components::Sprite::register_component(_lua());
         components::Animation::register_component(_lua());

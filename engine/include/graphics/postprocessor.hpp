@@ -38,6 +38,12 @@ namespace engine::graphics
         int initialize_vao();
 
         int generate_buffers();
+        // Attaches a depth renderbuffer to `_msfbo` only - the resolve FBO (`_fbo`) only ever
+        // holds the resolved color output post-processing effects sample from, and depth's job
+        // (letting systems::Render's opaque pass sort itself out via the GPU depth test - see
+        // graphics::DepthMode) is done once that scene render finishes, so it need not survive
+        // the resolve blit.
+        int add_depth_attachment();
         void activate_render_target(GLuint fbo) const;
         void copy_target_to_texture() const;
 

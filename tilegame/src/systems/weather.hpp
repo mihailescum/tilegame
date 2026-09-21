@@ -42,7 +42,7 @@ namespace tilegame::systems
 
         // Creates the precipitation entity, called once from load_content(): Transform/Shape, a
         // default ParticleEmitter (replaced wholesale by the first
-        // SetWeatherPrecipitationEvent), a fresh ParticlePool, and the Renderable2D/Ordering
+        // SetWeatherPrecipitationEvent), a fresh ParticlePool, and the Renderable2D/Depth
         // pair needed for systems::Particle/systems::Render to pick it up. Pinned to the camera
         // entity.
         entt::entity create_precipitation_entity();

@@ -13,6 +13,10 @@ namespace engine::graphics
         {
             return 0;
         }
+        if (!add_depth_attachment())
+        {
+            return 0;
+        }
         if (!initialize_vao())
         {
             return 0;
@@ -26,6 +30,31 @@ namespace engine::graphics
         glGenFramebuffers(1, &_msfbo);
         glCheckError();
         glGenFramebuffers(1, &_fbo);
+        glCheckError();
+
+        return 1;
+    }
+
+    int PostProcessor::add_depth_attachment()
+    {
+        // Matches add_color_attachments()'s own max_samples=1 - see its comment.
+        constexpr GLint max_samples = 1;
+        const glm::ivec2 &dimensions = _graphicsdevice.viewport().dimensions;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, _msfbo);
+        glCheckError();
+
+        GLuint rbo;
+        glGenRenderbuffers(1, &rbo);
+        glCheckError();
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glCheckError();
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, max_samples, GL_DEPTH_COMPONENT24, dimensions.x, dimensions.y);
+        glCheckError();
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        glCheckError();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glCheckError();
 
         return 1;

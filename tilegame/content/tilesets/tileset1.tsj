@@ -16,6 +16,33 @@
  "tileheight":32,
  "tiles":[
         {
+         "id":1,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":2,
+             "name":"",
+             "objects":[
+                    {
+                     "height":0,
+                     "id":1,
+                     "name":"depth",
+                     "point":true,
+                     "rotation":0,
+                     "type":"type",
+                     "visible":true,
+                     "width":0,
+                     "x":6.875,
+                     "y":30.5
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            }
+        }, 
+        {
          "id":120,
          "objectgroup":
             {

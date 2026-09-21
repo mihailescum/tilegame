@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "components/renderable2d.hpp"
-#include "components/ordering.hpp"
 #include "components/camera.hpp"
 #include "components/daytime.hpp"
 #include "components/inactive.hpp"
@@ -21,12 +20,6 @@ namespace tilegame::systems
 
     void Render::initialize()
     {
-        needs_sorting(_registry, entt::null);
-
-        _registry.on_construct<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
-        _registry.on_update<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
-        _registry.on_destroy<components::Ordering>().connect<&systems::Render::needs_sorting>(*this);
-
         _spritebatch.create();
         _text_spritebatch.create();
 
@@ -112,13 +105,7 @@ namespace tilegame::systems
 
         glClearBufferfv(GL_COLOR, 0, glm::value_ptr(static_cast<glm::vec4>(engine::Color::CORNFLOWER_BLUE)));
 
-        if (_needs_sorting)
-        {
-            sort_renderables();
-            _needs_sorting = false;
-        }
-
-        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D, const components::Depth>(entt::exclude<components::Inactive>);
         const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite>(entt::exclude<components::Inactive>);
         const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<components::Inactive>);
         const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool>(entt::exclude<components::Inactive>);
@@ -130,25 +117,33 @@ namespace tilegame::systems
         _spritebatch_luminosity_shader->use();
         _spritebatch_luminosity_shader->set("night_amount", _registry.ctx().get<float>(components::NIGHT_AMOUNT_ID));
 
-        _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader);
-
-        // Since Renderable2D is only a tag, it does not show up in the view
-        for (const auto &&[render_entity, transform] : view_renderable.each())
+        // Opaque pass: every tile and sprite, alpha blending off. No draw-order bookkeeping of
+        // any kind here - the GPU depth test (DepthMode::TestAndWrite) resolves overlapping
+        // draws per pixel regardless of which order this loop happens to visit entities in.
+        _spritebatch_luminosity_shader->set("discard_transparent", true);
+        _spritebatch.begin(camera.transform, false, _spritebatch_luminosity_shader, engine::graphics::DepthMode::TestAndWrite);
+        for (const auto &&[render_entity, transform, depth] : view_renderable.each())
         {
             if (view_sprites.contains(render_entity))
             {
-                auto &sprite_component = view_sprites.get<const components::Sprite>(render_entity);
-                draw_sprite(transform, sprite_component);
+                draw_sprite(transform, view_sprites.get<const components::Sprite>(render_entity), depth);
             }
             else if (view_tilelayers.contains(render_entity))
             {
-                auto &tilelayer_component = view_tilelayers.get<const components::TileLayer>(render_entity);
-                draw_tilelayer(transform, tilelayer_component, visible_bounds);
+                draw_tilelayer(transform, view_tilelayers.get<const components::TileLayer>(render_entity), depth, visible_bounds);
             }
-            else if (view_particle_pools.contains(render_entity))
+        }
+        _spritebatch.end();
+
+        // Transparent pass: e.g. weather. Depth-tested against whatever the opaque pass left
+        // behind (DepthMode::TestOnly - no depth write), real alpha blending, always last.
+        _spritebatch_luminosity_shader->set("discard_transparent", false);
+        _spritebatch.begin(camera.transform, true, _spritebatch_luminosity_shader, engine::graphics::DepthMode::TestOnly);
+        for (const auto &&[render_entity, transform, depth] : view_renderable.each())
+        {
+            if (view_particle_pools.contains(render_entity))
             {
-                auto &pool_component = view_particle_pools.get<const components::ParticlePool>(render_entity);
-                draw_particles(pool_component, visible_bounds);
+                draw_particles(view_particle_pools.get<const components::ParticlePool>(render_entity), depth, visible_bounds);
             }
         }
         _spritebatch.end();
@@ -238,25 +233,15 @@ namespace tilegame::systems
         }
     }
 
-    void Render::sort_renderables()
-    {
-        // TODO can we make this more efficient somehow?
-        _registry.sort<components::Ordering>(
-            [](const auto &lhs, const auto &rhs)
-            { return lhs() < rhs(); },
-            entt::insertion_sort());
-        _registry.sort<components::Renderable2D, components::Ordering>();
-    }
-
-    void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite)
+    void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth)
     {
         const auto &position = transform.position;
         const auto &source_rect = sprite.source_rect;
         const engine::Rectangle dest_rect(position, source_rect.dimensions);
-        _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE);
+        _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE, depth.z);
     }
 
-    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const engine::Rectangle &visible_bounds)
+    void Render::draw_tilelayer(const components::Transform &transform, const components::TileLayer &tilelayer, const components::Depth &depth, const engine::Rectangle &visible_bounds)
     {
         for (const auto &data : tilelayer.tile_data)
         {
@@ -271,11 +256,11 @@ namespace tilegame::systems
                 continue;
             }
 
-            _spritebatch.draw(data.textures, dest_rect, &data.source_rect, engine::Color::WHITE);
+            _spritebatch.draw(data.textures, dest_rect, &data.source_rect, engine::Color::WHITE, depth.z);
         }
     }
 
-    void Render::draw_particles(const components::ParticlePool &pool, const engine::Rectangle &visible_bounds)
+    void Render::draw_particles(const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds)
     {
         // TODO this should be outside of the loop to avoid refeching for every emitter
         const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
@@ -296,7 +281,7 @@ namespace tilegame::systems
                 continue;
             }
 
-            _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color);
+            _spritebatch.draw(sprite.textures, dest_rect, &source_rect, particle.color, depth.z);
         }
     }
 

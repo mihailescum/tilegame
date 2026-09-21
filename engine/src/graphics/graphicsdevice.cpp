@@ -11,7 +11,11 @@ namespace engine::graphics
 
     int GraphicsDevice::create()
     {
-        _clear_mask = GL_COLOR_BUFFER_BIT;
+        // Depth testing itself is enabled/disabled per SpriteBatch begin()/end() (see
+        // graphics::DepthMode), not globally here - only some batches (the opaque world-content
+        // pass) use it. Clearing GL_DEPTH_BUFFER_BIT on a framebuffer with no depth attachment is
+        // a no-op, so including it here unconditionally is safe for every render target.
+        _clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 
         int gladInitRes = gladLoadGL();
         if (!gladInitRes)
@@ -21,10 +25,6 @@ namespace engine::graphics
         }
 
         viewport(_viewport);
-        // glDisable(GL_CULL_FACE);
-        // glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
 
         return 1;
     }

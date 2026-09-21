@@ -20,6 +20,24 @@
 namespace engine::graphics
 {
     /**
+     * @brief How a begin()/end() batch reads and writes the depth buffer.
+     * `Disabled` leaves depth testing off entirely (screen-space UI, debug overlays, text - the
+     * default, so callers that don't care about depth need no changes). `TestAndWrite` is the
+     * opaque pass: an occluded fragment is discarded and a winning one both draws and updates the
+     * depth buffer, so later draws (in any order) are correctly sorted against it with no CPU
+     * sort needed. `TestOnly` is the alpha-blended pass: fragments still test against whatever
+     * the opaque pass left behind (so e.g. rain behind a wall is still hidden), but don't write
+     * depth, since blending - unlike the opaque pass's binary occlusion - needs the caller's own
+     * back-to-front draw order to composite correctly.
+     */
+    enum class DepthMode
+    {
+        Disabled,
+        TestAndWrite,
+        TestOnly,
+    };
+
+    /**
      * @brief Batches 2D sprite draw calls sharing the same texture into as few
      * `glDrawElements` calls as possible. The `T` template parameter is a texture
      * container type (e.g. a plain Texture2D, or a struct bundling several textures
@@ -257,14 +275,14 @@ namespace engine::graphics
                 -1.0f,
                 1.0f);
         }
-        void begin(const bool alpha_blending_enabled)
+        void begin(const bool alpha_blending_enabled, DepthMode depth_mode = DepthMode::Disabled)
         {
             glm::mat4 transform(1.0);
-            begin(transform, alpha_blending_enabled);
+            begin(transform, alpha_blending_enabled, nullptr, depth_mode);
         }
 
         /** @brief Begins a batch. `shader`, if given, overrides the default sprite shader for this batch (e.g. for a custom effect); otherwise the built-in shader is used. */
-        void begin(const glm::mat4 &transform, const bool alpha_blending_enabled, Shader *shader = nullptr)
+        void begin(const glm::mat4 &transform, const bool alpha_blending_enabled, Shader *shader = nullptr, DepthMode depth_mode = DepthMode::Disabled)
         {
             if (_has_begun)
             {
@@ -283,6 +301,28 @@ namespace engine::graphics
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 glCheckError();
             }
+
+            switch (depth_mode)
+            {
+            case DepthMode::Disabled:
+                glDisable(GL_DEPTH_TEST);
+                break;
+            case DepthMode::TestAndWrite:
+                // Plain default depth func/clear (GL_LESS, clear 1.0) - GLM's ortho() is
+                // right-handed, so with SpriteBatch::create()'s symmetric [-1, 1] Z range it
+                // maps NDC_z = -world_z; a larger world Z already produces a smaller (winning)
+                // stored depth under GL_LESS, so no custom glDepthFunc/glClearDepth is needed to
+                // get "larger Z wins" - adding GL_GREATER here would invert it instead.
+                glEnable(GL_DEPTH_TEST);
+                glDepthMask(GL_TRUE);
+                break;
+            case DepthMode::TestOnly:
+                glEnable(GL_DEPTH_TEST);
+                glDepthMask(GL_FALSE);
+                break;
+            }
+            glCheckError();
+
             _num_active_sprites = 0;
         }
 
@@ -332,6 +372,8 @@ namespace engine::graphics
             }
 
             glDisable(GL_BLEND);
+            glDisable(GL_DEPTH_TEST);
+            glDepthMask(GL_TRUE);
 
             _has_begun = false;
         }

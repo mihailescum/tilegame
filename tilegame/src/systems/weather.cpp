@@ -8,7 +8,7 @@
 #include "components/shape.hpp"
 #include "components/transform.hpp"
 #include "components/renderable2d.hpp"
-#include "components/ordering.hpp"
+#include "components/depth.hpp"
 #include "components/inactive.hpp"
 #include "components/camera.hpp"
 #include "components/pin.hpp"
@@ -79,7 +79,11 @@ namespace tilegame::systems
         _registry.emplace<components::ParticleEmitter>(entity);
         _registry.emplace<components::ParticlePool>(entity);
         _registry.emplace<components::Renderable2D>(entity);
-        _registry.emplace<components::Ordering>(entity, 1000.0f);
+        // Arbitrary placeholder for now - close to the largest Z in SpriteBatch's valid [-1, 1]
+        // range (see engine::graphics::SpriteBatch::create()), so weather always wins the
+        // (GL_GREATER - larger wins) depth test against tiles/characters and draws in front of
+        // them regardless of position - see systems::Render's transparent pass.
+        _registry.emplace<components::Depth>(entity, 0.99f);
 
         // Pinned to the camera (itself Pin'd to player 1, see systems::Camera::load_content())
         // so its spawn area travels with the player's view instead of this system having to

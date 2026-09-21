@@ -17,7 +17,7 @@
 #include "components/particle.hpp"
 #include "components/sprite.hpp"
 #include "components/renderable2d.hpp"
-#include "components/ordering.hpp"
+#include "components/depth.hpp"
 #include "components/speed.hpp"
 #include "components/direction.hpp"
 

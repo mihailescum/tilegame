@@ -3,7 +3,7 @@
 #include "tilegame.hpp"
 
 #include "components/renderable2d.hpp"
-#include "components/ordering.hpp"
+#include "components/depth.hpp"
 #include "components/scenenode.hpp"
 #include "components/animation.hpp"
 

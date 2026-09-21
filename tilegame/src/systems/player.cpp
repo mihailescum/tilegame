@@ -13,7 +13,7 @@
 #include "components/transform.hpp"
 #include "components/scenenode.hpp"
 #include "components/renderable2d.hpp"
-#include "components/ordering.hpp"
+#include "components/depth.hpp"
 #include "components/sprite.hpp"
 #include "components/animation.hpp"
 #include "components/inactive.hpp"
@@ -43,7 +43,11 @@ namespace tilegame::systems
         _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
         _registry.emplace<components::Transform>(_player1_entity, glm::vec2(200, 200));
-        _registry.emplace<components::Ordering>(_player1_entity, 2.0);
+        // Arbitrary placeholder for now (SpriteBatch's ortho projection covers Z in [-1, 1] -
+        // see engine::graphics::SpriteBatch::create()) - must beat every tile layer's Z
+        // (maploader.lua's layer_z(), currently 0 and ascending) under the (GL_GREATER - larger
+        // wins) depth test, or the player fails against the ground and disappears behind it.
+        _registry.emplace<components::Depth>(_player1_entity, 0.5f);
         _registry.emplace<components::Direction>(_player1_entity);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);

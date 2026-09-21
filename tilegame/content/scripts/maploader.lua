@@ -57,6 +57,16 @@ local function tile_collision_shape(tile_def)
     return nil
 end
 
+-- Maps a tile layer's index in its Tiled file into an actual Z (components::Depth.z is used
+-- as-is by systems::Render, with no further scaling - see that component). SpriteBatch's ortho
+-- projection covers Z in [-1, 1] with GL_GREATER (a larger Z wins - see
+-- engine::graphics::SpriteBatch::begin()), so a higher layer index, meant to sit in front of
+-- lower ones, gets a larger value. All tiles are static for now - every cell in a layer shares
+-- this one Z; there is no per-tile/dynamic case.
+local function layer_z(z_index)
+    return z_index * 0.01
+end
+
 local function read_property(properties, name)
     for _, property in ipairs(properties) do
         if property.name == name then
@@ -161,19 +171,21 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
             -- Always assigned (even for an empty cell, as `false`) so `cells` has no holes and
             -- its length reliably reflects the layer's tile count - see TileLayer::register_component().
 
+            local tile_def = tileset and tileset.tiles_by_id[local_id]
+
             cells[index + 1] = tileset and {
                 texture = tileset.texture,
                 luminosity = tileset.luminosity,
                 destination = _Rectangle(vec2(x * tileset.tile_dimensions.x, y * tileset.tile_dimensions.y), tileset.tile_dimensions),
                 source = calculate_source_rect(tileset, local_id),
-                shape = tile_collision_shape(tileset.tiles_by_id[local_id]),
+                shape = tile_collision_shape(tile_def),
             } or false
         end
     end
 
     local entity = _registry:create()
     _registry:emplace(entity, _Transform(map_position))
-    _registry:emplace(entity, _Ordering(z_index))
+    _registry:emplace(entity, _Depth(layer_z(z_index)))
     _registry:emplace(entity, _Renderable2D())
     _registry:emplace(entity, _Shape(_Point(vec2(layer.width, layer.height))))
     _registry:emplace(entity, _TileLayer(vec2(map_data.tilewidth, map_data.tileheight), cells))
@@ -203,7 +215,10 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
 
     local entity = _registry:create()
     _registry:emplace(entity, _Transform(position))
-    _registry:emplace(entity, _Ordering(3.0))
+    -- Arbitrary placeholder for now, same as the player (see player.cpp) - characters aren't
+    -- placed into the layer_z() binning above yet, just kept safely above every tile layer's Z
+    -- (0 and ascending) so they win the (GL_GREATER - larger wins) depth test against the ground.
+    _registry:emplace(entity, _Depth(0.5))
     _registry:emplace(entity, _Renderable2D())
 
     _registry:emplace(entity, _Animation(sprite_class, state_name))
