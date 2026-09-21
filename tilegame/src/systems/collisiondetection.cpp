@@ -38,8 +38,8 @@ namespace tilegame::systems
         // Near phase detection
         std::vector<std::pair<int, float>> found_collisions;
 
-        const auto entity_circle = std::get_if<engine::Circle>(&entity_collider.shape);
-        const auto entity_rectangle = std::get_if<engine::Rectangle>(&entity_collider.shape);
+        const auto entity_circle = std::get_if<engine::Circle>(&entity_collider());
+        const auto entity_rectangle = std::get_if<engine::Rectangle>(&entity_collider());
 
         // Broad phase detection: only visit tiles the entity's shape could possibly reach this
         // frame - its current extent unioned with that same extent shifted by its full velocity
@@ -63,7 +63,7 @@ namespace tilegame::systems
         const glm::vec2 local_max = swept_max - tilelayer_transform.position;
         const glm::ivec2 &tile_dimensions = tilelayer.tile_dimensions;
 
-        const auto shape = std::get_if<engine::Point>(&tilelayer_shape.shape);
+        const auto shape = std::get_if<engine::Point>(&tilelayer_shape());
         const int tilelayer_width = (int)shape->position.x;
         const int tilelayer_height = (int)shape->position.y;
 

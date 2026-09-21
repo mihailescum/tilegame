@@ -19,6 +19,8 @@ namespace tilegame::components
 
         CurrentMap() : map(entt::null) {}
         CurrentMap(entt::entity map) : map(map) {}
+
+        entt::entity operator()() const { return map; }
     };
 
     /**

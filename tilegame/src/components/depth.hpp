@@ -17,6 +17,8 @@ namespace tilegame::components
     {
         float z;
 
+        float operator()() const { return z; }
+
         static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

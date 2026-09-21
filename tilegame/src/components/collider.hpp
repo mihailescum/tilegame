@@ -18,6 +18,9 @@ namespace tilegame::components
         Collider() = default;
         Collider(const engine::ShapeVariant &shape) : shape(shape) {}
 
+        const engine::ShapeVariant &operator()() const { return shape; }
+        engine::ShapeVariant &operator()() { return shape; }
+
         /// Builds a ShapeVariant from a Lua-supplied descriptor table: {kind = "rectangle",
         /// position = vec2, dimensions = vec2}, {kind = "circle", position = vec2, radius =
         /// number}, or {kind = "point", position = vec2}. Shared with TileLayer's `_TileLayer`

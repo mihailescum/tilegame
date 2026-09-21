@@ -16,7 +16,7 @@ namespace tilegame::systems
         const auto view = registry.view<const components::Map, const components::Transform, const components::Shape>();
         for (auto &&[entity, transform, shape] : view.each())
         {
-            const auto *dimensions = std::get_if<engine::Point>(&shape.shape);
+            const auto *dimensions = std::get_if<engine::Point>(&shape());
             if (dimensions && engine::Rectangle(transform.position, dimensions->position).intersects(engine::Point(global_position)))
             {
                 return entity;

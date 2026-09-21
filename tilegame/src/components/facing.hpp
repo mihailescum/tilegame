@@ -23,6 +23,8 @@ namespace tilegame::components
         Facing() : Facing(glm::vec2(0.0, 1.0)) {}
         Facing(const glm::vec2 &direction) : direction(direction) {}
 
+        const glm::vec2 &operator()() const { return direction; }
+        glm::vec2 &operator()() { return direction; }
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);

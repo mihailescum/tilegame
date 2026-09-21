@@ -97,7 +97,7 @@ namespace tilegame::systems
 
     glm::vec2 Particle::generate_random_position(const components::Shape &shape)
     {
-        if (const auto *rect_ptr = std::get_if<engine::Rectangle>(&shape.shape))
+        if (const auto *rect_ptr = std::get_if<engine::Rectangle>(&shape()))
         {
             return tilegame::random_point_in_rectangle(*rect_ptr);
         }
@@ -131,12 +131,12 @@ namespace tilegame::systems
         _registry.patch<components::Direction>(new_particle,
                                                [&direction](auto &comp)
                                                {
-                                                   comp.direction = direction;
+                                                   comp() = direction;
                                                });
         _registry.patch<components::Speed>(new_particle,
                                            [&speed](auto &comp)
                                            {
-                                               comp.speed = speed;
+                                               comp() = speed;
                                            });
         _registry.patch<components::Particle>(new_particle,
                                               [lifetime, scale, &color](auto &particle)

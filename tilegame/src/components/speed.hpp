@@ -19,7 +19,8 @@ namespace tilegame::components
         Speed() : Speed(0.0) {}
         Speed(float speed) : speed(speed) {}
 
-        float operator()() const { return speed; }
+        const float &operator()() const { return speed; }
+        float &operator()() { return speed; }
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);

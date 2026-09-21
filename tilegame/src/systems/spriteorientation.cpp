@@ -19,7 +19,7 @@ namespace tilegame::systems
 
         for (auto &&[entity, facing, orientation, animation] : view.each())
         {
-            const auto direction = components::SpriteOrientation::direction_from_heading(facing.direction);
+            const auto direction = components::SpriteOrientation::direction_from_heading(facing());
             if (direction == orientation.current_direction)
                 continue;
 

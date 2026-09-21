@@ -167,13 +167,13 @@ namespace tilegame::systems
         {
             const auto &position = transform.position;
 
-            if (const auto shape_circle = std::get_if<engine::Circle>(&collider.shape))
+            if (const auto shape_circle = std::get_if<engine::Circle>(&collider()))
             {
                 glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
                 engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
                 _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
             }
-            else if (const auto shape_rect = std::get_if<engine::Rectangle>(&collider.shape))
+            else if (const auto shape_rect = std::get_if<engine::Rectangle>(&collider()))
             {
                 glm::vec2 pos = position + shape_rect->position;
                 engine::Rectangle dest_rect(pos, shape_rect->dimensions);
@@ -246,7 +246,7 @@ namespace tilegame::systems
         const auto &source_rect = sprite.source_rect;
         const engine::Rectangle dest_rect(position, source_rect.dimensions);
         // Ground-contact row (a character's feet).
-        const float z = compute_z(depth.z, position.y + source_rect.dimensions.y, depth_origin_y);
+        const float z = compute_z(depth(), position.y + source_rect.dimensions.y, depth_origin_y);
         _spritebatch.draw(sprite.textures, dest_rect, &source_rect, engine::Color::WHITE, z);
     }
 
@@ -276,7 +276,7 @@ namespace tilegame::systems
         const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
 
         // A single depth value per emitter, not one per particle - see the class comment.
-        const float z = compute_z(depth.z, emitter_transform.position.y, depth_origin_y);
+        const float z = compute_z(depth(), emitter_transform.position.y, depth_origin_y);
 
         for (size_t i = 0; i < pool.first_dead_particle; i++)
         {

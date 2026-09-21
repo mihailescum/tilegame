@@ -58,7 +58,7 @@ namespace tilegame::systems
 
                     // Skip the facing check right on top of the interactable, where the direction
                     // to it is undefined. Facing is already normalized, so only to_interactable needs it.
-                    if (distance2 > 1e-10f && glm::dot(glm::normalize(to_interactable), facing.direction) < kInteractionFacingCosThreshold)
+                    if (distance2 > 1e-10f && glm::dot(glm::normalize(to_interactable), facing()) < kInteractionFacingCosThreshold)
                         continue;
 
                     closest_entity = interactable_entity;

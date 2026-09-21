@@ -119,7 +119,7 @@ namespace tilegame::systems
                 _registry.patch<components::Direction>(entity,
                                                        [direction](auto &comp)
                                                        {
-                                                           comp.direction = direction;
+                                                           comp() = direction;
                                                        });
             }
             break;

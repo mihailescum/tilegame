@@ -21,6 +21,9 @@ namespace tilegame::components
         Shape() = default;
         Shape(const engine::ShapeVariant &shape) : shape(shape) {}
 
+        const engine::ShapeVariant &operator()() const { return shape; }
+        engine::ShapeVariant &operator()() { return shape; }
+
         static void register_component(sol::state &lua);
     };
 } // namespace tilegame::components

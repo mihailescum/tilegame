@@ -76,7 +76,7 @@ namespace tilegame::systems
                 continue;
 
             const entt::entity new_map = systems::World::map_at(_registry, transform.position);
-            const entt::entity old_map = _registry.all_of<components::CurrentMap>(entity) ? _registry.get<components::CurrentMap>(entity).map : entt::null;
+            const entt::entity old_map = _registry.all_of<components::CurrentMap>(entity) ? _registry.get<components::CurrentMap>(entity)() : entt::null;
 
             if (new_map != old_map)
             {
