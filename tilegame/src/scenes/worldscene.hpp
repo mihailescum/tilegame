@@ -7,7 +7,7 @@
 
 #include "engine.hpp"
 
-#include "scenegraphdata.hpp"
+#include "scenes/managedscene.hpp"
 #include "systems/render.hpp"
 #include "systems/camera.hpp"
 #include "systems/player.hpp"
@@ -32,17 +32,21 @@ namespace tilegame
     class Tilegame;
 }
 
-namespace tilegame::worldscene
+namespace tilegame::scenes
 {
+    class SceneManager;
+
     /**
      * @brief Top-level orchestrator for the currently loaded game scene.
      *
      * Owns the entt::registry and one instance of every systems::* system, and
      * drives them through their lifecycle each frame in the fixed order
      * required for correct behavior (e.g. input/scripts before movement,
-     * collision before movement is applied, animation/camera after).
+     * collision before movement is applied, animation/camera after). Pushed
+     * as the startup scene by Tilegame; can itself push overlay scenes (e.g.
+     * an inventory) on top via the SceneManager it was constructed with.
      */
-    class WorldScene : public tilegame::Scene
+    class WorldScene : public ManagedScene
     {
     private:
         entt::registry _registry;
@@ -67,7 +71,7 @@ namespace tilegame::worldscene
         systems::SpriteOrientation _system_sprite_orientation;
 
     public:
-        WorldScene(Tilegame &game);
+        WorldScene(Tilegame &game, SceneManager &scene_manager);
         ~WorldScene() = default;
 
         virtual void initialize() override;

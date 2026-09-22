@@ -1,16 +1,16 @@
 #pragma once
 #include "engine.hpp"
 
-#include "worldscene/worldscene.hpp"
+#include "scenes/scenemanager.hpp"
 
 namespace tilegame
 {
     /**
      * @brief Top-level engine::Game implementation for the tilegame executable.
      *
-     * Owns the single WorldScene (which owns the SpriteBatch(es) used for all
-     * rendering), forwarding the engine's game loop lifecycle callbacks to it,
-     * and updates the window title with the current FPS/UPS once per second.
+     * Owns the SceneManager (pushing WorldScene as the startup scene) and
+     * forwards the engine's game loop lifecycle callbacks to it, and updates
+     * the window title with the current FPS/UPS once per second.
      */
     class Tilegame : public engine::Game
     {
@@ -19,7 +19,7 @@ namespace tilegame
         int _updates = 0;
         float _timer = 0;
 
-        worldscene::WorldScene _worldscene;
+        scenes::SceneManager _scene_manager;
 
     protected:
         virtual void initialize() override;
@@ -33,7 +33,7 @@ namespace tilegame
         virtual void end_draw(const engine::GameTime &draw_time) override;
 
     public:
-        Tilegame(int window_width, int window_height) : Game(window_width, window_height), _worldscene(*this) {}
+        Tilegame(int window_width, int window_height) : Game(window_width, window_height), _scene_manager(*this) {}
         Tilegame(const Tilegame &game) = delete;
         ~Tilegame() {}
     };

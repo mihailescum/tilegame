@@ -7,10 +7,10 @@
 #include "components/scenenode.hpp"
 #include "components/animation.hpp"
 
-namespace tilegame::worldscene
+namespace tilegame::scenes
 {
-    WorldScene::WorldScene(Tilegame &game)
-        : tilegame::Scene(game),
+    WorldScene::WorldScene(Tilegame &game, SceneManager &scene_manager)
+        : ManagedScene(game, scene_manager),
           _system_render(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
