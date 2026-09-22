@@ -7,7 +7,6 @@
 #include "components/sprite.hpp"
 #include "components/tilelayer.hpp"
 #include "components/particlepool.hpp"
-#include "components/messagebox.hpp"
 #include "components/depth.hpp"
 
 namespace tilegame::systems
@@ -27,10 +26,9 @@ namespace tilegame::systems
      * PostProcessor (day/night tint, then a two-pass Gaussian blur of the per-sprite luminosity
      * output - gated by components::NIGHT_AMOUNT_ID, set by systems::Daytime, so light sources
      * only bloom once it's actually dark - additively blended back onto the tinted scene), which
-     * wraps that whole scene; the dialog box and, when present, the options box above it - both
-     * read from the registry's components::MessageBoxState ctx() value (owned by
-     * systems::MessageBox) - are drawn last, screen-space, straight onto the default framebuffer,
-     * so they're unaffected by both the camera and the post-processing effects.
+     * wraps that whole scene. The dialog/options message box is no longer drawn here - it's
+     * scenes::UIScene, pushed on top of this scene and drawn after it (see SceneManager::draw()),
+     * unaffected by both the camera and this system's post-processing effects.
      */
     class Render : public System
     {
@@ -48,10 +46,6 @@ namespace tilegame::systems
         // the game grows more scenes than just WorldScene and switching between them needs to reuse
         // the same GL VAO/VBO/shader/FBOs instead of recreating them per scene).
         engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> _spritebatch;
-        // Separate batch dedicated to text: draw_text() only exists for SpriteBatch<Texture2D>,
-        // since it binds a SpriteFont's texture directly rather than through the main batch's
-        // Texture2DContainer<2>.
-        engine::graphics::SpriteBatch<engine::Texture2D> _text_spritebatch;
         engine::Shader *_spritebatch_luminosity_shader;
         // Day/night tint + blend effect chain; wraps everything drawn in draw() except the
         // dialog box, which is drawn after apply_effects().
@@ -75,20 +69,9 @@ namespace tilegame::systems
         // distance - and the float precision it needs - small no matter how far into the map
         // `world_y` actually is. See components::DepthOrigin for the full reasoning.
         float compute_z(float depth_base, float world_y, float depth_origin_y) const;
-        // Draws the screen-space dialog box (background + up to messagebox_layout::VISIBLE_LINES
-        // lines of glyphs) for a non-empty components::MessageBoxState; called with its own
-        // spritebatch begin/end so it isn't affected by any camera transform.
-        void draw_message_box(const components::MessageBoxState &state);
-        // Draws the screen-space options box (background + one line of glyphs per option,
-        // prefixing the currently selected one) for a components::MessageBoxState with a
-        // non-empty `options` list; positioned to the right, above the dialog box drawn by
-        // draw_message_box(). Called with its own spritebatch begin/end so it isn't affected by
-        // any camera transform.
-        void draw_options_box(const components::MessageBoxState &state);
 
         engine::Texture2DContainer<2> _rect_tex;
         engine::Texture2DContainer<2> _circle_tex;
-        const engine::graphics::SpriteFont *_font;
 
     public:
         Render(tilegame::Scene &scene, entt::registry &registry);

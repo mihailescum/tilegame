@@ -1,7 +1,5 @@
 #include "core/game.hpp"
 
-#include <memory>
-
 namespace engine
 {
     Game::~Game()
@@ -94,6 +92,7 @@ namespace engine
 
     void Game::unload_content()
     {
+        _scene_manager.unload_content();
         _resource_manager.unload_resources();
     }
 

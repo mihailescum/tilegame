@@ -7,7 +7,7 @@
 
 #include "engine.hpp"
 
-#include "scenes/managedscene.hpp"
+#include "scene.hpp"
 #include "systems/render.hpp"
 #include "systems/camera.hpp"
 #include "systems/player.hpp"
@@ -27,15 +27,8 @@
 #include "systems/facing.hpp"
 #include "systems/spriteorientation.hpp"
 
-namespace tilegame
-{
-    class Tilegame;
-}
-
 namespace tilegame::scenes
 {
-    class SceneManager;
-
     /**
      * @brief Top-level orchestrator for the currently loaded game scene.
      *
@@ -44,9 +37,9 @@ namespace tilegame::scenes
      * required for correct behavior (e.g. input/scripts before movement,
      * collision before movement is applied, animation/camera after). Pushed
      * as the startup scene by Tilegame; can itself push overlay scenes (e.g.
-     * an inventory) on top via the SceneManager it was constructed with.
+     * an inventory) on top via the SceneManager reached through game().scene_manager().
      */
-    class WorldScene : public ManagedScene
+    class WorldScene : public tilegame::Scene
     {
     private:
         entt::registry _registry;
@@ -71,7 +64,7 @@ namespace tilegame::scenes
         systems::SpriteOrientation _system_sprite_orientation;
 
     public:
-        WorldScene(Tilegame &game, SceneManager &scene_manager);
+        WorldScene(engine::Game &game);
         ~WorldScene() = default;
 
         virtual void initialize() override;

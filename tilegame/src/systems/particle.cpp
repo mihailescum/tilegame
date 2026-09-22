@@ -11,7 +11,6 @@
 #include "components/particlepool.hpp"
 #include "components/transform.hpp"
 #include "components/shape.hpp"
-#include "components/scenenode.hpp"
 #include "components/inactive.hpp"
 #include "components/movement.hpp"
 #include "components/particle.hpp"
@@ -174,8 +173,6 @@ namespace tilegame::systems
 
             pool.container.resize(new_dimensions);
 
-            // auto emitter_scenenode = _registry.get<components::SceneNode>(emitter_entity).node;
-
             for (std::size_t i = old_dimensions; i < new_dimensions; ++i)
             {
                 const auto new_particle = _registry.create();
@@ -188,10 +185,6 @@ namespace tilegame::systems
                 _registry.emplace<components::Particle>(new_particle);
                 _registry.emplace<components::Sprite>(new_particle);
                 _registry.emplace<components::Transform>(new_particle);
-
-                // const tilegame::SceneGraphData scenedata(new_particle);
-                // tilegame::SceneGraphNode &scenenode = emitter_scenenode->add_child(scenedata);
-                //_registry.emplace<components::SceneNode>(new_particle, &scenenode);
             }
 
             return true;

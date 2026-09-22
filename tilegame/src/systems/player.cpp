@@ -11,7 +11,6 @@
 #include "components/facing.hpp"
 #include "components/spriteorientation.hpp"
 #include "components/transform.hpp"
-#include "components/scenenode.hpp"
 #include "components/renderable2d.hpp"
 #include "components/depth.hpp"
 #include "components/sprite.hpp"
@@ -51,10 +50,6 @@ namespace tilegame::systems
         _registry.emplace<components::Direction>(_player1_entity);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);
-
-        // const tilegame::SceneGraphData player1_scenedata(_player1_entity);
-        // tilegame::SceneGraphNode &player1_scenenode = _scene.scene_graph_root().add_child(player1_scenedata);
-        //_registry.emplace<components::SceneNode>(_player1_entity, &player1_scenenode);
 
         constexpr auto player1_initial_direction = components::SpriteOrientation::Direction::Down;
         const std::string player1_initial_action = "walking";

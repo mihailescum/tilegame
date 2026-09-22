@@ -1,53 +1,48 @@
 #pragma once
 
-#include <cstddef>
+#include <any>
 
 #include "engine.hpp"
 
 #include "system.hpp"
 #include "components/messagebox.hpp"
+#include "scenes/uiscene.hpp"
 
 namespace tilegame::systems
 {
     /**
-     * @brief Drives dialog messages requested via components::ShowMessageEvent.
+     * @brief Bridges `_show_message` Lua calls into scenes::UIScene.
      *
-     * Owns the current message state as a single components::MessageBoxState value in the
-     * registry's ctx() storage (created in initialize()) - not an entity/component, so
-     * systems::Render can still read it to know what to draw without this system needing to
-     * expose anything directly to it. Also in initialize(), registers an
-     * EventListener<ShowMessageEvent> (on its own dedicated entity) that reacts the instant the
-     * `_show_message` Lua binding raises one via the inherited System::raise(): word-wraps its
-     * text and either appends the result to the state or replaces it, depending on the event's
-     * `append` flag, raising a MessageOpenedEvent the moment a message becomes active; the
-     * event's `options`, if any, replace the state's options list outright. Then, each frame,
-     * pops a line off the front on each Enter key press - until either `lines` is exhausted (no
-     * `options` attached: raises a MessageClosedEvent) or, once `lines` holds no more than one
-     * page and `options` is non-empty, the *next* Enter instead reveals the options box
-     * (`showing_options = true`) without popping, freezing the last line in place. While the
-     * options box is showing, Up/Down cycle the highlighted option and a further Enter closes
-     * both boxes together, clearing `lines`/`options`/`showing_options` and raising a
-     * MessageClosedEvent; selecting one currently has no other effect (the return value isn't
-     * surfaced anywhere yet).
+     * Owns no message state itself - that lives entirely in scenes::UIScene, which is pushed on
+     * top of the current scene stack (via the SceneManager) the first time a
+     * components::ShowMessageEvent arrives with none already open, and reused for any further
+     * calls (append or replace) while it's still up. In initialize(), creates the
+     * components::MessageBoxOpenState ctx() value (read by systems::Interaction to avoid
+     * triggering a new interaction while a message is on screen) and registers an
+     * EventListener<ShowMessageEvent> that reacts the instant the `_show_message` Lua binding
+     * raises one via the inherited System::raise(), immediately delivering it to the open (or
+     * newly pushed) UIScene, reaching the SceneManager via _scene.game().scene_manager(). Raises
+     * a MessageOpenedEvent whenever that call counts as opening a new message (see
+     * scenes::UIScene::show_message()), and a MessageClosedEvent - carrying whichever option was
+     * selected, if any - once the UIScene closes itself and the SceneManager delivers its result
+     * back via the close callback given to push_for_result().
      */
     class MessageBox : public System
     {
     private:
-        bool _enter_was_down;
-        bool _up_was_down;
-        bool _down_was_down;
+        // The currently open message box, or nullptr if none is up. Non-owning: the SceneManager
+        // owns it, and clears this back to nullptr via on_message_closed() once it's popped.
+        scenes::UIScene *_ui_scene = nullptr;
 
-        // Applies one ShowMessageEvent to the current MessageBoxState; the body of the
-        // EventListener<ShowMessageEvent> registered in initialize().
+        // Applies one ShowMessageEvent to `_ui_scene`, pushing it first if none is open yet; the
+        // body of the EventListener<ShowMessageEvent> registered in initialize().
         void on_show_message(const components::ShowMessageEvent &event);
-        // Max characters per line the on-screen dialog box can fit, from the current viewport
-        // width and font.
-        std::size_t max_line_chars() const;
+        // The close callback given to push_for_result() when `_ui_scene` is pushed.
+        void on_message_closed(std::any result);
 
     public:
         MessageBox(tilegame::Scene &scene, entt::registry &registry);
 
         void initialize();
-        void update(const engine::GameTime &update_time);
     };
 } // namespace tilegame

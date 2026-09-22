@@ -3,7 +3,7 @@
 #include "entt/entt.hpp"
 
 #include "engine.hpp"
-#include "scenegraphdata.hpp"
+#include "scene.hpp"
 
 #include "components/event.hpp"
 #include "components/inactive.hpp"

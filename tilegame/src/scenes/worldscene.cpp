@@ -1,16 +1,13 @@
 #include "worldscene.hpp"
 
-#include "tilegame.hpp"
-
 #include "components/renderable2d.hpp"
 #include "components/depth.hpp"
-#include "components/scenenode.hpp"
 #include "components/animation.hpp"
 
 namespace tilegame::scenes
 {
-    WorldScene::WorldScene(Tilegame &game, SceneManager &scene_manager)
-        : ManagedScene(game, scene_manager),
+    WorldScene::WorldScene(engine::Game &game)
+        : tilegame::Scene(game),
           _system_render(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),
@@ -80,10 +77,9 @@ namespace tilegame::scenes
         _system_particle.update(update_time);
 
         _system_player.update(update_time);              // Can generate direction of a colliding entity
-        _system_messagebox.update(update_time);          // Can tag the player Inactive, blocking movement below
         _system_movement_controller.update(update_time); // Transforms directions to movement instruction; also writes NPC Direction from Target
         _system_facing.update(update_time);              // Persists latest non-zero Direction (player + NPCs) - must run after both Direction writers above
-        _system_interaction.update(update_time);         // Reads Facing - must run after Facing, and after MessageBox (see systems::Interaction's doc comment)
+        _system_interaction.update(update_time);         // Reads Facing - must run after Facing
         _system_sprite_orientation.update(update_time);  // Reads Facing, swaps Animation/Sprite to match - must run after Facing
 
         _system_collision_detection.update(update_time); // Resolves all collisions on movement direction level

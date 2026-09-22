@@ -9,6 +9,7 @@
 #include "helper.hpp"
 
 #include "components/camera.hpp"
+#include "components/transform.hpp"
 #include "components/depthorigin.hpp"
 #include "components/camerashake.hpp"
 #include "components/player.hpp"
@@ -70,12 +71,6 @@ namespace tilegame::systems
 
         if (player1_entity != entt::null)
         {
-            // auto player1_scenenode = _registry.get<components::SceneNode>(player1_entity).node;
-
-            // const tilegame::SceneGraphData camera_scenedata(camera_entity);
-            // tilegame::SceneGraphNode &camera_scenenode = player1_scenenode->add_child(camera_scenedata);
-            //_registry.emplace<components::SceneNode>(camera_entity, &camera_scenenode);
-
             _registry.emplace<components::Pin>(camera_entity, player1_entity);
         }
 

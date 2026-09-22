@@ -7,6 +7,7 @@
 #include "components/particleemitter.hpp"
 #include "components/particlepool.hpp"
 #include "components/shape.hpp"
+#include "components/transform.hpp"
 
 namespace tilegame::systems
 {

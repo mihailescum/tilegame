@@ -4,6 +4,7 @@
 #include <glm/gtx/norm.hpp>
 
 #include "components/movement.hpp"
+#include "components/transform.hpp"
 #include "components/target.hpp"
 #include "components/speed.hpp"
 #include "components/direction.hpp"

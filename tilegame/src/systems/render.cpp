@@ -15,14 +15,13 @@
 namespace tilegame::systems
 {
     Render::Render(tilegame::Scene &scene, entt::registry &registry)
-        : System(scene, registry), _spritebatch(scene.game().graphicsdevice()), _text_spritebatch(scene.game().graphicsdevice()), _postprocessor(scene.game().graphicsdevice())
+        : System(scene, registry), _spritebatch(scene.game().graphicsdevice()), _postprocessor(scene.game().graphicsdevice())
     {
     }
 
     void Render::initialize()
     {
         _spritebatch.create();
-        _text_spritebatch.create();
 
         int postprocessor_result = _postprocessor.initialize();
         if (!postprocessor_result)
@@ -43,7 +42,6 @@ namespace tilegame::systems
 
         const engine::Texture2D *rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
         const engine::Texture2D *circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
-        _font = _scene.game().resource_manager().load_resource<engine::graphics::SpriteFont>("font_default", "content/fonts/default.json");
 
         _rect_tex = {rect_tex, rect_tex};
         _circle_tex = {circle_tex, circle_tex};
@@ -219,25 +217,6 @@ namespace tilegame::systems
 
         _postprocessor.end_scene();
         _postprocessor.apply_effects(draw_time);
-
-        //
-        // Dialog box (screen-space, unaffected by any camera and by the post-processing effects
-        // above - drawn straight onto the default framebuffer)
-        //
-
-        const auto &message_box_state = _registry.ctx().get<const components::MessageBoxState>();
-        if (!message_box_state.lines.empty())
-        {
-            draw_message_box(message_box_state);
-        }
-        // Only once systems::MessageBox has actually revealed the options (one Enter press
-        // after the message's last line first appears on screen) does the box get drawn -
-        // matching that system's own gate on when Up/Down/Enter start controlling it, rather
-        // than just when it's next in line to appear.
-        if (message_box_state.showing_options)
-        {
-            draw_options_box(message_box_state);
-        }
     }
 
     void Render::draw_sprite(const components::Transform &transform, const components::Sprite &sprite, const components::Depth &depth, float depth_origin_y)
@@ -301,68 +280,5 @@ namespace tilegame::systems
     float Render::compute_z(float depth_base, float world_y, float depth_origin_y) const
     {
         return depth_base + (world_y - depth_origin_y) * DEPTH_FINE_SCALE;
-    }
-
-    void Render::draw_message_box(const components::MessageBoxState &state)
-    {
-        using namespace tilegame::messagebox_layout;
-
-        const auto &viewport = _scene.game().graphicsdevice().viewport();
-        const int cell_height = _font->cell_height();
-
-        const float box_width = static_cast<float>(viewport.dimensions.x);
-        const float box_height = BOX_PADDING * 2 + cell_height * VISIBLE_LINES;
-        const float box_y = viewport.dimensions.y - BOX_MARGIN_BOTTOM - box_height;
-
-        _spritebatch.begin(true);
-        const engine::Rectangle box_rect(glm::vec2(0.0f, box_y), glm::vec2(box_width, box_height));
-        _spritebatch.draw(_rect_tex, box_rect, nullptr, engine::Color(0.0f, 0.0f, 0.0f, 0.75f));
-        _spritebatch.end();
-
-        _text_spritebatch.begin(true);
-        int line_index = 0;
-        for (const auto &line : state.lines)
-        {
-            if (line_index >= VISIBLE_LINES)
-            {
-                break;
-            }
-
-            const float line_bottom = box_y + BOX_PADDING + (line_index + 1) * cell_height;
-            _text_spritebatch.draw_text(line, *_font, glm::vec2(BOX_PADDING, line_bottom), engine::Color::WHITE);
-
-            line_index++;
-        }
-        _text_spritebatch.end();
-    }
-
-    void Render::draw_options_box(const components::MessageBoxState &state)
-    {
-        using namespace tilegame::messagebox_layout;
-
-        const auto &viewport = _scene.game().graphicsdevice().viewport();
-        const int cell_height = _font->cell_height();
-
-        const float message_box_height = BOX_PADDING * 2 + cell_height * VISIBLE_LINES;
-        const float message_box_y = viewport.dimensions.y - BOX_MARGIN_BOTTOM - message_box_height;
-
-        const float box_width = viewport.dimensions.x * OPTIONS_BOX_WIDTH_RATIO;
-        const float box_height = BOX_PADDING * 2 + cell_height * static_cast<float>(state.options.size());
-        const float box_x = viewport.dimensions.x - box_width;
-        const float box_y = message_box_y - OPTIONS_BOX_MARGIN_BOTTOM - box_height;
-
-        _spritebatch.begin(true);
-        const engine::Rectangle box_rect(glm::vec2(box_x, box_y), glm::vec2(box_width, box_height));
-        _spritebatch.draw(_rect_tex, box_rect, nullptr, engine::Color(0.0f, 0.0f, 0.0f, 0.75f));
-        _spritebatch.end();
-
-        _text_spritebatch.begin(true);
-        for (std::size_t option_index = 0; option_index < state.options.size(); option_index++)
-        {
-            const float line_bottom = box_y + BOX_PADDING + (option_index + 1) * cell_height;
-            const std::string prefix = option_index == state.selected_option ? "> " : "  ";
-            _text_spritebatch.draw_text(prefix + state.options[option_index], *_font, glm::vec2(box_x + BOX_PADDING, line_bottom), engine::Color::WHITE);
-        }
-        _text_spritebatch.end();
     }
 }

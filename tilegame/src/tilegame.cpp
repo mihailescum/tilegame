@@ -17,7 +17,7 @@ namespace tilegame
         // glfwSetInputMode(window.native_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // window->position(700, 400);
 
-        _scene_manager.push<scenes::WorldScene>();
+        scene_manager().push<scenes::WorldScene>();
     }
 
     void Tilegame::load_content()
@@ -25,16 +25,9 @@ namespace tilegame
         Game::load_content();
     }
 
-    void Tilegame::unload_content()
-    {
-        Game::unload_content();
-
-        _scene_manager.unload_content();
-    }
-
     void Tilegame::update(const engine::GameTime &update_time)
     {
-        _scene_manager.update(update_time);
+        scene_manager().update(update_time);
 
         _timer += update_time.elapsed_time;
         _updates++;
@@ -53,12 +46,12 @@ namespace tilegame
     {
         Game::begin_update();
 
-        _scene_manager.begin_update();
+        scene_manager().begin_update();
     }
 
     void Tilegame::end_update()
     {
-        _scene_manager.end_update();
+        scene_manager().end_update();
 
         Game::end_update();
     }
@@ -67,7 +60,7 @@ namespace tilegame
     {
         _graphicsdevice.clear(engine::Color::CORNFLOWER_BLUE);
 
-        _scene_manager.draw(draw_time);
+        scene_manager().draw(draw_time);
 
         _frames++;
     }
@@ -76,12 +69,12 @@ namespace tilegame
     {
         Game::begin_draw();
 
-        _scene_manager.begin_draw();
+        scene_manager().begin_draw();
     }
 
     void Tilegame::end_draw(const engine::GameTime &draw_time)
     {
-        _scene_manager.end_draw(draw_time);
+        scene_manager().end_draw(draw_time);
 
         Game::end_draw(draw_time);
     }

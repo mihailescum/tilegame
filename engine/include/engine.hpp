@@ -16,7 +16,7 @@
 #include "core/resource.hpp"
 #include "core/resourcemanager.hpp"
 #include "core/scene.hpp"
-#include "core/scenegraphnode.hpp"
+#include "core/scenemanager.hpp"
 #include "core/shader.hpp"
 #include "core/shape.hpp"
 #include "core/shapevariant.hpp"

@@ -22,7 +22,7 @@ namespace tilegame::systems
         constexpr float kInteractionFacingCosThreshold = 0.5f;
     } // namespace
 
-    Interaction::Interaction(tilegame::Scene &scene, entt::registry &registry) : _enter_was_down(false), _message_was_open_previous_frame(false), System(scene, registry)
+    Interaction::Interaction(tilegame::Scene &scene, entt::registry &registry) : _enter_was_down(false), System(scene, registry)
     {
     }
 
@@ -34,10 +34,8 @@ namespace tilegame::systems
         const bool enter_pressed = enter_is_down && !_enter_was_down;
         _enter_was_down = enter_is_down;
 
-        // Read before acting, so a message MessageBox already closed via this same Enter press
-        // (earlier in this same frame) still counts as "was open" for the hysteresis check below.
-        const bool message_was_open = !_registry.ctx().get<components::MessageBoxState>().lines.empty();
-        const bool should_search = enter_pressed && !message_was_open && !_message_was_open_previous_frame;
+        const bool message_open = _registry.ctx().get<components::MessageBoxOpenState>().open;
+        const bool should_search = enter_pressed && !message_open;
 
         if (should_search)
         {
@@ -73,9 +71,5 @@ namespace tilegame::systems
                 }
             }
         }
-
-        // Re-read after acting: if should_search just opened a message, that must count as
-        // "open" for next frame, even though message_was_open was false when read above.
-        _message_was_open_previous_frame = !_registry.ctx().get<components::MessageBoxState>().lines.empty();
     }
 } // namespace tilegame::systems

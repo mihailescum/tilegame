@@ -1,10 +1,10 @@
-#include "scenes/scenemanager.hpp"
+#include "core/scenemanager.hpp"
 
 #include <algorithm>
 
-namespace tilegame::scenes
+namespace engine
 {
-    void SceneManager::close(ManagedScene &scene, std::any result)
+    void SceneManager::close(Scene &scene, std::any result)
     {
         PendingAction action;
         action.kind = PendingKind::Close;
@@ -60,7 +60,7 @@ namespace tilegame::scenes
                 entry.scene->begin_update();
     }
 
-    void SceneManager::update(const engine::GameTime &update_time)
+    void SceneManager::update(const GameTime &update_time)
     {
         for (auto &entry : _stack)
             if (!entry.scene->update_paused())
@@ -83,14 +83,14 @@ namespace tilegame::scenes
                 entry.scene->begin_draw();
     }
 
-    void SceneManager::draw(const engine::GameTime &draw_time)
+    void SceneManager::draw(const GameTime &draw_time)
     {
         for (auto &entry : _stack)
             if (!entry.scene->draw_paused())
                 entry.scene->draw(draw_time);
     }
 
-    void SceneManager::end_draw(const engine::GameTime &draw_time)
+    void SceneManager::end_draw(const GameTime &draw_time)
     {
         for (auto &entry : _stack)
             if (!entry.scene->draw_paused())
@@ -107,4 +107,4 @@ namespace tilegame::scenes
         _stack.clear();
         _pending.clear();
     }
-} // namespace tilegame::scenes
+} // namespace engine

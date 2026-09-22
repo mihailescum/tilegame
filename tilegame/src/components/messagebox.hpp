@@ -1,24 +1,9 @@
 #pragma once
 
 #include <string>
-#include <deque>
 #include <vector>
-#include <cstddef>
 
 #include "sol/sol.hpp"
-
-namespace tilegame::messagebox_layout
-{
-    /// Layout of the on-screen dialog box, in screen pixels; shared by systems::MessageBox (to
-    /// compute word-wrap width) and systems::Render (to actually draw the box), so the two stay in sync.
-    inline constexpr float BOX_PADDING = 16.0f;
-    inline constexpr float BOX_MARGIN_BOTTOM = 24.0f;
-    inline constexpr int VISIBLE_LINES = 2;
-    /// Width of the options box, as a fraction of the viewport width.
-    inline constexpr float OPTIONS_BOX_WIDTH_RATIO = 0.15f;
-    /// Gap between the bottom of the options box and the top of the dialog box above which it sits.
-    inline constexpr float OPTIONS_BOX_MARGIN_BOTTOM = 8.0f;
-} // namespace tilegame::messagebox_layout
 
 namespace tilegame::components
 {
@@ -45,34 +30,17 @@ namespace tilegame::components
     };
 
     /**
-     * @brief The currently displayed dialog message. Not an entity/component - a single value
-     * held in the entt::registry's ctx() storage (see entt::basic_registry::ctx()), which every
-     * system already has access to through the registry reference it's constructed with, so no
-     * system needs a direct reference to another one to reach it. Created once, in
-     * systems::MessageBox::initialize(), and is the only state that system mutates in place as
-     * it consumes ShowMessageEvents and Enter/Up/Down key presses. `lines` empty means no
-     * message is currently displayed. systems::Render reads it
-     * (_registry.ctx().get<MessageBoxState>()) each draw() to know whether/what to draw; it
-     * never writes it.
+     * @brief Whether the UI message box (scenes::UiScene) is currently open. Not an entity/
+     * component - a single value held in the entt::registry's ctx() storage (see
+     * entt::basic_registry::ctx()), which every system already has access to through the
+     * registry reference it's constructed with. The message's actual content and rendering live
+     * entirely in scenes::UiScene now, not the registry; this is the one bit systems::Interaction
+     * still needs (to avoid triggering a new interaction while a message is on screen), set by
+     * systems::MessageBox whenever it pushes/is notified that scenes::UiScene has closed.
      */
-    struct MessageBoxState
+    struct MessageBoxOpenState
     {
-        /// Remaining word-wrapped lines still to be shown; empty means nothing is displayed.
-        std::deque<std::string> lines;
-        /// Selectable options attached to the message; empty means no options box. Set from
-        /// ShowMessageEvent::options, but not shown/interactable until `showing_options` is
-        /// true. Cleared, along with `selected_option` and `showing_options`, whenever the
-        /// message closes.
-        std::vector<std::string> options;
-        /// Index into `options` currently highlighted; cycled by Up/Down while `showing_options`
-        /// is true.
-        std::size_t selected_option = 0;
-        /// True once Enter has been pressed while the message's last line was already on
-        /// screen (i.e. no more pages left in `lines`) and `options` is non-empty: reveals the
-        /// options box in place of dismissing the message, and freezes `lines` so the last line
-        /// doesn't scroll. While true, a further Enter press closes the message and options box
-        /// together instead of popping `lines`.
-        bool showing_options = false;
+        bool open = false;
     };
 
     /**
