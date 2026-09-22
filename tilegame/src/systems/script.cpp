@@ -60,7 +60,7 @@ namespace tilegame::systems
         const auto control_entity = _registry.create();
         _registry.emplace<components::EventListener<components::RunScriptEvent>>(
             control_entity,
-            [this](const std::string &, const components::RunScriptEvent &event, entt::entity)
+            [this](const std::string &, const components::RunScriptEvent &event, entt::entity, entt::entity)
             {
                 execute_script(event.path, event.arguments);
             },
@@ -102,7 +102,7 @@ namespace tilegame::systems
             parsed_arguments.push_back(argument.as<sol::object>());
         }
 
-        raise_event<components::RunScriptEvent>(entt::null, path, std::move(parsed_arguments));
+        raise_event<components::RunScriptEvent>(entt::null, entt::null, path, std::move(parsed_arguments));
     }
 
     json11::Json Script::read_json_file(const std::string &path) const
@@ -182,6 +182,11 @@ namespace tilegame::systems
     {
         _lua().require("_registry", sol::c_call<AUTO_ARG(&entt_sol::open_registry)>, false);
         _lua()["_registry"] = std::ref(_registry);
+        // Explicit "no filter" entity, for passing to _add_event_listener's source/target
+        // arguments when only the other one should be filtered on (e.g. a target-only filter -
+        // see content/scripts/map1.lua). Lua has no literal for entt::null, so there's otherwise
+        // no way to skip the first of two trailing entity arguments.
+        _lua()["_null_entity"] = static_cast<entt::entity>(entt::null);
 
         // Define the user types
         _lua().new_usertype<glm::vec2>(
@@ -198,11 +203,9 @@ namespace tilegame::systems
             { return a + b; },
             sol::meta_function::subtraction, [](const glm::vec2 &a, const glm::vec2 &b)
             { return a - b; },
-            sol::meta_function::multiplication, sol::overload(
-                                                     [](const glm::vec2 &a, float b)
-                                                     { return a * b; },
-                                                     [](float a, const glm::vec2 &b)
-                                                     { return a * b; }));
+            sol::meta_function::multiplication, sol::overload([](const glm::vec2 &a, float b)
+                                                              { return a * b; }, [](float a, const glm::vec2 &b)
+                                                              { return a * b; }));
         _lua().new_usertype<engine::Color>(
             "_Color",
             sol::call_constructor,
@@ -253,9 +256,9 @@ namespace tilegame::systems
             sol::no_constructor,
             "get_sprite", sol::resolve<engine::graphics::Sprite &(std::string)>(&engine::graphics::SpriteSheet::operator[]),
             "texture", sol::property([](engine::graphics::SpriteSheet &sheet)
-                                      { return &sheet.texture(); }),
+                                     { return &sheet.texture(); }),
             "tile_dimensions", sol::property([](const engine::graphics::SpriteSheet &sheet)
-                                              { const auto &dim = sheet.tile_dimensions(); return glm::vec2(dim.x, dim.y); }));
+                                             { const auto &dim = sheet.tile_dimensions(); return glm::vec2(dim.x, dim.y); }));
 
         components::Direction::register_component(_lua());
         components::Facing::register_component(_lua());
@@ -295,9 +298,11 @@ namespace tilegame::systems
         _lua().set_function("_add_event_listener",
                             sol::overload(
                                 [this](const sol::table &event, sol::function callback)
-                                { return Script::add_event_listener(event, callback, entt::null); },
+                                { return Script::add_event_listener(event, callback, entt::null, entt::null); },
                                 [this](const sol::table &event, sol::function callback, entt::entity source)
-                                { return Script::add_event_listener(event, callback, source); }));
+                                { return Script::add_event_listener(event, callback, source, entt::null); },
+                                [this](const sol::table &event, sol::function callback, entt::entity source, entt::entity target)
+                                { return Script::add_event_listener(event, callback, source, target); }));
         _lua().set_function("_remove_event_listener", &Script::remove_event_listener, this);
         _lua().set_function("_to_global", sol::resolve<glm::vec2(entt::entity, const glm::vec2 &) const>(&Script::to_global), this);
         _lua().set_function("_show_message",
@@ -343,10 +348,15 @@ namespace tilegame::systems
 
     entt::entity Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
     {
+        return add_event_listener(event, callback, source, entt::null);
+    }
+
+    entt::entity Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source, entt::entity target)
+    {
         auto event_type = event["EVENT_TYPE"];
         if (event_type.valid() && _event_types.find(event_type) != _event_types.end())
         {
-            return _event_types[event_type](callback, source);
+            return _event_types[event_type](callback, source, target);
         }
         else
         {
@@ -369,7 +379,7 @@ namespace tilegame::systems
 
     void Script::show_message(const std::string &text, bool append, const std::vector<std::string> &options)
     {
-        raise_event<components::ShowMessageEvent>(entt::null, text, append, options);
+        raise_event<components::ShowMessageEvent>(entt::null, entt::null, text, append, options);
     }
 
     void Script::set_daytime_marks(const sol::table &marks)
@@ -383,32 +393,32 @@ namespace tilegame::systems
         std::sort(parsed.begin(), parsed.end(), [](const components::TimeOfDayMark &a, const components::TimeOfDayMark &b)
                   { return a.start < b.start; });
 
-        raise_event<components::SetDaytimeMarksEvent>(entt::null, std::move(parsed));
+        raise_event<components::SetDaytimeMarksEvent>(entt::null, entt::null, std::move(parsed));
     }
 
     void Script::set_daytime_time(int seconds_since_midnight)
     {
-        raise_event<components::SetDaytimeTimeEvent>(entt::null, seconds_since_midnight);
+        raise_event<components::SetDaytimeTimeEvent>(entt::null, entt::null, seconds_since_midnight);
     }
 
     void Script::set_daytime_speedup(double ingame_seconds_per_real_second)
     {
-        raise_event<components::SetDaytimeSpeedupEvent>(entt::null, ingame_seconds_per_real_second);
+        raise_event<components::SetDaytimeSpeedupEvent>(entt::null, entt::null, ingame_seconds_per_real_second);
     }
 
     void Script::set_daytime_day_duration(int seconds)
     {
-        raise_event<components::SetDaytimeDayDurationEvent>(entt::null, seconds);
+        raise_event<components::SetDaytimeDayDurationEvent>(entt::null, entt::null, seconds);
     }
 
     void Script::set_weather_tint(const engine::Color &target_tint, float fade_duration)
     {
-        raise_event<components::SetWeatherTintEvent>(entt::null, target_tint, fade_duration);
+        raise_event<components::SetWeatherTintEvent>(entt::null, entt::null, target_tint, fade_duration);
     }
 
     void Script::set_weather_precipitation(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
     {
-        raise_event<components::SetWeatherPrecipitationEvent>(entt::null, emitter, spawn_area);
+        raise_event<components::SetWeatherPrecipitationEvent>(entt::null, entt::null, emitter, spawn_area);
     }
 
     void Script::set_weather_precipitation()
@@ -418,17 +428,17 @@ namespace tilegame::systems
 
     void Script::shake_camera_horizontal(float displacement_speed, float offset, float duration)
     {
-        raise_event<components::ShakeCameraHorizontalEvent>(entt::null, displacement_speed, offset, duration);
+        raise_event<components::ShakeCameraHorizontalEvent>(entt::null, entt::null, displacement_speed, offset, duration);
     }
 
     void Script::shake_camera_vertical(float displacement_speed, float offset, float duration)
     {
-        raise_event<components::ShakeCameraVerticalEvent>(entt::null, displacement_speed, offset, duration);
+        raise_event<components::ShakeCameraVerticalEvent>(entt::null, entt::null, displacement_speed, offset, duration);
     }
 
     void Script::set_lightning(float min_interval, float max_interval, float flash_duration)
     {
-        raise_event<components::SetLightningEvent>(entt::null, min_interval, max_interval, flash_duration);
+        raise_event<components::SetLightningEvent>(entt::null, entt::null, min_interval, max_interval, flash_duration);
     }
 
     void Script::clear_lightning()
@@ -438,11 +448,11 @@ namespace tilegame::systems
 
     void Script::stop_player_input(int player_id)
     {
-        raise_event<components::StopPlayerInputEvent>(entt::null, player_id);
+        raise_event<components::StopPlayerInputEvent>(entt::null, entt::null, player_id);
     }
 
     void Script::resume_player_input(int player_id)
     {
-        raise_event<components::ResumePlayerInputEvent>(entt::null, player_id);
+        raise_event<components::ResumePlayerInputEvent>(entt::null, entt::null, player_id);
     }
 } // namespace tilegame::systems

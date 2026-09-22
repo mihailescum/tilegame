@@ -43,9 +43,10 @@ namespace tilegame::systems
     private:
         tilegame::SecureLuaState _lua;
         // Maps a Lua-visible EVENT_TYPE name to a function that creates the matching native
-        // EventListener<EventType> entity and returns it, so add_event_listener can dispatch
-        // generically without knowing the concrete event type at the call site.
-        std::unordered_map<std::string, std::function<entt::entity(sol::function, entt::entity)>> _event_types;
+        // EventListener<EventType> entity (scoped to the given source/target filters) and
+        // returns it, so add_event_listener can dispatch generically without knowing the
+        // concrete event type at the call site.
+        std::unordered_map<std::string, std::function<entt::entity(sol::function, entt::entity, entt::entity)>> _event_types;
 
         void register_api();
         // Loads and immediately runs a Lua file, forwarding `arguments` (possibly empty) to it
@@ -141,9 +142,15 @@ namespace tilegame::systems
         // entt::null if the event type isn't registered.
         entt::entity add_event_listener(const sol::table &event, sol::function callback);
         // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
-        // _event_types and, if registered, creates the corresponding listener entity and
-        // returns it. Returns entt::null if the event type isn't registered.
+        // _event_types and, if registered, creates the corresponding listener entity - scoped to
+        // events raised with `source` as their source - and returns it. Returns entt::null if
+        // the event type isn't registered.
         entt::entity add_event_listener(const sol::table &event, sol::function callback, entt::entity source);
+        // Exposed to Lua as `_add_event_listener`; looks up the event's EVENT_TYPE in
+        // _event_types and, if registered, creates the corresponding listener entity - scoped to
+        // events raised with `source` as their source and `target` as their target - and returns
+        // it. Returns entt::null if the event type isn't registered.
+        entt::entity add_event_listener(const sol::table &event, sol::function callback, entt::entity source, entt::entity target);
         // Exposed to Lua as `_remove_event_listener`; destroys the listener entity returned by
         // an earlier `_add_event_listener` call, unsubscribing that callback. A no-op if
         // `listener` is already invalid (e.g. entt::null, or removed twice).
@@ -173,10 +180,10 @@ namespace tilegame::systems
         void register_event_type()
         {
             _event_types[EventType::EVENT_TYPE] =
-                [&_registry = _registry](sol::function callback, entt::entity source)
+                [&_registry = _registry](sol::function callback, entt::entity source, entt::entity target)
             {
                 const auto listener_entity = _registry.create();
-                _registry.emplace<EventListener>(listener_entity, EventListener(callback, source));
+                _registry.emplace<EventListener>(listener_entity, EventListener(callback, source, target));
                 return listener_entity;
             };
         }

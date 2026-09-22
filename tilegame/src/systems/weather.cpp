@@ -43,7 +43,7 @@ namespace tilegame::systems
         const auto weather_entity = _registry.create();
         _registry.emplace<components::EventListener<components::SetWeatherPrecipitationEvent>>(
             weather_entity,
-            [this, precipitation_entity](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity)
+            [this, precipitation_entity](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::ParticleEmitter>(precipitation_entity, event.emitter);
                 _registry.replace<components::Shape>(precipitation_entity, engine::ShapeVariant(event.spawn_area));
@@ -52,13 +52,13 @@ namespace tilegame::systems
             entt::null);
         _registry.emplace<components::EventListener<components::ClearWeatherPrecipitationEvent>>(
             weather_entity,
-            [this, precipitation_entity](const std::string &, const components::ClearWeatherPrecipitationEvent &, entt::entity)
+            [this, precipitation_entity](const std::string &, const components::ClearWeatherPrecipitationEvent &, entt::entity, entt::entity)
             { _registry.emplace_or_replace<components::Inactive>(precipitation_entity); },
             entt::null);
 
         _registry.emplace<components::EventListener<components::SetWeatherTintEvent>>(
             weather_entity,
-            [this](const std::string &, const components::SetWeatherTintEvent &event, entt::entity)
+            [this](const std::string &, const components::SetWeatherTintEvent &event, entt::entity, entt::entity)
             {
                 // Read back whatever is currently on screen (rather than the possibly-unfinished
                 // previous fade's target) so re-triggering weather mid-fade doesn't jump.

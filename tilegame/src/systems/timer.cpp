@@ -22,7 +22,7 @@ namespace tilegame::systems
                 // Raised immediately: none of today's TimerEvent listeners add/remove a Timer
                 // component (see System::raise_event()'s caution), only reschedule/mutate their
                 // own via patch()/emplace_or_replace(), which is safe mid-iteration.
-                raise_event<components::TimerEvent>(entity, timer.time_total, timer.repeat);
+                raise_event<components::TimerEvent>(entity, entt::null, timer.time_total, timer.repeat);
 
                 if (timer.repeat)
                 {

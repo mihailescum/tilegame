@@ -67,6 +67,8 @@ namespace tilegame::systems
 
                 if (closest_entity != entt::null)
                 {
+                    // target = player_entity, so a listener can scope itself to a specific
+                    // player (e.g. local multiplayer) in addition to/instead of the source NPC.
                     raise_event<components::InteractEvent>(closest_entity, player_entity);
                 }
             }

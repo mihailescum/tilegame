@@ -34,22 +34,22 @@ namespace tilegame::systems
         const auto entity = _registry.create();
         _registry.emplace<components::EventListener<components::SetDaytimeMarksEvent>>(
             entity,
-            [this](const std::string &, const components::SetDaytimeMarksEvent &event, entt::entity)
+            [this](const std::string &, const components::SetDaytimeMarksEvent &event, entt::entity, entt::entity)
             { _times_of_day = event.marks; },
             entt::null);
         _registry.emplace<components::EventListener<components::SetDaytimeTimeEvent>>(
             entity,
-            [this](const std::string &, const components::SetDaytimeTimeEvent &event, entt::entity)
+            [this](const std::string &, const components::SetDaytimeTimeEvent &event, entt::entity, entt::entity)
             { _now = event.seconds_since_midnight; },
             entt::null);
         _registry.emplace<components::EventListener<components::SetDaytimeSpeedupEvent>>(
             entity,
-            [this](const std::string &, const components::SetDaytimeSpeedupEvent &event, entt::entity)
+            [this](const std::string &, const components::SetDaytimeSpeedupEvent &event, entt::entity, entt::entity)
             { _speedup = event.speedup; },
             entt::null);
         _registry.emplace<components::EventListener<components::SetDaytimeDayDurationEvent>>(
             entity,
-            [this](const std::string &, const components::SetDaytimeDayDurationEvent &event, entt::entity)
+            [this](const std::string &, const components::SetDaytimeDayDurationEvent &event, entt::entity, entt::entity)
             { _day_duration = event.seconds; },
             entt::null);
     }

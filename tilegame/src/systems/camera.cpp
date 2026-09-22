@@ -94,7 +94,7 @@ namespace tilegame::systems
         const auto control_entity = _registry.create();
         _registry.emplace<components::EventListener<components::ShakeCameraHorizontalEvent>>(
             control_entity,
-            [this, horizontal_axis_entity](const std::string &, const components::ShakeCameraHorizontalEvent &event, entt::entity)
+            [this, horizontal_axis_entity](const std::string &, const components::ShakeCameraHorizontalEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::CameraShakeAxis>(horizontal_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
                 _registry.emplace_or_replace<components::Timer>(horizontal_axis_entity, event.duration, false);
@@ -103,7 +103,7 @@ namespace tilegame::systems
             entt::null);
         _registry.emplace<components::EventListener<components::ShakeCameraVerticalEvent>>(
             control_entity,
-            [this, vertical_axis_entity](const std::string &, const components::ShakeCameraVerticalEvent &event, entt::entity)
+            [this, vertical_axis_entity](const std::string &, const components::ShakeCameraVerticalEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::CameraShakeAxis>(vertical_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
                 _registry.emplace_or_replace<components::Timer>(vertical_axis_entity, event.duration, false);
@@ -123,7 +123,7 @@ namespace tilegame::systems
         // Lua subscribes to via _add_event_listener.
         _registry.emplace<components::EventListener<components::TimerEvent>>(
             entity,
-            [this, entity](const std::string &, const components::TimerEvent &, entt::entity)
+            [this, entity](const std::string &, const components::TimerEvent &, entt::entity, entt::entity)
             { _registry.get<components::CameraShakeAxis>(entity).settling = true; },
             entity);
 

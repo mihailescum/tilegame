@@ -82,7 +82,7 @@ namespace tilegame::systems
         const auto entity = _registry.create();
         _registry.emplace<components::EventListener<components::ShowMessageEvent>>(
             entity,
-            [this](const std::string &, const components::ShowMessageEvent &event, entt::entity)
+            [this](const std::string &, const components::ShowMessageEvent &event, entt::entity, entt::entity)
             { on_show_message(event); },
             entt::null);
     }
@@ -159,7 +159,7 @@ namespace tilegame::systems
                 state.selected_option = 0;
                 state.showing_options = false;
 
-                raise_event<components::MessageClosedEvent>(entt::null, selected_option);
+                raise_event<components::MessageClosedEvent>(entt::null, entt::null, selected_option);
             }
             else if (!state.options.empty() && state.lines.size() <= static_cast<std::size_t>(messagebox_layout::VISIBLE_LINES))
             {

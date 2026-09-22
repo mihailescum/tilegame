@@ -62,7 +62,7 @@ namespace tilegame::systems
                 // Raised immediately: no current TargetReachedEvent listener adds/removes a
                 // Target/Transform (see System::raise_event()'s caution), so this is safe
                 // mid-iteration.
-                raise_event<components::TargetReachedEvent>(entity, reached_target);
+                raise_event<components::TargetReachedEvent>(entity, entt::null, reached_target);
             }
         }
     }
@@ -83,6 +83,8 @@ namespace tilegame::systems
                 // Raised immediately: no current MapLeftEvent/MapEnteredEvent listener
                 // adds/removes a Movement/Transform (see System::raise_event()'s caution), so
                 // this is safe mid-iteration.
+                // target = the map entity, so a listener can scope itself to one specific map
+                // (e.g. content/scripts/map1.lua) in addition to/instead of the entity that moved.
                 if (old_map != entt::null)
                 {
                     raise_event<components::MapLeftEvent>(entity, old_map);

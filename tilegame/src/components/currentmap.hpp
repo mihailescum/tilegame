@@ -26,16 +26,17 @@ namespace tilegame::components
     /**
      * @brief Raised immediately by the Movement system (via System::raise_event()) when an
      * entity's CurrentMap changes to `map`, and delivered synchronously to every
-     * EventListener<MapEnteredEvent>. A plain value type - never stored as an entt component -
-     * that only exists for the duration of that call. Exposed to Lua as `_MapEnteredEvent`.
+     * EventListener<MapEnteredEvent>. Source is set to the entity that moved and target to
+     * `map`, so Lua can scope a listener to one specific map regardless of which entity enters it
+     * via `_add_event_listener(_MapEnteredEvent, callback, _null_entity, map_entity)` (see
+     * content/scripts/map1.lua). A plain value type - never stored as an entt component - that
+     * only exists for the duration of that call. Exposed to Lua as `_MapEnteredEvent`.
      */
     struct MapEnteredEvent
     {
         inline static const std::string EVENT_TYPE = "MAP_ENTERED_EVENT";
-        entt::entity map;
 
-        MapEnteredEvent() : map(entt::null) {}
-        MapEnteredEvent(entt::entity map) : map(map) {}
+        MapEnteredEvent() {}
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);
@@ -44,16 +45,17 @@ namespace tilegame::components
     /**
      * @brief Raised immediately by the Movement system (via System::raise_event()) when an
      * entity's CurrentMap changes away from `map`, and delivered synchronously to every
-     * EventListener<MapLeftEvent>. A plain value type - never stored as an entt component -
-     * that only exists for the duration of that call. Exposed to Lua as `_MapLeftEvent`.
+     * EventListener<MapLeftEvent>. Source is set to the entity that moved and target to `map`,
+     * so Lua can scope a listener to one specific map regardless of which entity leaves it via
+     * `_add_event_listener(_MapLeftEvent, callback, _null_entity, map_entity)` (see
+     * content/scripts/map1.lua). A plain value type - never stored as an entt component - that
+     * only exists for the duration of that call. Exposed to Lua as `_MapLeftEvent`.
      */
     struct MapLeftEvent
     {
         inline static const std::string EVENT_TYPE = "MAP_LEFT_EVENT";
-        entt::entity map;
 
-        MapLeftEvent() : map(entt::null) {}
-        MapLeftEvent(entt::entity map) : map(map) {}
+        MapLeftEvent() {}
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);

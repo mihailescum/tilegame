@@ -85,7 +85,7 @@ namespace tilegame::systems
 
         _registry.emplace<components::EventListener<components::StopPlayerInputEvent>>(
             _player1_entity,
-            [this](const std::string &, const components::StopPlayerInputEvent &event, entt::entity)
+            [this](const std::string &, const components::StopPlayerInputEvent &event, entt::entity, entt::entity)
             {
                 if (event.player_id == _registry.get<const components::Player>(_player1_entity).id)
                 {
@@ -95,7 +95,7 @@ namespace tilegame::systems
             entt::null);
         _registry.emplace<components::EventListener<components::ResumePlayerInputEvent>>(
             _player1_entity,
-            [this](const std::string &, const components::ResumePlayerInputEvent &event, entt::entity)
+            [this](const std::string &, const components::ResumePlayerInputEvent &event, entt::entity, entt::entity)
             {
                 if (event.player_id == _registry.get<const components::Player>(_player1_entity).id)
                 {

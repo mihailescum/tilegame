@@ -13,12 +13,14 @@ of the engine.
 - A **listener** is a normal entt component (`EventListener<T>`) that wraps a
   callback. Listeners live on their own dedicated entities, not on the
   entity the event is about.
-- `System::raise_event<T>(source, args...)` is the raise-and-deliver step,
-  all in one synchronous call: build `T{args...}`, find every entity
+- `System::raise_event<T>(source, target, args...)` is the raise-and-deliver
+  step, all in one synchronous call: build `T{args...}`, find every entity
   carrying `EventListener<T>`, call each one with
-  `(EVENT_TYPE, event, source)`. `System::raise<T>(args...)` is a
+  `(EVENT_TYPE, event, source, target)`. `source`/`target` are the (up to)
+  two entities the event is conceptually between — e.g. `InteractEvent`'s
+  source is the NPC, target the player. `System::raise<T>(args...)` is a
   convenience for when the event isn't about any particular entity —
-  `raise_event<T>(entt::null, args...)`.
+  `raise_event<T>(entt::null, entt::null, args...)`.
 - There's nothing to clean up afterwards. The event value only exists for
   the duration of the call; no system needs an `end_update()` to erase it.
 - Lua never touches `raise_event`/`raise` directly. `systems::Script` is
@@ -78,23 +80,24 @@ running example:
 
 2. **Raising.** Each frame, `systems::Timer::update()` decrements every
    `Timer` component; when one expires it immediately calls
-   `raise_event<TimerEvent>(entity, timer.time_total, timer.repeat)` —
-   `entity` is the one that owns the `Timer`.
+   `raise_event<TimerEvent>(entity, entt::null, timer.time_total,
+   timer.repeat)` — `entity` is the one that owns the `Timer`; `TimerEvent`
+   has no meaningful target.
 
-3. **Dispatch.** `System::raise_event<TimerEvent>(source, args...)`
+3. **Dispatch.** `System::raise_event<TimerEvent>(source, target, args...)`
    (`systems/system.hpp`) builds `const TimerEvent event{args...}` as a
    local value, finds every entity carrying `EventListener<TimerEvent>`, and
-   calls `listener_component(TimerEvent::EVENT_TYPE, event, source)` for
-   each. `EventListener<T>::operator()` checks the listener's
-   `target_entity` filter (see below) and, if it passes, invokes the wrapped
-   `std::function`. All of this happens before `raise_event()` returns —
-   there is no batching or per-frame collection step.
+   calls `listener_component(TimerEvent::EVENT_TYPE, event, source, target)`
+   for each. `EventListener<T>::operator()` checks the listener's
+   `source_filter`/`target_filter` (see below) and, if both pass, invokes
+   the wrapped `std::function`. All of this happens before `raise_event()`
+   returns — there is no batching or per-frame collection step.
 
 4. **The listener's callback**, for any event type registered through
    `systems::Script`, is a `sol::function` — a Lua callable — stored inside
    the `std::function`. Calling it runs Lua code with the event type string,
    the event data (as a userdata wrapping the C++ struct, valid only for the
-   duration of the call), and the source entity.
+   duration of the call), the source entity, and the target entity.
 
 5. **Cleanup:** none needed. `event` was a local variable in
    `raise_event()`'s stack frame; once that call returns, it's gone. There
@@ -118,7 +121,7 @@ shorthand for `raise_event<T>(entt::null, args...)`:
 template <class Event, class EventListener = components::EventListener<Event>, class... Args>
 void raise(Args &&...args) const
 {
-    raise_event<Event, EventListener>(entt::null, std::forward<Args>(args)...);
+    raise_event<Event, EventListener>(entt::null, entt::null, std::forward<Args>(args)...);
 }
 ```
 
@@ -193,15 +196,16 @@ separate case — see the last "Sharp edges" bullet below.
 
 ## Existing native event types
 
-| Event | `EVENT_TYPE` | Raised by | Raised when | Payload |
-|---|---|---|---|---|
-| `TimerEvent` | `"TIMER_EVENT"` | `systems::Timer` | a `Timer` component's `time_left` reaches 0 | `duration` (float), `repeated` (bool) |
-| `TargetReachedEvent` | `"TARGET_REACHED_EVENT"` | `systems::Movement` | an entity with `Target` arrives at its destination (also removes `Target`/`Movement`/`Speed`) | `target` (vec2) |
-| `MapEnteredEvent` | `"MAP_ENTERED_EVENT"` | `systems::Movement` | an entity's computed `CurrentMap` changes to a new, non-empty map | `map_name` (string) |
-| `MapLeftEvent` | `"MAP_LEFT_EVENT"` | `systems::Movement` | an entity's `CurrentMap` changes away from a previous map | `map_name` (string, the *old* map) |
-| `LightningEvent` | `"LIGHTNING_EVENT"` | `systems::Lightning` | a scheduled strike's random interval elapses | none (empty) |
-| `MessageOpenedEvent` | `"MESSAGE_OPENED_EVENT"` | `systems::MessageBox` | a new dialog message becomes active | none (empty) |
-| `MessageClosedEvent` | `"MESSAGE_CLOSED_EVENT"` | `systems::MessageBox` | the current dialog message is fully dismissed | `selected_option` (string, empty if the message had no options) |
+| Event | `EVENT_TYPE` | Raised by | Raised when | Payload | Source | Target |
+|---|---|---|---|---|---|---|
+| `TimerEvent` | `"TIMER_EVENT"` | `systems::Timer` | a `Timer` component's `time_left` reaches 0 | `duration` (float), `repeated` (bool) | the entity whose `Timer` rang | — |
+| `TargetReachedEvent` | `"TARGET_REACHED_EVENT"` | `systems::Movement` | an entity with `Target` arrives at its destination (also removes `Target`/`Movement`/`Speed`) | `target` (vec2) | the entity that arrived | — |
+| `InteractEvent` | `"INTERACT_EVENT"` | `systems::Interaction` | a player presses Enter near/facing an `Interactable` entity | `player` (entity) | the Interactable (NPC) | the player entity |
+| `MapEnteredEvent` | `"MAP_ENTERED_EVENT"` | `systems::Movement` | an entity's computed `CurrentMap` changes to a new, non-empty map | `map` (entity) | the entity that moved | the map entity |
+| `MapLeftEvent` | `"MAP_LEFT_EVENT"` | `systems::Movement` | an entity's `CurrentMap` changes away from a previous map | `map` (entity, the *old* map) | the entity that moved | the (old) map entity |
+| `LightningEvent` | `"LIGHTNING_EVENT"` | `systems::Lightning` | a scheduled strike's random interval elapses | none (empty) | — | — |
+| `MessageOpenedEvent` | `"MESSAGE_OPENED_EVENT"` | `systems::MessageBox` | a new dialog message becomes active | none (empty) | — | — |
+| `MessageClosedEvent` | `"MESSAGE_CLOSED_EVENT"` | `systems::MessageBox` | the current dialog message is fully dismissed | `selected_option` (string, empty if the message had no options) | — | — |
 
 All of these are registered for Lua in `systems::Script::register_api()`
 (`systems/script.cpp`) via `register_event_type<T>()`, and all have their
@@ -213,15 +217,21 @@ natively (`ShowMessageEvent`, `SetLightningEvent`/`ClearLightningEvent`, the
 — these still need `EVENT_TYPE` (see above) but have no Lua usertype, since
 nothing outside their one owning system subscribes to them today.
 
-## Filtering by source entity
+## Filtering by source and target entity
 
-`EventListener<T>` (`components/event.hpp`) carries an optional
-`target_entity`. If it's `entt::null` (the default), the listener fires for
-an event from *any* source. If it's set, the listener only fires when
-`source == target_entity` — this is what lets a script subscribe to "my
-timer" specifically instead of every `Timer` in the game.
+Events are a communication between (up to) two entities — a `source` and a
+`target` (e.g. `InteractEvent`'s NPC and player, or `MapEnteredEvent`'s
+mover and map). `EventListener<T>` (`components/event.hpp`) carries two
+optional filters, `source_filter` and `target_filter`. Each defaults to
+`entt::null`, meaning "match any entity on that side." If set, the listener
+only fires when the event's `source`/`target` equals that filter,
+respectively — both filters must pass for the callback to fire. This is
+what lets a script subscribe to "my timer" specifically instead of every
+`Timer` in the game, or to "anything that enters map1" regardless of which
+entity moved.
 
-From Lua this is the third, optional argument to `_add_event_listener`:
+From Lua these are the third and fourth, optional arguments to
+`_add_event_listener`:
 
 ```lua
 -- fires for TimerEvents from *any* entity
@@ -229,7 +239,18 @@ _add_event_listener(_TimerEvent, callback)
 
 -- fires only for TimerEvents raised on `timer1`
 _add_event_listener(_TimerEvent, callback, timer1)
+
+-- fires only for MapEnteredEvents whose target is map1_entity, regardless
+-- of which entity moved - _null_entity explicitly skips the source filter
+-- (Lua has no literal for entt::null, so this global fills in for it)
+_add_event_listener(_MapEnteredEvent, callback, _null_entity, map1_entity)
+
+-- fires only for InteractEvents from npc_entity AND targeting player_entity
+_add_event_listener(_InteractEvent, callback, npc_entity, player_entity)
 ```
+
+The callback itself always receives both entities, regardless of whether
+either is filtered on: `function(event_type, event, source, target)`.
 
 ## The Lua-side idiom: `coroutine.wrap` dispatch
 
@@ -359,13 +380,15 @@ end
    "_YourEvent", ..., "EVENT_TYPE", sol::var(T::EVENT_TYPE.c_str()), ...)`.
 3. To raise it: `raise<T>(args...)` (see above) if it isn't about any
    particular entity - the common case for anything raised from a Lua
-   binding. Use `raise_event<T>(source, args...)` directly if `source`
-   should identify a specific, already-existing entity for listeners to key
-   off of (e.g. `TargetReachedEvent` on the entity that arrived). Either
-   way, watch out for calling it from inside a `view.each()` loop over
-   component types a listener might structurally add/remove (see "Sharp
-   edges" above), and for the Inactive-exclusion trap if the listener is
-   meant to activate the same entity it lives on.
+   binding. Use `raise_event<T>(source, target, args...)` directly if
+   `source` and/or `target` should identify specific, already-existing
+   entities for listeners to key off of (e.g. `TargetReachedEvent`'s source
+   is the entity that arrived; `MapEnteredEvent`'s target is the map).
+   Pass `entt::null` for whichever side isn't about any particular entity.
+   Either way, watch out for calling it from inside a `view.each()` loop
+   over component types a listener might structurally add/remove (see
+   "Sharp edges" above), and for the Inactive-exclusion trap if the listener
+   is meant to activate the same entity it lives on.
 4. If registering for Lua, in `systems::Script::register_api()`
    (`systems/script.cpp`): add `T::register_component(_lua())` and
    `register_event_type<T>()`.
@@ -378,7 +401,7 @@ end
 | File | Role |
 |---|---|
 | `tilegame/src/components/event.hpp` | `EventListener<T>` template |
-| `tilegame/src/systems/system.hpp` | `System::raise_event<T>(source, args...)`, `System::raise<T>(args...)` |
+| `tilegame/src/systems/system.hpp` | `System::raise_event<T>(source, target, args...)`, `System::raise<T>(args...)` |
 | `tilegame/src/systems/script.hpp`/`.cpp` | Lua bridge: `register_event_type<T>()`, `_add_event_listener`/`_remove_event_listener`; every `_set_X`/`_show_message`/`_stop_player_input`-style binding calls `raise<T>()` |
 | `tilegame/src/components/timer.hpp`/`.cpp` | `Timer`, `TimerEvent` |
 | `tilegame/src/components/target.hpp`/`.cpp` | `Target`, `TargetReachedEvent` |

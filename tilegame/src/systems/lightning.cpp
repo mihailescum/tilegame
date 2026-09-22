@@ -32,7 +32,7 @@ namespace tilegame::systems
         // and not some unrelated Timer elsewhere in the game.
         _registry.emplace<components::EventListener<components::TimerEvent>>(
             entity,
-            [this, entity](const std::string &, const components::TimerEvent &, entt::entity)
+            [this, entity](const std::string &, const components::TimerEvent &, entt::entity, entt::entity)
             { strike(entity); },
             entity);
 
@@ -42,7 +42,7 @@ namespace tilegame::systems
         const auto control_entity = _registry.create();
         _registry.emplace<components::EventListener<components::SetLightningEvent>>(
             control_entity,
-            [this, entity](const std::string &, const components::SetLightningEvent &event, entt::entity)
+            [this, entity](const std::string &, const components::SetLightningEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::Lightning>(entity, event.min_interval, event.max_interval, event.flash_duration);
                 _registry.emplace_or_replace<components::Timer>(entity, get_random(event.min_interval, event.max_interval), false);
@@ -51,7 +51,7 @@ namespace tilegame::systems
             entt::null);
         _registry.emplace<components::EventListener<components::ClearLightningEvent>>(
             control_entity,
-            [this, entity](const std::string &, const components::ClearLightningEvent &, entt::entity)
+            [this, entity](const std::string &, const components::ClearLightningEvent &, entt::entity, entt::entity)
             { _registry.emplace_or_replace<components::Inactive>(entity); },
             entt::null);
     }

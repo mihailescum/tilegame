@@ -44,10 +44,7 @@ namespace tilegame::components
             sol::call_constructor,
             sol::factories(
                 []()
-                { return InteractEvent(); },
-                [](entt::entity player)
-                { return InteractEvent(player); }),
-            "player", &InteractEvent::player,
+                { return InteractEvent(); }),
             "EVENT_TYPE", sol::var(InteractEvent::EVENT_TYPE.c_str()),
             sol::meta_function::to_string, &InteractEvent::to_string);
     }

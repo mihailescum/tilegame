@@ -27,13 +27,14 @@ namespace tilegame::systems
         entt::registry &_registry;
 
         // Builds an Event from `args` and immediately delivers it to every entity carrying a
-        // matching EventListener<Event>, passing (EVENT_TYPE, event, source). `event` is a
-        // plain local value here - never an entt component - so raising is always synchronous
+        // matching EventListener<Event>, passing (EVENT_TYPE, event, source, target). `event` is
+        // a plain local value here - never an entt component - so raising is always synchronous
         // and there is nothing for anyone to clean up afterwards: subscribers only ever see it
         // via their EventListener<Event> callback's `event` parameter, for the duration of this
-        // call. `source`, if given, is whichever entity the event is conceptually about (e.g.
-        // the entity whose Timer just rang); pass entt::null (or use raise(), below) if it
-        // isn't about any particular entity.
+        // call. `source` and `target`, if given, are whichever entities the event is conceptually
+        // between (e.g. `source` the entity whose Timer just rang, or the NPC an InteractEvent
+        // was raised on; `target` the player entity that triggered it); pass entt::null for
+        // either side that isn't about any particular entity.
         //
         // Requires `Event::EVENT_TYPE` to exist (see components::EventListener<T>), even for
         // events with no Lua usertype of their own - delivery needs it regardless of who's
@@ -45,13 +46,13 @@ namespace tilegame::systems
         // for today's listeners; a new one that does this would need the raising loop to finish
         // first.
         template <class Event, class EventListener = components::EventListener<Event>, class... Args>
-        void raise_event(entt::entity source = entt::null, Args &&...args) const
+        void raise_event(entt::entity source = entt::null, entt::entity target = entt::null, Args &&...args) const
         {
             const Event event{std::forward<Args>(args)...};
             const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
             for (const auto listener : listener_entities)
             {
-                listener_entities.template get<const EventListener>(listener)(Event::EVENT_TYPE, event, source);
+                listener_entities.template get<const EventListener>(listener)(Event::EVENT_TYPE, event, source, target);
             }
         }
 

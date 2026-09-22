@@ -15,7 +15,7 @@ namespace tilegame::systems
      * kInteractionDistance and roughly in front of the player - dot product of the player's
      * Facing against the direction to the candidate at or above kInteractionFacingCosThreshold,
      * both hardcoded in interaction.cpp for now - the closest one raises an InteractEvent
-     * (source = the interactable entity, payload = the player entity) via the inherited
+     * (source = the interactable entity, target/payload = the player entity) via the inherited
      * System::raise_event().
      *
      * Must run after systems::MessageBox each frame (see WorldScene::update()). Skips the search
