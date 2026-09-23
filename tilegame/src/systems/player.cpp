@@ -41,7 +41,7 @@ namespace tilegame::systems
 
         _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
-        _registry.emplace<components::Transform>(_player1_entity, glm::vec2(200, 200));
+        _registry.emplace<components::Transform>(_player1_entity);
         // Arbitrary placeholder for now (SpriteBatch's ortho projection covers Z in [-1, 1] -
         // see engine::graphics::SpriteBatch::create()) - must beat every tile layer's Z
         // (maploader.lua's layer_z(), currently 0 and ascending) under the (GL_GREATER - larger

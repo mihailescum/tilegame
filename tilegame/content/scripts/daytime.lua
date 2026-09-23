@@ -16,6 +16,7 @@ _set_daytime_time(12 * HOUR)  -- start at noon
 _set_daytime_speedup(HOUR)    -- 1 real second = 1 in-game hour
 _set_daytime_marks({
     { start = 0,         color = _Color(0.1, 0.1, 0.1, 1.0) },   -- midnight
+    { start = 4 * HOUR,         color = _Color(0.1, 0.1, 0.1, 1.0) },   -- midnight
     { start = 5 * HOUR,  color = _Color(0.5, 0.5, 0.5, 1.0) },   -- pre-dawn
     { start = 7 * HOUR,  color = _Color(1.0, 0.902, 0.8, 1.0) }, -- sunrise
     { start = 9 * HOUR,  color = _Color(1.0, 1.0, 1.0, 1.0) },   -- morning

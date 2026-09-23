@@ -148,7 +148,7 @@ local function load_tileset(tileset_ref, map_dir)
         tiles_by_id[tile.id] = tile
     end
 
-    local luminosity_path = data.properties.image_luminosity
+    local luminosity_path = read_property(data.properties, "image_luminosity")
 
     return {
         firstgid = tileset_ref.firstgid,

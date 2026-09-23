@@ -38,18 +38,17 @@ namespace engine
 
     bool Texture2D::load_resource(ResourceManager &_resource_manager, va_list args)
     {
-        bool hasAlphaChannel = va_arg(args, int);
-        if (hasAlphaChannel)
-        {
-            internal_format(GL_RGBA);
-            image_format(GL_RGBA);
-        }
         // load image
         int width, height, nrChannels;
         unsigned char *data = stbi_load(_resource_path.c_str(), &width, &height, &nrChannels, 0);
         // now generate texture
         if (data)
         {
+            if (nrChannels == 4)
+            {
+                internal_format(GL_RGBA);
+                image_format(GL_RGBA);
+            }
             create_texture_from_raw_data(width, height, data);
             // and finally free image data
             stbi_image_free(data);

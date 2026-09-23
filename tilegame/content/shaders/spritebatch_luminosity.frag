@@ -24,8 +24,9 @@ void main()
     {
         discard;
     }
-    FragColor = color;
 
     vec4 luminosity = texture(TextureLuminosity, TexCoord) * VertexColor;
+
+    FragColor = color;
     FragLuminosity = luminosity * night_amount;
 }
