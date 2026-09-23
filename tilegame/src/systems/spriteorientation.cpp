@@ -4,17 +4,16 @@
 #include "components/spriteorientation.hpp"
 #include "components/animation.hpp"
 #include "components/sprite.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    SpriteOrientation::SpriteOrientation(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    SpriteOrientation::SpriteOrientation(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
     void SpriteOrientation::update(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<const components::Facing, components::SpriteOrientation, components::Animation>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<const components::Facing, components::SpriteOrientation, components::Animation>(entt::exclude<engine::Inactive>);
         const auto sprite_entities = _registry.view<const components::Sprite>();
 
         for (auto &&[entity, facing, orientation, animation] : view.each())

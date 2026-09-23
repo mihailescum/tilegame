@@ -2,8 +2,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -28,13 +26,13 @@ namespace tilegame::systems
      * frame that key press is no longer a fresh one anyway. Lua reacts to the event via
      * `_add_event_listener(_InteractEvent, callback, npc_entity)`.
      */
-    class Interaction : public System
+    class Interaction : public engine::System
     {
     private:
         bool _enter_was_down;
 
     public:
-        Interaction(tilegame::Scene &scene, entt::registry &registry);
+        Interaction(engine::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

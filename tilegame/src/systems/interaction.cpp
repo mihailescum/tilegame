@@ -8,7 +8,6 @@
 #include "components/facing.hpp"
 #include "components/interactable.hpp"
 #include "components/messagebox.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -22,7 +21,7 @@ namespace tilegame::systems
         constexpr float kInteractionFacingCosThreshold = 0.5f;
     } // namespace
 
-    Interaction::Interaction(tilegame::Scene &scene, entt::registry &registry) : _enter_was_down(false), System(scene, registry)
+    Interaction::Interaction(engine::Scene &scene, entt::registry &registry) : _enter_was_down(false), System(scene, registry)
     {
     }
 
@@ -39,8 +38,8 @@ namespace tilegame::systems
 
         if (should_search)
         {
-            const auto players = _registry.view<const components::Player, const components::Transform, const components::Facing>(entt::exclude<components::Inactive>);
-            const auto interactables = _registry.view<const components::Transform, const components::Interactable>(entt::exclude<components::Inactive>);
+            const auto players = _registry.view<const components::Player, const components::Transform, const components::Facing>(entt::exclude<engine::Inactive>);
+            const auto interactables = _registry.view<const components::Transform, const components::Interactable>(entt::exclude<engine::Inactive>);
 
             for (auto &&[player_entity, player, player_transform, facing] : players.each())
             {

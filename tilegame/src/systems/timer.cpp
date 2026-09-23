@@ -1,19 +1,17 @@
 #include "timer.hpp"
 
 #include "components/timer.hpp"
-#include "components/event.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    Timer::Timer(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Timer::Timer(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
     void Timer::update(const engine::GameTime &update_time)
     {
         // Advance Timers
-        const auto timer_entities = _registry.view<components::Timer>(entt::exclude<components::Inactive>);
+        const auto timer_entities = _registry.view<components::Timer>(entt::exclude<engine::Inactive>);
         for (auto &&[entity, timer] : timer_entities.each())
         {
             timer.time_left -= update_time.elapsed_time;

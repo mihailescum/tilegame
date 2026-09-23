@@ -4,8 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -15,10 +13,10 @@ namespace tilegame::systems
      * pinned target entity's Transform position onto them every frame (e.g.
      * used to make the camera follow the player).
      */
-    class Pin : public System
+    class Pin : public engine::System
     {
     public:
-        Pin(tilegame::Scene &scene, entt::registry &registry);
+        Pin(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

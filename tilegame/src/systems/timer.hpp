@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "system.hpp"
+#include "engine.hpp"
 
 namespace tilegame::systems
 {
@@ -15,11 +15,11 @@ namespace tilegame::systems
      * native and Lua listeners), either resetting the timer if it repeats or
      * removing the Timer component otherwise.
      */
-    class Timer : public System
+    class Timer : public engine::System
     {
 
     public:
-        Timer(tilegame::Scene &scene, entt::registry &registry);
+        Timer(engine::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

@@ -4,8 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -21,7 +19,7 @@ namespace tilegame::systems
      * entity (one with a Movement component) is currently on (CurrentMap),
      * immediately raising MapLeftEvent/MapEnteredEvent when it changes.
      */
-    class Movement : public System
+    class Movement : public engine::System
     {
     private:
         void apply_movement(const engine::GameTime &update_time) const;
@@ -29,7 +27,7 @@ namespace tilegame::systems
         void update_current_map() const;
 
     public:
-        Movement(tilegame::Scene &scene, entt::registry &registry);
+        Movement(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

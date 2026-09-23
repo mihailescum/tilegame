@@ -4,7 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
 #include "components/movement.hpp"
 
 namespace tilegame::systems
@@ -25,7 +24,7 @@ namespace tilegame::systems
      * inherited System::raise(), for whichever player entity's id matches the event's
      * player_id.
      */
-    class Player : public System
+    class Player : public engine::System
     {
     private:
         entt::entity _player1_entity;
@@ -35,7 +34,7 @@ namespace tilegame::systems
         glm::vec2 handle_input_1();
 
     public:
-        Player(tilegame::Scene &scene, entt::registry &registry);
+        Player(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

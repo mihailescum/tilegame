@@ -15,8 +15,6 @@
 #include "components/player.hpp"
 #include "components/pin.hpp"
 #include "components/timer.hpp"
-#include "components/event.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
@@ -39,7 +37,7 @@ namespace tilegame::systems
         constexpr float SHAKE_SETTLE_EPSILON = 0.1f;
     }
 
-    Camera::Camera(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Camera::Camera(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -59,7 +57,7 @@ namespace tilegame::systems
         _registry.emplace<components::DepthOrigin>(camera_entity, 0.0f);
 
         entt::entity player1_entity = entt::null;
-        auto players = _registry.view<const components::Player>(entt::exclude<components::Inactive>);
+        auto players = _registry.view<const components::Player>(entt::exclude<engine::Inactive>);
         for (auto &&[entity, player] : players.each())
         {
             if (player.id == 1)
@@ -87,22 +85,22 @@ namespace tilegame::systems
         // these to the axis entities themselves would mean the very event whose job is to
         // remove Inactive could never reach them.
         const auto control_entity = _registry.create();
-        _registry.emplace<components::EventListener<components::ShakeCameraHorizontalEvent>>(
+        _registry.emplace<engine::EventListener<components::ShakeCameraHorizontalEvent>>(
             control_entity,
             [this, horizontal_axis_entity](const std::string &, const components::ShakeCameraHorizontalEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::CameraShakeAxis>(horizontal_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
                 _registry.emplace_or_replace<components::Timer>(horizontal_axis_entity, event.duration, false);
-                _registry.remove<components::Inactive>(horizontal_axis_entity);
+                _registry.remove<engine::Inactive>(horizontal_axis_entity);
             },
             entt::null);
-        _registry.emplace<components::EventListener<components::ShakeCameraVerticalEvent>>(
+        _registry.emplace<engine::EventListener<components::ShakeCameraVerticalEvent>>(
             control_entity,
             [this, vertical_axis_entity](const std::string &, const components::ShakeCameraVerticalEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::CameraShakeAxis>(vertical_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
                 _registry.emplace_or_replace<components::Timer>(vertical_axis_entity, event.duration, false);
-                _registry.remove<components::Inactive>(vertical_axis_entity);
+                _registry.remove<engine::Inactive>(vertical_axis_entity);
             },
             entt::null);
     }
@@ -111,12 +109,12 @@ namespace tilegame::systems
     {
         const auto entity = _registry.create();
         _registry.emplace<components::CameraShakeAxis>(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false);
-        _registry.emplace<components::Inactive>(entity);
+        _registry.emplace<engine::Inactive>(entity);
 
         // Source-filtered to itself, so it only reacts to the TimerEvent its own Timer raises
         // and not some unrelated Timer elsewhere in the game - the same native-event mechanism
         // Lua subscribes to via _add_event_listener.
-        _registry.emplace<components::EventListener<components::TimerEvent>>(
+        _registry.emplace<engine::EventListener<components::TimerEvent>>(
             entity,
             [this, entity](const std::string &, const components::TimerEvent &, entt::entity, entt::entity)
             { _registry.get<components::CameraShakeAxis>(entity).settling = true; },
@@ -127,7 +125,7 @@ namespace tilegame::systems
 
     float Camera::update_shake_axis(entt::entity axis_entity, float elapsed_time)
     {
-        if (_registry.all_of<components::Inactive>(axis_entity))
+        if (_registry.all_of<engine::Inactive>(axis_entity))
         {
             return 0.0f;
         }
@@ -158,7 +156,7 @@ namespace tilegame::systems
         if (shake.settling && std::abs(shake.current_offset) < SHAKE_SETTLE_EPSILON)
         {
             shake.current_offset = 0.0f;
-            _registry.emplace<components::Inactive>(axis_entity);
+            _registry.emplace<engine::Inactive>(axis_entity);
         }
 
         return shake.current_offset;

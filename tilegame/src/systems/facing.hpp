@@ -2,8 +2,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -17,10 +15,10 @@ namespace tilegame::systems
      * writes Direction that frame - systems::Player for the player, systems::MovementController
      * for Target-driven entities - see WorldScene::update().
      */
-    class Facing : public System
+    class Facing : public engine::System
     {
     public:
-        Facing(tilegame::Scene &scene, entt::registry &registry);
+        Facing(engine::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

@@ -7,7 +7,7 @@
 namespace tilegame::scenes
 {
     WorldScene::WorldScene(engine::Game &game)
-        : tilegame::Scene(game),
+        : engine::Scene(game),
           _system_render(*this, _registry),
           _system_camera(*this, _registry),
           _system_player(*this, _registry),

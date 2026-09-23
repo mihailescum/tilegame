@@ -11,8 +11,6 @@
 #include "engine.hpp"
 
 #include "secureluastate.hpp"
-#include "system.hpp"
-#include "components/event.hpp"
 #include "components/daytime.hpp"
 #include "components/weather.hpp"
 #include "components/particleemitter.hpp"
@@ -38,7 +36,7 @@ namespace tilegame::systems
      * loads and runs that file immediately, passing those arguments on to it as varargs (`...`).
      * Its return value, if any, is discarded.
      */
-    class Script : public System
+    class Script : public engine::System
     {
     private:
         tilegame::SecureLuaState _lua;
@@ -176,7 +174,7 @@ namespace tilegame::systems
 
         // Registers EventType in _event_types so Lua scripts can listen for it via
         // add_event_listener; instantiated once per native event type in register_api().
-        template <class EventType, class EventListener = components::EventListener<EventType>>
+        template <class EventType, class EventListener = engine::EventListener<EventType>>
         void register_event_type()
         {
             _event_types[EventType::EVENT_TYPE] =
@@ -189,7 +187,7 @@ namespace tilegame::systems
         }
 
     public:
-        Script(tilegame::Scene &scene, entt::registry &registry);
+        Script(engine::Scene &scene, entt::registry &registry);
         ~Script();
 
         void initialize();

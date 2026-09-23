@@ -118,7 +118,7 @@ is "from," only that it happened. For these, `System::raise<T>(args...)` is
 shorthand for `raise_event<T>(entt::null, args...)`:
 
 ```cpp
-template <class Event, class EventListener = components::EventListener<Event>, class... Args>
+template <class Event, class EventListener = engine::EventListener<Event>, class... Args>
 void raise(Args &&...args) const
 {
     raise_event<Event, EventListener>(entt::null, entt::null, std::forward<Args>(args)...);

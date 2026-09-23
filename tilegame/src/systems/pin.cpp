@@ -5,7 +5,7 @@
 
 namespace tilegame::systems
 {
-    Pin::Pin(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Pin::Pin(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -15,7 +15,7 @@ namespace tilegame::systems
 
     void Pin::update(const engine::GameTime &update_time)
     {
-        const auto view = _registry.view<const components::Transform, const components::Pin>(entt::exclude<components::Inactive>);
+        const auto view = _registry.view<const components::Transform, const components::Pin>(entt::exclude<engine::Inactive>);
         for (const auto &entity : view)
         {
             const auto &pin = view.get<const components::Pin>(entity);

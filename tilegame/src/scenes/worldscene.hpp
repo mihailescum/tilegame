@@ -7,7 +7,6 @@
 
 #include "engine.hpp"
 
-#include "scene.hpp"
 #include "systems/render.hpp"
 #include "systems/camera.hpp"
 #include "systems/player.hpp"
@@ -39,7 +38,7 @@ namespace tilegame::scenes
      * as the startup scene by Tilegame; can itself push overlay scenes (e.g.
      * an inventory) on top via the SceneManager reached through game().scene_manager().
      */
-    class WorldScene : public tilegame::Scene
+    class WorldScene : public engine::Scene
     {
     private:
         entt::registry _registry;

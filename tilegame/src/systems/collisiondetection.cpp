@@ -7,11 +7,10 @@
 #include <glm/glm.hpp>
 
 #include "math_helper.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    CollisionDetection::CollisionDetection(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    CollisionDetection::CollisionDetection(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -21,8 +20,8 @@ namespace tilegame::systems
 
     void CollisionDetection::update(const engine::GameTime &update_time)
     {
-        const auto moving_entities = _registry.view<const components::Transform, const components::Collider, components::Movement>(entt::exclude<components::Inactive>);
-        const auto tilelayer_entities = _registry.view<const components::Transform, const components::TileLayer, const components::Shape>(entt::exclude<components::Inactive>);
+        const auto moving_entities = _registry.view<const components::Transform, const components::Collider, components::Movement>(entt::exclude<engine::Inactive>);
+        const auto tilelayer_entities = _registry.view<const components::Transform, const components::TileLayer, const components::Shape>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, transform, collider, movement] : moving_entities.each())
         {

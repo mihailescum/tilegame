@@ -7,8 +7,6 @@
 
 #include "engine.hpp"
 
-#include "scene.hpp"
-
 namespace tilegame::scenes
 {
     /**
@@ -24,7 +22,7 @@ namespace tilegame::scenes
      * it - have been dismissed, delivering the selected option (or an empty std::any if there
      * were none) to the callback it was pushed with.
      */
-    class UIScene : public tilegame::Scene
+    class UIScene : public engine::Scene
     {
     private:
         // Layout of the on-screen dialog/options boxes, in screen pixels. Private to this class

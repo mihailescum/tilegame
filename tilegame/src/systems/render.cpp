@@ -8,13 +8,12 @@
 #include "components/camera.hpp"
 #include "components/depthorigin.hpp"
 #include "components/daytime.hpp"
-#include "components/inactive.hpp"
 #include "components/particle.hpp"
 #include "components/collider.hpp"
 
 namespace tilegame::systems
 {
-    Render::Render(tilegame::Scene &scene, entt::registry &registry)
+    Render::Render(engine::Scene &scene, entt::registry &registry)
         : System(scene, registry), _spritebatch(scene.game().graphicsdevice()), _postprocessor(scene.game().graphicsdevice())
     {
     }
@@ -107,10 +106,10 @@ namespace tilegame::systems
         // Depth (unlike Transform/Renderable2D) isn't a filter here - TileLayer entities carry
         // no Depth of their own any more (see draw_tilelayer()), only Sprite/ParticlePool ones
         // do, fetched below via view_sprites/view_particle_pools instead.
-        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D>(entt::exclude<components::Inactive>);
-        const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite, const components::Depth>(entt::exclude<components::Inactive>);
-        const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<components::Inactive>);
-        const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool, const components::Depth>(entt::exclude<components::Inactive>);
+        const auto view_renderable = _registry.view<const components::Transform, const components::Renderable2D>(entt::exclude<engine::Inactive>);
+        const auto view_sprites = _registry.view<const components::Renderable2D, const components::Sprite, const components::Depth>(entt::exclude<engine::Inactive>);
+        const auto view_tilelayers = _registry.view<const components::Renderable2D, const components::TileLayer>(entt::exclude<engine::Inactive>);
+        const auto view_particle_pools = _registry.view<const components::Renderable2D, const components::ParticlePool, const components::Depth>(entt::exclude<engine::Inactive>);
 
         const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
         const auto &camera = _registry.get<const components::Camera>(camera_entity);
@@ -155,8 +154,8 @@ namespace tilegame::systems
         // Debug drawing of collision shapes
         //
 
-        const auto view_collision_shapes = _registry.view<const components::Transform, const components::Collider, const components::Renderable2D>(entt::exclude<components::Inactive>);
-        const auto view_tilelayer_shapes = _registry.view<const components::Transform, const components::TileLayer, const components::Renderable2D>(entt::exclude<components::Inactive>);
+        const auto view_collision_shapes = _registry.view<const components::Transform, const components::Collider, const components::Renderable2D>(entt::exclude<engine::Inactive>);
+        const auto view_tilelayer_shapes = _registry.view<const components::Transform, const components::TileLayer, const components::Renderable2D>(entt::exclude<engine::Inactive>);
 
         _spritebatch.begin(camera.transform, true);
 
@@ -252,7 +251,7 @@ namespace tilegame::systems
     void Render::draw_particles(const components::Transform &emitter_transform, const components::ParticlePool &pool, const components::Depth &depth, const engine::Rectangle &visible_bounds, float depth_origin_y)
     {
         // TODO this should be outside of the loop to avoid refeching for every emitter
-        const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<components::Inactive>);
+        const auto particles_entities = _registry.view<components::Particle, components::Sprite, components::Transform>(entt::exclude<engine::Inactive>);
 
         // A single depth value per emitter, not one per particle - see the class comment.
         const float z = compute_z(depth(), emitter_transform.position.y, depth_origin_y);

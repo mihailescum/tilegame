@@ -2,7 +2,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
 #include "components/transform.hpp"
 #include "components/sprite.hpp"
 #include "components/tilelayer.hpp"
@@ -30,7 +29,7 @@ namespace tilegame::systems
      * scenes::UIScene, pushed on top of this scene and drawn after it (see SceneManager::draw()),
      * unaffected by both the camera and this system's post-processing effects.
      */
-    class Render : public System
+    class Render : public engine::System
     {
     private:
         // How much of a components::Depth bucket's headroom one world-space unit of distance
@@ -74,7 +73,7 @@ namespace tilegame::systems
         engine::Texture2DContainer<2> _circle_tex;
 
     public:
-        Render(tilegame::Scene &scene, entt::registry &registry);
+        Render(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

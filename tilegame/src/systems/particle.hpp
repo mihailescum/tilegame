@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 #include "entt/entt.hpp"
 
-#include "system.hpp"
 #include "components/particleemitter.hpp"
 #include "components/particlepool.hpp"
 #include "components/shape.hpp"
@@ -21,7 +20,7 @@ namespace tilegame::systems
      * created/destroyed at runtime: they are pre-allocated in the pool as
      * Inactive and toggled active/inactive as they are emitted/killed.
      */
-    class Particle : public System
+    class Particle : public engine::System
     {
     private:
         void update_particles(const engine::GameTime &update_time);
@@ -38,7 +37,7 @@ namespace tilegame::systems
         bool grow_pool(const entt::entity emitter_entity, components::ParticlePool &pool, int num_new_particles);
 
     public:
-        Particle(tilegame::Scene &scene, entt::registry &registry);
+        Particle(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void load_content();

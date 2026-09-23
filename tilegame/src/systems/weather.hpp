@@ -3,7 +3,6 @@
 #include "engine.hpp"
 #include "entt/entt.hpp"
 
-#include "system.hpp"
 #include "components/weather.hpp"
 
 namespace tilegame::systems
@@ -30,7 +29,7 @@ namespace tilegame::systems
      * (uploading it to the daytime post-processing shader's `weather_tint` uniform, see
      * content/shaders/daytime.frag). It has no knowledge of systems::Script/Lua at all.
      */
-    class Weather : public System
+    class Weather : public engine::System
     {
     private:
         engine::Shader *_daytime_shader;
@@ -48,7 +47,7 @@ namespace tilegame::systems
         entt::entity create_precipitation_entity();
 
     public:
-        Weather(tilegame::Scene &scene, entt::registry &registry);
+        Weather(engine::Scene &scene, entt::registry &registry);
 
         void load_content();
         void update(const engine::GameTime &update_time);

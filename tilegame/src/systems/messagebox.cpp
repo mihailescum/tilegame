@@ -1,11 +1,10 @@
 #include "messagebox.hpp"
 
 #include "components/messagebox.hpp"
-#include "components/event.hpp"
 
 namespace tilegame::systems
 {
-    MessageBox::MessageBox(tilegame::Scene &scene, entt::registry &registry)
+    MessageBox::MessageBox(engine::Scene &scene, entt::registry &registry)
         : System(scene, registry)
     {
     }
@@ -15,7 +14,7 @@ namespace tilegame::systems
         _registry.ctx().emplace<components::MessageBoxOpenState>();
 
         const auto entity = _registry.create();
-        _registry.emplace<components::EventListener<components::ShowMessageEvent>>(
+        _registry.emplace<engine::EventListener<components::ShowMessageEvent>>(
             entity,
             [this](const std::string &, const components::ShowMessageEvent &event, entt::entity, entt::entity)
             { on_show_message(event); },

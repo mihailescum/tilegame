@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
+#include <sstream>
 
 #include "entt/entt.hpp"
 
-namespace tilegame::components
+namespace engine
 {
     /**
      * @brief Wraps a callback (typically a Lua function bound via Script::add_event_listener) that is
@@ -45,4 +45,16 @@ namespace tilegame::components
             }
         }
     };
-} // namespace tilegame::components
+
+    struct Inactive
+    {
+        Inactive() {}
+
+        [[nodiscard]] std::string to_string() const
+        {
+            std::stringstream ss;
+            ss << "Inactive";
+            return ss.str();
+        }
+    };
+} // namespace engine

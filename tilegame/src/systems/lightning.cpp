@@ -6,12 +6,10 @@
 
 #include "components/lightning.hpp"
 #include "components/timer.hpp"
-#include "components/event.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    Lightning::Lightning(tilegame::Scene &scene, entt::registry &registry)
+    Lightning::Lightning(engine::Scene &scene, entt::registry &registry)
         : System(scene, registry), _flash_intensity(0.0f), _flash_duration(0.0f)
     {
     }
@@ -26,11 +24,11 @@ namespace tilegame::systems
 
         const auto entity = _registry.create();
         _registry.emplace<components::Lightning>(entity, 0.0f, 0.0f, 0.0f);
-        _registry.emplace<components::Inactive>(entity);
+        _registry.emplace<engine::Inactive>(entity);
 
         // Source-filtered to itself, so it only reacts to the TimerEvent its own Timer raises
         // and not some unrelated Timer elsewhere in the game.
-        _registry.emplace<components::EventListener<components::TimerEvent>>(
+        _registry.emplace<engine::EventListener<components::TimerEvent>>(
             entity,
             [this, entity](const std::string &, const components::TimerEvent &, entt::entity, entt::entity)
             { strike(entity); },
@@ -40,19 +38,19 @@ namespace tilegame::systems
         // raise_event()'s listener view excludes Inactive entities: attaching these to `entity`
         // itself would mean the very event whose job is to remove Inactive could never reach it.
         const auto control_entity = _registry.create();
-        _registry.emplace<components::EventListener<components::SetLightningEvent>>(
+        _registry.emplace<engine::EventListener<components::SetLightningEvent>>(
             control_entity,
             [this, entity](const std::string &, const components::SetLightningEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::Lightning>(entity, event.min_interval, event.max_interval, event.flash_duration);
                 _registry.emplace_or_replace<components::Timer>(entity, get_random(event.min_interval, event.max_interval), false);
-                _registry.remove<components::Inactive>(entity);
+                _registry.remove<engine::Inactive>(entity);
             },
             entt::null);
-        _registry.emplace<components::EventListener<components::ClearLightningEvent>>(
+        _registry.emplace<engine::EventListener<components::ClearLightningEvent>>(
             control_entity,
             [this, entity](const std::string &, const components::ClearLightningEvent &, entt::entity, entt::entity)
-            { _registry.emplace_or_replace<components::Inactive>(entity); },
+            { _registry.emplace_or_replace<engine::Inactive>(entity); },
             entt::null);
     }
 

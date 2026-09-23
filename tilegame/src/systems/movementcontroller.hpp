@@ -4,8 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -17,7 +15,7 @@ namespace tilegame::systems
      * before CollisionDetection/Movement so there is a velocity for those
      * systems to resolve/apply.
      */
-    class MovementController : public System
+    class MovementController : public engine::System
     {
     private:
         void update_movement(const engine::GameTime &update_time);
@@ -30,7 +28,7 @@ namespace tilegame::systems
         void add_target_component(entt::registry &registry, entt::entity entity);
 
     public:
-        MovementController(tilegame::Scene &scene, entt::registry &registry);
+        MovementController(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

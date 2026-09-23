@@ -7,13 +7,12 @@
 #include "components/target.hpp"
 #include "components/speed.hpp"
 #include "components/transform.hpp"
-#include "components/inactive.hpp"
 #include "components/currentmap.hpp"
 #include "systems/world.hpp"
 
 namespace tilegame::systems
 {
-    Movement::Movement(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Movement::Movement(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -30,7 +29,7 @@ namespace tilegame::systems
 
     void Movement::apply_movement(const engine::GameTime &update_time) const
     {
-        auto view = _registry.view<const components::Movement>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<const components::Movement>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, movement] : view.each())
         {
@@ -44,7 +43,7 @@ namespace tilegame::systems
 
     void Movement::check_target_reached() const
     {
-        auto view = _registry.view<components::Transform, const components::Target>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<components::Transform, const components::Target>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, transform, target] : view.each())
         {
@@ -69,7 +68,7 @@ namespace tilegame::systems
 
     void Movement::update_current_map() const
     {
-        const auto view = _registry.view<const components::Movement, const components::Transform>(entt::exclude<components::Inactive>);
+        const auto view = _registry.view<const components::Movement, const components::Transform>(entt::exclude<engine::Inactive>);
         for (auto &&[entity, movement, transform] : view.each())
         {
             if (!movement.track_current_map)

@@ -9,14 +9,12 @@
 #include "components/transform.hpp"
 #include "components/renderable2d.hpp"
 #include "components/depth.hpp"
-#include "components/inactive.hpp"
 #include "components/camera.hpp"
 #include "components/pin.hpp"
-#include "components/event.hpp"
 
 namespace tilegame::systems
 {
-    Weather::Weather(tilegame::Scene &scene, entt::registry &registry)
+    Weather::Weather(engine::Scene &scene, entt::registry &registry)
         : System(scene, registry),
           _start_tint(engine::Color::WHITE),
           _target_tint(engine::Color::WHITE),
@@ -34,29 +32,29 @@ namespace tilegame::systems
         _daytime_shader->set("weather_tint", static_cast<glm::vec4>(engine::Color::WHITE));
 
         const auto precipitation_entity = create_precipitation_entity();
-        _registry.emplace<components::Inactive>(precipitation_entity);
+        _registry.emplace<engine::Inactive>(precipitation_entity);
 
         // On a *separate* entity - never tagged Inactive - since `precipitation_entity` starts
         // Inactive and raise_event()'s listener view excludes Inactive entities: attaching
         // these to `precipitation_entity` itself would mean the very event whose job is to
         // remove Inactive could never reach it.
         const auto weather_entity = _registry.create();
-        _registry.emplace<components::EventListener<components::SetWeatherPrecipitationEvent>>(
+        _registry.emplace<engine::EventListener<components::SetWeatherPrecipitationEvent>>(
             weather_entity,
             [this, precipitation_entity](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity, entt::entity)
             {
                 _registry.replace<components::ParticleEmitter>(precipitation_entity, event.emitter);
                 _registry.replace<components::Shape>(precipitation_entity, engine::ShapeVariant(event.spawn_area));
-                _registry.remove<components::Inactive>(precipitation_entity);
+                _registry.remove<engine::Inactive>(precipitation_entity);
             },
             entt::null);
-        _registry.emplace<components::EventListener<components::ClearWeatherPrecipitationEvent>>(
+        _registry.emplace<engine::EventListener<components::ClearWeatherPrecipitationEvent>>(
             weather_entity,
             [this, precipitation_entity](const std::string &, const components::ClearWeatherPrecipitationEvent &, entt::entity, entt::entity)
-            { _registry.emplace_or_replace<components::Inactive>(precipitation_entity); },
+            { _registry.emplace_or_replace<engine::Inactive>(precipitation_entity); },
             entt::null);
 
-        _registry.emplace<components::EventListener<components::SetWeatherTintEvent>>(
+        _registry.emplace<engine::EventListener<components::SetWeatherTintEvent>>(
             weather_entity,
             [this](const std::string &, const components::SetWeatherTintEvent &event, entt::entity, entt::entity)
             {

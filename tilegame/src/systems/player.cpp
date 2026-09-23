@@ -15,14 +15,12 @@
 #include "components/depth.hpp"
 #include "components/sprite.hpp"
 #include "components/animation.hpp"
-#include "components/inactive.hpp"
 #include "components/speed.hpp"
 #include "components/collider.hpp"
-#include "components/event.hpp"
 
 namespace tilegame::systems
 {
-    Player::Player(tilegame::Scene &scene, entt::registry &registry) : _player1_input_active(true), System(scene, registry)
+    Player::Player(engine::Scene &scene, entt::registry &registry) : _player1_input_active(true), System(scene, registry)
     {
     }
 
@@ -78,7 +76,7 @@ namespace tilegame::systems
             }
         }
 
-        _registry.emplace<components::EventListener<components::StopPlayerInputEvent>>(
+        _registry.emplace<engine::EventListener<components::StopPlayerInputEvent>>(
             _player1_entity,
             [this](const std::string &, const components::StopPlayerInputEvent &event, entt::entity, entt::entity)
             {
@@ -88,7 +86,7 @@ namespace tilegame::systems
                 }
             },
             entt::null);
-        _registry.emplace<components::EventListener<components::ResumePlayerInputEvent>>(
+        _registry.emplace<engine::EventListener<components::ResumePlayerInputEvent>>(
             _player1_entity,
             [this](const std::string &, const components::ResumePlayerInputEvent &event, entt::entity, entt::entity)
             {
@@ -102,7 +100,7 @@ namespace tilegame::systems
 
     void Player::update(const engine::GameTime &update_time)
     {
-        const auto players = _registry.view<const components::Player, const components::Speed>(entt::exclude<components::Inactive>);
+        const auto players = _registry.view<const components::Player, const components::Speed>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, player, velocity] : players.each())
         {

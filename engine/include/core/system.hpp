@@ -2,13 +2,10 @@
 
 #include "entt/entt.hpp"
 
-#include "engine.hpp"
 #include "scene.hpp"
+#include "components.hpp"
 
-#include "components/event.hpp"
-#include "components/inactive.hpp"
-
-namespace tilegame::systems
+namespace engine
 {
     /**
      * @brief Common base class for all per-frame ECS game-behavior systems.
@@ -23,7 +20,7 @@ namespace tilegame::systems
     class System
     {
     protected:
-        tilegame::Scene &_scene;
+        Scene &_scene;
         entt::registry &_registry;
 
         // Builds an Event from `args` and immediately delivers it to every entity carrying a
@@ -36,7 +33,7 @@ namespace tilegame::systems
         // was raised on; `target` the player entity that triggered it); pass entt::null for
         // either side that isn't about any particular entity.
         //
-        // Requires `Event::EVENT_TYPE` to exist (see components::EventListener<T>), even for
+        // Requires `Event::EVENT_TYPE` to exist (see engine::EventListener<T>), even for
         // events with no Lua usertype of their own - delivery needs it regardless of who's
         // listening.
         //
@@ -45,11 +42,11 @@ namespace tilegame::systems
         // remove (as opposed to just modifying values of) can invalidate that iteration. Safe
         // for today's listeners; a new one that does this would need the raising loop to finish
         // first.
-        template <class Event, class EventListener = components::EventListener<Event>, class... Args>
+        template <class Event, class EventListener = EventListener<Event>, class... Args>
         void raise_event(entt::entity source = entt::null, entt::entity target = entt::null, Args &&...args) const
         {
             const Event event{std::forward<Args>(args)...};
-            const auto listener_entities = _registry.view<const EventListener>(entt::exclude<components::Inactive>);
+            const auto listener_entities = _registry.view<const EventListener>(entt::exclude<Inactive>);
             for (const auto listener : listener_entities)
             {
                 listener_entities.template get<const EventListener>(listener)(Event::EVENT_TYPE, event, source, target);
@@ -57,7 +54,7 @@ namespace tilegame::systems
         }
 
     public:
-        System(tilegame::Scene &scene, entt::registry &registry);
+        System(Scene &scene, entt::registry &registry);
         virtual ~System() = 0;
     };
 } // namespace tilegame

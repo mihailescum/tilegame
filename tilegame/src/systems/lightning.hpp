@@ -3,8 +3,6 @@
 #include "engine.hpp"
 #include "entt/entt.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -34,7 +32,7 @@ namespace tilegame::systems
      * independent of the strike schedule, so an in-progress flash still finishes playing out
      * even if the schedule is cleared mid-flash.
      */
-    class Lightning : public System
+    class Lightning : public engine::System
     {
     private:
         engine::Shader *_daytime_shader;
@@ -48,7 +46,7 @@ namespace tilegame::systems
         void strike(entt::entity lightning_entity);
 
     public:
-        Lightning(tilegame::Scene &scene, entt::registry &registry);
+        Lightning(engine::Scene &scene, entt::registry &registry);
 
         void load_content();
         void update(const engine::GameTime &update_time);

@@ -11,7 +11,6 @@
 #include "components/particlepool.hpp"
 #include "components/transform.hpp"
 #include "components/shape.hpp"
-#include "components/inactive.hpp"
 #include "components/movement.hpp"
 #include "components/particle.hpp"
 #include "components/sprite.hpp"
@@ -22,7 +21,7 @@
 
 namespace tilegame::systems
 {
-    Particle::Particle(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Particle::Particle(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -43,8 +42,8 @@ namespace tilegame::systems
 
     void Particle::update_particles(const engine::GameTime &update_time)
     {
-        const auto emitter_entities = _registry.view<components::ParticlePool>(entt::exclude<components::Inactive>);
-        auto particles_entities = _registry.view<components::Particle>(entt::exclude<components::Inactive>);
+        const auto emitter_entities = _registry.view<components::ParticlePool>(entt::exclude<engine::Inactive>);
+        auto particles_entities = _registry.view<components::Particle>(entt::exclude<engine::Inactive>);
 
         for (const auto &&[emitter_entity, pool] : emitter_entities.each())
         {
@@ -68,7 +67,7 @@ namespace tilegame::systems
 
     void Particle::emit_particles(const engine::GameTime &update_time)
     {
-        const auto emitter_entities = _registry.view<components::ParticleEmitter, components::ParticlePool, const components::Transform, const components::Shape>(entt::exclude<components::Inactive>);
+        const auto emitter_entities = _registry.view<components::ParticleEmitter, components::ParticlePool, const components::Transform, const components::Shape>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, emitter, pool, transform, shape] : emitter_entities.each())
         {
@@ -126,7 +125,7 @@ namespace tilegame::systems
         // Get entity and update components
         const auto new_particle = pool.container[pool.first_dead_particle++];
 
-        _registry.remove<components::Inactive>(new_particle);
+        _registry.remove<engine::Inactive>(new_particle);
         _registry.patch<components::Direction>(new_particle,
                                                [&direction](auto &comp)
                                                {
@@ -158,7 +157,7 @@ namespace tilegame::systems
 
     void Particle::kill_particle(const entt::entity particle_entity, size_t index, components::ParticlePool &pool)
     {
-        _registry.emplace<components::Inactive>(particle_entity);
+        _registry.emplace<engine::Inactive>(particle_entity);
         std::iter_swap(pool.container.begin() + index, pool.container.begin() + pool.first_dead_particle - 1);
         --pool.first_dead_particle;
     }
@@ -178,7 +177,7 @@ namespace tilegame::systems
                 const auto new_particle = _registry.create();
                 pool.container[i] = new_particle;
 
-                _registry.emplace<components::Inactive>(new_particle);
+                _registry.emplace<engine::Inactive>(new_particle);
                 _registry.emplace<components::Direction>(new_particle);
                 _registry.emplace<components::Movement>(new_particle, glm::vec2(), false);
                 _registry.emplace<components::Speed>(new_particle);

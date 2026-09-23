@@ -66,7 +66,7 @@ namespace tilegame::scenes
     } // namespace
 
     UIScene::UIScene(engine::Game &game)
-        : tilegame::Scene(game), _spritebatch(game.graphicsdevice())
+        : engine::Scene(game), _spritebatch(game.graphicsdevice())
     {
     }
 

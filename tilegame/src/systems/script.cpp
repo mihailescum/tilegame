@@ -11,7 +11,6 @@
 #include "components/runscriptevent.hpp"
 #include "components/timer.hpp"
 #include "components/luatable.hpp"
-#include "components/inactive.hpp"
 #include "components/target.hpp"
 #include "components/speed.hpp"
 #include "components/transform.hpp"
@@ -38,7 +37,7 @@
 
 namespace tilegame::systems
 {
-    Script::Script(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Script::Script(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -55,10 +54,10 @@ namespace tilegame::systems
 
         // Dedicated always-active control entity for RunScriptEvent, following the same
         // pattern as systems::Weather/Lightning/Camera's own control entities - see
-        // components::EventListener's doc comment for why this can't just live on some
+        // engine::EventListener's doc comment for why this can't just live on some
         // Inactive-taggable entity.
         const auto control_entity = _registry.create();
-        _registry.emplace<components::EventListener<components::RunScriptEvent>>(
+        _registry.emplace<engine::EventListener<components::RunScriptEvent>>(
             control_entity,
             [this](const std::string &, const components::RunScriptEvent &event, entt::entity, entt::entity)
             {
@@ -260,9 +259,18 @@ namespace tilegame::systems
             "tile_dimensions", sol::property([](const engine::graphics::SpriteSheet &sheet)
                                              { const auto &dim = sheet.tile_dimensions(); return glm::vec2(dim.x, dim.y); }));
 
+        entt_sol::register_meta_component<engine::Inactive>();
+        _lua().new_usertype<engine::Inactive>(
+            "_Inactive",
+            "type_id", &entt::type_hash<engine::Inactive>::value,
+            sol::call_constructor,
+            sol::factories(
+                []()
+                { return engine::Inactive(); }),
+            sol::meta_function::to_string, &engine::Inactive::to_string);
+
         components::Direction::register_component(_lua());
         components::Facing::register_component(_lua());
-        components::Inactive::register_component(_lua());
         components::Interactable::register_component(_lua());
         components::InteractEvent::register_component(_lua());
         components::LuaTable::register_component(_lua());
@@ -336,14 +344,14 @@ namespace tilegame::systems
         _lua().set_function("_clear_lightning", &Script::clear_lightning, this);
         _lua().set_function("_stop_player_input", &Script::stop_player_input, this);
         _lua().set_function("_resume_player_input", &Script::resume_player_input, this);
-        register_event_type<components::TargetReachedEvent, components::EventListener<components::TargetReachedEvent>>();
-        register_event_type<components::InteractEvent, components::EventListener<components::InteractEvent>>();
-        register_event_type<components::TimerEvent, components::EventListener<components::TimerEvent>>();
-        register_event_type<components::MapEnteredEvent, components::EventListener<components::MapEnteredEvent>>();
-        register_event_type<components::MapLeftEvent, components::EventListener<components::MapLeftEvent>>();
-        register_event_type<components::MessageClosedEvent, components::EventListener<components::MessageClosedEvent>>();
-        register_event_type<components::MessageOpenedEvent, components::EventListener<components::MessageOpenedEvent>>();
-        register_event_type<components::LightningEvent, components::EventListener<components::LightningEvent>>();
+        register_event_type<components::TargetReachedEvent, engine::EventListener<components::TargetReachedEvent>>();
+        register_event_type<components::InteractEvent, engine::EventListener<components::InteractEvent>>();
+        register_event_type<components::TimerEvent, engine::EventListener<components::TimerEvent>>();
+        register_event_type<components::MapEnteredEvent, engine::EventListener<components::MapEnteredEvent>>();
+        register_event_type<components::MapLeftEvent, engine::EventListener<components::MapLeftEvent>>();
+        register_event_type<components::MessageClosedEvent, engine::EventListener<components::MessageClosedEvent>>();
+        register_event_type<components::MessageOpenedEvent, engine::EventListener<components::MessageOpenedEvent>>();
+        register_event_type<components::LightningEvent, engine::EventListener<components::LightningEvent>>();
     }
 
     entt::entity Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)

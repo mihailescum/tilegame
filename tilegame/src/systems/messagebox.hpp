@@ -4,7 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
 #include "components/messagebox.hpp"
 #include "scenes/uiscene.hpp"
 
@@ -27,7 +26,7 @@ namespace tilegame::systems
      * selected, if any - once the UIScene closes itself and the SceneManager delivers its result
      * back via the close callback given to push_for_result().
      */
-    class MessageBox : public System
+    class MessageBox : public engine::System
     {
     private:
         // The currently open message box, or nullptr if none is up. Non-owning: the SceneManager
@@ -41,7 +40,7 @@ namespace tilegame::systems
         void on_message_closed(std::any result);
 
     public:
-        MessageBox(tilegame::Scene &scene, entt::registry &registry);
+        MessageBox(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
     };

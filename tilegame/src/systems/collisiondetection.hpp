@@ -4,8 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 #include "components/transform.hpp"
 #include "components/movement.hpp"
 #include "components/tilelayer.hpp"
@@ -25,7 +23,7 @@ namespace tilegame::systems
      * MovementController) and before Movement applies that velocity to the
      * Transform.
      */
-    class CollisionDetection : public System
+    class CollisionDetection : public engine::System
     {
     private:
         // Sweeps the entity's shape against every colliding tile in the layer, sorts the
@@ -51,7 +49,7 @@ namespace tilegame::systems
         void circle_circle_resolution(const engine::Circle &a, const engine::Circle &b, glm::vec2 &a_vel) const;
 
     public:
-        CollisionDetection(tilegame::Scene &scene, entt::registry &registry);
+        CollisionDetection(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

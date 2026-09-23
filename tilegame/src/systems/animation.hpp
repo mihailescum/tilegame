@@ -4,8 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -16,10 +14,10 @@ namespace tilegame::systems
      * that also carry a Sprite component get their source rect updated to the
      * new frame each time it changes.
      */
-    class Animation : public System
+    class Animation : public engine::System
     {
     public:
-        Animation(tilegame::Scene &scene, entt::registry &registry);
+        Animation(engine::Scene &scene, entt::registry &registry);
 
         void initialize();
         void update(const engine::GameTime &update_time);

@@ -2,8 +2,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
-
 namespace tilegame::systems
 {
     /**
@@ -20,10 +18,10 @@ namespace tilegame::systems
      * systems::Animation only refreshes it when a frame naturally times out. Must run after
      * systems::Facing.
      */
-    class SpriteOrientation : public System
+    class SpriteOrientation : public engine::System
     {
     public:
-        SpriteOrientation(tilegame::Scene &scene, entt::registry &registry);
+        SpriteOrientation(engine::Scene &scene, entt::registry &registry);
 
         void update(const engine::GameTime &update_time);
     };

@@ -2,11 +2,9 @@
 
 #include <algorithm>
 
-#include "components/event.hpp"
-
 namespace tilegame::systems
 {
-    Daytime::Daytime(tilegame::Scene &scene, entt::registry &registry)
+    Daytime::Daytime(engine::Scene &scene, entt::registry &registry)
         : System(scene, registry), _now(0), _day_duration(0), _speedup(1.0)
     {
     }
@@ -32,22 +30,22 @@ namespace tilegame::systems
         blend_shader->set("exposure", 1.0f);
 
         const auto entity = _registry.create();
-        _registry.emplace<components::EventListener<components::SetDaytimeMarksEvent>>(
+        _registry.emplace<engine::EventListener<components::SetDaytimeMarksEvent>>(
             entity,
             [this](const std::string &, const components::SetDaytimeMarksEvent &event, entt::entity, entt::entity)
             { _times_of_day = event.marks; },
             entt::null);
-        _registry.emplace<components::EventListener<components::SetDaytimeTimeEvent>>(
+        _registry.emplace<engine::EventListener<components::SetDaytimeTimeEvent>>(
             entity,
             [this](const std::string &, const components::SetDaytimeTimeEvent &event, entt::entity, entt::entity)
             { _now = event.seconds_since_midnight; },
             entt::null);
-        _registry.emplace<components::EventListener<components::SetDaytimeSpeedupEvent>>(
+        _registry.emplace<engine::EventListener<components::SetDaytimeSpeedupEvent>>(
             entity,
             [this](const std::string &, const components::SetDaytimeSpeedupEvent &event, entt::entity, entt::entity)
             { _speedup = event.speedup; },
             entt::null);
-        _registry.emplace<components::EventListener<components::SetDaytimeDayDurationEvent>>(
+        _registry.emplace<engine::EventListener<components::SetDaytimeDayDurationEvent>>(
             entity,
             [this](const std::string &, const components::SetDaytimeDayDurationEvent &event, entt::entity, entt::entity)
             { _day_duration = event.seconds; },

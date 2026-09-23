@@ -4,7 +4,6 @@
 
 #include "engine.hpp"
 
-#include "system.hpp"
 #include "components/daytime.hpp"
 
 namespace tilegame::systems
@@ -24,7 +23,7 @@ namespace tilegame::systems
      * systems::Script or Lua at all; there is currently no way to read the cycle's state back
      * from Lua (only to set it).
      */
-    class Daytime : public System
+    class Daytime : public engine::System
     {
     private:
         engine::Shader *_daytime_shader;
@@ -35,7 +34,7 @@ namespace tilegame::systems
         double _speedup;   // How many ingame seconds pass in one real world second
 
     public:
-        Daytime(tilegame::Scene &scene, entt::registry &registry);
+        Daytime(engine::Scene &scene, entt::registry &registry);
 
         void load_content();
         void update(const engine::GameTime &update_time);

@@ -2,11 +2,10 @@
 
 #include "components/animation.hpp"
 #include "components/sprite.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    Animation::Animation(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    Animation::Animation(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -16,8 +15,8 @@ namespace tilegame::systems
 
     void Animation::update(const engine::GameTime &update_time)
     {
-        const auto animation_entities = _registry.view<components::Animation>(entt::exclude<components::Inactive>);
-        const auto sprite_entities = _registry.view<const components::Animation, const components::Sprite>(entt::exclude<components::Inactive>);
+        const auto animation_entities = _registry.view<components::Animation>(entt::exclude<engine::Inactive>);
+        const auto sprite_entities = _registry.view<const components::Animation, const components::Sprite>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, animation] : animation_entities.each())
         {

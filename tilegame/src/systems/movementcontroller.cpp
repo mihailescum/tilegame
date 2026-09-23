@@ -8,11 +8,10 @@
 #include "components/target.hpp"
 #include "components/speed.hpp"
 #include "components/direction.hpp"
-#include "components/inactive.hpp"
 
 namespace tilegame::systems
 {
-    MovementController::MovementController(tilegame::Scene &scene, entt::registry &registry) : System(scene, registry)
+    MovementController::MovementController(engine::Scene &scene, entt::registry &registry) : System(scene, registry)
     {
     }
 
@@ -45,7 +44,7 @@ namespace tilegame::systems
 
     void MovementController::update_direction_from_target(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<components::Direction, const components::Target, const components::Transform, const components::Speed>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<components::Direction, const components::Target, const components::Transform, const components::Speed>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, direction, target, transform, speed] : view.each())
         {
@@ -64,7 +63,7 @@ namespace tilegame::systems
 
     void MovementController::update_movement(const engine::GameTime &update_time)
     {
-        auto view = _registry.view<components::Movement, const components::Direction, const components::Speed>(entt::exclude<components::Inactive>);
+        auto view = _registry.view<components::Movement, const components::Direction, const components::Speed>(entt::exclude<engine::Inactive>);
 
         for (auto &&[entity, movement, direction, speed] : view.each())
         {
