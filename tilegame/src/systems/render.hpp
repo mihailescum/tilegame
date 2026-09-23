@@ -32,13 +32,8 @@ namespace tilegame::systems
     class Render : public engine::System
     {
     private:
-        // How much of a components::Depth bucket's headroom one world-space unit of distance
-        // from components::DepthOrigin.y consumes. Chosen so that even the worst case (an entity
-        // up to ~2x components::DepthOrigin::CHUNK_SIZE away from the origin, which can happen
-        // right at a chunk boundary) stays comfortably within one bucket's gap to the next -
-        // 2 * 65536 * 0.000002 =~ 0.26, well inside e.g. the 0.49 gap between the dynamic bucket
-        // (0.5) and weather's (0.99).
-        static constexpr float DEPTH_FINE_SCALE = 0.000002f;
+        static constexpr float DEPTH_FINE_SCALE = 0.0001;
+        static constexpr float MAX_Z_VALUE_INV = 1.0f / (2 << 16);
 
         // Owned here rather than by Tilegame/Game: nothing outside of Render draws anything, so
         // there's no reason for the SpriteBatch(es)/PostProcessor to live any higher up (unless/until

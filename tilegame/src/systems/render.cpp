@@ -276,8 +276,8 @@ namespace tilegame::systems
         }
     }
 
-    float Render::compute_z(float depth_base, float world_y, float depth_origin_y) const
+    inline float Render::compute_z(float depth_base, float world_y, float depth_origin_y) const
     {
-        return depth_base + (world_y - depth_origin_y) * DEPTH_FINE_SCALE;
+        return (depth_base + (world_y - depth_origin_y) * DEPTH_FINE_SCALE) * MAX_Z_VALUE_INV;
     }
 }

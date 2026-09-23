@@ -57,16 +57,6 @@ local function tile_collision_shape(tile_def)
     return nil
 end
 
--- Maps a tile layer's index in its Tiled file into an actual Z (components::Depth.z is used
--- as-is by systems::Render, with no further scaling - see that component). SpriteBatch's ortho
--- projection covers Z in [-1, 1] with GL_GREATER (a larger Z wins - see
--- engine::graphics::SpriteBatch::begin()), so a higher layer index, meant to sit in front of
--- lower ones, gets a larger value. All tiles are static for now - every cell in a layer shares
--- this one Z; there is no per-tile/dynamic case.
-local function layer_z(z_index)
-    return z_index * 0.01
-end
-
 local function read_property(properties, name)
     -- A Tiled tile/object with no custom properties at all omits the "properties" key entirely
     -- (e.g. a tile with only an objectgroup for collision) rather than giving an empty array.
@@ -84,7 +74,7 @@ end
 -- The shared bucket characters sort in - see player.cpp's and create_sprite_entity's own
 -- _Depth(0.5); kept in sync with those by hand, since there's no single shared constant for it
 -- on the Lua side.
-local DYNAMIC_DEPTH = 0.5
+local DYNAMIC_DEPTH = 96.0
 
 -- A tile's depth anchor is its custom property `depth_anchor`, if present - marks it as needing
 -- to sort against characters using its own row (see systems::Render's draw_tilelayer) instead of
@@ -191,7 +181,7 @@ local function create_tile_layer_entity(map_data, tilesets, layer, z_index, map_
     -- Baked into each cell at load time (see TileLayer::TileData::depth) - this layer's own
     -- static bucket, unless that specific tile has a depth_anchor (see tile_depth_anchor), in
     -- which case it joins DYNAMIC_DEPTH's bucket instead.
-    local layer_depth = layer_z(z_index)
+    local layer_depth = z_index
 
     local cells = {}
     for y = 0, layer.height - 1 do

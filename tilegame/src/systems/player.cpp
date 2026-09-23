@@ -44,7 +44,7 @@ namespace tilegame::systems
         // see engine::graphics::SpriteBatch::create()) - must beat every tile layer's Z
         // (maploader.lua's layer_z(), currently 0 and ascending) under the (GL_GREATER - larger
         // wins) depth test, or the player fails against the ground and disappears behind it.
-        _registry.emplace<components::Depth>(_player1_entity, 0.5f);
+        _registry.emplace<components::Depth>(_player1_entity, 96.0f);
         _registry.emplace<components::Direction>(_player1_entity);
         _registry.emplace<components::Movement>(_player1_entity, glm::vec2(), true);
         _registry.emplace<components::Speed>(_player1_entity, 200.0);
