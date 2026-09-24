@@ -1,14 +1,14 @@
 {
     "maps": [
         {
-            "fileName": "../maps/map1.tmj",
+            "fileName": "../maps/grass.tmj",
             "height": 1280,
             "width": 1280,
             "x": -640,
             "y": -640
         },
         {
-            "fileName": "../maps/map2.tmj",
+            "fileName": "../maps/snow.tmj",
             "height": 1280,
             "width": 1280,
             "x": 640,

@@ -24,7 +24,7 @@ namespace engine::tilemap
     {
     private:
         inline static const std::string NAME_COLLISION_SHAPE = "collision";
-        inline static const std::string NAME_IMAGE_LUMINOSITY = "image_luminosity";
+        inline static const std::string NAME_IMAGE_LUMINOSITY = "texture_bloom";
 
         std::vector<Tile> _tiles;
         std::unique_ptr<const Shape> parse_shape(const tson::Object &object) const;

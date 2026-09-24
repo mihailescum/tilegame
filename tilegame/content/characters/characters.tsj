@@ -6,13 +6,13 @@
  "name":"characters",
  "properties":[
         {
-         "name":"image_luminosity",
+         "name":"texture_bloom",
          "type":"file",
-         "value":"..\/textures\/sprite_sheet_32x32_luminosity.png"
+         "value":"..\/textures\/sprite_sheet_32x32_bloom.png"
         }],
  "spacing":0,
  "tilecount":80,
- "tiledversion":"1.10.2",
+ "tiledversion":"1.12.2",
  "tileheight":32,
  "tiles":[
         {
@@ -32,6 +32,7 @@
                      "height":20,
                      "id":8,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"collision",
                      "visible":true,
@@ -219,6 +220,7 @@
                      "height":20,
                      "id":1,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"collision",
                      "visible":true,
@@ -298,6 +300,7 @@
                      "height":20,
                      "id":1,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"collision",
                      "visible":true,
@@ -349,6 +352,7 @@
                      "height":20,
                      "id":1,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"",
                      "visible":true,
@@ -400,6 +404,7 @@
                      "height":20,
                      "id":3,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"collision",
                      "visible":true,
@@ -479,6 +484,7 @@
                      "height":20,
                      "id":1,
                      "name":"",
+                     "opacity":1,
                      "rotation":0,
                      "type":"collision",
                      "visible":true,
