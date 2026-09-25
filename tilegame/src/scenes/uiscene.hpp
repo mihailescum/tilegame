@@ -52,6 +52,7 @@ namespace tilegame::scenes
         // message, freezing `_lines` so the last line doesn't scroll. A further Enter then closes
         // the whole scene instead of popping `_lines`.
         bool _showing_options = false;
+        bool _message_opened_this_frame = false;
 
         bool _enter_was_down = false;
         bool _up_was_down = false;

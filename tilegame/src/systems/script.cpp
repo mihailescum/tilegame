@@ -68,6 +68,20 @@ namespace tilegame::systems
 
     void Script::load_content()
     {
+        // TODO: Once the player is loaded in lua, this has to go
+
+        const auto players = _registry.view<const components::Player>(entt::exclude<engine::Inactive>);
+        for (auto &&[entity, player] : players.each())
+        {
+            switch (player())
+            {
+            case 1:
+            {
+                _lua()["player1_entity"] = entity;
+            }
+            }
+        }
+
         // Global configuration scripts, run once at startup - deliberately here rather than in
         // initialize(), see the declaration in script.hpp for why.
         execute_script("content/scripts/maploader.lua");

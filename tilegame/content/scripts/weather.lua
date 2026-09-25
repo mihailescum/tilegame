@@ -79,12 +79,12 @@ local function start_snow()
     _set_weather_precipitation(SNOW, SNOW_AREA)
 end
 
-local function stop_weather()
+local function end_weather()
     _set_weather_precipitation()
 end
 
 local weather = {...}
 weather.start_rain = start_rain
 weather.start_snow = start_snow
-weather.stop_weather = stop_weather
+weather.end_weather = end_weather
 return weather

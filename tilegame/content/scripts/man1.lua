@@ -48,16 +48,3 @@ _registry:emplace(timer1, timer_component)
 
 _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
 _add_event_listener(_TargetReachedEvent, coroutine.wrap(handle_target_reached_event), entity)
-
-print("Man loaded")
-
--- Manual test for show_message: prints a message that should wrap across more
--- than two lines, blocking movement until the player has pressed Enter through
--- all of them.
-
-_show_message("Hello! This is a longer test message that should wrap across more than two lines when the dialog box is on screen.", false, {"yes", "no"})
-_stop_player_input(1)
-_add_event_listener(_MessageClosedEvent, function(event_type, event, source)
-    print("Selected option: " .. event.selected_option)
-    _resume_player_input(1)
-end)

@@ -26,6 +26,7 @@ namespace tilegame::systems
 
     void Player::initialize()
     {
+        _player1_entity = _registry.create();
     }
 
     void Player::load_content()
@@ -37,7 +38,6 @@ namespace tilegame::systems
 
         const engine::graphics::Sprite &player1_sprite = (*characters)["man"];
 
-        _player1_entity = _registry.create();
         _registry.emplace<components::Player>(_player1_entity, 1);
         _registry.emplace<components::Transform>(_player1_entity);
         // Arbitrary placeholder for now (SpriteBatch's ortho projection covers Z in [-1, 1] -

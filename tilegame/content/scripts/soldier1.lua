@@ -10,13 +10,18 @@ local function handle_timer_event(event_type, event, source)
 end
 
 local function handle_interact_event(event_type, event, source)
-    print("Hello")
+    _show_message("Hello!\nI'm a magician...\nWhich action do you want me to do?", false, {"Earthquake", "Stop the rain"})
+    _stop_player_input(1)
+    _add_event_listener(_MessageClosedEvent, function(event_type, event, source)
+    print("Selected option: " .. event.selected_option)
+    _resume_player_input(1)
+end)
 end
 
-local timer1 = _registry:create()
-local timer_component = _Timer(10, true)
-_registry:emplace(timer1, timer_component)
+-- local timer1 = _registry:create()
+-- local timer_component = _Timer(10, true)
+-- _registry:emplace(timer1, timer_component)
+-- _add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
 
-_add_event_listener(_TimerEvent, coroutine.wrap(handle_timer_event), timer1)
-_add_event_listener(_InteractEvent, handle_interact_event, entity)
 _registry:emplace(entity, _Interactable())
+_add_event_listener(_InteractEvent, handle_interact_event, entity)

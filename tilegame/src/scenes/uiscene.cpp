@@ -105,6 +105,7 @@ namespace tilegame::scenes
         _options = options;
         _selected_option = 0;
         _showing_options = false;
+        _message_opened_this_frame = true;
 
         return opened;
     }
@@ -137,6 +138,12 @@ namespace tilegame::scenes
         const bool enter_is_down = window.is_key_pressed(GLFW_KEY_ENTER);
         const bool enter_pressed = enter_is_down && !_enter_was_down;
         _enter_was_down = enter_is_down;
+
+        if (_message_opened_this_frame)
+        {
+            _message_opened_this_frame = false;
+            return;
+        }
 
         if (!enter_pressed)
         {
