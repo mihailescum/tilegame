@@ -23,7 +23,7 @@ namespace tilegame::systems
      * rather than iterated as a view, since there is only ever one. Also draws debug overlays for
      * Collider/TileLayer collision shapes (depth testing off, always visible). Owns the
      * PostProcessor (day/night tint, then a two-pass Gaussian blur of the per-sprite luminosity
-     * output - gated by components::NIGHT_AMOUNT_ID, set by systems::Daytime, so light sources
+     * output - gated by the daytime texture at components::DAYTIME_TIME_ID, set by systems::Daytime, so light sources
      * only bloom once it's actually dark - additively blended back onto the tinted scene), which
      * wraps that whole scene. The dialog/options message box is no longer drawn here - it's
      * scenes::UIScene, pushed on top of this scene and drawn after it (see SceneManager::draw()),
@@ -41,6 +41,11 @@ namespace tilegame::systems
         // the same GL VAO/VBO/shader/FBOs instead of recreating them per scene).
         engine::graphics::SpriteBatch<engine::Texture2DContainer<2>> _spritebatch;
         engine::Shader *_spritebatch_luminosity_shader;
+        // Tint per time of day along its x axis; sampled by both the daytime post-processing
+        // effect and _spritebatch_luminosity_shader (bound to DAYTIME_TEXTURE_UNIT).
+        const engine::Texture2D *_daytime_texture;
+        // Units 0/1 are taken by the SpriteBatch's Texture2DContainer<2>.
+        static constexpr GLenum DAYTIME_TEXTURE_UNIT = 2;
         // Day/night tint + blend effect chain; wraps everything drawn in draw() except the
         // dialog box, which is drawn after apply_effects().
         engine::graphics::PostProcessor _postprocessor;

@@ -57,18 +57,17 @@ local function tile_collision_shape(tile_def)
     return nil
 end
 
-local function read_property(properties, name)
+local function read_property(properties, name, default)
     -- A Tiled tile/object with no custom properties at all omits the "properties" key entirely
     -- (e.g. a tile with only an objectgroup for collision) rather than giving an empty array.
-    if not properties then
-        return nil
-    end
-    for _, property in ipairs(properties) do
-        if property.name == name then
-            return property.value
+    if properties then
+        for _, property in ipairs(properties) do
+            if property.name == name then
+                return property.value
+            end
         end
     end
-    return nil
+    return default
 end
 
 -- The shared bucket characters sort in - see player.cpp's and create_sprite_entity's own
@@ -235,8 +234,8 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     -- Mirrors engine::graphics::Sprite::parse(): the SpriteState lookup key is "<direction>_
     -- <action>" when the tile has a "direction" property (see characters.tsj), otherwise just
     -- "<action>" as-is.
-    local action = read_property(tile_def.properties, "state")
-    local direction = read_property(tile_def.properties, "direction")
+    local action = read_property(object.properties, "state", read_property(tile_def.properties, "state"))
+    local direction = read_property(object.properties, "direction", read_property(tile_def.properties, "direction"))
     local state_name = direction and (direction .. "_" .. action) or action
     local sprite_class = tileset.spritesheet:get_sprite(tile_def.type)
     local source_rect = calculate_source_rect(tileset, local_id)
@@ -250,7 +249,6 @@ local function create_sprite_entity(tilesets, object, map_position, map_dir)
     -- (0 and ascending) so they win the (GL_GREATER - larger wins) depth test against the ground.
     _registry:emplace(entity, _Depth(0.5))
     _registry:emplace(entity, _Renderable2D())
-
     _registry:emplace(entity, _Animation(sprite_class, state_name))
     _registry:emplace(entity, _Sprite(tileset.texture, tileset.luminosity, source_rect))
 

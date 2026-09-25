@@ -29,7 +29,7 @@
 -- Below are rain/snow presets any script can reuse or override; feel free to add more (e.g.
 -- ash, falling leaves) the same way.
 
-RAIN = _ParticleEmitter(
+local RAIN = _ParticleEmitter(
     300,                              -- rate: particles/second
     vec2(0.0, 1.0), math.pi / 32.0,   -- spread: mostly straight down, slight variance
     600.0, 900.0,                     -- speed range
@@ -40,9 +40,9 @@ RAIN = _ParticleEmitter(
 -- A band starting 700 units above the player and 250 tall, i.e. well above the visible top
 -- edge (~450 units above player at this window size) - rain speed (600-900) x lifetime (1-1.5s)
 -- covers 600-1350 units, enough to fall all the way through the visible height from there.
-RAIN_AREA = _Rectangle(vec2(-800.0, -700.0), vec2(1600.0, 250.0))
+local RAIN_AREA = _Rectangle(vec2(-800.0, -700.0), vec2(1600.0, 250.0))
 
-SNOW = _ParticleEmitter(
+local SNOW = _ParticleEmitter(
     150,
     vec2(0.0, 1.0), math.pi / 6.0,    -- wider spread for drifting motion
     40.0, 90.0,
@@ -52,7 +52,7 @@ SNOW = _ParticleEmitter(
     _Rectangle(vec2(0.0, 0.0), vec2(64.0, 64.0))) -- soft round sprite
 -- Snow falls much slower, so its band sits closer to the top edge - it doesn't need as much
 -- room above the screen to visibly enter from the top.
-SNOW_AREA = _Rectangle(vec2(-800.0, -550.0), vec2(1600.0, 1000.0))
+local SNOW_AREA = _Rectangle(vec2(-800.0, -550.0), vec2(1600.0, 1000.0))
 
 -- Example, called from any script to bring in a storm and clear it later:
 --   _set_weather_tint(_Color(0.55, 0.55, 0.65, 1.0), 4.0) -- darken over 4 seconds
@@ -71,6 +71,20 @@ SNOW_AREA = _Rectangle(vec2(-800.0, -550.0), vec2(1600.0, 1000.0))
 --       RAIN.speed.x, RAIN.speed.y, RAIN.lifetime.x, RAIN.lifetime.y,
 --       RAIN.scale.x, RAIN.scale.y, RAIN.color, RAIN.source_rect)
 
-_set_weather_precipitation(SNOW, SNOW_AREA)
-_shake_camera_horizontal(500, 20, 5) -- chase within +-20 units at up to 500 units/sec, for 5 seconds
-_set_lightning(1, 2, 0.2)
+local function start_rain()
+    _set_weather_precipitation(RAIN, RAIN_AREA)
+end
+
+local function start_snow()
+    _set_weather_precipitation(SNOW, SNOW_AREA)
+end
+
+local function stop_weather()
+    _set_weather_precipitation()
+end
+
+local weather = {...}
+weather.start_rain = start_rain
+weather.start_snow = start_snow
+weather.stop_weather = stop_weather
+return weather

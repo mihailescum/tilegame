@@ -8,9 +8,12 @@ in vec4 VertexColor;
 
 uniform sampler2D Texture;
 uniform sampler2D TextureLuminosity;
-// 0 in full daylight, 1 at full night (see systems::Daytime); gates how strongly light
-// sources bloom, so they only visibly glow once it's actually dark.
-uniform float night_amount;
+// Tint per time of day along x, and the current time of day normalized to [0, 1) (see
+// systems::Daytime) - the same inputs as daytime.frag. The tint's inverse perceptual
+// brightness gates how strongly light sources bloom, so they only visibly glow once it's
+// actually dark.
+uniform sampler2D daytime_tint;
+uniform float time;
 // True for the opaque (depth-tested) pass - tiles and characters, drawn with alpha blending
 // off - so a texture's fully-transparent regions are discarded instead of painting solid
 // garbage into the color/depth buffers. False for the particle pass, which blends real partial
@@ -26,6 +29,7 @@ void main()
     }
 
     vec4 luminosity = texture(TextureLuminosity, TexCoord) * VertexColor;
+    float night_amount = texture(daytime_tint, vec2(time, 0.75)).r;
 
     FragColor = color;
     FragLuminosity = luminosity * night_amount;

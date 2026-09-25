@@ -56,7 +56,7 @@ namespace tilegame::systems
         _registry.emplace<components::Renderable2D>(_player1_entity);
         _registry.emplace<components::Sprite>(_player1_entity, engine::Texture2DContainer<2>{&characters_texture, &characters_texture_luminosity}, player1_animation_component.get_current_frame().source_rect);
         _registry.emplace<components::Facing>(_player1_entity);
-        _registry.emplace<components::SpriteOrientation>(_player1_entity, &player1_sprite, "down_walking", components::SpriteOrientation::Direction::Down);
+        _registry.emplace<components::SpriteOrientation>(_player1_entity, &player1_sprite, player1_initial_action, player1_initial_direction);
 
         const auto current_animation_tile = characters->get(player1_animation_component.get_current_frame().id);
         if (current_animation_tile->collision_shape)

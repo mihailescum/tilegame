@@ -38,6 +38,7 @@ namespace tilegame::systems
         _spritebatch_luminosity_shader->use();
         _spritebatch_luminosity_shader->set("Texture", 0);
         _spritebatch_luminosity_shader->set("TextureLuminosity", 1);
+        _spritebatch_luminosity_shader->set("daytime_tint", static_cast<int>(DAYTIME_TEXTURE_UNIT));
 
         const engine::Texture2D *rect_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_rect", "content/textures/white_rect.png");
         const engine::Texture2D *circle_tex = _scene.game().resource_manager().load_resource<engine::Texture2D>("white_circle", "content/textures/white_circle.png");
@@ -50,9 +51,12 @@ namespace tilegame::systems
         // onto the tinted scene.
         _postprocessor.add_color_attachments(2);
 
+        _daytime_texture = _scene.game().resource_manager().load_resource<engine::Texture2D>(
+            "daytime_texture", "content/textures/daytime_texture.png");
         auto &daytime_shader = _scene.game().resource_manager().get<engine::Shader>("daytime_shader");
         engine::graphics::PostProcessingEffect daytime_effect(_scene.game().graphicsdevice(), daytime_shader);
         daytime_effect.input_textures().push_back(std::ref(_postprocessor.color_attachment_at(0)));
+        daytime_effect.input_textures().push_back(*_daytime_texture);
         daytime_effect.add_color_attachments(1);
 
         // Two independent Shader resources (not shared with each other) compiled from the same
@@ -117,7 +121,8 @@ namespace tilegame::systems
         const float depth_origin_y = _registry.get<const components::DepthOrigin>(camera_entity).y;
 
         _spritebatch_luminosity_shader->use();
-        _spritebatch_luminosity_shader->set("night_amount", _registry.ctx().get<float>(components::NIGHT_AMOUNT_ID));
+        _spritebatch_luminosity_shader->set("time", _registry.ctx().get<float>(components::DAYTIME_TIME_ID));
+        engine::Texture2D::use(*_daytime_texture, DAYTIME_TEXTURE_UNIT);
 
         // Opaque pass: every tile and sprite, alpha blending off. No draw-order bookkeeping of
         // any kind here - the GPU depth test (DepthMode::TestAndWrite) resolves overlapping
@@ -168,13 +173,13 @@ namespace tilegame::systems
             {
                 glm::vec2 pos = position + shape_circle->origin - shape_circle->radius;
                 engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
+                //_spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color);
             }
             else if (const auto shape_rect = std::get_if<engine::Rectangle>(&collider()))
             {
                 glm::vec2 pos = position + shape_rect->position;
                 engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color);
+                //_spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color);
             }
         }
         engine::Color shape_color_tiles(0.93, 0.7, 0.16, 0.7);
@@ -200,13 +205,13 @@ namespace tilegame::systems
                     {
                         glm::vec2 pos = position + data.destination_rect.position + shape_circle->origin - shape_circle->radius;
                         engine::Rectangle dest_rect(pos, glm::vec2(shape_circle->radius * 2));
-                        _spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
+                        //_spritebatch.draw(_circle_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                     else if (const auto shape_rect = std::get_if<engine::Rectangle>(&(*data.collision_shape)))
                     {
                         glm::vec2 pos = position + data.destination_rect.position + shape_rect->position;
                         engine::Rectangle dest_rect(pos, shape_rect->dimensions);
-                        _spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
+                        //_spritebatch.draw(_rect_tex, dest_rect, nullptr, shape_color_tiles);
                     }
                 }
             }

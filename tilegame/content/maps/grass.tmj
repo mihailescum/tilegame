@@ -219,16 +219,26 @@
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"down"
+                        }, 
+                        {
                          "name":"script",
                          "type":"string",
                          "value":"..\/scripts\/soldier1.lua"
+                        }, 
+                        {
+                         "name":"state",
+                         "type":"string",
+                         "value":"standing"
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":64,
-                 "y":480
+                 "x":416,
+                 "y":608
                 }, 
                 {
                  "height":32,
@@ -250,16 +260,26 @@
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
                          "name":"script",
                          "type":"string",
                          "value":"..\/scripts\/man1.lua"
+                        }, 
+                        {
+                         "name":"state",
+                         "type":"string",
+                         "value":"walking"
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":512,
-                 "y":256
+                 "x":704,
+                 "y":544
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -478,7 +498,7 @@
         {
          "name":"script",
          "type":"string",
-         "value":"..\/scripts\/map1.lua"
+         "value":"..\/scripts\/grass.lua"
         }],
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

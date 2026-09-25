@@ -417,7 +417,7 @@
         {
          "name":"script",
          "type":"string",
-         "value":"..\/scripts\/map2.lua"
+         "value":"..\/scripts\/snow.lua"
         }],
  "renderorder":"right-down",
  "tiledversion":"1.12.2",
