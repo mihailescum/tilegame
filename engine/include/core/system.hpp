@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "entt/entt.hpp"
 
 #include "scene.hpp"
@@ -37,6 +39,13 @@ namespace engine
         // events with no Lua usertype of their own - delivery needs it regardless of who's
         // listening.
         //
+        // Listeners may add or remove listeners - including themselves, e.g. a one-shot Lua
+        // callback calling `_remove_event_listener` on its own handle - while this is
+        // delivering: the listener set is snapshotted up front (so listeners added meanwhile
+        // only get the *next* event), any removed or deactivated before their turn are skipped,
+        // and each listener is copied before being called, so destroying it mid-call doesn't
+        // destroy the callback that's still executing.
+        //
         // Caution: since this calls arbitrary listener callbacks synchronously, calling it from
         // inside a view/each() loop over component types a listener might structurally add or
         // remove (as opposed to just modifying values of) can invalidate that iteration. Safe
@@ -46,10 +55,17 @@ namespace engine
         void raise_event(entt::entity source = entt::null, entt::entity target = entt::null, Args &&...args) const
         {
             const Event event{std::forward<Args>(args)...};
-            const auto listener_entities = _registry.view<const EventListener>(entt::exclude<Inactive>);
+            const auto listener_view = _registry.view<const EventListener>(entt::exclude<Inactive>);
+            const std::vector<entt::entity> listener_entities(listener_view.begin(), listener_view.end());
             for (const auto listener : listener_entities)
             {
-                listener_entities.template get<const EventListener>(listener)(Event::EVENT_TYPE, event, source, target);
+                if (!_registry.valid(listener) || !_registry.all_of<EventListener>(listener) || _registry.all_of<Inactive>(listener))
+                {
+                    continue;
+                }
+
+                const EventListener callback = _registry.get<const EventListener>(listener);
+                callback(Event::EVENT_TYPE, event, source, target);
             }
         }
 

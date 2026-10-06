@@ -17,9 +17,13 @@ namespace tilegame::components
     struct Interactable
     {
         Interactable() = default;
+        Interactable(float max_distance, float cos_max_angle) : max_distance(max_distance), cos_max_angle(cos_max_angle) {}
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);
+
+        float max_distance;
+        float cos_max_angle;
     };
 
     /**
@@ -36,9 +40,13 @@ namespace tilegame::components
     {
         inline static const std::string EVENT_TYPE = "INTERACT_EVENT";
 
-        InteractEvent() {}
+        InteractEvent() = default;
+        InteractEvent(float distance, float cos_angle) : distance(distance), cos_angle(cos_angle) {}
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);
+
+        float distance;
+        float cos_angle;
     };
 } // namespace tilegame::components

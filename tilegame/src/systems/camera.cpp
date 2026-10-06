@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -14,26 +15,17 @@
 #include "components/camerashake.hpp"
 #include "components/player.hpp"
 #include "components/pin.hpp"
-#include "components/timer.hpp"
 
 namespace tilegame::systems
 {
     namespace
     {
-        using namespace entt::literals;
-        // Registry context ids (registry.ctx()) under which the two shake axis entities' handles
-        // are stored, for the entire program's life once load_content() has run. Private to this
-        // file - unlike components::CAMERA_ENTITY_ID, nothing outside systems::Camera needs to
-        // find these.
-        constexpr auto HORIZONTAL_SHAKE_ENTITY_ID = "camera_shake_horizontal_entity"_hs;
-        constexpr auto VERTICAL_SHAKE_ENTITY_ID = "camera_shake_vertical_entity"_hs;
-
-        // How often a shake axis picks a new random jitter target while its Timer is still
-        // running. Purely a timing knob - the jitter's strength is components::CameraShakeAxis::offset,
+        // How often a shake axis picks a new random jitter target while it's still running.
+        // Purely a timing knob - the jitter's strength is components::CameraShakeAxis::offset,
         // given by the caller, not derived from this.
         constexpr float SHAKE_RETARGET_INTERVAL = 0.05f;
-        // Once a shake axis is settling (its Timer has rung), how close to 0 `current_offset`
-        // must get before the axis is considered fully at rest again and tagged Inactive.
+        // Once a shake axis is settling (its duration has run out), how close to 0
+        // `current_offset` must get before the axis is considered fully at rest again.
         constexpr float SHAKE_SETTLE_EPSILON = 0.1f;
     }
 
@@ -74,63 +66,67 @@ namespace tilegame::systems
 
         _registry.ctx().emplace_as<entt::entity>(components::CAMERA_ENTITY_ID, camera_entity);
 
-        const auto horizontal_axis_entity = create_shake_axis_entity();
-        _registry.ctx().emplace_as<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID, horizontal_axis_entity);
-
-        const auto vertical_axis_entity = create_shake_axis_entity();
-        _registry.ctx().emplace_as<entt::entity>(VERTICAL_SHAKE_ENTITY_ID, vertical_axis_entity);
-
-        // On a *separate* entity - never tagged Inactive - since both axis entities start
-        // Inactive and raise_event()'s listener view excludes Inactive entities: attaching
-        // these to the axis entities themselves would mean the very event whose job is to
-        // remove Inactive could never reach them.
+        // On a *separate*, never Inactive entity, following the same convention as
+        // systems::Lightning/Weather's control entities.
         const auto control_entity = _registry.create();
-        _registry.emplace<engine::EventListener<components::ShakeCameraHorizontalEvent>>(
+        _registry.emplace<engine::EventListener<components::ShakeCameraEvent>>(
             control_entity,
-            [this, horizontal_axis_entity](const std::string &, const components::ShakeCameraHorizontalEvent &event, entt::entity, entt::entity)
+            [this](const std::string &, const components::ShakeCameraEvent &event, entt::entity, entt::entity shake_entity)
             {
-                _registry.replace<components::CameraShakeAxis>(horizontal_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
-                _registry.emplace_or_replace<components::Timer>(horizontal_axis_entity, event.duration, false);
-                _registry.remove<engine::Inactive>(horizontal_axis_entity);
+                if (!_registry.valid(shake_entity))
+                {
+                    return;
+                }
+
+                auto &shake = _registry.emplace_or_replace<components::CameraShake>(shake_entity);
+                if (event.horizontal)
+                {
+                    shake.horizontal.emplace(*event.horizontal);
+                }
+                if (event.vertical)
+                {
+                    shake.vertical.emplace(*event.vertical);
+                }
             },
             entt::null);
-        _registry.emplace<engine::EventListener<components::ShakeCameraVerticalEvent>>(
+        _registry.emplace<engine::EventListener<components::StopCameraShakeEvent>>(
             control_entity,
-            [this, vertical_axis_entity](const std::string &, const components::ShakeCameraVerticalEvent &event, entt::entity, entt::entity)
+            [this](const std::string &, const components::StopCameraShakeEvent &, entt::entity, entt::entity shake_entity)
             {
-                _registry.replace<components::CameraShakeAxis>(vertical_axis_entity, event.displacement_speed, event.offset, 0.0f, 0.0f, 0.0f, false);
-                _registry.emplace_or_replace<components::Timer>(vertical_axis_entity, event.duration, false);
-                _registry.remove<engine::Inactive>(vertical_axis_entity);
+                if (!_registry.valid(shake_entity) || !_registry.all_of<components::CameraShake>(shake_entity))
+                {
+                    return;
+                }
+
+                auto &shake = _registry.get<components::CameraShake>(shake_entity);
+                for (auto *axis : {&shake.horizontal, &shake.vertical})
+                {
+                    if (*axis)
+                    {
+                        (*axis)->settling = true;
+                    }
+                }
             },
             entt::null);
     }
 
-    entt::entity Camera::create_shake_axis_entity()
+    float Camera::update_shake_axis(std::optional<components::CameraShakeAxis> &axis, float elapsed_time)
     {
-        const auto entity = _registry.create();
-        _registry.emplace<components::CameraShakeAxis>(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false);
-        _registry.emplace<engine::Inactive>(entity);
-
-        // Source-filtered to itself, so it only reacts to the TimerEvent its own Timer raises
-        // and not some unrelated Timer elsewhere in the game - the same native-event mechanism
-        // Lua subscribes to via _add_event_listener.
-        _registry.emplace<engine::EventListener<components::TimerEvent>>(
-            entity,
-            [this, entity](const std::string &, const components::TimerEvent &, entt::entity, entt::entity)
-            { _registry.get<components::CameraShakeAxis>(entity).settling = true; },
-            entity);
-
-        return entity;
-    }
-
-    float Camera::update_shake_axis(entt::entity axis_entity, float elapsed_time)
-    {
-        if (_registry.all_of<engine::Inactive>(axis_entity))
+        if (!axis)
         {
             return 0.0f;
         }
 
-        auto &shake = _registry.get<components::CameraShakeAxis>(axis_entity);
+        auto &shake = *axis;
+
+        if (!shake.settling)
+        {
+            shake.remaining_duration -= elapsed_time;
+            if (shake.remaining_duration <= 0.0f)
+            {
+                shake.settling = true;
+            }
+        }
 
         if (!shake.settling)
         {
@@ -143,9 +139,8 @@ namespace tilegame::systems
         }
         else
         {
-            // Its EventListener<TimerEvent> already fired this frame (see
-            // create_shake_axis_entity()): head smoothly back to center instead of jittering
-            // further.
+            // Duration ran out or the shake was stopped: head smoothly back to center instead
+            // of jittering further.
             shake.target_offset = 0.0f;
         }
 
@@ -155,11 +150,41 @@ namespace tilegame::systems
 
         if (shake.settling && std::abs(shake.current_offset) < SHAKE_SETTLE_EPSILON)
         {
-            shake.current_offset = 0.0f;
-            _registry.emplace<engine::Inactive>(axis_entity);
+            axis.reset();
+            return 0.0f;
         }
 
         return shake.current_offset;
+    }
+
+    glm::vec2 Camera::update_shakes(float elapsed_time)
+    {
+        glm::vec2 offset(0.0f);
+        std::vector<entt::entity> finished_shakes;
+
+        for (auto &&[entity, shake] : _registry.view<components::CameraShake>().each())
+        {
+            offset.x += update_shake_axis(shake.horizontal, elapsed_time);
+            offset.y += update_shake_axis(shake.vertical, elapsed_time);
+
+            if (!shake.horizontal && !shake.vertical)
+            {
+                finished_shakes.push_back(entity);
+            }
+        }
+
+        // Only after the loop: a Lua listener may start a new shake, which would emplace a
+        // CameraShake while the view above is still iterating.
+        for (const auto entity : finished_shakes)
+        {
+            raise_event<components::CameraShakeEndedEvent>(entity);
+            if (_registry.valid(entity))
+            {
+                _registry.destroy(entity);
+            }
+        }
+
+        return offset;
     }
 
     void Camera::update(const engine::GameTime &update_time)
@@ -168,9 +193,7 @@ namespace tilegame::systems
         auto &camera = _registry.get<components::Camera>(camera_entity);
         const auto &transform = _registry.get<const components::Transform>(camera_entity);
 
-        const glm::vec2 shake_offset(
-            update_shake_axis(_registry.ctx().get<entt::entity>(HORIZONTAL_SHAKE_ENTITY_ID), update_time.elapsed_time),
-            update_shake_axis(_registry.ctx().get<entt::entity>(VERTICAL_SHAKE_ENTITY_ID), update_time.elapsed_time));
+        const glm::vec2 shake_offset = update_shakes(update_time.elapsed_time);
 
         glm::vec2 position = transform.position + shake_offset;
         float scale = camera.scale;

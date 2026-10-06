@@ -19,7 +19,7 @@ namespace tilegame::scenes
      * time a `_show_message` Lua call arrives with none already open; subsequent calls while
      * this is still open go through show_message() again instead of pushing a second one.
      * Closes itself (see Scene::close()) once the message - and any options attached to
-     * it - have been dismissed, delivering the selected option (or an empty std::any if there
+     * it - have been dismissed, delivering the selected option's 1-based index (or an empty std::any if there
      * were none) to the callback it was pushed with.
      */
     class UIScene : public engine::Scene
@@ -30,8 +30,6 @@ namespace tilegame::scenes
         static constexpr float BOX_PADDING = 16.0f;
         static constexpr float BOX_MARGIN_BOTTOM = 24.0f;
         static constexpr int VISIBLE_LINES = 2;
-        // Width of the options box, as a fraction of the viewport width.
-        static constexpr float OPTIONS_BOX_WIDTH_RATIO = 0.15f;
         // Gap between the bottom of the options box and the top of the dialog box above which it sits.
         static constexpr float OPTIONS_BOX_MARGIN_BOTTOM = 8.0f;
 

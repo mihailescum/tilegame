@@ -17,7 +17,7 @@ namespace engine
      *
      * Caution: `System::raise_event()`'s listener lookup excludes entities tagged Inactive.
      * Don't put an `EventListener<T>` meant to *remove* an entity's Inactive tag (e.g. "start"
-     * events like SetLightningEvent/ShakeCameraHorizontalEvent) on that same entity - it would
+     * events like SetLightningEvent/ShakeCameraEvent) on that same entity - it would
      * never fire, since the entity is exactly the thing being excluded. Put it on a separate,
      * always-active entity instead (see systems::Lightning/Weather/Camera's `control_entity`/
      * `weather_entity` for the pattern).

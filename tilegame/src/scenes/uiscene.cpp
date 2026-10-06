@@ -152,8 +152,9 @@ namespace tilegame::scenes
 
         if (_showing_options)
         {
-            // Confirm the highlighted option and close, delivering it to whoever pushed this scene.
-            close(_options[_selected_option]);
+            // Confirm the highlighted option and close, delivering its 1-based (Lua-style) index
+            // to whoever pushed this scene.
+            close(static_cast<int>(_selected_option) + 1);
         }
         else if (!_options.empty() && _lines.size() <= static_cast<std::size_t>(VISIBLE_LINES))
         {
@@ -226,7 +227,14 @@ namespace tilegame::scenes
         const float message_box_height = BOX_PADDING * 2 + cell_height * VISIBLE_LINES;
         const float message_box_y = viewport.dimensions.y - BOX_MARGIN_BOTTOM - message_box_height;
 
-        const float box_width = viewport.dimensions.x * OPTIONS_BOX_WIDTH_RATIO;
+        // Sized to fit the longest option plus its "> " selection prefix, capped at the viewport width.
+        std::size_t longest_option_chars = 0;
+        for (const auto &option : _options)
+        {
+            longest_option_chars = std::max(longest_option_chars, option.size());
+        }
+        const float text_width = static_cast<float>((longest_option_chars + 2) * _font->cell_width());
+        const float box_width = std::min(text_width + BOX_PADDING * 2, static_cast<float>(viewport.dimensions.x));
         const float box_height = BOX_PADDING * 2 + cell_height * static_cast<float>(_options.size());
         const float box_x = viewport.dimensions.x - box_width;
         const float box_y = message_box_y - OPTIONS_BOX_MARGIN_BOTTOM - box_height;

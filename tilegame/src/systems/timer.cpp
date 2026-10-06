@@ -22,9 +22,23 @@ namespace tilegame::systems
                 // own via patch()/emplace_or_replace(), which is safe mid-iteration.
                 raise_event<components::TimerEvent>(entity, entt::null, timer.time_total, timer.repeat);
 
-                if (timer.repeat)
+                // Re-fetched rather than reusing `timer`: a listener may have replaced this
+                // entity's Timer (e.g. systems::Lightning re-arming itself for the next strike)
+                // or removed it outright.
+                auto *current = _registry.try_get<components::Timer>(entity);
+                if (!current)
                 {
-                    timer.time_left += timer.time_total;
+                    continue;
+                }
+
+                if (current->time_left > 0)
+                {
+                    // Re-armed by a listener: keep it, rather than erasing/rewinding it below.
+                    _registry.patch<components::Timer>(entity);
+                }
+                else if (current->repeat)
+                {
+                    current->time_left += current->time_total;
                     // Trigger on_update()
                     _registry.patch<components::Timer>(entity);
                 }

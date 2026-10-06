@@ -283,6 +283,7 @@ namespace tilegame::systems
                 { return engine::Inactive(); }),
             sol::meta_function::to_string, &engine::Inactive::to_string);
 
+        components::CameraShakeEndedEvent::register_component(_lua());
         components::Direction::register_component(_lua());
         components::Facing::register_component(_lua());
         components::Interactable::register_component(_lua());
@@ -312,6 +313,8 @@ namespace tilegame::systems
         components::SpriteOrientation::register_component(_lua());
         components::Camera::register_component(_lua());
 
+        _lua()["math"]["isnan"] = [](double x)
+        { return std::isnan(x); };
         _lua().set_function("_run_script", &Script::run_script, this);
         _lua().set_function("_load_json", &Script::load_json, this);
         _lua().set_function("_load_texture", &Script::load_texture, this);
@@ -335,10 +338,12 @@ namespace tilegame::systems
                                 { Script::show_message(text, append, {}); },
                                 [this](const std::string &text, bool append, const sol::table &options)
                                 {
+                                    // Indexed explicitly rather than via pairs-style iteration, whose
+                                    // order is unspecified, so options keep the order written in Lua.
                                     std::vector<std::string> parsed_options;
-                                    for (const auto &option : options)
+                                    for (std::size_t i = 1; i <= options.size(); i++)
                                     {
-                                        parsed_options.push_back(option.second.as<std::string>());
+                                        parsed_options.push_back(options.get<std::string>(i));
                                     }
                                     Script::show_message(text, append, parsed_options);
                                 }));
@@ -352,8 +357,8 @@ namespace tilegame::systems
                                           { Script::set_weather_precipitation(); },
                                           [this](const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
                                           { Script::set_weather_precipitation(emitter, spawn_area); }));
-        _lua().set_function("_shake_camera_horizontal", &Script::shake_camera_horizontal, this);
-        _lua().set_function("_shake_camera_vertical", &Script::shake_camera_vertical, this);
+        _lua().set_function("_shake_camera", &Script::shake_camera, this);
+        _lua().set_function("_stop_camera_shake", &Script::stop_camera_shake, this);
         _lua().set_function("_set_lightning", &Script::set_lightning, this);
         _lua().set_function("_clear_lightning", &Script::clear_lightning, this);
         _lua().set_function("_stop_player_input", &Script::stop_player_input, this);
@@ -366,6 +371,7 @@ namespace tilegame::systems
         register_event_type<components::MessageClosedEvent, engine::EventListener<components::MessageClosedEvent>>();
         register_event_type<components::MessageOpenedEvent, engine::EventListener<components::MessageOpenedEvent>>();
         register_event_type<components::LightningEvent, engine::EventListener<components::LightningEvent>>();
+        register_event_type<components::CameraShakeEndedEvent, engine::EventListener<components::CameraShakeEndedEvent>>();
     }
 
     entt::entity Script::add_event_listener(const sol::table &event, sol::function callback, entt::entity source)
@@ -448,14 +454,42 @@ namespace tilegame::systems
         raise_event<components::ClearWeatherPrecipitationEvent>();
     }
 
-    void Script::shake_camera_horizontal(float displacement_speed, float offset, float duration)
+    entt::entity Script::shake_camera(const sol::table &settings)
     {
-        raise_event<components::ShakeCameraHorizontalEvent>(entt::null, entt::null, displacement_speed, offset, duration);
+        const auto parse_axis = [&settings](const char *axis) -> std::optional<components::CameraShakeAxisSettings>
+        {
+            const sol::optional<sol::table> axis_settings = settings[axis];
+            if (!axis_settings)
+            {
+                return std::nullopt;
+            }
+
+            const sol::optional<float> displacement_speed = (*axis_settings)["displacement_speed"];
+            const sol::optional<float> offset = (*axis_settings)["offset"];
+            const sol::optional<float> duration = (*axis_settings)["duration"];
+            if (!displacement_speed || !offset || !duration)
+            {
+                throw sol::error(std::string("_shake_camera: '") + axis + "' needs numeric displacement_speed, offset and duration");
+            }
+
+            return components::CameraShakeAxisSettings{*displacement_speed, *offset, *duration};
+        };
+
+        const auto horizontal = parse_axis("horizontal");
+        const auto vertical = parse_axis("vertical");
+        if (!horizontal && !vertical)
+        {
+            throw sol::error("_shake_camera: expected a 'horizontal' and/or 'vertical' table");
+        }
+
+        const auto shake = _registry.create();
+        raise_event<components::ShakeCameraEvent>(entt::null, shake, horizontal, vertical);
+        return shake;
     }
 
-    void Script::shake_camera_vertical(float displacement_speed, float offset, float duration)
+    void Script::stop_camera_shake(entt::entity shake)
     {
-        raise_event<components::ShakeCameraVerticalEvent>(entt::null, entt::null, displacement_speed, offset, duration);
+        raise_event<components::StopCameraShakeEvent>(entt::null, shake);
     }
 
     void Script::set_lightning(float min_interval, float max_interval, float flash_duration)

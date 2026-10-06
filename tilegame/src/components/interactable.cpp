@@ -22,8 +22,10 @@ namespace tilegame::components
             "type_id", &entt::type_hash<Interactable>::value,
             sol::call_constructor,
             sol::factories(
-                []()
-                { return Interactable{}; }),
+                [](float max_distance, float cos_max_angle)
+                { return Interactable(max_distance, cos_max_angle); }),
+            "max_distance", &components::Interactable::max_distance,
+            "cos_max_angle", &Interactable::cos_max_angle,
             sol::meta_function::to_string, &Interactable::to_string);
     }
 
@@ -43,8 +45,8 @@ namespace tilegame::components
             "type_id", &entt::type_hash<InteractEvent>::value,
             sol::call_constructor,
             sol::factories(
-                []()
-                { return InteractEvent(); }),
+                [](float distance, float angle)
+                { return InteractEvent(distance, angle); }),
             "EVENT_TYPE", sol::var(InteractEvent::EVENT_TYPE.c_str()),
             sol::meta_function::to_string, &InteractEvent::to_string);
     }

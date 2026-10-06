@@ -24,8 +24,8 @@ namespace tilegame::components
         /// If true and a message is currently displayed, `text`'s wrapped lines are appended to
         /// it instead of replacing it.
         bool append = false;
-        /// If non-empty, shown as a selectable list alongside the message, replacing whatever
-        /// options (if any) were showing before. Empty means no options box.
+        /// If non-empty, shown as a selectable list alongside the message, in this order,
+        /// replacing whatever options (if any) were showing before. Empty means no options box.
         std::vector<std::string> options;
     };
 
@@ -53,12 +53,12 @@ namespace tilegame::components
     {
         inline static const std::string EVENT_TYPE = "MESSAGE_CLOSED_EVENT";
 
-        /// Text of the option that was highlighted when the message closed; empty if the
-        /// message had no options attached.
-        std::string selected_option;
+        /// 1-based (Lua-style) index into ShowMessageEvent::options of the option that was
+        /// highlighted when the message closed; 0 if the message had no options attached.
+        int selected_option = 0;
 
         MessageClosedEvent() = default;
-        MessageClosedEvent(const std::string &selected_option) : selected_option(selected_option) {}
+        MessageClosedEvent(int selected_option) : selected_option(selected_option) {}
         [[nodiscard]] std::string to_string() const;
 
         static void register_component(sol::state &lua);

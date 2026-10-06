@@ -60,7 +60,7 @@ namespace tilegame::scenes
         _system_render.load_content();
 
         // Runs the global Lua scripts (content/scripts/daytime.lua, weather.lua), which
-        // immediately raise events like SetWeatherPrecipitationEvent/ShakeCameraHorizontalEvent/
+        // immediately raise events like SetWeatherPrecipitationEvent/ShakeCameraEvent/
         // SetLightningEvent (see systems::Script::load_content()) - must run last, once every
         // system above has already created whatever entities/listeners those events are
         // delivered to.

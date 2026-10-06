@@ -103,27 +103,32 @@ namespace tilegame::systems
         void set_weather_tint(const engine::Color &target_tint, float fade_duration);
         // Exposed to Lua as `_set_weather_precipitation`; `emitter` is a fully-configured
         // _ParticleEmitter (rate, spread, speed, lifetime, scale, color, source_rect) and
-        // `spawn_area` a _Rectangle particles spawn within, relative to the precipitation
-        // entity's Transform (which tracks player 1 - see
+        // `spawn_area` a _Rectangle particles spawn within, relative to the camera (see
         // systems::Weather::create_precipitation_entity()), both built entirely by the calling
         // script - see content/scripts/weather.lua for the rain/snow presets. Raises a
-        // SetWeatherPrecipitationEvent, immediately delivered to systems::Weather, which creates
-        // or reconfigures the active precipitation effect.
+        // SetWeatherPrecipitationEvent, immediately delivered to systems::Weather, which stops
+        // the currently emitting precipitation (its particles finish falling) and starts this
+        // one alongside it.
         void set_weather_precipitation(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area);
-        // Exposed to Lua as `_set_weather_precipitation` without parameter; stops and removes
-        // whatever precipitation effect is currently active, if any. Raises a
+        // Exposed to Lua as `_set_weather_precipitation` without parameter; stops whatever
+        // precipitation is currently emitting, if any - particles already in the air keep
+        // falling until they expire, then systems::Weather cleans the effect up. Raises a
         // ClearWeatherPrecipitationEvent, immediately delivered to systems::Weather.
         void set_weather_precipitation();
-        // Exposed to Lua as `_shake_camera_horizontal`; (re)starts the camera's horizontal
-        // screen shake axis, jittering within [-offset, +offset] world units at up to
-        // `displacement_speed` units/second, for `duration` seconds, after which
-        // systems::Camera smoothly settles it back to center at the same speed. Raises a
-        // ShakeCameraHorizontalEvent, immediately delivered to systems::Camera.
-        void shake_camera_horizontal(float displacement_speed, float offset, float duration);
-        // Exposed to Lua as `_shake_camera_vertical`; same as shake_camera_horizontal() but for
-        // the vertical axis. Raises a ShakeCameraVerticalEvent, immediately delivered to
-        // systems::Camera.
-        void shake_camera_vertical(float displacement_speed, float offset, float duration);
+        // Exposed to Lua as `_shake_camera`; starts a new screen shake on whichever of the
+        // camera's axes `settings` has a `horizontal` and/or `vertical` entry for, each a table
+        // { displacement_speed = ..., offset = ..., duration = ... } (see
+        // components::CameraShakeAxisSettings), on top of any shakes already running. Creates
+        // the shake's entity and raises a ShakeCameraEvent targeting it, immediately delivered
+        // to systems::Camera; returns that entity, which is the source of the
+        // CameraShakeEndedEvent raised once both axes have finished, and can be passed to
+        // `_stop_camera_shake`.
+        entt::entity shake_camera(const sol::table &settings);
+        // Exposed to Lua as `_stop_camera_shake`; ends a shake returned by `_shake_camera`
+        // early - it settles smoothly back to center, then raises CameraShakeEndedEvent as
+        // usual. A no-op if it already ended. Raises a StopCameraShakeEvent targeting `shake`,
+        // immediately delivered to systems::Camera.
+        void stop_camera_shake(entt::entity shake);
         // Exposed to Lua as `_set_lightning`; (re)starts recurring lightning strikes, each
         // waiting a fresh random interval within [min_interval, max_interval) seconds after the
         // previous one. Each strike raises a _LightningEvent (subscribable via
@@ -160,8 +165,8 @@ namespace tilegame::systems
         // delivered to systems::MessageBox, which word-wraps `text` and, per `append`, either
         // adding it to the currently displayed message or replacing it. `options`, if
         // non-empty, replaces whatever options box is currently showing (see
-        // components::ShowMessageEvent::options); selecting one currently just closes the
-        // message - the return value isn't surfaced anywhere yet.
+        // components::ShowMessageEvent::options), shown in the Lua list's order; the selected
+        // option's 1-based index is reported back via components::MessageClosedEvent::selected_option.
         void show_message(const std::string &text, bool append, const std::vector<std::string> &options);
         // Exposed to Lua as `_stop_player_input`; raises a components::StopPlayerInputEvent,
         // immediately delivered to systems::Player, suppressing keyboard input for whichever
@@ -193,7 +198,7 @@ namespace tilegame::systems
         void initialize();
         // Runs the global (non-entity) configuration scripts (content/scripts/daytime.lua,
         // weather.lua). Deliberately not in initialize(): those scripts immediately raise
-        // events like SetWeatherPrecipitationEvent/ShakeCameraHorizontalEvent/SetLightningEvent,
+        // events like SetWeatherPrecipitationEvent/ShakeCameraEvent/SetLightningEvent,
         // which are only deliverable once their target systems have already created the
         // entities/listeners those events reach - load_content() is called last in
         // WorldScene::load_content(), after every other system's own load_content().

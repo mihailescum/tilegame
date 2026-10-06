@@ -42,7 +42,7 @@ namespace tilegame::systems
         _ui_scene = nullptr;
         _registry.ctx().get<components::MessageBoxOpenState>().open = false;
 
-        const std::string selected_option = result.has_value() ? std::any_cast<std::string>(result) : std::string();
+        const int selected_option = result.has_value() ? std::any_cast<int>(result) : 0;
         raise_event<components::MessageClosedEvent>(entt::null, entt::null, selected_option);
     }
 } // namespace tilegame::systems

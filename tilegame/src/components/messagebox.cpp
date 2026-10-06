@@ -26,7 +26,7 @@ namespace tilegame::components
             sol::factories(
                 []()
                 { return MessageClosedEvent(); },
-                [](const std::string &selected_option)
+                [](int selected_option)
                 { return MessageClosedEvent(selected_option); }),
             "selected_option", &MessageClosedEvent::selected_option,
             "EVENT_TYPE", sol::var(MessageClosedEvent::EVENT_TYPE.c_str()),

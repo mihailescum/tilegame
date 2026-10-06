@@ -3,7 +3,7 @@ local map_entity = ...
 local weather = require("weather")
 
 local function handle_map_entered_event(event_type, event, source, target)
-    weather.start_rain()
+    weather.start_thunderstorm()
 end
 
 local function handle_map_left_event(event_type, event, source, target)

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "components/particleemitter.hpp"
 #include "components/particlepool.hpp"
@@ -31,27 +32,21 @@ namespace tilegame::systems
         _daytime_shader->use();
         _daytime_shader->set("weather_tint", static_cast<glm::vec4>(engine::Color::WHITE));
 
-        const auto precipitation_entity = create_precipitation_entity();
-        _registry.emplace<engine::Inactive>(precipitation_entity);
-
-        // On a *separate* entity - never tagged Inactive - since `precipitation_entity` starts
-        // Inactive and raise_event()'s listener view excludes Inactive entities: attaching
-        // these to `precipitation_entity` itself would mean the very event whose job is to
-        // remove Inactive could never reach it.
+        // On a dedicated, never Inactive entity, following the same convention as
+        // systems::Lightning/Camera's control entities.
         const auto weather_entity = _registry.create();
         _registry.emplace<engine::EventListener<components::SetWeatherPrecipitationEvent>>(
             weather_entity,
-            [this, precipitation_entity](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity, entt::entity)
+            [this](const std::string &, const components::SetWeatherPrecipitationEvent &event, entt::entity, entt::entity)
             {
-                _registry.replace<components::ParticleEmitter>(precipitation_entity, event.emitter);
-                _registry.replace<components::Shape>(precipitation_entity, engine::ShapeVariant(event.spawn_area));
-                _registry.remove<engine::Inactive>(precipitation_entity);
+                stop_precipitation();
+                create_precipitation_entity(event.emitter, event.spawn_area);
             },
             entt::null);
         _registry.emplace<engine::EventListener<components::ClearWeatherPrecipitationEvent>>(
             weather_entity,
-            [this, precipitation_entity](const std::string &, const components::ClearWeatherPrecipitationEvent &, entt::entity, entt::entity)
-            { _registry.emplace_or_replace<engine::Inactive>(precipitation_entity); },
+            [this](const std::string &, const components::ClearWeatherPrecipitationEvent &, entt::entity, entt::entity)
+            { stop_precipitation(); },
             entt::null);
 
         _registry.emplace<engine::EventListener<components::SetWeatherTintEvent>>(
@@ -69,12 +64,13 @@ namespace tilegame::systems
             entt::null);
     }
 
-    entt::entity Weather::create_precipitation_entity()
+    entt::entity Weather::create_precipitation_entity(const components::ParticleEmitter &emitter, const engine::Rectangle &spawn_area)
     {
         const auto entity = _registry.create();
+        _registry.emplace<components::Precipitation>(entity);
         _registry.emplace<components::Transform>(entity, glm::vec2(0.0f, 0.0f));
-        _registry.emplace<components::Shape>(entity, engine::ShapeVariant(engine::Rectangle(glm::vec2(0.0f), glm::vec2(0.0f))));
-        _registry.emplace<components::ParticleEmitter>(entity);
+        _registry.emplace<components::Shape>(entity, engine::ShapeVariant(spawn_area));
+        _registry.emplace<components::ParticleEmitter>(entity, emitter);
         _registry.emplace<components::ParticlePool>(entity);
         _registry.emplace<components::Renderable2D>(entity);
         // Arbitrary placeholder for now - close to the largest Z in SpriteBatch's valid [-1, 1]
@@ -91,15 +87,47 @@ namespace tilegame::systems
         // row). Pinned to the camera rather than directly to the player so precipitation still
         // tracks the view if the camera is ever re-pinned to something other than player 1. The
         // spawn area itself is Lua's call - see SetWeatherPrecipitationEvent - and is relative to
-        // wherever this Transform ends up.
+        // wherever this Transform ends up. Already-spawned particles don't follow the pin (their
+        // positions are world-space), so a stopped effect's last drops just fall where they are.
         const auto camera_entity = _registry.ctx().get<entt::entity>(components::CAMERA_ENTITY_ID);
         _registry.emplace<components::Pin>(entity, camera_entity);
 
         return entity;
     }
 
+    void Weather::stop_precipitation()
+    {
+        const auto emitting = _registry.view<const components::Precipitation, const components::ParticleEmitter>();
+        // Collected first: removing ParticleEmitter while iterating a view over it would
+        // invalidate the iteration.
+        const std::vector<entt::entity> entities(emitting.begin(), emitting.end());
+        _registry.remove<components::ParticleEmitter>(entities.begin(), entities.end());
+    }
+
+    void Weather::destroy_finished_precipitation()
+    {
+        std::vector<entt::entity> finished;
+        const auto stopped = _registry.view<const components::Precipitation, const components::ParticlePool>(entt::exclude<components::ParticleEmitter>);
+        for (const auto entity : stopped)
+        {
+            if (stopped.get<const components::ParticlePool>(entity).first_dead_particle == 0)
+            {
+                finished.push_back(entity);
+            }
+        }
+
+        for (const auto entity : finished)
+        {
+            const auto &pool = _registry.get<const components::ParticlePool>(entity);
+            _registry.destroy(pool.container.begin(), pool.container.end());
+            _registry.destroy(entity);
+        }
+    }
+
     void Weather::update(const engine::GameTime &update_time)
     {
+        destroy_finished_precipitation();
+
         _fade_elapsed = std::min(_fade_elapsed + update_time.elapsed_time, _fade_duration);
         float lerp_amount = _fade_duration > 0.0f ? _fade_elapsed / _fade_duration : 1.0f;
 

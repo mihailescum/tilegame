@@ -1,9 +1,12 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "engine.hpp"
 #include "entt/entt.hpp"
+
+#include "components/camerashake.hpp"
 
 namespace tilegame::systems
 {
@@ -20,26 +23,23 @@ namespace tilegame::systems
      * visible_bounds) from its Transform position, viewport, and any active
      * screen shake.
      *
-     * Screen shake has its own two dedicated entities (horizontal/vertical - a Timer can't be
-     * shared between axes), tracked via private registry context ids rather than system
-     * members, each starting Inactive (not currently shaking) and carrying a components::Timer
-     * (decremented by the shared systems::Timer), a components::CameraShakeAxis holding the
-     * jitter state, and its own engine::EventListener<TimerEvent> (source-filtered to
-     * itself, registered in create_shake_axis_entity()) that flips CameraShakeAxis::settling
-     * once its Timer rings. A third, separate control entity (created in load_content(), never
-     * tagged Inactive - see the comment there for why) carries
-     * EventListener<ShakeCameraHorizontalEvent>/EventListener<ShakeCameraVerticalEvent>, which
-     * (re)start the matching axis the instant Script::shake_camera_horizontal()/
-     * shake_camera_vertical() raises it via the inherited System::raise(). See camera.cpp for
-     * the per-axis update.
+     * Screen shake: every running shake is its own entity carrying a components::CameraShake
+     * (see there). A separate control entity (created in load_content()) carries the
+     * EventListener<ShakeCameraEvent>/EventListener<StopCameraShakeEvent> that start/stop a
+     * shake the instant Script::shake_camera()/stop_camera_shake() raises one via the
+     * inherited System::raise(). Each frame, update() advances every shake, adds their offsets
+     * together, and raises components::CameraShakeEndedEvent (source = the shake entity) for,
+     * then destroys, each shake whose axes have all settled.
      */
     class Camera : public engine::System
     {
     private:
-        entt::entity create_shake_axis_entity();
-        // Advances one shake axis by `elapsed_time` and returns its current offset (0 if
-        // Inactive, i.e. not currently shaking or settling). See components::CameraShakeAxis.
-        float update_shake_axis(entt::entity axis_entity, float elapsed_time);
+        // Advances one shake axis by `elapsed_time` and returns its current offset. Resets
+        // `axis` to empty once it has finished settling. See components::CameraShakeAxis.
+        float update_shake_axis(std::optional<components::CameraShakeAxis> &axis, float elapsed_time);
+        // Advances every running shake and returns their summed offset, raising
+        // CameraShakeEndedEvent for and destroying any shake that finished this frame.
+        glm::vec2 update_shakes(float elapsed_time);
 
     public:
         Camera(engine::Scene &scene, entt::registry &registry);
